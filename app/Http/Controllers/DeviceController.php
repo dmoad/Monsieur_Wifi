@@ -7,6 +7,7 @@ use App\Models\Location;
 use App\Models\SystemSetting;
 use App\Models\LocationSettings;
 use App\Models\ScanResult;
+use App\Models\OnlineNetworkUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Firmware;
@@ -349,6 +350,72 @@ class DeviceController extends Controller
             'status' => 'success',
             'message' => 'Device verified successfully',
             'device' => $device
+        ]);
+    }
+
+    public function updateClientList($device_key, $device_secret, Request $request)
+    {
+        Log::info('Update client list request: ');
+        Log::info($device_key.' '.$device_secret);
+        Log::info($request->all());
+        
+        $device = Device::where('device_key', $device_key)->where('device_secret', $device_secret)->first();
+        if (!$device) {
+            return response()->json(['error' => 'Invalid device credentials'], 401);
+        }
+
+        // Validate the request
+        $request->validate([
+            'timestamp' => 'required|string',
+            'clients' => 'required|array',
+            'clients.*.mac' => 'required|string',
+            'clients.*.type' => 'required|string',
+            'clients.*.ip' => 'required|string',
+            'clients.*.interface' => 'required|string',
+            'clients.*.hostname' => 'nullable|string',
+            'clients.*.network' => 'required|string',
+            'summary' => 'required|array',
+            'synced' => 'required|boolean'
+        ]);
+
+        $location = Location::where('device_id', $device->id)->first();
+        if (!$location) {
+            return response()->json(['error' => 'Location not found'], 404);
+        }
+
+        $location_id = $location->id;
+        Log::info('Location ID: '.$location_id);
+        
+        // Delete all existing online network users for this location
+        OnlineNetworkUser::where('location_id', $location_id)->delete();
+        
+        // Create new records for all clients in the payload
+        $clients = $request->input('clients');
+        foreach ($clients as $client) {
+            OnlineNetworkUser::create([
+                'mac' => $client['mac'],
+                'type' => $client['type'],
+                'ip' => $client['ip'],
+                'interface' => $client['interface'],
+                'hostname' => $client['hostname'] ?? '',
+                'network' => $client['network'],
+                'location_id' => $location_id,
+            ]);
+        }
+
+        Log::info('Client list updated', [
+            'device_key' => $device_key,
+            'location_id' => $location_id,
+            'clients_count' => count($clients),
+            'timestamp' => $request->input('timestamp')
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Client list updated successfully',
+            'clients_processed' => count($clients),
+            'location_id' => $location_id,
+            'timestamp' => $request->input('timestamp')
         ]);
     }
 

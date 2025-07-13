@@ -11,6 +11,7 @@ use App\Http\Controllers\CaptivePortalDesignController;
 use App\Http\Controllers\FirmwareController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DomainBlockingController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -39,6 +40,7 @@ Route::group(['prefix' => 'devices'], function () {
 Route::get('/devices/{device_key}/{device_secret}/settings', [DeviceController::class, 'getSettings']);
 Route::get('/devices/{device_key}/{device_secret}/heartbeat', [DeviceController::class, 'heartbeat']);
 Route::get('/devices/{device_key}/{device_secret}/firmware', [FirmwareController::class, 'getDeviceFirmware']);
+Route::post('/devices/{device_key}/{device_secret}/clients', [DeviceController::class, 'updateClientList']);
 
 // Device scan update routes (called by devices themselves)
 Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/started', [DeviceController::class, 'updateScanStarted']);

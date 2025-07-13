@@ -2293,7 +2293,6 @@
                                                                 <select class="form-control form-control-sm" id="secured-mac-view-filter" style="width: auto;">
                                                                     <option value="all">Show All</option>
                                                                     <option value="blacklisted">Show Blacklisted</option>
-                                                                    <option value="whitelisted">Show Whitelisted</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -2306,7 +2305,6 @@
                                                             <div class="col-3">
                                                                 <select class="form-control form-control-sm" id="secured-mac-type">
                                                                     <option value="blacklist">Blacklist</option>
-                                                                    <option value="whitelist">Whitelist</option>
                                                                 </select>
                                                             </div>
                                                             <div class="col-2">
@@ -6627,9 +6625,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Show summary in success message
                     const total = window.macAddresses.secured.length;
-                    const whitelisted = window.macAddresses.secured.filter(item => item.type === 'whitelist').length;
                     const blacklisted = window.macAddresses.secured.filter(item => item.type === 'blacklist').length;
-                    toastr.success(`Secured WiFi MAC filter saved! Total: ${total} (${whitelisted} whitelisted, ${blacklisted} blacklisted)`);
+                    toastr.success(`Secured WiFi MAC filter saved! Total: ${total} (${blacklisted} blacklisted)`);
                 }, 1000);
             });
             
