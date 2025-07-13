@@ -4865,10 +4865,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // **MAC Filter Settings**
-                // Load MAC addresses if present
+                // Load MAC addresses from separate fields
+                if (settings.captive_mac_filter_list && Array.isArray(settings.captive_mac_filter_list)) {
+                    loadMacAddressesFromSettings(settings.captive_mac_filter_list, 'captive');
+                }
+                if (settings.secured_mac_filter_list && Array.isArray(settings.secured_mac_filter_list)) {
+                    loadMacAddressesFromSettings(settings.secured_mac_filter_list, 'secured');
+                }
+                
+                // Backward compatibility - if old mac_filter_list exists, load it for both contexts
                 if (settings.mac_filter_list && Array.isArray(settings.mac_filter_list)) {
-                    loadMacAddressesFromSettings(settings.mac_filter_list, 'captive');
-                    loadMacAddressesFromSettings(settings.mac_filter_list, 'secured');
+                    if (!settings.captive_mac_filter_list) {
+                        loadMacAddressesFromSettings(settings.mac_filter_list, 'captive');
+                    }
+                    if (!settings.secured_mac_filter_list) {
+                        loadMacAddressesFromSettings(settings.mac_filter_list, 'secured');
+                    }
                 }
                 
                 console.log('All settings populated successfully');
@@ -6513,10 +6525,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Prepare the new data structure
-                const macFilterData = {
-                    mac_filter_list: window.macAddresses[context]
-                };
+                // Prepare the new data structure with context-specific field names
+                const macFilterData = {};
+                if (context === 'captive') {
+                    // For captive portal - adds to radcheck, no config version increment
+                    macFilterData.captive_mac_filter_list = window.macAddresses[context];
+                } else if (context === 'secured') {
+                    // For password WiFi - adds to list, increments config version
+                    macFilterData.secured_mac_filter_list = window.macAddresses[context];
+                }
                 
                 console.log('Saving MAC filter settings:', macFilterData);
                 

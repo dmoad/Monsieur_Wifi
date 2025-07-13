@@ -51,6 +51,8 @@ class LocationSettings extends Model
         
         // Access control
         'mac_filter_list',
+        'captive_mac_filter_list',
+        'secured_mac_filter_list',
         'web_filter_enabled',
         'web_filter_domains',
         'web_filter_categories',
@@ -145,6 +147,8 @@ class LocationSettings extends Model
         // JSON casts
         'enabled_social_platforms' => 'json',
         'mac_filter_list' => 'json',
+        'captive_mac_filter_list' => 'json',
+        'secured_mac_filter_list' => 'json',
         'web_filter_domains' => 'json',
         'web_filter_categories' => 'json',
         
@@ -345,8 +349,13 @@ class LocationSettings extends Model
      */
     public function shouldAllowMacAddress($macAddress)
     {
-        // Normalize MAC address to uppercase for comparison
-        $macAddress = strtoupper($macAddress);
+        // Normalize MAC address to dash-delimited uppercase format
+        $macAddress = $this->normalizeMacAddress($macAddress);
+        
+        // If MAC address is invalid, deny access
+        if ($macAddress === null) {
+            return false;
+        }
         
         // Get the MAC filter list
         $macList = $this->mac_filter_list ?: [];
@@ -408,6 +417,31 @@ class LocationSettings extends Model
     }
     
     /**
+     * Normalize MAC address to dash-delimited uppercase format
+     *
+     * @param string $macAddress
+     * @return string|null
+     */
+    private function normalizeMacAddress($macAddress)
+    {
+        // Remove any existing delimiters and convert to uppercase
+        $macAddress = strtoupper(str_replace([':', '-', '.', ' '], '', $macAddress));
+        
+        // Validate that we have exactly 12 hex characters
+        if (strlen($macAddress) !== 12 || !ctype_xdigit($macAddress)) {
+            return null;
+        }
+        
+        // Add dash delimiters: XX-XX-XX-XX-XX-XX
+        return substr($macAddress, 0, 2) . '-' . 
+               substr($macAddress, 2, 2) . '-' . 
+               substr($macAddress, 4, 2) . '-' . 
+               substr($macAddress, 6, 2) . '-' . 
+               substr($macAddress, 8, 2) . '-' . 
+               substr($macAddress, 10, 2);
+    }
+
+    /**
      * Add a MAC address to the filter list.
      *
      * @param string $macAddress
@@ -416,11 +450,11 @@ class LocationSettings extends Model
      */
     public function addMacAddress($macAddress, $type = 'blacklist')
     {
-        // Normalize MAC address to uppercase
-        $macAddress = strtoupper($macAddress);
+        // Normalize MAC address to dash-delimited uppercase format
+        $macAddress = $this->normalizeMacAddress($macAddress);
         
-        // Validate MAC address format
-        if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macAddress)) {
+        // Validate MAC address format (dash-delimited)
+        if ($macAddress === null || !preg_match('/^([0-9A-F]{2}-){5}([0-9A-F]{2})$/', $macAddress)) {
             return false;
         }
         
@@ -472,8 +506,13 @@ class LocationSettings extends Model
      */
     public function removeMacAddress($macAddress)
     {
-        // Normalize MAC address to uppercase
-        $macAddress = strtoupper($macAddress);
+        // Normalize MAC address to dash-delimited uppercase format
+        $macAddress = $this->normalizeMacAddress($macAddress);
+        
+        // Return false if MAC address is invalid
+        if ($macAddress === null) {
+            return false;
+        }
         
         // Get current list
         $macList = $this->mac_filter_list ?: [];

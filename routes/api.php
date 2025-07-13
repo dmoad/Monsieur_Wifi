@@ -72,6 +72,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::post('/{id}/update-firmware', [LocationController::class, 'updateFirmware']);
     // MAC address update route
     Route::post('/{id}/update-mac-address', [LocationController::class, 'updateMacAddress']);
+    // MAC address sync route
+    Route::post('/{id}/sync-mac-addresses', [LocationController::class, 'syncMacAddressesToRadcheck']);
     // Accounting routes
     Route::get('/{id}/accounting', [LocationController::class, 'getAccounting']);
     Route::get('/{id}/user-sessions', [LocationController::class, 'getUserSessions']);

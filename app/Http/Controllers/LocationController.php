@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Models\LocationSettings;
 use App\Models\SystemSetting;
 use App\Models\Radacct;
+use App\Models\Radcheck;
 use App\Models\Firmware;
 use App\Services\GeocodingService;
 use Illuminate\Http\Request;
@@ -1523,6 +1524,8 @@ class LocationController extends Controller
                 'channel_width_2g',
                 'channel_width_5g',
                 'mac_filter_list',
+                'captive_mac_filter_list',
+                'secured_mac_filter_list',
                 // New VLAN and redirect fields
                 'password_wifi_vlan',
                 'captive_portal_vlan',
@@ -1625,55 +1628,67 @@ class LocationController extends Controller
             
 
             
-            // Validate and process MAC filter list
+            // Handle Captive Portal MAC filter list (adds to radcheck, no config version increment)
+            if (isset($settingsData['captive_mac_filter_list'])) {
+                $normalizedMacList = $this->normalizeMacFilterList($settingsData['captive_mac_filter_list']);
+                
+                // Check if MAC filter list changed
+                $currentMacList = $settings->captive_mac_filter_list ?: [];
+                if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
+                    Log::info('Captive portal MAC filter list updated (no config version increment)', [
+                        'old_list' => $currentMacList,
+                        'new_list' => $normalizedMacList
+                    ]);
+                    
+                    // Update the captive portal MAC filter list first
+                    $settings->captive_mac_filter_list = $normalizedMacList;
+                    
+                    // Handle radcheck records for captive portal MAC address filtering
+                    $this->updateRadcheckForMacFiltering($settings, $currentMacList, $normalizedMacList);
+                }
+                
+                unset($settingsData['captive_mac_filter_list']);
+            }
+            
+            // Handle Secured WiFi MAC filter list (no radcheck, increments config version)
+            if (isset($settingsData['secured_mac_filter_list'])) {
+                $normalizedMacList = $this->normalizeMacFilterList($settingsData['secured_mac_filter_list']);
+                
+                // Check if MAC filter list changed
+                $currentMacList = $settings->secured_mac_filter_list ?: [];
+                if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
+                    $increment_version = 1;
+                    Log::info('Secured WiFi MAC filter list updated (config version increment)', [
+                        'old_list' => $currentMacList,
+                        'new_list' => $normalizedMacList
+                    ]);
+                    
+                    // Update the secured WiFi MAC filter list (no radcheck records for secured WiFi)
+                    $settings->secured_mac_filter_list = $normalizedMacList;
+                }
+                
+                unset($settingsData['secured_mac_filter_list']);
+            }
+            
+            // Handle legacy mac_filter_list field for backward compatibility
+            // Default to captive portal behavior (radcheck, no config version increment)
             if (isset($settingsData['mac_filter_list'])) {
-                if (is_string($settingsData['mac_filter_list'])) {
-                    $settingsData['mac_filter_list'] = json_decode($settingsData['mac_filter_list'], true) ?: [];
-                } elseif (!is_array($settingsData['mac_filter_list'])) {
-                    $settingsData['mac_filter_list'] = [];
-                }
-                
-                // Handle both old format (array of strings) and new format (array of objects)
-                $normalizedMacList = [];
-                foreach ($settingsData['mac_filter_list'] as $index => $macItem) {
-                    if (is_string($macItem)) {
-                        // Old format - treat as blacklist for backward compatibility
-                        if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem)) {
-                            throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem);
-                        }
-                        $normalizedMacList[] = [
-                            'mac' => strtoupper($macItem),
-                            'type' => 'blacklist'
-                        ];
-                    } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
-                        // New format - validate MAC address and type
-                        if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem['mac'])) {
-                            throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem['mac']);
-                        }
-                        if (!in_array($macItem['type'], ['whitelist', 'blacklist'])) {
-                            throw new \Exception('Invalid MAC address type at index ' . $index . ': ' . $macItem['type'] . '. Must be "whitelist" or "blacklist"');
-                        }
-                        $normalizedMacList[] = [
-                            'mac' => strtoupper($macItem['mac']),
-                            'type' => $macItem['type']
-                        ];
-                    } else {
-                        throw new \Exception('Invalid MAC filter item format at index ' . $index . '. Must be string or object with mac and type properties.');
-                    }
-                }
-                
-                // Update with normalized data
-                $settingsData['mac_filter_list'] = $normalizedMacList;
+                $normalizedMacList = $this->normalizeMacFilterList($settingsData['mac_filter_list']);
                 
                 // Check if MAC filter list changed
                 $currentMacList = $settings->mac_filter_list ?: [];
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
-                    $increment_version = 1;
-                    Log::info('MAC filter list updated', [
+                    Log::info('Legacy MAC filter list updated (treated as captive portal)', [
                         'old_list' => $currentMacList,
                         'new_list' => $normalizedMacList
                     ]);
+                    
+                    // Update the MAC filter list and handle radcheck records
+                    $settings->mac_filter_list = $normalizedMacList;
+                    $this->updateRadcheckForMacFiltering($settings, $currentMacList, $normalizedMacList);
                 }
+                
+                unset($settingsData['mac_filter_list']);
             }
             
             // Apply the settings changes
@@ -1840,6 +1855,241 @@ class LocationController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error updating MAC address: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update radcheck records for MAC address filtering
+     *
+     * @param \App\Models\LocationSettings $settings
+     * @param array $oldMacList
+     * @param array $newMacList
+     * @return void
+     */
+    private function updateRadcheckForMacFiltering($settings, $oldMacList, $newMacList)
+    {
+        Log::info('Updating radcheck records for MAC filtering', [
+            'location_id' => $settings->location_id,
+            'old_count' => count($oldMacList),
+            'new_count' => count($newMacList)
+        ]);
+
+        // Convert arrays to associative arrays for easier comparison
+        $oldMacMap = [];
+        foreach ($oldMacList as $macItem) {
+            if (is_string($macItem)) {
+                $oldMacMap[$macItem] = 'blacklist';
+            } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
+                $oldMacMap[$macItem['mac']] = $macItem['type'];
+            }
+        }
+
+        $newMacMap = [];
+        foreach ($newMacList as $macItem) {
+            if (is_string($macItem)) {
+                $newMacMap[$macItem] = 'blacklist';
+            } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
+                $newMacMap[$macItem['mac']] = $macItem['type'];
+            }
+        }
+
+        // Find MAC addresses that were removed
+        $removedMacs = array_diff_key($oldMacMap, $newMacMap);
+        foreach ($removedMacs as $macAddress => $type) {
+            Log::info('Removing MAC address from radcheck: ' . $macAddress);
+            
+            // Normalize MAC address to dash format
+            $normalizedMac = $this->normalizeMacAddress($macAddress);
+            if ($normalizedMac) {
+                \App\Models\Radcheck::where('username', $normalizedMac)
+                    ->where('attribute', 'Cleartext-Password')
+                    ->where('location_id', $settings->location_id)
+                    ->delete();
+            }
+        }
+
+        // Find MAC addresses that were added or changed
+        foreach ($newMacMap as $macAddress => $type) {
+            $normalizedMac = $this->normalizeMacAddress($macAddress);
+            if (!$normalizedMac) {
+                Log::warning('Invalid MAC address format: ' . $macAddress);
+                continue;
+            }
+
+            $accessControl = $type === 'whitelist' ? 'whitelisted' : 'blacklisted';
+            
+            // Check if this is a new MAC address or if the type changed
+            if (!isset($oldMacMap[$macAddress]) || $oldMacMap[$macAddress] !== $type) {
+                Log::info('Adding/updating MAC address in radcheck: ' . $normalizedMac . ' as ' . $accessControl);
+                
+                \App\Models\Radcheck::updateOrCreateRecord(
+                    $normalizedMac,
+                    'Cleartext-Password',
+                    $normalizedMac,
+                    '==',
+                    [
+                        'location_id' => $settings->location_id,
+                        'access_control' => $accessControl
+                    ]
+                );
+            }
+        }
+    }
+
+    /**
+     * Normalize MAC address to dash-delimited uppercase format
+     *
+     * @param string $macAddress
+     * @return string|null
+     */
+    private function normalizeMacAddress($macAddress)
+    {
+        // Remove any existing delimiters and convert to uppercase
+        $macAddress = strtoupper(str_replace([':', '-', '.', ' '], '', $macAddress));
+        
+        // Validate that we have exactly 12 hex characters
+        if (strlen($macAddress) !== 12 || !ctype_xdigit($macAddress)) {
+            return null;
+        }
+        
+        // Add dash delimiters: XX-XX-XX-XX-XX-XX
+        return substr($macAddress, 0, 2) . '-' . 
+               substr($macAddress, 2, 2) . '-' . 
+               substr($macAddress, 4, 2) . '-' . 
+               substr($macAddress, 6, 2) . '-' . 
+               substr($macAddress, 8, 2) . '-' . 
+               substr($macAddress, 10, 2);
+    }
+
+    /**
+     * Normalize and validate MAC filter list
+     *
+     * @param mixed $macFilterList
+     * @return array
+     */
+    private function normalizeMacFilterList($macFilterList)
+    {
+        if (is_string($macFilterList)) {
+            $macFilterList = json_decode($macFilterList, true) ?: [];
+        } elseif (!is_array($macFilterList)) {
+            $macFilterList = [];
+        }
+        
+        // Handle both old format (array of strings) and new format (array of objects)
+        $normalizedMacList = [];
+        foreach ($macFilterList as $index => $macItem) {
+            if (is_string($macItem)) {
+                // Old format - treat as blacklist for backward compatibility
+                if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem)) {
+                    throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem);
+                }
+                $normalizedMacList[] = [
+                    'mac' => strtoupper($macItem),
+                    'type' => 'blacklist'
+                ];
+            } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
+                // New format - validate MAC address and type
+                if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem['mac'])) {
+                    throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem['mac']);
+                }
+                if (!in_array($macItem['type'], ['whitelist', 'blacklist'])) {
+                    throw new \Exception('Invalid MAC address type at index ' . $index . ': ' . $macItem['type'] . '. Must be "whitelist" or "blacklist"');
+                }
+                $normalizedMacList[] = [
+                    'mac' => strtoupper($macItem['mac']),
+                    'type' => $macItem['type']
+                ];
+            } else {
+                throw new \Exception('Invalid MAC filter item format at index ' . $index . '. Must be string or object with mac and type properties.');
+            }
+        }
+        
+        return $normalizedMacList;
+    }
+
+    /**
+     * Sync existing MAC addresses to radcheck records for a location
+     * This is useful for locations that already have MAC addresses configured
+     * but don't have corresponding radcheck records
+     *
+     * @param int $locationId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function syncMacAddressesToRadcheck($locationId)
+    {
+        try {
+            $location = Location::find($locationId);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $settings = LocationSettings::where('location_id', $locationId)->first();
+            
+            if (!$settings) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location settings not found'
+                ], 404);
+            }
+            
+            $macList = $settings->mac_filter_list ?: [];
+            $synced = 0;
+            
+            foreach ($macList as $macItem) {
+                if (is_string($macItem)) {
+                    // Old format: just a string MAC address
+                    $macAddress = $this->normalizeMacAddress($macItem);
+                    $type = 'blacklist'; // Default for old format
+                } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
+                    // New format
+                    $macAddress = $this->normalizeMacAddress($macItem['mac']);
+                    $type = $macItem['type'];
+                } else {
+                    continue; // Skip invalid entries
+                }
+                
+                if ($macAddress) {
+                    $accessControl = $type === 'whitelist' ? 'whitelisted' : 'blacklisted';
+                    
+                    \App\Models\Radcheck::updateOrCreateRecord(
+                        $macAddress,
+                        'Cleartext-Password',
+                        $macAddress,
+                        '==',
+                        [
+                            'location_id' => $locationId,
+                            'access_control' => $accessControl
+                        ]
+                    );
+                    
+                    $synced++;
+                }
+            }
+            
+            Log::info('Synced MAC addresses to radcheck', [
+                'location_id' => $locationId,
+                'synced_count' => $synced
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully synced {$synced} MAC addresses to radcheck",
+                'data' => [
+                    'synced_count' => $synced
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error syncing MAC addresses to radcheck: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error syncing MAC addresses: ' . $e->getMessage()
             ], 500);
         }
     }
