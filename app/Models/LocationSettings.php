@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Radcheck;
 
 class LocationSettings extends Model
 {
@@ -49,7 +50,6 @@ class LocationSettings extends Model
         'channel_width_5g',
         
         // Access control
-        'mac_filter_mode',
         'mac_filter_list',
         'web_filter_enabled',
         'web_filter_domains',
@@ -294,5 +294,264 @@ class LocationSettings extends Model
         }
         
         return true;
+    }
+    
+    /**
+     * Check if MAC filtering is enabled (has any MAC addresses configured).
+     *
+     * @return bool
+     */
+    public function isMacFilteringEnabled()
+    {
+        return !empty($this->mac_filter_list);
+    }
+    
+    /**
+     * Get MAC filter statistics.
+     *
+     * @return array
+     */
+    public function getMacFilterStatsAttribute()
+    {
+        $macList = $this->mac_filter_list ?: [];
+        $stats = [
+            'total' => 0,
+            'whitelisted' => 0,
+            'blacklisted' => 0
+        ];
+        
+        foreach ($macList as $macItem) {
+            $stats['total']++;
+            if (isset($macItem['type'])) {
+                if ($macItem['type'] === 'whitelist') {
+                    $stats['whitelisted']++;
+                } elseif ($macItem['type'] === 'blacklist') {
+                    $stats['blacklisted']++;
+                }
+            } else {
+                // Old format compatibility - treat as blacklist
+                $stats['blacklisted']++;
+            }
+        }
+        
+        return $stats;
+    }
+    
+    /**
+     * Check if a MAC address should be allowed access based on filter settings.
+     *
+     * @param string $macAddress
+     * @return bool
+     */
+    public function shouldAllowMacAddress($macAddress)
+    {
+        // Normalize MAC address to uppercase for comparison
+        $macAddress = strtoupper($macAddress);
+        
+        // Get the MAC filter list
+        $macList = $this->mac_filter_list ?: [];
+        
+        // If no MAC addresses configured, allow all
+        if (empty($macList)) {
+            return true;
+        }
+        
+        $hasWhitelist = false;
+        $hasBlacklist = false;
+        $isWhitelisted = false;
+        $isBlacklisted = false;
+        
+        // Check each MAC filter entry
+        foreach ($macList as $macItem) {
+            // Handle both old format (string) and new format (object)
+            if (is_string($macItem)) {
+                // Old format - treat as blacklist
+                $mac = $macItem;
+                $type = 'blacklist';
+            } elseif (isset($macItem['mac']) && isset($macItem['type'])) {
+                // New format
+                $mac = $macItem['mac'];
+                $type = $macItem['type'];
+            } else {
+                continue; // Skip invalid entries
+            }
+            
+            if ($mac === $macAddress) {
+                if ($type === 'whitelist') {
+                    $isWhitelisted = true;
+                } elseif ($type === 'blacklist') {
+                    $isBlacklisted = true;
+                }
+            }
+            
+            // Track what types of filters exist
+            if ($type === 'whitelist') {
+                $hasWhitelist = true;
+            } elseif ($type === 'blacklist') {
+                $hasBlacklist = true;
+            }
+        }
+        
+        // Apply filtering logic
+        if ($isBlacklisted) {
+            // Explicitly blacklisted - always deny
+            return false;
+        }
+        
+        if ($hasWhitelist && !$isWhitelisted) {
+            // Whitelist exists but MAC is not in it - deny
+            return false;
+        }
+        
+        // Allow in all other cases (explicitly whitelisted or no relevant filters)
+        return true;
+    }
+    
+    /**
+     * Add a MAC address to the filter list.
+     *
+     * @param string $macAddress
+     * @param string $type 'whitelist' or 'blacklist'
+     * @return bool
+     */
+    public function addMacAddress($macAddress, $type = 'blacklist')
+    {
+        // Normalize MAC address to uppercase
+        $macAddress = strtoupper($macAddress);
+        
+        // Validate MAC address format
+        if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macAddress)) {
+            return false;
+        }
+        
+        // Validate type
+        if (!in_array($type, ['whitelist', 'blacklist'])) {
+            return false;
+        }
+        
+        // Get current list
+        $macList = $this->mac_filter_list ?: [];
+        
+        // Check if MAC already exists
+        foreach ($macList as $macItem) {
+            $existingMac = is_string($macItem) ? $macItem : ($macItem['mac'] ?? '');
+            if ($existingMac === $macAddress) {
+                return false; // Already exists
+            }
+        }
+        
+        // Add new MAC address
+        $macList[] = [
+            'mac' => $macAddress,
+            'type' => $type
+        ];
+        
+        $this->mac_filter_list = $macList;
+        
+        // Create corresponding radcheck record
+        $accessControl = $type === 'whitelist' ? 'whitelisted' : 'blacklisted';
+        Radcheck::updateOrCreateRecord(
+            $macAddress,
+            'Cleartext-Password',
+            $macAddress,
+            '==',
+            [
+                'location_id' => $this->location_id,
+                'access_control' => $accessControl
+            ]
+        );
+        
+        return true;
+    }
+    
+    /**
+     * Remove a MAC address from the filter list.
+     *
+     * @param string $macAddress
+     * @return bool
+     */
+    public function removeMacAddress($macAddress)
+    {
+        // Normalize MAC address to uppercase
+        $macAddress = strtoupper($macAddress);
+        
+        // Get current list
+        $macList = $this->mac_filter_list ?: [];
+        $newMacList = [];
+        $found = false;
+        
+        foreach ($macList as $macItem) {
+            $existingMac = is_string($macItem) ? $macItem : ($macItem['mac'] ?? '');
+            if ($existingMac !== $macAddress) {
+                $newMacList[] = $macItem;
+            } else {
+                $found = true;
+            }
+        }
+        
+        if ($found) {
+            $this->mac_filter_list = $newMacList;
+            
+            // Remove corresponding radcheck record
+            Radcheck::where('username', $macAddress)
+                ->where('attribute', 'Cleartext-Password')
+                ->where('location_id', $this->location_id)
+                ->delete();
+            
+            return true;
+        }
+        
+        return false; // Not found
+    }
+    
+    /**
+     * Get the count of MAC addresses in the filter list.
+     *
+     * @return int
+     */
+    public function getMacFilterCountAttribute()
+    {
+        return count($this->mac_filter_list ?: []);
+    }
+    
+    /**
+     * Get all whitelisted MAC addresses.
+     *
+     * @return array
+     */
+    public function getWhitelistedMacAddresses()
+    {
+        $macList = $this->mac_filter_list ?: [];
+        $whitelisted = [];
+        
+        foreach ($macList as $macItem) {
+            if (isset($macItem['type']) && $macItem['type'] === 'whitelist' && isset($macItem['mac'])) {
+                $whitelisted[] = $macItem['mac'];
+            }
+        }
+        
+        return $whitelisted;
+    }
+    
+    /**
+     * Get all blacklisted MAC addresses.
+     *
+     * @return array
+     */
+    public function getBlacklistedMacAddresses()
+    {
+        $macList = $this->mac_filter_list ?: [];
+        $blacklisted = [];
+        
+        foreach ($macList as $macItem) {
+            if (is_string($macItem)) {
+                // Old format - treat as blacklist
+                $blacklisted[] = $macItem;
+            } elseif (isset($macItem['type']) && $macItem['type'] === 'blacklist' && isset($macItem['mac'])) {
+                $blacklisted[] = $macItem['mac'];
+            }
+        }
+        
+        return $blacklisted;
     }
 }

@@ -452,6 +452,11 @@ class LocationController extends Controller
                 
                 // Handle different types of settings
                 if ($settingsType === 'captive' || $settingsType === 'captive_portal') {
+                    Log::info('=== CAPTIVE PORTAL SETTINGS UPDATE ===');
+                    Log::info('Settings type: ' . $settingsType);
+                    Log::info('Location ID: ' . $location_id);
+                    Log::info('Settings data: ' . json_encode($settings));
+                    
                     // Update captive portal settings
                     if (isset($settings['captive_portal_ssid'])) {
                         if ($settings['captive_portal_ssid'] !== $locationSettings->captive_portal_ssid) {
@@ -1074,9 +1079,15 @@ class LocationController extends Controller
                     // $locationSettings->configuration_version = $locationSettings->configuration_version + 1;
                     $device->configuration_version = $device->configuration_version + 1;
                     $device->save();
+                    Log::info('Device configuration version incremented to: ' . $device->configuration_version);
                 }
+                
                 // Save the settings
+                Log::info('=== SAVING LOCATION SETTINGS ===');
+                Log::info('Location settings before save: ' . json_encode($locationSettings->toArray()));
                 $locationSettings->save();
+                Log::info('Location settings saved successfully');
+                Log::info('Location settings after save: ' . json_encode($locationSettings->fresh()->toArray()));
                 
                 return response()->json([
                     'success' => true,
@@ -1511,7 +1522,6 @@ class LocationController extends Controller
                 'channel_5g',
                 'channel_width_2g',
                 'channel_width_5g',
-                'mac_filter_mode',
                 'mac_filter_list',
                 // New VLAN and redirect fields
                 'password_wifi_vlan',
@@ -1610,6 +1620,59 @@ class LocationController extends Controller
                     $settingsData['web_filter_categories'] = json_decode($settingsData['web_filter_categories'], true) ?: [];
                 } elseif (!is_array($settingsData['web_filter_categories'])) {
                     $settingsData['web_filter_categories'] = [];
+                }
+            }
+            
+
+            
+            // Validate and process MAC filter list
+            if (isset($settingsData['mac_filter_list'])) {
+                if (is_string($settingsData['mac_filter_list'])) {
+                    $settingsData['mac_filter_list'] = json_decode($settingsData['mac_filter_list'], true) ?: [];
+                } elseif (!is_array($settingsData['mac_filter_list'])) {
+                    $settingsData['mac_filter_list'] = [];
+                }
+                
+                // Handle both old format (array of strings) and new format (array of objects)
+                $normalizedMacList = [];
+                foreach ($settingsData['mac_filter_list'] as $index => $macItem) {
+                    if (is_string($macItem)) {
+                        // Old format - treat as blacklist for backward compatibility
+                        if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem)) {
+                            throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem);
+                        }
+                        $normalizedMacList[] = [
+                            'mac' => strtoupper($macItem),
+                            'type' => 'blacklist'
+                        ];
+                    } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
+                        // New format - validate MAC address and type
+                        if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem['mac'])) {
+                            throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem['mac']);
+                        }
+                        if (!in_array($macItem['type'], ['whitelist', 'blacklist'])) {
+                            throw new \Exception('Invalid MAC address type at index ' . $index . ': ' . $macItem['type'] . '. Must be "whitelist" or "blacklist"');
+                        }
+                        $normalizedMacList[] = [
+                            'mac' => strtoupper($macItem['mac']),
+                            'type' => $macItem['type']
+                        ];
+                    } else {
+                        throw new \Exception('Invalid MAC filter item format at index ' . $index . '. Must be string or object with mac and type properties.');
+                    }
+                }
+                
+                // Update with normalized data
+                $settingsData['mac_filter_list'] = $normalizedMacList;
+                
+                // Check if MAC filter list changed
+                $currentMacList = $settings->mac_filter_list ?: [];
+                if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
+                    $increment_version = 1;
+                    Log::info('MAC filter list updated', [
+                        'old_list' => $currentMacList,
+                        'new_list' => $normalizedMacList
+                    ]);
                 }
             }
             

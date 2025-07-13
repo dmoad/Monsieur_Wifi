@@ -51,7 +51,8 @@ class Radcheck extends Model
         'download_bandwidth',
         'upload_bandwidth',
         'expiration_time',
-        'idle_timeout'
+        'idle_timeout',
+        'access_control'
     ];
 
     /**
@@ -62,6 +63,91 @@ class Radcheck extends Model
     protected $casts = [
         'expiration_time' => 'datetime',
     ];
+
+    /**
+     * Access control options
+     */
+    const ACCESS_CONTROL_NONE = 'none';
+    const ACCESS_CONTROL_WHITELISTED = 'whitelisted';
+    const ACCESS_CONTROL_BLACKLISTED = 'blacklisted';
+
+    /**
+     * Get available access control options
+     *
+     * @return array
+     */
+    public static function getAccessControlOptions()
+    {
+        return [
+            self::ACCESS_CONTROL_NONE => 'None',
+            self::ACCESS_CONTROL_WHITELISTED => 'Whitelisted',
+            self::ACCESS_CONTROL_BLACKLISTED => 'Blacklisted'
+        ];
+    }
+
+    /**
+     * Check if the record is whitelisted
+     *
+     * @return bool
+     */
+    public function isWhitelisted()
+    {
+        return $this->access_control === self::ACCESS_CONTROL_WHITELISTED;
+    }
+
+    /**
+     * Check if the record is blacklisted
+     *
+     * @return bool
+     */
+    public function isBlacklisted()
+    {
+        return $this->access_control === self::ACCESS_CONTROL_BLACKLISTED;
+    }
+
+    /**
+     * Check if the record has no access control
+     *
+     * @return bool
+     */
+    public function hasNoAccessControl()
+    {
+        return $this->access_control === self::ACCESS_CONTROL_NONE;
+    }
+
+    /**
+     * Scope to filter by access control type
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $accessControl
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAccessControl($query, $accessControl)
+    {
+        return $query->where('access_control', $accessControl);
+    }
+
+    /**
+     * Scope to filter whitelisted records
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWhitelisted($query)
+    {
+        return $query->accessControl(self::ACCESS_CONTROL_WHITELISTED);
+    }
+
+    /**
+     * Scope to filter blacklisted records
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeBlacklisted($query)
+    {
+        return $query->accessControl(self::ACCESS_CONTROL_BLACKLISTED);
+    }
 
     /**
      * Get records by username
@@ -141,6 +227,3 @@ class Radcheck extends Model
             ->delete();
     }
 } 
-//         return self::where('username', $username)->delete();
-//     }
-// } 

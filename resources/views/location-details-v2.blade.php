@@ -2171,24 +2171,52 @@
                                                 <div class="col-lg-6">
                                                     <!-- MAC Filtering -->
                                                             <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">MAC Filtering</label>
-                                                            <div>
-                                                                <select class="form-control form-control-sm" id="portal-mac-filter">
-                                                                    <option value="allow-all" selected>Allow All</option>
-                                                                    <option value="allow-listed">Allow Listed Only</option>
-                                                                    <option value="block-listed">Block Listed</option>
+                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                            <label class="mb-0">MAC Address Filtering</label>
+                                                            <div class="d-flex align-items-center">
+                                                                <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
+                                                                <select class="form-control form-control-sm" id="captive-mac-view-filter" style="width: auto;">
+                                                                    <option value="all">Show All</option>
+                                                                    <option value="blacklisted">Show Blacklisted</option>
+                                                                    <option value="whitelisted">Show Whitelisted</option>
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="input-group mb-1">
-                                                            <input type="text" class="form-control" id="captive-mac-address" placeholder="00:11:22:33:44:55">
-                                                            <div class="input-group-append">
-                                                                <button class="btn btn-sm btn-primary" id="captive-add-mac">Add</button>
+                                                        
+                                                        <!-- Add MAC Address Controls -->
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control form-control-sm" id="captive-mac-address" placeholder="00:11:22:33:44:55">
+                                                            </div>
+                                                            <div class="col-3">
+                                                                <select class="form-control form-control-sm" id="captive-mac-type">
+                                                                    <option value="blacklist">Blacklist</option>
+                                                                    <option value="whitelist">Whitelist</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <button class="btn btn-sm btn-primary w-100" id="captive-add-mac">Add</button>
                                                             </div>
                                                         </div>
-                                                        <div class="filtered-mac-list border p-1 rounded" style="max-height: 100px; overflow-y: auto;">
-                                                            <!-- MAC addresses will be added here dynamically -->
+                                                        
+                                                        <!-- MAC Address List -->
+                                                        <div class="mac-address-container">
+                                                            <div class="mac-filter-status text-muted mb-1" id="captive-mac-status">
+                                                                <small>No MAC addresses added yet</small>
+                                                            </div>
+                                                            <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
+                                                                <div class="text-center text-muted p-3" id="captive-mac-empty">
+                                                                    <i data-feather="shield" class="mb-2"></i>
+                                                                    <div><small>No MAC addresses configured</small></div>
+                                                                    <div><small class="text-muted">Add MAC addresses above to control access</small></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-sm btn-success" id="save-captive-mac-filter">
+                                                                <i data-feather="save" class="mr-1"></i> Save MAC Filter Settings
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2258,24 +2286,52 @@
                                                 <div class="col-lg-6">
                                                     <!-- MAC Filtering -->
                                                     <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">MAC Filtering</label>
-                                                            <div>
-                                                                <select class="form-control form-control-sm" id="secured-mac-filter">
-                                                                    <option value="allow-all" selected>Allow All</option>
-                                                                    <option value="allow-listed">Allow Listed Only</option>
-                                                                    <option value="block-listed">Block Listed</option>
+                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                            <label class="mb-0">MAC Address Filtering</label>
+                                                            <div class="d-flex align-items-center">
+                                                                <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
+                                                                <select class="form-control form-control-sm" id="secured-mac-view-filter" style="width: auto;">
+                                                                    <option value="all">Show All</option>
+                                                                    <option value="blacklisted">Show Blacklisted</option>
+                                                                    <option value="whitelisted">Show Whitelisted</option>
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="input-group mb-1">
-                                                            <input type="text" class="form-control" id="secured-mac-address" placeholder="00:11:22:33:44:55">
-                                                            <div class="input-group-append">
-                                                                <button class="btn btn-sm btn-primary" id="secured-add-mac">Add</button>
+                                                        
+                                                        <!-- Add MAC Address Controls -->
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control form-control-sm" id="secured-mac-address" placeholder="00:11:22:33:44:55">
+                                                            </div>
+                                                            <div class="col-3">
+                                                                <select class="form-control form-control-sm" id="secured-mac-type">
+                                                                    <option value="blacklist">Blacklist</option>
+                                                                    <option value="whitelist">Whitelist</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-2">
+                                                                <button class="btn btn-sm btn-primary w-100" id="secured-add-mac">Add</button>
                                                             </div>
                                                         </div>
-                                                        <div class="filtered-mac-list border p-1 rounded" style="max-height: 100px; overflow-y: auto;">
-                                                            <!-- MAC addresses will be added here dynamically -->
+                                                        
+                                                        <!-- MAC Address List -->
+                                                        <div class="mac-address-container">
+                                                            <div class="mac-filter-status text-muted mb-1" id="secured-mac-status">
+                                                                <small>No MAC addresses added yet</small>
+                                                            </div>
+                                                            <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
+                                                                <div class="text-center text-muted p-3" id="secured-mac-empty">
+                                                                    <i data-feather="shield" class="mb-2"></i>
+                                                                    <div><small>No MAC addresses configured</small></div>
+                                                                    <div><small class="text-muted">Add MAC addresses above to control access</small></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-sm btn-success" id="save-secured-mac-filter">
+                                                                <i data-feather="save" class="mr-1"></i> Save MAC Filter Settings
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2706,38 +2762,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="form-group">
                         <label>IP Address</label>
-                        <input type="text" class="form-control" placeholder="192.168.10.1" value="192.168.10.1">
+                        <input type="text" class="form-control" placeholder="192.168.10.1" id="captive-portal-ip-modal" value="">
                     </div>
                     <div class="form-group">
                         <label>Netmask</label>
-                        <input type="text" class="form-control" placeholder="255.255.255.0" value="255.255.255.0">
+                        <input type="text" class="form-control" placeholder="255.255.255.0" id="captive-portal-netmask-modal" value="">
                     </div>
                     <div class="form-group">
                         <label>Gateway</label>
-                        <input type="text" class="form-control" placeholder="192.168.10.1" value="192.168.10.1">
-                    </div>
-                    <div class="form-group">
-                        <label>Broadcast IP</label>
-                        <input type="text" class="form-control" placeholder="192.168.10.255" value="192.168.10.255">
+                        <input type="text" class="form-control" placeholder="192.168.10.1" id="captive-portal-gateway-modal" value="">
                     </div>
                     <div class="form-group">
                         <label>Primary DNS</label>
-                        <input type="text" class="form-control" placeholder="8.8.8.8" value="8.8.8.8">
+                        <input type="text" class="form-control" placeholder="8.8.8.8" id="captive-portal-dns1-modal" value="">
                     </div>
                     <div class="form-group">
                         <label>Secondary DNS</label>
-                        <input type="text" class="form-control" placeholder="1.1.1.1" value="1.1.1.1">
+                        <input type="text" class="form-control" placeholder="1.1.1.1" id="captive-portal-dns2-modal" value="">
                     </div>
                     
                     <div class="form-group vlan-setting">
                         <label>VLAN ID (Optional)</label>
-                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan" value="" min="1" max="4094" disabled>
+                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan-modal" value="" min="1" max="4094" disabled>
                         <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                     
                     <div class="form-group vlan-setting">
                         <label>VLAN Tagging</label>
-                        <select class="form-control" id="captive-portal-vlan-tagging" disabled>
+                        <select class="form-control" id="captive-portal-vlan-tagging-modal" disabled>
                             <option value="disabled">Disabled</option>
                             <option value="tagged">Tagged</option>
                             <option value="untagged">Untagged</option>
@@ -2747,7 +2799,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-primary save-captive-portal">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -4617,6 +4669,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log('Extracted settings:', settings);
                 
+                // Store settings globally for other functions to access
+                window.deviceSettings = { settings: settings };
+                console.log('Stored settings in window.deviceSettings:', window.deviceSettings);
+                
                 // **VLAN Settings**
                 if (settings.vlan_enabled !== undefined) {
                     $('#vlan-enabled').prop('checked', settings.vlan_enabled);
@@ -4676,20 +4732,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // **Captive Portal Network Settings**
+                console.log('=== POPULATING CAPTIVE PORTAL NETWORK SETTINGS ===');
+                console.log('Captive portal IP from settings:', settings.captive_portal_ip);
+                console.log('Captive portal netmask from settings:', settings.captive_portal_netmask);
+                console.log('Captive portal gateway from settings:', settings.captive_portal_gateway);
+                console.log('Captive portal DNS1 from settings:', settings.captive_portal_dns1);
+                console.log('Captive portal DNS2 from settings:', settings.captive_portal_dns2);
+                
                 if (settings.captive_portal_ip) {
                     $('#captive-portal-ip').val(settings.captive_portal_ip);
                     // Update display field for IP address
                     $('#captive-ip-display').text(settings.captive_portal_ip);
+                    console.log('Set captive portal IP to:', settings.captive_portal_ip);
                 }
                 if (settings.captive_portal_netmask) {
                     $('#captive-portal-netmask').val(settings.captive_portal_netmask);
                     // Update display field for netmask
                     $('#captive-netmask-display').text(settings.captive_portal_netmask);
+                    console.log('Set captive portal netmask to:', settings.captive_portal_netmask);
                 }
                 if (settings.captive_portal_gateway) {
                     $('#captive-portal-gateway').val(settings.captive_portal_gateway);
                     // Update display field for gateway
                     $('#captive-gateway-display').text(settings.captive_portal_gateway);
+                    console.log('Set captive portal gateway to:', settings.captive_portal_gateway);
                 }
                 if (settings.captive_portal_vlan) {
                     $('#captive-portal-vlan').val(settings.captive_portal_vlan);
@@ -4799,9 +4865,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // **MAC Filter Settings**
-                if (settings.mac_filter_mode) {
-                    $('#portal-mac-filter').val(settings.mac_filter_mode);
-                    $('#secured-mac-filter').val(settings.mac_filter_mode);
+                // Load MAC addresses if present
+                if (settings.mac_filter_list && Array.isArray(settings.mac_filter_list)) {
+                    loadMacAddressesFromSettings(settings.mac_filter_list, 'captive');
+                    loadMacAddressesFromSettings(settings.mac_filter_list, 'secured');
                 }
                 
                 console.log('All settings populated successfully');
@@ -6242,79 +6309,185 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // MAC address management for captive portal
+            // Enhanced MAC filtering handlers for individual blacklist/whitelist management
+            
+            // Store MAC addresses globally for filtering
+            window.macAddresses = {
+                captive: [],
+                secured: []
+            };
+            
+            // MAC address validation
+            function validateMacAddress(macAddress) {
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                return macRegex.test(macAddress);
+            }
+            
+            // Check if MAC address already exists
+            function checkDuplicateMac(macAddress, context) {
+                return window.macAddresses[context].some(item => item.mac === macAddress);
+            }
+            
+            // Add MAC address to the list
+            function addMacAddress(macAddress, type, context) {
+                // Normalize MAC address
+                macAddress = macAddress.toUpperCase();
+                
+                // Check if already exists
+                if (checkDuplicateMac(macAddress, context)) {
+                    toastr.error('This MAC address is already in the list');
+                    return false;
+                }
+                
+                // Add to global storage
+                window.macAddresses[context].push({
+                    mac: macAddress,
+                    type: type
+                });
+                
+                // Refresh display
+                refreshMacDisplay(context);
+                
+                // Auto-save
+                saveMacFilterSettings(context);
+                
+                toastr.success(`MAC address ${macAddress} added to ${type}`);
+                return true;
+            }
+            
+            // Remove MAC address from the list
+            function removeMacAddress(macAddress, context) {
+                const index = window.macAddresses[context].findIndex(item => item.mac === macAddress);
+                if (index > -1) {
+                    const removedItem = window.macAddresses[context].splice(index, 1)[0];
+                    refreshMacDisplay(context);
+                    saveMacFilterSettings(context);
+                    toastr.success(`MAC address ${macAddress} removed from ${removedItem.type}`);
+                }
+            }
+            
+            // Refresh the MAC address display based on current filter
+            function refreshMacDisplay(context) {
+                const container = context === 'captive' ? 
+                    $('#captive-portal .filtered-mac-list') : 
+                    $('#secured-wifi .filtered-mac-list');
+                const emptyElement = context === 'captive' ? $('#captive-mac-empty') : $('#secured-mac-empty');
+                const viewFilter = context === 'captive' ? $('#captive-mac-view-filter').val() : $('#secured-mac-view-filter').val();
+                
+                // Clear current display
+                container.find('.mac-address-item').remove();
+                
+                // Filter MAC addresses based on view filter
+                let filteredMacs = window.macAddresses[context];
+                if (viewFilter === 'blacklisted') {
+                    filteredMacs = filteredMacs.filter(item => item.type === 'blacklist');
+                } else if (viewFilter === 'whitelisted') {
+                    filteredMacs = filteredMacs.filter(item => item.type === 'whitelist');
+                }
+                
+                // Show/hide empty message
+                if (filteredMacs.length === 0) {
+                    emptyElement.show();
+                } else {
+                    emptyElement.hide();
+                }
+                
+                // Add MAC addresses to display
+                filteredMacs.forEach(item => {
+                    const badgeClass = item.type === 'whitelist' ? 'badge-success' : 'badge-danger';
+                    const iconClass = item.type === 'whitelist' ? 'check-circle' : 'x-circle';
+                    const macItem = `
+                        <div class="d-flex justify-content-between align-items-center p-2 border-bottom mac-address-item" data-mac="${item.mac}" data-type="${item.type}">
+                            <div class="d-flex align-items-center">
+                                <i data-feather="${iconClass}" class="mr-2" style="width: 16px; height: 16px;"></i>
+                                <span class="mac-address-text font-weight-medium mr-2">${item.mac}</span>
+                                <span class="badge ${badgeClass}">${item.type}</span>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-mac" title="Remove MAC address">
+                                <i data-feather="x" style="width: 12px; height: 12px;"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.append(macItem);
+                });
+                
+                // Update status
+                updateMacStatus(context);
+                
+                // Re-initialize feather icons
+                feather.replace();
+            }
+            
+            // Update status display
+            function updateMacStatus(context) {
+                const statusElement = context === 'captive' ? $('#captive-mac-status small') : $('#secured-mac-status small');
+                const total = window.macAddresses[context].length;
+                const whitelisted = window.macAddresses[context].filter(item => item.type === 'whitelist').length;
+                const blacklisted = window.macAddresses[context].filter(item => item.type === 'blacklist').length;
+                
+                if (total === 0) {
+                    statusElement.text('No MAC addresses added yet');
+                } else {
+                    statusElement.text(`Total: ${total} | Whitelisted: ${whitelisted} | Blacklisted: ${blacklisted}`);
+                }
+            }
+            
+            // Handle view filter changes
+            $('#captive-mac-view-filter').on('change', function() {
+                refreshMacDisplay('captive');
+            });
+            
+            $('#secured-mac-view-filter').on('change', function() {
+                refreshMacDisplay('secured');
+            });
+            
+            // Handle adding MAC addresses for captive portal
             $('#captive-add-mac').on('click', function() {
-                const macAddress = $('#captive-mac-address').val().trim();
-                const filterType = $('#portal-mac-filter').val();
+                const macAddress = $('#captive-mac-address').val().trim().toUpperCase();
+                const macType = $('#captive-mac-type').val();
                 
                 if (!macAddress) {
                     toastr.error('Please enter a MAC address');
                     return;
                 }
                 
-                // Simple MAC address validation
-                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-                if (!macRegex.test(macAddress)) {
+                if (!validateMacAddress(macAddress)) {
                     toastr.error('Please enter a valid MAC address format (00:11:22:33:44:55)');
                     return;
                 }
                 
-                // Add MAC address to the list
-                const macList = $('.filtered-mac-list');
-                const macItem = `
-                    <div class="d-flex justify-content-between align-items-center p-1 border-bottom">
-                        <span class="small">${macAddress}</span>
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-mac">
-                            <i data-feather="x" style="width: 12px; height: 12px;"></i>
-                        </button>
-                    </div>
-                `;
-                
-                macList.append(macItem);
-                $('#captive-mac-address').val('');
-                feather.replace();
-                
-                toastr.success('MAC address added to ' + filterType + ' list');
+                if (addMacAddress(macAddress, macType, 'captive')) {
+                    $('#captive-mac-address').val('');
+                }
             });
             
-            // MAC address management for password WiFi
+            // Handle adding MAC addresses for secured WiFi
             $('#secured-add-mac').on('click', function() {
-                const macAddress = $('#secured-mac-address').val().trim();
-                const filterType = $('#secured-mac-filter').val();
+                const macAddress = $('#secured-mac-address').val().trim().toUpperCase();
+                const macType = $('#secured-mac-type').val();
                 
                 if (!macAddress) {
                     toastr.error('Please enter a MAC address');
                     return;
                 }
                 
-                // Simple MAC address validation
-                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-                if (!macRegex.test(macAddress)) {
+                if (!validateMacAddress(macAddress)) {
                     toastr.error('Please enter a valid MAC address format (00:11:22:33:44:55)');
                     return;
                 }
                 
-                // Add MAC address to the list
-                const macList = $('#secured-wifi .filtered-mac-list');
-                const macItem = `
-                    <div class="d-flex justify-content-between align-items-center p-1 border-bottom">
-                        <span class="small">${macAddress}</span>
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-mac">
-                            <i data-feather="x" style="width: 12px; height: 12px;"></i>
-                        </button>
-                    </div>
-                `;
-                
-                macList.append(macItem);
-                $('#secured-mac-address').val('');
-                feather.replace();
-                
-                toastr.success('MAC address added to ' + filterType + ' list');
+                if (addMacAddress(macAddress, macType, 'secured')) {
+                    $('#secured-mac-address').val('');
+                }
             });
             
-            // Remove MAC address handler (delegated event for dynamic elements)
+            // Handle removing MAC addresses
             $(document).on('click', '.remove-mac', function() {
-                $(this).closest('.d-flex').remove();
-                toastr.success('MAC address removed');
+                const macItem = $(this).closest('.mac-address-item');
+                const macAddress = macItem.data('mac');
+                const context = macItem.closest('#captive-portal').length > 0 ? 'captive' : 'secured';
+                
+                removeMacAddress(macAddress, context);
             });
             
             // MAC address input validation (format as user types)
@@ -6330,6 +6503,117 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 $(this).val(formatted.toUpperCase());
+            });
+            
+            // Function to save MAC filter settings
+            function saveMacFilterSettings(context) {
+                const locationId = getLocationId();
+                if (!locationId) {
+                    console.error('Location ID not found for MAC filter settings save');
+                    return;
+                }
+                
+                // Prepare the new data structure
+                const macFilterData = {
+                    mac_filter_list: window.macAddresses[context]
+                };
+                
+                console.log('Saving MAC filter settings:', macFilterData);
+                
+                // Save to API
+                $.ajax({
+                    url: `/api/locations/${locationId}/settings`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify(macFilterData),
+                    success: function(response) {
+                        console.log('MAC filter settings saved successfully:', response);
+                        // Don't show success toast for auto-save to avoid spam
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to save MAC filter settings:', error);
+                        toastr.error('Failed to save MAC filter settings. Please try again.');
+                    }
+                });
+            }
+            
+            // Function to load MAC addresses from settings
+            function loadMacAddressesFromSettings(macFilterList, context) {
+                if (!macFilterList || !Array.isArray(macFilterList)) {
+                    console.log(`No MAC filter list found for ${context}`);
+                    return;
+                }
+                
+                // Handle both old format (array of strings) and new format (array of objects)
+                const normalizedList = macFilterList.map(item => {
+                    if (typeof item === 'string') {
+                        // Old format - default to blacklist for backward compatibility
+                        return { mac: item, type: 'blacklist' };
+                    } else if (item && item.mac && item.type) {
+                        // New format
+                        return item;
+                    }
+                    return null;
+                }).filter(item => item !== null);
+                
+                // Store in global variable
+                window.macAddresses[context] = normalizedList;
+                
+                // Refresh display
+                refreshMacDisplay(context);
+                
+                console.log(`Loaded ${normalizedList.length} MAC addresses for ${context}:`, normalizedList);
+            }
+            
+            // Manual save button handlers for MAC filtering
+            $('#save-captive-mac-filter').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.html();
+                
+                // Show loading state
+                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+                
+                // Save settings
+                saveMacFilterSettings('captive');
+                
+                // Reset button after short delay
+                setTimeout(function() {
+                    $button.html(originalText).prop('disabled', false);
+                    feather.replace();
+                    
+                    // Show summary in success message
+                    const total = window.macAddresses.captive.length;
+                    const whitelisted = window.macAddresses.captive.filter(item => item.type === 'whitelist').length;
+                    const blacklisted = window.macAddresses.captive.filter(item => item.type === 'blacklist').length;
+                    toastr.success(`Captive Portal MAC filter saved! Total: ${total} (${whitelisted} whitelisted, ${blacklisted} blacklisted)`);
+                }, 1000);
+            });
+            
+            $('#save-secured-mac-filter').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.html();
+                
+                // Show loading state
+                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+                
+                // Save settings
+                saveMacFilterSettings('secured');
+                
+                // Reset button after short delay
+                setTimeout(function() {
+                    $button.html(originalText).prop('disabled', false);
+                    feather.replace();
+                    
+                    // Show summary in success message
+                    const total = window.macAddresses.secured.length;
+                    const whitelisted = window.macAddresses.secured.filter(item => item.type === 'whitelist').length;
+                    const blacklisted = window.macAddresses.secured.filter(item => item.type === 'blacklist').length;
+                    toastr.success(`Secured WiFi MAC filter saved! Total: ${total} (${whitelisted} whitelisted, ${blacklisted} blacklisted)`);
+                }, 1000);
             });
             
             // **Fix for Password WiFi Save Handler**
@@ -6426,6 +6710,51 @@ document.addEventListener('DOMContentLoaded', function() {
             $('.save-captive-portal').off('click').on('click', function(e) {
                 e.preventDefault();
                 console.log('Captive Portal save clicked - using fixed handler');
+                console.log('Save clicked at:', new Date().toLocaleTimeString());
+                console.log('Save button element:', this);
+                console.log('Save button parent modal:', $(this).closest('.modal').attr('id'));
+                
+                // Check modal visibility and state (CORRECT modal ID)
+                console.log('=== MODAL STATE CHECK ===');
+                const modal = $('#captive-portal-modal');
+                console.log('Modal exists:', modal.length);
+                console.log('Modal is visible:', modal.is(':visible'));
+                console.log('Modal has class "show":', modal.hasClass('show'));
+                
+                // Check if we can see the fields from the save button context (CORRECT field IDs)
+                console.log('=== FIELD VISIBILITY FROM SAVE CONTEXT ===');
+                const modalContext = $(this).closest('.modal');
+                console.log('Fields found in modal context:', {
+                    ip: modalContext.find('#captive-portal-ip').length,
+                    netmask: modalContext.find('#captive-portal-netmask').length,
+                    gateway: modalContext.find('#captive-portal-gateway').length,
+                    vlan: modalContext.find('#captive-portal-vlan-modal').length,
+                    vlan_tagging: modalContext.find('#captive-portal-vlan-tagging-modal').length
+                });
+                
+                // FIRST: Collect form data immediately before any other operations
+                console.log('=== COLLECTING FORM DATA IMMEDIATELY ===');
+                // Use the CORRECT field IDs from the captive-portal-modal that actually opens
+                const formData = {
+                    ip: $('#captive-portal-ip').val(),
+                    netmask: $('#captive-portal-netmask').val(),
+                    gateway: $('#captive-portal-gateway').val(),
+                    vlan: $('#captive-portal-vlan-modal').val(),
+                    vlan_tagging: $('#captive-portal-vlan-tagging-modal').val()
+                };
+                
+                console.log('Form data collected immediately:', formData);
+                
+                // Try alternative field selection methods using CORRECT field IDs
+                console.log('=== ALTERNATIVE FIELD SELECTION ===');
+                const alternativeData = {
+                    ip_by_modal_context: modalContext.find('#captive-portal-ip').val(),
+                    ip_by_document: $(document).find('#captive-portal-ip').val(),
+                    ip_by_attribute: $('input[id="captive-portal-ip"]').val(),
+                    // Also check the wrong IDs we were using before
+                    wrong_ip_field: $('#captive-portal-ip-modal').val()
+                };
+                console.log('Alternative field selection results:', alternativeData);
                 
                 const locationId = getLocationId();
                 if (!locationId) {
@@ -6439,38 +6768,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 console.log('Captive portal save context:', isModal ? 'Modal: ' + modalId : 'Main form');
                 
-                // Collect form data - from the correct fields based on context
+                // Additional debugging
+                console.log('=== FORM FIELD DEBUGGING ===');
+                console.log('IP field element:', $('#captive-portal-ip-modal'));
+                console.log('IP field exists:', $('#captive-portal-ip-modal').length > 0);
+                console.log('IP field value:', $('#captive-portal-ip-modal').val());
+                console.log('IP field HTML value attribute:', $('#captive-portal-ip-modal').attr('value'));
+                console.log('Netmask field value:', $('#captive-portal-netmask-modal').val());
+                console.log('Gateway field value:', $('#captive-portal-gateway-modal').val());
+                console.log('DNS1 field value:', $('#captive-portal-dns1-modal').val());
+                console.log('DNS2 field value:', $('#captive-portal-dns2-modal').val());
+                
+                // Check if fields are being cleared by testing their actual DOM state
+                console.log('All modal form fields DOM state:', {
+                    ip_element: $('#captive-portal-ip-modal')[0],
+                    netmask_element: $('#captive-portal-netmask-modal')[0],
+                    gateway_element: $('#captive-portal-gateway-modal')[0],
+                    dns1_element: $('#captive-portal-dns1-modal')[0],
+                    dns2_element: $('#captive-portal-dns2-modal')[0]
+                });
+                
+                // Use the form data collected immediately at the start
                 const captivePortalData = {
-                    captive_portal_ssid: $('#captive-portal-ssid').val(),
-                    captive_portal_visible: $('#captive-portal-visible').val() === '1',
-                    captive_auth_method: $('#captive-auth-method').val(),
-                    captive_portal_password: $('#captive_portal_password').val(),
-                    session_timeout: $('#captive-session-timeout').val(),
-                    idle_timeout: $('#captive-idle-timeout').val(),
-                    download_limit: $('#captive-download-limit').val(),
-                    upload_limit: $('#captive-upload-limit').val(),
-                    captive_portal_redirect: $('#captive-portal-redirect').val(),
-                    captive_portal_ip: $('#captive-portal-ip').val(),
-                    captive_portal_netmask: $('#captive-portal-netmask').val(),
-                    captive_portal_gateway: $('#captive-portal-gateway').val(),
-                    // Use the correct VLAN field based on context
-                    captive_portal_vlan: isModal && modalId === 'captive-portal-modal' 
-                        ? $('#captive-portal-vlan-modal').val() 
-                        : $('#captive-portal-vlan').val(),
-                    // Use the correct VLAN tagging field based on context
-                    captive_portal_vlan_tagging: isModal && modalId === 'captive-portal-modal' 
-                        ? $('#captive-portal-vlan-tagging-modal').val() 
-                        : $('#captive-portal-vlan-tagging').val()
+                    captive_portal_ip: formData.ip,
+                    captive_portal_netmask: formData.netmask,
+                    captive_portal_gateway: formData.gateway,
+                    captive_portal_dns1: '8.8.8.8', // Default DNS since not in this modal
+                    captive_portal_dns2: '1.1.1.1', // Default DNS since not in this modal
+                    captive_portal_vlan: formData.vlan,
+                    captive_portal_vlan_tagging: formData.vlan_tagging
                 };
                 
-                console.log('Saving captive portal data:', captivePortalData);
-                console.log('VLAN field values:', {
-                    mainFormVlan: $('#captive-portal-vlan').val(),
-                    modalVlan: $('#captive-portal-vlan-modal').val(),
-                    mainFormTagging: $('#captive-portal-vlan-tagging').val(),
-                    modalTagging: $('#captive-portal-vlan-tagging-modal').val(),
-                    usedVlan: captivePortalData.captive_portal_vlan,
-                    usedTagging: captivePortalData.captive_portal_vlan_tagging
+                console.log('Final data object using immediate collection:', captivePortalData);
+                
+                console.log('=== CAPTIVE PORTAL NETWORK SAVE DEBUG ===');
+                console.log('Modal ID:', modalId);
+                console.log('Location ID:', locationId);
+                console.log('Form data being sent:', captivePortalData);
+                console.log('API endpoint:', `/api/locations/${locationId}`);
+                console.log('Settings type:', 'captive_portal');
+                console.log('Full request data:', {
+                    settings_type: 'captive_portal',
+                    settings: captivePortalData
                 });
                 
                 // Show loading state
@@ -6478,18 +6817,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 const originalText = $button.html();
                 $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
                 
-                // Save to API
+                // Save to API using the correct endpoint and format
                 $.ajax({
-                    url: `/api/locations/${locationId}/settings`,
+                    url: `/api/locations/${locationId}`,
                     method: 'PUT',
                     headers: {
                         'Authorization': 'Bearer ' + UserManager.getToken(),
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    data: JSON.stringify(captivePortalData),
+                    data: JSON.stringify({
+                        settings_type: 'captive_portal',
+                        settings: captivePortalData
+                    }),
                     success: function(response) {
-                        console.log('Captive portal settings saved successfully:', response);
+                        console.log('=== CAPTIVE PORTAL SAVE SUCCESS ===');
+                        console.log('Response:', response);
+                        console.log('Response type:', typeof response);
+                        console.log('Response success:', response.success);
+                        console.log('Response message:', response.message);
                         
                         // Reset button state
                         $button.html(originalText).prop('disabled', false);
@@ -6504,10 +6850,26 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Reload device data to verify the update
                         setTimeout(function() {
+                            console.log('Reloading device settings after captive portal save...');
+                            console.log('Previous captive portal settings before reload:', window.deviceSettings?.settings ? {
+                                captive_portal_ip: window.deviceSettings.settings.captive_portal_ip,
+                                captive_portal_netmask: window.deviceSettings.settings.captive_portal_netmask,
+                                captive_portal_gateway: window.deviceSettings.settings.captive_portal_gateway,
+                                captive_portal_dns1: window.deviceSettings.settings.captive_portal_dns1,
+                                captive_portal_dns2: window.deviceSettings.settings.captive_portal_dns2
+                            } : 'No settings available');
                             loadDeviceSettings();
                         }, 1000);
                     },
                     error: function(xhr, status, error) {
+                        console.log('=== CAPTIVE PORTAL SAVE ERROR ===');
+                        console.log('XHR:', xhr);
+                        console.log('Status:', status);
+                        console.log('Error:', error);
+                        console.log('Response Text:', xhr.responseText);
+                        console.log('Response JSON:', xhr.responseJSON);
+                        console.log('HTTP Status:', xhr.status);
+                        
                         // Reset button state
                         $button.html(originalText).prop('disabled', false);
                         
@@ -6780,6 +7142,124 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#mac-address-edit-modal').on('hidden.bs.modal', function() {
                 $('#mac-address-input').val('');
                 $('#current-mac-display').text('-');
+            });
+
+            // Handle captive portal modal open (CORRECT modal ID)
+            $('#captive-portal-modal').on('shown.bs.modal', function() {
+                console.log('=== CAPTIVE PORTAL MODAL OPENED ===');
+                console.log('Modal open timestamp:', new Date().toLocaleTimeString());
+                
+                // Check if fields exist before trying to populate them (CORRECT field IDs)
+                console.log('Field existence check:', {
+                    ip_field: $('#captive-portal-ip').length,
+                    netmask_field: $('#captive-portal-netmask').length,
+                    gateway_field: $('#captive-portal-gateway').length,
+                    vlan_field: $('#captive-portal-vlan-modal').length,
+                    vlan_tagging_field: $('#captive-portal-vlan-tagging-modal').length
+                });
+                
+                // Check for duplicate IDs that might be causing issues
+                console.log('=== CHECKING FOR DUPLICATE IDs ===');
+                const allIpFields = $('[id="captive-portal-ip"]');
+                console.log('Number of elements with captive-portal-ip ID:', allIpFields.length);
+                if (allIpFields.length > 1) {
+                    console.warn('FOUND DUPLICATE IDs! This could be the problem.');
+                    allIpFields.each(function(index) {
+                        console.log(`IP field ${index}:`, this, 'value:', $(this).val());
+                    });
+                }
+                
+                // Populate modal fields with current settings or defaults
+                if (window.deviceSettings && window.deviceSettings.settings) {
+                    const settings = window.deviceSettings.settings;
+                    
+                    console.log('Available settings:', settings);
+                    console.log('Captive portal specific settings:', {
+                        captive_portal_ip: settings.captive_portal_ip,
+                        captive_portal_netmask: settings.captive_portal_netmask,
+                        captive_portal_gateway: settings.captive_portal_gateway,
+                        captive_portal_dns1: settings.captive_portal_dns1,
+                        captive_portal_dns2: settings.captive_portal_dns2,
+                        captive_portal_vlan: settings.captive_portal_vlan,
+                        captive_portal_vlan_tagging: settings.captive_portal_vlan_tagging
+                    });
+                    
+                    // Only set values if they exist in the settings, otherwise use defaults (CORRECT field IDs)
+                    console.log('Setting IP field to:', settings.captive_portal_ip || '192.168.10.1');
+                    $('#captive-portal-ip').val(settings.captive_portal_ip || '192.168.10.1');
+                    $('#captive-portal-netmask').val(settings.captive_portal_netmask || '255.255.255.0');
+                    $('#captive-portal-gateway').val(settings.captive_portal_gateway || '192.168.10.1');
+                    $('#captive-portal-vlan-modal').val(settings.captive_portal_vlan || '');
+                    $('#captive-portal-vlan-tagging-modal').val(settings.captive_portal_vlan_tagging || 'disabled');
+                    
+                    console.log('Modal fields populated with values (CORRECT IDs):', {
+                        ip: $('#captive-portal-ip').val(),
+                        netmask: $('#captive-portal-netmask').val(),
+                        gateway: $('#captive-portal-gateway').val(),
+                        vlan: $('#captive-portal-vlan-modal').val(),
+                        vlan_tagging: $('#captive-portal-vlan-tagging-modal').val()
+                    });
+                } else {
+                    console.log('No device settings available, using defaults (CORRECT field IDs)');
+                    // Use defaults when no settings available
+                    $('#captive-portal-ip').val('192.168.10.1');
+                    $('#captive-portal-netmask').val('255.255.255.0');
+                    $('#captive-portal-gateway').val('192.168.10.1');
+                    $('#captive-portal-vlan-modal').val('');
+                    $('#captive-portal-vlan-tagging-modal').val('disabled');
+                }
+
+                // Add comprehensive field tracking
+                const trackFieldChange = function(fieldId, fieldName) {
+                    $(fieldId).off('input.debug change.debug').on('input.debug change.debug', function() {
+                        console.log(`${fieldName} field changed to: "${$(this).val()}" at ${new Date().toLocaleTimeString()}`);
+                    });
+                    
+                    // Track when field gets cleared
+                    const originalVal = $(fieldId).val;
+                    $(fieldId).val = function(value) {
+                        if (arguments.length === 0) {
+                            return originalVal.call(this);
+                        } else {
+                            console.log(`${fieldName} field .val() called with: "${value}" at ${new Date().toLocaleTimeString()}`);
+                            const stack = new Error().stack;
+                            console.log('Call stack:', stack);
+                            return originalVal.call(this, value);
+                        }
+                    };
+                };
+                
+                // Track fields using CORRECT field IDs
+                trackFieldChange('#captive-portal-ip', 'IP');
+                trackFieldChange('#captive-portal-netmask', 'Netmask');
+                trackFieldChange('#captive-portal-gateway', 'Gateway');
+                trackFieldChange('#captive-portal-vlan-modal', 'VLAN');
+                trackFieldChange('#captive-portal-vlan-tagging-modal', 'VLAN_Tagging');
+                
+                // Check for any other event handlers that might be interfering
+                setTimeout(function() {
+                    console.log('=== CHECKING FOR OTHER EVENT HANDLERS ===');
+                    const ipField = $('#captive-portal-ip')[0];
+                    if (ipField) {
+                        console.log('IP field event handlers:', $._data(ipField, 'events'));
+                    }
+                    console.log('Modal event handlers:', $._data($('#captive-portal-modal')[0], 'events'));
+                }, 100);
+            });
+
+            // Handle captive portal modal close (CORRECT modal ID)
+            $('#captive-portal-modal').on('hidden.bs.modal', function() {
+                console.log('=== CAPTIVE PORTAL MODAL CLOSED ===');
+                console.log('Modal close timestamp:', new Date().toLocaleTimeString());
+                // TEMPORARILY DISABLED: Clear modal fields when closed
+                // $('#captive-portal-ip-modal').val('');
+                // $('#captive-portal-netmask-modal').val('');
+                // $('#captive-portal-gateway-modal').val('');
+                // $('#captive-portal-dns1-modal').val('');
+                // $('#captive-portal-dns2-modal').val('');
+                // $('#captive-portal-vlan-modal').val('');
+                // $('#captive-portal-vlan-tagging-modal').val('disabled');
+                console.log('Field clearing DISABLED for debugging');
             });
         });
     </script>
