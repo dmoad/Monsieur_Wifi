@@ -9,11 +9,13 @@ use App\Models\SystemSetting;
 use App\Models\Radacct;
 use App\Models\Radcheck;
 use App\Models\Firmware;
+use App\Models\OnlineNetworkUser;
 use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 class LocationController extends Controller
 {
     /**
@@ -394,6 +396,138 @@ class LocationController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error retrieving user sessions: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get online users for a specific location
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getOnlineUsers($id)
+    {
+        try {
+            $location = Location::find($id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            // Get all online users for this location
+            $onlineUsers = OnlineNetworkUser::where('location_id', $id)
+                ->orderBy('updated_at', 'desc')
+                ->get();
+            
+            // Transform the data to include additional information
+            $transformedUsers = $onlineUsers->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'mac' => $user->mac,
+                    'type' => $user->type,
+                    'ip' => $user->ip,
+                    'interface' => $user->interface,
+                    'hostname' => $user->hostname ?: 'Unknown Device',
+                    'network' => $user->network,
+                    'connected_time' => $user->updated_at->diffForHumans(),
+                    'last_seen' => $user->updated_at->format('Y-m-d H:i:s'),
+                    'network_badge' => $user->network === 'captive' ? 'badge-light-info' : 'badge-light-success',
+                    'network_label' => $user->network === 'captive' ? 'Captive Portal' : 'Password WiFi'
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'location' => $location,
+                    'online_users' => $transformedUsers,
+                    'total_count' => $onlineUsers->count(),
+                    'captive_count' => $onlineUsers->where('network', 'captive')->count(),
+                    'password_count' => $onlineUsers->where('network', 'lan')->count()
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error getting online users: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving online users: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get captive portal daily usage statistics from Radacct
+     *
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getCaptivePortalDailyUsage($id, Request $request)
+    {
+        try {
+            $location = Location::find($id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+
+            // Get period from request, default to 7 days
+            $period = $request->get('period', 7);
+            
+            // Calculate date range
+            $endDate = Carbon::now();
+            $startDate = Carbon::now()->subDays($period - 1);
+            
+            // Get daily statistics from Radacct
+            $dailyStats = Radacct::getSessionStats($id, $startDate, $endDate);
+            
+            // Transform the data for the chart
+            $chartData = [];
+            foreach ($dailyStats as $date => $stats) {
+                $chartData[] = [
+                    'date' => Carbon::parse($date)->format('M j'), // Format as "Jan 15"
+                    'users' => $stats['unique_users'],
+                    'sessions' => $stats['sessions'],
+                    'data_usage' => $stats['total_bytes'],
+                    'session_time' => $stats['total_session_time']
+                ];
+            }
+            
+            // Calculate summary statistics
+            $totalUsers = collect($dailyStats)->sum('unique_users');
+            $totalSessions = collect($dailyStats)->sum('sessions');
+            $totalDataUsage = collect($dailyStats)->sum('total_bytes');
+            $averageUsersPerDay = $totalUsers > 0 ? round($totalUsers / $period, 1) : 0;
+            
+            return response()->json([
+                'success' => true,
+                'data' => $chartData,
+                'summary' => [
+                    'total_unique_users' => $totalUsers,
+                    'total_sessions' => $totalSessions,
+                    'total_data_usage' => $totalDataUsage,
+                    'average_users_per_day' => $averageUsersPerDay,
+                    'period_days' => $period,
+                    'start_date' => $startDate->format('Y-m-d'),
+                    'end_date' => $endDate->format('Y-m-d')
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error getting captive portal daily usage: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving captive portal usage data: ' . $e->getMessage()
             ], 500);
         }
     }

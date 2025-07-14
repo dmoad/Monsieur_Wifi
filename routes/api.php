@@ -79,6 +79,10 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     // Accounting routes
     Route::get('/{id}/accounting', [LocationController::class, 'getAccounting']);
     Route::get('/{id}/user-sessions', [LocationController::class, 'getUserSessions']);
+    // Online users route
+    Route::get('/{id}/online-users', [LocationController::class, 'getOnlineUsers']);
+    // Captive portal daily usage route
+    Route::get('/{id}/captive-portal/daily-usage', [LocationController::class, 'getCaptivePortalDailyUsage']);
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], function () {

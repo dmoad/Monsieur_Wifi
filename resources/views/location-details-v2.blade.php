@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -43,7 +44,9 @@
     <!-- END: Custom CSS-->
 
     <style>
-        /* Modern Status Badges */
+        /* ==============================================
+           MODERN STATUS BADGES
+        ============================================== */
         .status-badge {
             padding: 8px 16px;
             border-radius: 20px;
@@ -51,6 +54,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
         
         .status-online {
@@ -71,13 +75,16 @@
             box-shadow: 0 2px 8px rgba(255, 159, 67, 0.3);
         }
         
-        /* Enhanced Cards */
+        /* ==============================================
+           ENHANCED CARDS
+        ============================================== */
         .card {
             border: none;
             border-radius: 12px;
             box-shadow: 0 2px 20px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
             background: #fff;
+            margin-bottom: 1.5rem;
         }
         
         .card:hover {
@@ -91,6 +98,514 @@
             border-radius: 12px 12px 0 0 !important;
             padding: 1.5rem;
         }
+
+        /* ==============================================
+           ANALYTICS CHART CARD
+        ============================================== */
+        .analytics-chart-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .analytics-chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.5) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .chart-header {
+            padding: 25px 25px 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chart-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .chart-icon i {
+            font-size: 22px;
+            color: white;
+        }
+
+        .chart-title {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .chart-subtitle {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .period-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            padding: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .period-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .period-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .period-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .chart-stats {
+            display: flex;
+            gap: 20px;
+            padding: 0 25px 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            flex: 1;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .stat-users {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .stat-sessions {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .stat-avg {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            background: white;
+            margin: 0 25px 25px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            position: relative;
+            z-index: 2;
+        }
+
+        #daily-usage-chart {
+            height: 300px;
+        }
+
+        /* ==============================================
+           ONLINE USERS CARD
+        ============================================== */
+        .online-users-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .online-users-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.5) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .users-header {
+            padding: 25px 25px 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .users-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .users-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .users-icon i {
+            font-size: 22px;
+            color: white;
+        }
+
+        .users-title {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .users-subtitle {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .refresh-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 10px;
+            color: #667eea;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .users-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            margin-top: 15px;
+        }
+
+        .count-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            line-height: 1;
+        }
+
+        .count-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .users-container {
+            background: white;
+            margin: 20px 25px 25px;
+            border-radius: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            position: relative;
+            z-index: 2;
+        }
+
+        .users-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .users-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .users-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .users-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b5b95 100%);
+        }
+
+        .user-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: rgba(102, 126, 234, 0.03);
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .user-details small {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+        }
+
+        .user-details small i {
+            margin-right: 4px;
+            color: #667eea;
+        }
+
+        .user-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .network-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-light-info {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .badge-light-success {
+            background: rgba(40, 199, 111, 0.1);
+            color: #28c76f;
+        }
+
+        .connection-time {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+        }
+
+        /* ==============================================
+           LOADING & EMPTY STATES
+        ============================================== */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .loading-icon {
+            width: 40px !important;
+            height: 40px !important;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            color: #e74c3c;
+        }
+
+        .error-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #e74c3c;
+        }
+
+                 /* ==============================================
+            CHART TOOLTIP
+         ============================================== */
+         .custom-tooltip {
+             background: white;
+             border: 1px solid #e9ecef;
+             border-radius: 8px;
+             padding: 10px;
+             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+         }
+
+         .tooltip-title {
+             font-size: 0.8rem;
+             color: #6c757d;
+             margin-bottom: 4px;
+         }
+
+         .tooltip-value {
+             font-size: 1rem;
+             font-weight: 600;
+             color: #667eea;
+         }
+
+         /* ==============================================
+            RESPONSIVE DESIGN
+         ============================================== */
+         @media (max-width: 768px) {
+             .chart-stats {
+                 flex-direction: column;
+                 gap: 10px;
+             }
+             
+             .stat-item {
+                 flex-direction: row;
+             }
+             
+             .header-content {
+                 flex-direction: column;
+                 gap: 15px;
+                 align-items: flex-start;
+             }
+             
+             .chart-title-wrapper {
+                 flex-direction: column;
+                 align-items: flex-start;
+                 gap: 10px;
+             }
+         }
         
         .card-title {
             font-weight: 600;
@@ -103,7 +618,9 @@
             padding: 1.5rem;
         }
         
-        /* Modern Navigation Tabs */
+        /* ==============================================
+           MODERN NAVIGATION TABS
+        ============================================== */
         .nav-tabs {
             border: none;
             background: #f8f9fa;
@@ -127,12 +644,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
         }
         
         .nav-tabs .nav-link:hover {
             background: rgba(115, 103, 240, 0.1);
             color: #7367f0;
             transform: translateY(-1px);
+            text-decoration: none;
         }
         
         .nav-tabs .nav-link.active {
@@ -177,7 +696,9 @@
             letter-spacing: 0.5px;
         }
         
-        /* Form Improvements */
+        /* ==============================================
+           FORM IMPROVEMENTS
+        ============================================== */
         .form-control {
             border: 2px solid #e9ecef;
             border-radius: 8px;
@@ -185,6 +706,7 @@
             font-size: 0.95rem;
             transition: all 0.3s ease;
             line-height: 1.5;
+            background-color: #fff;
         }
         
         /* Select specific improvements for vertical alignment */
@@ -221,6 +743,11 @@
         .form-control:focus {
             border-color: #7367f0;
             box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.15);
+            outline: none;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
         }
         
         .form-group label {
@@ -228,6 +755,61 @@
             color: #495057;
             margin-bottom: 8px;
             font-size: 0.9rem;
+            display: block;
+        }
+        
+        .form-group .form-text {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+        
+        /* Form validation states */
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        
+        .form-control.is-valid {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        
+        .invalid-feedback {
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #dc3545;
+        }
+        
+        .form-control.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+        
+        .valid-feedback {
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #28a745;
+        }
+        
+        .form-control.is-valid ~ .valid-feedback {
+            display: block;
+        }
+        
+        /* Required field indicator */
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+        
+        /* Form actions */
+        .form-actions {
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+            margin-top: 1rem;
         }
         
         /* Button Enhancements */
@@ -351,10 +933,19 @@
             overflow: hidden;
         }
         
-        /* Responsive Grid */
+        /* ==============================================
+           RESPONSIVE GRID SYSTEM
+        ============================================== */
         .responsive-grid {
             display: grid;
             gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+        
+        @media (min-width: 576px) {
+            .responsive-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
         }
         
         @media (min-width: 768px) {
@@ -366,6 +957,22 @@
         @media (min-width: 1200px) {
             .responsive-grid {
                 grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 575.98px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 8px 12px;
+                font-size: 0.9rem;
             }
         }
         
@@ -1165,11 +1772,11 @@
         <div class="navbar-header">
             <ul class="nav navbar-nav flex-row">
                 <li class="nav-item mr-auto">
-                    <a class="navbar-brand" href="dashboard.html">
+                    <a class="navbar-brand" href="/dashboard">
                         <span class="brand-logo">
-                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo">
+                            <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi logo">
                         </span>
-                        <h2 class="brand-text">monsieur-wifi</h2>
+                        <h2 class="brand-text">Mr WiFi</h2>
                     </a>
                 </li>
                 <li class="nav-item nav-toggle">
@@ -1186,7 +1793,9 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
-                <li class="navigation-header"><span>Management</span></li>
+                <li class="navigation-header">
+                    <span>Management</span>
+                </li>
                 <li class="nav-item">
                     <a class="d-flex align-items-center" href="/dashboard">
                         <i data-feather="home"></i>
@@ -1205,7 +1814,6 @@
                         <span class="menu-title text-truncate">Usage Analytics</span>
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="d-flex align-items-center" href="/captive-portals">
                         <i data-feather="layout"></i>
@@ -1214,7 +1822,9 @@
                 </li>
 
                 <!-- For Admin Section -->
-                <li class="navigation-header"><span>For Admin</span></li>
+                <li class="navigation-header">
+                    <span>For Admin</span>
+                </li>
                 <li class="nav-item">
                     <a class="d-flex align-items-center" href="/accounts">
                         <i data-feather="users"></i>
@@ -1239,20 +1849,23 @@
                         <span class="menu-title text-truncate">System Settings</span>
                     </a>
                 </li>
+                
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
-                <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
-                         <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
-                     </a>
+                <li class="navigation-header">
+                    <span>Account</span>
                 </li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/logout">
-                         <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Logout</span>
-                     </a>
-                </li> 
+                    <a class="d-flex align-items-center" href="/profile">
+                        <i data-feather="user"></i>
+                        <span class="menu-title text-truncate">Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/logout">
+                        <i data-feather="power"></i>
+                        <span class="menu-title text-truncate">Logout</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -1270,9 +1883,15 @@
                             <h2 class="content-header-title float-left mb-0">Location Details</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="dashboard.html">Home</a></li>
-                                <li class="breadcrumb-item"><a href="locations.html">Locations</a></li>
-                                <li class="breadcrumb-item active"><span class="location_name"></span></li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/dashboard">Home</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/locations">Locations</a>
+                                    </li>
+                                    <li class="breadcrumb-item active">
+                                        <span class="location_name">Loading...</span>
+                                    </li>
                                 </ol>
                             </div>
                         </div>
@@ -1280,7 +1899,10 @@
                 </div>
                 <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
                     <div class="form-group breadcrumb-right">
-                        <a href="location-analytics.html" class="btn btn-primary">Analytics</a>
+                        <a href="#" class="btn btn-primary btn-analytics" id="analytics-btn">
+                            <i data-feather="bar-chart-2" class="mr-1"></i>
+                            Analytics
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1384,7 +2006,7 @@
                                     <div class="stat-label">Download</div>
                                 </div>
                                 <div>
-                                    <div class="stat-value text-info" id="connected-users">
+                                    <div class="stat-value text-info" id="users-sessions-count">
                                         <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
                                     </div>
                                     <div class="stat-label">Users / Sessions</div>
@@ -1423,6 +2045,112 @@
                         <div id="location-map" class="location-map"></div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Analytics</h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row g-4">
+                                    <!-- Daily Usage Chart -->
+                                    <div class="col-lg-8">
+                                        <div class="analytics-chart-card">
+                                            <div class="chart-header">
+                                                <div class="header-content">
+                                                    <div class="chart-title-wrapper">
+                                                        <div class="chart-icon">
+                                                            <i data-feather="bar-chart-2"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h5 class="chart-title">Daily Usage Analytics</h5>
+                                                            <p class="chart-subtitle">Captive Portal User Activity</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="chart-controls">
+                                                        <div class="period-selector">
+                                                            <button class="period-btn active" data-period="7">7D</button>
+                                                            <button class="period-btn" data-period="30">30D</button>
+                                                            <button class="period-btn" data-period="90">90D</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-stats">
+                                                <div class="stat-item">
+                                                    <div class="stat-icon stat-users">
+                                                        <i data-feather="users"></i>
+                                                    </div>
+                                                    <div class="stat-content">
+                                                        <span class="stat-value" id="total-users">-</span>
+                                                        <span class="stat-label">Total Users</span>
+                                                    </div>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <div class="stat-icon stat-sessions">
+                                                        <i data-feather="activity"></i>
+                                                    </div>
+                                                    <div class="stat-content">
+                                                        <span class="stat-value" id="total-sessions">-</span>
+                                                        <span class="stat-label">Sessions</span>
+                                                    </div>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <div class="stat-icon stat-avg">
+                                                        <i data-feather="trending-up"></i>
+                                                    </div>
+                                                    <div class="stat-content">
+                                                        <span class="stat-value" id="avg-daily">-</span>
+                                                        <span class="stat-label">Daily Avg</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-container">
+                                                <div id="daily-usage-chart"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Online Users List -->
+                                    <div class="col-lg-4">
+                                        <div class="online-users-card">
+                                            <div class="users-header">
+                                                <div class="header-content">
+                                                                                                         <div class="users-title-wrapper">
+                                                         <div class="users-icon">
+                                                             <i data-feather="wifi"></i>
+                                                         </div>
+                                                        <div>
+                                                            <h5 class="users-title">Live Users</h5>
+                                                            <p class="users-subtitle">Currently Connected</p>
+                                                        </div>
+                                                    </div>
+                                                    <button class="refresh-btn" id="refresh-online-users">
+                                                        <i data-feather="refresh-cw"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="users-count">
+                                                    <span class="count-number" id="online-count">0</span>
+                                                    <span class="count-label">Online</span>
+                                                </div>
+                                            </div>
+                                            <div class="users-container">
+                                                <div id="online-users-list">
+                                                    <div class="loading-state">
+                                                        <i data-feather="loader" class="loading-icon"></i>
+                                                        <p>Loading online users...</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                        
+
 
             <!-- Network Configuration Tabs -->
             <div class="row">
@@ -1453,11 +2181,8 @@
                                         <i data-feather="lock" class="mr-50"></i>Password WiFi
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="connected-users-tab" data-toggle="tab" href="#connected-users" aria-controls="connected-users" role="tab" aria-selected="false">
-                                        <i data-feather="users" class="mr-50"></i>Total Users
-                                    </a>
-                                </li>
+
+
                                 <!-- Add to your tab navigation -->
                                
                             </ul>
@@ -1469,12 +2194,13 @@
                                             <h4 class="card-title">Location Information</h4>
                                         </div>
                                         <div class="card-body">
-                                            <form id="location-info-form">
+                                            <form id="location-info-form" novalidate>
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="location-name">Location Name</label>
-                                                            <input type="text" class="form-control" id="location-name" placeholder="Enter location name">
+                                                            <label for="location-name" class="required">Location Name</label>
+                                                            <input type="text" class="form-control" id="location-name" placeholder="Enter location name" required aria-describedby="location-name-help">
+                                                            <div class="invalid-feedback"></div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-address">Address</label>
@@ -1500,12 +2226,12 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="router-model-select">Router Model</label>
-                                                            <select class="form-control" id="router-model-select">
+                                                            <select class="form-control" id="router-model-select" aria-describedby="router-model-help">
                                                                 <option value="">Select Router Model</option>
                                                                 <option value="820AX">820AX</option>
                                                                 <option value="835AX">835AX</option>
                                                             </select>
-                                                            <small class="text-muted">Choose the router model installed at this location.</small>
+                                                            <small id="router-model-help" class="form-text text-muted">Choose the router model installed at this location.</small>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-manager">Manager Name</label>
@@ -1514,6 +2240,7 @@
                                                         <div class="form-group">
                                                             <label for="location-contact-email">Contact Email</label>
                                                             <input type="email" class="form-control" id="location-contact-email" placeholder="Contact email">
+                                                            <div class="invalid-feedback"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1521,7 +2248,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="location-contact-phone">Contact Phone</label>
-                                                            <input type="text" class="form-control" id="location-contact-phone" placeholder="Contact phone">
+                                                            <input type="tel" class="form-control" id="location-contact-phone" placeholder="Contact phone">
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-status">Status</label>
@@ -1535,11 +2262,23 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="location-description">Description</label>
-                                                            <textarea class="form-control" id="location-description" rows="3" placeholder="Location description"></textarea>
+                                                            <textarea class="form-control" id="location-description" rows="3" placeholder="Location description" maxlength="500"></textarea>
+                                                            <small class="form-text text-muted">
+                                                                <span id="description-counter">0</span>/500 characters
+                                                            </small>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <button type="button" id="save-location-info" class="btn btn-primary">Save Location Information</button>
+                                                <div class="form-actions">
+                                                    <button type="button" id="save-location-info" class="btn btn-primary">
+                                                        <i data-feather="save" class="mr-1"></i>
+                                                        Save Location Information
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary ml-2" onclick="resetLocationForm()">
+                                                        <i data-feather="refresh-ccw" class="mr-1"></i>
+                                                        Reset
+                                                    </button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
@@ -2342,53 +3081,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Total Users Tab -->
-                                <div class="tab-pane fade" id="connected-users" aria-labelledby="connected-users-tab" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title">Connected Devices</h4>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="table-responsive">
-                                                        <table class="table table-hover">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>User/Device</th>
-                                                                    <th>MAC Address</th>
-                                                                    <th>IP Address</th>
-                                                                    <th>Network</th>
-                                                                    <th>Connected Time</th>
-                                                                    <th>Data Usage</th>
-                                                                    <th>Signal</th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <!-- Example Row -->
-                                                                <tr>
-                                                                    <td>John Doe (iPhone 13)</td>
-                                                                    <td>00-1A-2B-3C-4D-5E</td>
-                                                                    <td>-</td>
-                                                                    <td><span class="badge badge-light-info">Captive Portal</span></td>
-                                                                    <td>1h 23m</td>
-                                                                    <td>125 MB</td>
-                                                                    <td>Excellent (85%)</td>
-                                                                    <td>
-                                                                        <button class="btn btn-sm btn-icon btn-outline-danger">
-                                                                            <i data-feather="user-x"></i>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
 
                             </div><!-- End .tab-content -->
                             </div><!-- End .card-body -->
@@ -3332,8 +4025,125 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/location-details.js?time=<?php echo time(); ?>"></script>
     <script>
+        // ==============================================
+        // FORM VALIDATION UTILITIES
+        // ==============================================
+        
+        // Form validation helper functions
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function validatePhone(phone) {
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+        }
+        
+        function showFieldError(fieldId, message) {
+            const field = $('#' + fieldId);
+            field.addClass('is-invalid').removeClass('is-valid');
+            field.siblings('.invalid-feedback').text(message);
+        }
+        
+        function showFieldSuccess(fieldId) {
+            const field = $('#' + fieldId);
+            field.addClass('is-valid').removeClass('is-invalid');
+            field.siblings('.invalid-feedback').text('');
+        }
+        
+        function clearFieldValidation(fieldId) {
+            const field = $('#' + fieldId);
+            field.removeClass('is-invalid is-valid');
+            field.siblings('.invalid-feedback').text('');
+        }
+        
+        // Reset location form
+        function resetLocationForm() {
+            $('#location-info-form')[0].reset();
+            $('#location-info-form .form-control').removeClass('is-invalid is-valid');
+            $('#location-info-form .invalid-feedback').text('');
+            updateDescriptionCounter();
+        }
+        
+        // Update description character counter
+        function updateDescriptionCounter() {
+            const description = $('#location-description').val();
+            const counter = $('#description-counter');
+            counter.text(description.length);
+            
+            if (description.length > 450) {
+                counter.addClass('text-warning').removeClass('text-danger');
+            } else if (description.length > 500) {
+                counter.addClass('text-danger').removeClass('text-warning');
+            } else {
+                counter.removeClass('text-warning text-danger');
+            }
+        }
+        
+        // ==============================================
+        // DOCUMENT READY FUNCTIONS
+        // ==============================================
+        
         // Firmware Update Modal functionality
         $(document).ready(function() {
+            // ==============================================
+            // FORM EVENT HANDLERS
+            // ==============================================
+            
+            // Description character counter
+            $('#location-description').on('input', function() {
+                updateDescriptionCounter();
+            });
+            
+            // Email validation
+            $('#location-contact-email').on('blur', function() {
+                const email = $(this).val();
+                if (email && !validateEmail(email)) {
+                    showFieldError('location-contact-email', 'Please enter a valid email address');
+                } else if (email) {
+                    showFieldSuccess('location-contact-email');
+                } else {
+                    clearFieldValidation('location-contact-email');
+                }
+            });
+            
+            // Phone validation
+            $('#location-contact-phone').on('blur', function() {
+                const phone = $(this).val();
+                if (phone && !validatePhone(phone)) {
+                    showFieldError('location-contact-phone', 'Please enter a valid phone number');
+                } else if (phone) {
+                    showFieldSuccess('location-contact-phone');
+                } else {
+                    clearFieldValidation('location-contact-phone');
+                }
+            });
+            
+            // Required field validation
+            $('#location-name').on('blur', function() {
+                const value = $(this).val().trim();
+                if (!value) {
+                    showFieldError('location-name', 'Location name is required');
+                } else {
+                    showFieldSuccess('location-name');
+                }
+            });
+            
+            // Initialize character counter
+            updateDescriptionCounter();
+            
+            // ==============================================
+            // ANALYTICS FUNCTIONALITY
+            // ==============================================
+            
+            // Initialize Analytics components
+            initializeAnalytics();
+            
+            // ==============================================
+            // EXISTING FUNCTIONALITY
+            // ==============================================
+            
             // Show firmware update modal when button is clicked
             $('#update-firmware-btn').on('click', function() {
                 // Check if router model is set
@@ -3825,6 +4635,330 @@ document.addEventListener('DOMContentLoaded', function() {
             toastr.error(`${context}: ${errorMessage}`);
         }
 
+        // ==============================================
+        // ANALYTICS FUNCTIONS
+        // ==============================================
+        
+        // Initialize Analytics components
+        function initializeAnalytics() {
+            initializeDailyUsageChart();
+            loadOnlineUsers();
+            
+            // Set up refresh button
+            $('#refresh-online-users').on('click', function() {
+                loadOnlineUsers();
+            });
+            
+            // Set up chart period buttons
+            $('.period-btn').on('click', function(e) {
+                e.preventDefault();
+                const period = $(this).data('period');
+                
+                // Update active state
+                $('.period-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                // Load new data
+                loadDailyUsageData(period);
+            });
+        }
+        
+        // Global variables for charts
+        let dailyUsageChart = null;
+        
+        // Initialize Daily Usage Chart
+        function initializeDailyUsageChart() {
+            const chartOptions = {
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: {
+                        show: false
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800
+                    },
+                    sparkline: {
+                        enabled: false
+                    }
+                },
+                series: [{
+                    name: 'Users',
+                    data: []
+                }],
+                xaxis: {
+                    categories: [],
+                    labels: {
+                        style: {
+                            colors: '#6c757d',
+                            fontSize: '12px'
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: '#6c757d',
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shade: 'light',
+                        type: 'vertical',
+                        shadeIntensity: 0.3,
+                        gradientToColors: ['#a5b4fc'],
+                        inverseColors: false,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.05,
+                        stops: [0, 100]
+                    }
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2,
+                    colors: ['#667eea']
+                },
+                colors: ['#667eea'],
+                grid: {
+                    borderColor: '#f1f3f4',
+                    strokeDashArray: 5,
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                tooltip: {
+                    theme: 'light',
+                    custom: function({series, seriesIndex, dataPointIndex, w}) {
+                        const value = series[seriesIndex][dataPointIndex];
+                        const category = w.globals.categoryLabels[dataPointIndex];
+                        return `
+                            <div class="custom-tooltip">
+                                <div class="tooltip-title">${category}</div>
+                                <div class="tooltip-value">${value} users</div>
+                            </div>
+                        `;
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                }
+            };
+            
+            dailyUsageChart = new ApexCharts(document.querySelector('#daily-usage-chart'), chartOptions);
+            dailyUsageChart.render();
+            
+            // Load initial data
+            loadDailyUsageData(7);
+        }
+        
+        // Load Daily Usage Data
+        function loadDailyUsageData(period = 7) {
+            const locationId = getLocationId();
+            if (!locationId) {
+                console.error('No location ID found for daily usage data');
+                return;
+            }
+            
+            $.ajax({
+                url: `/api/locations/${locationId}/captive-portal/daily-usage`,
+                method: 'GET',
+                data: {
+                    period: period
+                },
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Daily usage data loaded:', response);
+                    
+                    // Process the data
+                    const data = response.data || [];
+                    const categories = data.map(item => item.date);
+                    const series = data.map(item => item.users);
+                    
+                    // Update chart
+                    dailyUsageChart.updateOptions({
+                        xaxis: {
+                            categories: categories
+                        }
+                    });
+                    
+                    dailyUsageChart.updateSeries([{
+                        name: 'Users',
+                        data: series
+                    }]);
+                    
+                    // Update statistics
+                    const summary = response.summary || {};
+                    $('#total-users').text(summary.total_unique_users || 0);
+                    $('#total-sessions').text(summary.total_sessions || 0);
+                    $('#avg-daily').text(summary.average_users_per_day || 0);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading daily usage data:', error);
+                    
+                    // Show empty chart with error message
+                    dailyUsageChart.updateOptions({
+                        xaxis: {
+                            categories: []
+                        },
+                        noData: {
+                            text: 'Unable to load usage data',
+                            align: 'center',
+                            verticalAlign: 'middle',
+                            style: {
+                                color: '#9aa0ac',
+                                fontSize: '14px'
+                            }
+                        }
+                    });
+                    
+                    dailyUsageChart.updateSeries([{
+                        name: 'Users',
+                        data: []
+                    }]);
+                    
+                    // Show error message
+                    toastr.error('Failed to load captive portal usage data');
+                }
+            });
+        }
+        
+        // Load Online Users
+        function loadOnlineUsers() {
+            const locationId = getLocationId();
+            if (!locationId) {
+                console.error('No location ID found for online users');
+                return;
+            }
+            
+            $('#online-users-list').html(`
+                <div class="loading-state">
+                    <i data-feather="loader" class="loading-icon"></i>
+                    <p>Loading online users...</p>
+                </div>
+            `);
+            
+            // Re-render Feather icons
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            
+            $.ajax({
+                url: `/api/locations/${locationId}/online-users`,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Online users loaded:', response);
+                    // Handle the response format from the API
+                    const onlineUsers = response.data && response.data.online_users ? response.data.online_users : [];
+                    displayOnlineUsers(onlineUsers);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading online users:', error);
+                    
+                    // Show error message instead of sample data
+                    $('#online-users-list').html(`
+                        <div class="error-state">
+                            <i data-feather="alert-triangle"></i>
+                            <p>Unable to load online users</p>
+                            <small>Please try refreshing</small>
+                        </div>
+                    `);
+                    
+                    // Re-render Feather icons
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                    
+                    // Show error toast
+                    toastr.error('Failed to load online users data');
+                }
+            });
+        }
+        
+        // Display Online Users
+        function displayOnlineUsers(users) {
+            // Update users count
+            $('#online-count').text(users ? users.length : 0);
+            
+            if (!users || users.length === 0) {
+                $('#online-users-list').html(`
+                    <div class="empty-state">
+                        <i data-feather="users"></i>
+                        <p>No users currently online</p>
+                    </div>
+                `);
+                
+                // Re-render Feather icons
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+                return;
+            }
+            
+            let html = '';
+            users.forEach(user => {
+                const connectedTime = user.connected_time || 'Unknown';
+                const hostname = user.hostname || 'Unknown Device';
+                const initials = hostname.substring(0, 2).toUpperCase();
+                
+                html += `
+                    <div class="user-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="user-info">
+                                <div class="user-avatar">${initials}</div>
+                                <div class="user-details">
+                                    <h6>${hostname}</h6>
+                                                                    <small><i data-feather="link" style="width: 12px; height: 12px;"></i>${user.mac || 'N/A'}</small>
+                                <br>
+                                <small><i data-feather="globe" style="width: 12px; height: 12px;"></i>${user.ip || 'N/A'}</small>
+                                </div>
+                            </div>
+                            <div class="user-status">
+                                <span class="network-badge ${user.network_badge || 'badge-light-info'}">${user.network_label || 'Online'}</span>
+                                <span class="connection-time">${connectedTime}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            $('#online-users-list').html(html);
+            
+            // Re-render Feather icons after dynamic content insertion
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        }
+        
         // Router Model Selection functionality
         $(document).ready(function() {
             // Check authentication first
@@ -4537,42 +5671,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Fix for Total Users tab - Force proper Bootstrap tab initialization
+            // Initialize Bootstrap tabs properly
             $(document).ready(function() {
-                // Debug: Check if tab elements exist
-                console.log('Total Users tab link exists:', $('#connected-users-tab').length > 0);
-                console.log('Total Users tab content exists:', $('#connected-users').length > 0);
-                
-                // Force tab initialization
-                $('#connected-users-tab').on('click', function(e) {
-                    e.preventDefault();
-                    console.log('Total Users tab clicked');
-                    
-                    // Remove active class from all tabs
-                    $('.nav-link').removeClass('active');
-                    $('.tab-pane').removeClass('active show');
-                    
-                    // Add active class to clicked tab
-                    $(this).addClass('active');
-                    $('#connected-users').addClass('active show');
-                    
-                    console.log('Total Users tab should now be visible');
-                });
-                
-                // Also handle all other tabs the same way to ensure consistency
-                $('.nav-link[data-toggle="tab"]').on('click', function(e) {
-                    e.preventDefault();
-                    const targetId = $(this).attr('href');
-                    console.log('Tab clicked:', targetId);
-                    
-                    // Remove active class from all tabs
-                    $('.nav-link').removeClass('active');
-                    $('.tab-pane').removeClass('active show');
-                    
-                    // Add active class to clicked tab and its content
-                    $(this).addClass('active');
-                    $(targetId).addClass('active show');
-                });
+                // Let Bootstrap handle tabs automatically - no manual intervention needed
+                console.log('Bootstrap tabs initialized');
             });
 
             // Load web filter categories when page loads
@@ -4583,6 +5685,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Load all device settings when page loads
             loadDeviceSettings();
+
+
 
             // Function to load all device settings from API 
             function loadDeviceSettings() {
@@ -7242,14 +8346,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     };
                 };
-                
+
                 // Track fields using CORRECT field IDs
                 trackFieldChange('#captive-portal-ip', 'IP');
                 trackFieldChange('#captive-portal-netmask', 'Netmask');
                 trackFieldChange('#captive-portal-gateway', 'Gateway');
                 trackFieldChange('#captive-portal-vlan-modal', 'VLAN');
                 trackFieldChange('#captive-portal-vlan-tagging-modal', 'VLAN_Tagging');
-                
+
                 // Check for any other event handlers that might be interfering
                 setTimeout(function() {
                     console.log('=== CHECKING FOR OTHER EVENT HANDLERS ===');
@@ -7275,9 +8379,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // $('#captive-portal-vlan-tagging-modal').val('disabled');
                 console.log('Field clearing DISABLED for debugging');
             });
+
+
+
+
         });
     </script>
     </body>
-<!-- END: Body-->
-</html>
+    <!-- END: Body-->
 </html>

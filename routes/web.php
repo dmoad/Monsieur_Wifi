@@ -49,6 +49,11 @@ Route::get('/locations/{location}', function () {
     return view('location-details-v2');
 })->name('location-details');
 
+Route::get('/locations/analytics/{location_id}', function ($location_id) {
+    return view('location-analytics', compact('location_id'));
+})->name('location-analytics');
+
+
 Route::get('/system-settings', function () {
     return view('system-settings');
 })->name('system-settings');
