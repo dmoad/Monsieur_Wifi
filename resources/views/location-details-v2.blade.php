@@ -361,7 +361,7 @@
         .refresh-btn:hover {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            transform: rotate(180deg);
+            /*transform: rotate(180deg);    */
         }
 
         .users-count {
@@ -390,16 +390,129 @@
             letter-spacing: 0.5px;
         }
 
+        .count-range {
+            display: block;
+            color: #6c757d;
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
         .users-container {
             background: white;
             margin: 20px 25px 25px;
             border-radius: 15px;
-            max-height: 400px;
-            overflow-y: auto;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border: 1px solid rgba(0, 0, 0, 0.08);
             position: relative;
             z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #online-users-list {
+            max-height: 350px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .pagination-container {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: #f8f9fa;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-info-row {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .pagination-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 8px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn i {
+            width: 16px !important;
+            height: 16px !important;
+        }
+
+        .pagination-info {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .page-numbers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .page-number-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 8px;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .page-number-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .page-number-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .page-ellipsis {
+            padding: 0 4px;
+            color: #6c757d;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
         }
 
         .users-container::-webkit-scrollbar {
@@ -604,6 +717,21 @@
                  flex-direction: column;
                  align-items: flex-start;
                  gap: 10px;
+             }
+             
+             .page-numbers {
+                 flex-wrap: wrap;
+                 gap: 2px;
+             }
+             
+             .page-number-btn, .pagination-btn {
+                 width: 28px;
+                 height: 28px;
+                 font-size: 0.8rem;
+             }
+             
+             .pagination-container {
+                 padding: 12px 15px;
              }
          }
         
@@ -1899,9 +2027,9 @@
                 </div>
                 <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
                     <div class="form-group breadcrumb-right">
-                        <a href="#" class="btn btn-primary btn-analytics" id="analytics-btn">
-                            <i data-feather="bar-chart-2" class="mr-1"></i>
-                            Analytics
+                        <a href="#network-configuration-tabs" class="btn btn-primary btn-analytics">
+                            <i data-feather="settings" class="mr-1"></i>
+                            Settings
                         </a>
                     </div>
                 </div>
@@ -1924,7 +2052,7 @@
                             </div>
                             <span class="status-badge status-offline">Offline</span>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-6">
                                 <div class="interface-detail">
@@ -2132,6 +2260,7 @@
                                                 <div class="users-count">
                                                     <span class="count-number" id="online-count">0</span>
                                                     <span class="count-label">Online</span>
+                                                    <span class="count-range" id="count-range" style="display: none;"></span>
                                                 </div>
                                             </div>
                                             <div class="users-container">
@@ -2139,6 +2268,22 @@
                                                     <div class="loading-state">
                                                         <i data-feather="loader" class="loading-icon"></i>
                                                         <p>Loading online users...</p>
+                                                    </div>
+                                                </div>
+                                                <div class="pagination-container" id="users-pagination" style="display: none;">
+                                                    <div class="pagination-controls">
+                                                        <button class="pagination-btn" id="prev-page" disabled>
+                                                            <i data-feather="chevron-left"></i>
+                                                        </button>
+                                                        <div class="page-numbers" id="page-numbers">
+                                                            <!-- Page numbers will be dynamically generated -->
+                                                        </div>
+                                                        <button class="pagination-btn" id="next-page" disabled>
+                                                            <i data-feather="chevron-right"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="pagination-info-row">
+                                                        <span class="pagination-info" id="page-info">1 / 1</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2153,7 +2298,7 @@
 
 
             <!-- Network Configuration Tabs -->
-            <div class="row">
+            <div class="row" id="network-configuration-tabs">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
@@ -4661,10 +4806,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Load new data
                 loadDailyUsageData(period);
             });
+            
+            // Set up pagination controls
+            $('#prev-page').on('click', function() {
+                if (window.usersCurrentPage > 1) {
+                    window.usersCurrentPage--;
+                    renderCurrentPage();
+                    console.log('⬅️ Previous page clicked, now on page:', window.usersCurrentPage);
+                }
+            });
+            
+            $('#next-page').on('click', function() {
+                const totalPages = Math.ceil(window.allOnlineUsers.length / window.usersPerPage);
+                if (window.usersCurrentPage < totalPages) {
+                    window.usersCurrentPage++;
+                    renderCurrentPage();
+                    console.log('➡️ Next page clicked, now on page:', window.usersCurrentPage);
+                }
+            });
         }
         
         // Global variables for charts
         let dailyUsageChart = null;
+        
+        // Global variables for pagination
+        window.allOnlineUsers = [];
+        window.usersCurrentPage = 1;
+        window.usersPerPage = 2;
         
         // Initialize Daily Usage Chart
         function initializeDailyUsageChart() {
@@ -4904,18 +5072,27 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Display Online Users
+                // Display Online Users
         function displayOnlineUsers(users) {
-            // Update users count
-            $('#online-count').text(users ? users.length : 0);
+            // Store all users globally for pagination
+            window.allOnlineUsers = users || [];
             
-            if (!users || users.length === 0) {
+            // Calculate max pages and ensure current page is valid
+            const totalPages = Math.ceil(window.allOnlineUsers.length / window.usersPerPage);
+            window.usersCurrentPage = Math.min(Math.max(1, window.usersCurrentPage), totalPages || 1);
+            
+            // Update total users count
+            $('#online-count').text(window.allOnlineUsers.length);
+            
+            if (window.allOnlineUsers.length === 0) {
                 $('#online-users-list').html(`
                     <div class="empty-state">
                         <i data-feather="users"></i>
                         <p>No users currently online</p>
                     </div>
                 `);
+                $('#users-pagination').hide();
+                $('#count-range').hide();
                 
                 // Re-render Feather icons
                 if (typeof feather !== 'undefined') {
@@ -4924,8 +5101,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // Show pagination if more than usersPerPage users
+            if (window.allOnlineUsers.length > window.usersPerPage) {
+                $('#users-pagination').show();
+                $('#count-range').show();
+            } else {
+                $('#users-pagination').hide();
+                $('#count-range').hide();
+            }
+            
+            // Render current page
+            renderCurrentPage();
+        }
+        
+        // Render current page of users
+        function renderCurrentPage() {
+            const startIndex = (window.usersCurrentPage - 1) * window.usersPerPage;
+            const endIndex = startIndex + window.usersPerPage;
+            const currentUsers = window.allOnlineUsers.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(window.allOnlineUsers.length / window.usersPerPage);
+            
+            // Update range display
+            const rangeStart = startIndex + 1;
+            const rangeEnd = Math.min(endIndex, window.allOnlineUsers.length);
+            $('#count-range').text(`${rangeStart}-${rangeEnd} of ${window.allOnlineUsers.length}`);
+            
+            // Generate HTML for current page users
             let html = '';
-            users.forEach(user => {
+            currentUsers.forEach(user => {
                 const connectedTime = user.connected_time || 'Unknown';
                 const hostname = user.hostname || 'Unknown Device';
                 const initials = hostname.substring(0, 2).toUpperCase();
@@ -4937,14 +5140,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="user-avatar">${initials}</div>
                                 <div class="user-details">
                                     <h6>${hostname}</h6>
-                                                                    <small><i data-feather="link" style="width: 12px; height: 12px;"></i>${user.mac || 'N/A'}</small>
-                                <br>
-                                <small><i data-feather="globe" style="width: 12px; height: 12px;"></i>${user.ip || 'N/A'}</small>
+                                    <small><i data-feather="cpu" style="width: 12px; height: 12px;"></i>${user.mac || 'N/A'}</small>
+                                    <br>
+                                    <small><i data-feather="globe" style="width: 12px; height: 12px;"></i>${user.ip || 'N/A'}</small>
                                 </div>
                             </div>
                             <div class="user-status">
                                 <span class="network-badge ${user.network_badge || 'badge-light-info'}">${user.network_label || 'Online'}</span>
-                                <span class="connection-time">${connectedTime}</span>
                             </div>
                         </div>
                     </div>
@@ -4953,12 +5155,118 @@ document.addEventListener('DOMContentLoaded', function() {
             
             $('#online-users-list').html(html);
             
+            // Update pagination controls
+            updatePaginationControls(totalPages);
+            
             // Re-render Feather icons after dynamic content insertion
             if (typeof feather !== 'undefined') {
                 feather.replace();
             }
         }
         
+        // Update pagination controls
+        function updatePaginationControls(totalPages) {
+            $('#page-info').text(`${window.usersCurrentPage} / ${totalPages}`);
+            
+            // Update button states
+            $('#prev-page').prop('disabled', window.usersCurrentPage === 1);
+            $('#next-page').prop('disabled', window.usersCurrentPage === totalPages);
+            
+            // Generate page number buttons
+            generatePageNumbers(totalPages);
+            
+            // Debug pagination controls
+            console.log('🎛️ Pagination Controls Updated:', {
+                currentPage: window.usersCurrentPage,
+                totalPages: totalPages,
+                prevDisabled: window.usersCurrentPage === 1,
+                nextDisabled: window.usersCurrentPage === totalPages
+            });
+        }
+        
+        // Generate page number buttons
+        function generatePageNumbers(totalPages) {
+            const $pageNumbers = $('#page-numbers');
+            $pageNumbers.empty();
+            
+            if (totalPages <= 1) {
+                return; // No need for page numbers if only 1 page
+            }
+            
+            const currentPage = window.usersCurrentPage;
+            const maxVisible = 5; // Maximum visible page numbers
+            
+            let startPage = 1;
+            let endPage = totalPages;
+            
+            // Calculate visible page range
+            if (totalPages > maxVisible) {
+                const half = Math.floor(maxVisible / 2);
+                
+                if (currentPage <= half + 1) {
+                    // Near the beginning
+                    startPage = 1;
+                    endPage = maxVisible;
+                } else if (currentPage >= totalPages - half) {
+                    // Near the end
+                    startPage = totalPages - maxVisible + 1;
+                    endPage = totalPages;
+                } else {
+                    // In the middle
+                    startPage = currentPage - half;
+                    endPage = currentPage + half;
+                }
+            }
+            
+            // Add first page and ellipsis if needed
+            if (startPage > 1) {
+                addPageButton(1);
+                if (startPage > 2) {
+                    $pageNumbers.append('<span class="page-ellipsis">...</span>');
+                }
+            }
+            
+            // Add visible page numbers
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(i);
+            }
+            
+            // Add ellipsis and last page if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    $pageNumbers.append('<span class="page-ellipsis">...</span>');
+                }
+                addPageButton(totalPages);
+            }
+            
+            // Re-render Feather icons if any
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        }
+        
+        // Add a page button
+        function addPageButton(pageNumber) {
+            const isActive = pageNumber === window.usersCurrentPage;
+            const $button = $(`
+                <button class="page-number-btn ${isActive ? 'active' : ''}" data-page="${pageNumber}">
+                    ${pageNumber}
+                </button>
+            `);
+            
+            $button.on('click', function() {
+                const targetPage = parseInt($(this).data('page'));
+                if (targetPage !== window.usersCurrentPage) {
+                    window.usersCurrentPage = targetPage;
+                    renderCurrentPage();
+                    console.log(`📄 Page ${targetPage} clicked`);
+                }
+            });
+            
+            $('#page-numbers').append($button);
+        }
+        
+                         
         // Router Model Selection functionality
         $(document).ready(function() {
             // Check authentication first
@@ -5823,11 +6131,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (settings.idle_timeout) {
                     $('#captive-idle-timeout').val(settings.idle_timeout);
                 }
-                if (settings.download_limit) {
+                // Handle bandwidth limits - set to value or empty string if null/undefined
+                if (settings.download_limit !== undefined && settings.download_limit !== null) {
                     $('#captive-download-limit').val(settings.download_limit);
+                } else {
+                    $('#captive-download-limit').val(''); // Default to empty for no limit
                 }
-                if (settings.upload_limit) {
+                if (settings.upload_limit !== undefined && settings.upload_limit !== null) {
                     $('#captive-upload-limit').val(settings.upload_limit);
+                } else {
+                    $('#captive-upload-limit').val('0'); // Default to "0" option for no limit
                 }
                 if (settings.redirect_url || settings.captive_portal_redirect) {
                     $('#captive-portal-redirect').val(settings.redirect_url || settings.captive_portal_redirect);
@@ -7086,20 +7399,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 toggleVlanFields();
             }, 500);
             
-            // Debug: Manual test function for VLAN (can be called from browser console)
-            window.testVlanToggle = function() {
-                console.log('=== Manual VLAN Test ===');
-                const checkbox = $('#vlan-enabled');
-                console.log('Checkbox exists:', checkbox.length > 0);
-                console.log('Checkbox checked:', checkbox.is(':checked'));
-                
-                // Toggle checkbox programmatically
-                checkbox.prop('checked', !checkbox.is(':checked'));
-                console.log('Toggled checkbox to:', checkbox.is(':checked'));
-                
-                // Trigger the change event
-                checkbox.trigger('change');
-            };
+
             
             // Additional debugging: Check if VLAN fields exist and log their initial state
             $(document).ready(function() {
@@ -7906,18 +8206,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     dns2_element: $('#captive-portal-dns2-modal')[0]
                 });
                 
-                // Use the form data collected immediately at the start
+                // **COLLECT ALL CAPTIVE PORTAL DATA FROM MAIN TAB AND MODAL**
+                console.log('=== COLLECTING CAPTIVE PORTAL DATA ===');
+                console.log('Download limit field value:', $('#captive-download-limit').val());
+                console.log('Upload limit field value:', $('#captive-upload-limit').val());
+                console.log('SSID field value:', $('#captive-portal-ssid').val());
+                console.log('Visible field value:', $('#captive-portal-visible').val());
+                console.log('Auth method field value:', $('#captive-auth-method').val());
+                console.log('Session timeout field value:', $('#captive-session-timeout').val());
+                console.log('Idle timeout field value:', $('#captive-idle-timeout').val());
+                
                 const captivePortalData = {
+                    // Network settings (from modal or form)
                     captive_portal_ip: formData.ip,
                     captive_portal_netmask: formData.netmask,
                     captive_portal_gateway: formData.gateway,
                     captive_portal_dns1: '8.8.8.8', // Default DNS since not in this modal
                     captive_portal_dns2: '1.1.1.1', // Default DNS since not in this modal
                     captive_portal_vlan: formData.vlan,
-                    captive_portal_vlan_tagging: formData.vlan_tagging
+                    captive_portal_vlan_tagging: formData.vlan_tagging,
+                    
+                    // **BANDWIDTH LIMITS FROM MAIN TAB**
+                    download_limit: $('#captive-download-limit').val(),
+                    upload_limit: $('#captive-upload-limit').val(),
+                    captive_download_limit: $('#captive-download-limit').val(),
+                    captive_upload_limit: $('#captive-upload-limit').val(),
+                    
+                    // **OTHER CAPTIVE PORTAL SETTINGS FROM MAIN TAB**
+                    captive_portal_ssid: $('#captive-portal-ssid').val(),
+                    captive_portal_visible: $('#captive-portal-visible').val(),
+                    captive_auth_method: $('#captive-auth-method').val(),
+                    captive_portal_password: $('#captive_portal_password').val(),
+                    session_timeout: $('#captive-session-timeout').val(),
+                    idle_timeout: $('#captive-idle-timeout').val(),
+                    captive_portal_redirect: $('#captive-portal-redirect').val()
                 };
                 
-                console.log('Final data object using immediate collection:', captivePortalData);
+                console.log('=== COMPLETE CAPTIVE PORTAL DATA ===');
+                console.log('Full data object:', captivePortalData);
                 
                 console.log('=== CAPTIVE PORTAL NETWORK SAVE DEBUG ===');
                 console.log('Modal ID:', modalId);

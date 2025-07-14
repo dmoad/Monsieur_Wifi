@@ -590,7 +590,7 @@ class LocationController extends Controller
                     Log::info('=== CAPTIVE PORTAL SETTINGS UPDATE ===');
                     Log::info('Settings type: ' . $settingsType);
                     Log::info('Location ID: ' . $location_id);
-                    Log::info('Settings data: ' . json_encode($settings));
+                    Log::info('Settings data captive: ' . json_encode($settings));
                     
                     // Update captive portal settings
                     if (isset($settings['captive_portal_ssid'])) {
@@ -714,22 +714,79 @@ class LocationController extends Controller
                         $locationSettings->web_filter_domains = $settings['allowed_domains'];
                     }
                     
-                    // Bandwidth settings
+                    // Bandwidth settings with debugging
+                    Log::info('=== BANDWIDTH LIMITS DEBUG ===');
+                    Log::info('captive_download_limit in settings: ' . (isset($settings['captive_download_limit']) ? $settings['captive_download_limit'] : 'NOT SET'));
+                    Log::info('captive_upload_limit in settings: ' . (isset($settings['captive_upload_limit']) ? $settings['captive_upload_limit'] : 'NOT SET'));
+                    Log::info('download_limit in settings: ' . (isset($settings['download_limit']) ? $settings['download_limit'] : 'NOT SET'));
+                    Log::info('upload_limit in settings: ' . (isset($settings['upload_limit']) ? $settings['upload_limit'] : 'NOT SET'));
+                    Log::info('Current DB download_limit: ' . $locationSettings->download_limit);
+                    Log::info('Current DB upload_limit: ' . $locationSettings->upload_limit);
+                    
                     if (isset($settings['captive_download_limit'])) {
-                        if ($settings['captive_download_limit'] !== $locationSettings->download_limit) {
-                            # $increment_version = 1;
-                            Log::info('Bandwidth limit up updated');
+                        $newValue = $settings['captive_download_limit'];
+                        // Convert empty string to null or 0 for proper comparison
+                        if ($newValue === '' || $newValue === null) {
+                            $newValue = null;
+                        } else {
+                            $newValue = (int)$newValue;
                         }
-                        $locationSettings->download_limit = $settings['captive_download_limit'];
+                        
+                        if ($newValue !== $locationSettings->download_limit) {
+                            Log::info('Captive download limit updated from ' . $locationSettings->download_limit . ' to ' . $newValue);
+                        }
+                        $locationSettings->download_limit = $newValue;
                     }
                     
                     if (isset($settings['captive_upload_limit'])) {
-                        if ($settings['captive_upload_limit'] !== $locationSettings->upload_limit) {
-                            # $increment_version = 1;
-                            Log::info('Bandwidth limit down updated');
+                        $newValue = $settings['captive_upload_limit'];
+                        // Convert empty string or "0" to null for proper comparison  
+                        if ($newValue === '' || $newValue === null || $newValue === '0') {
+                            $newValue = null;
+                        } else {
+                            $newValue = (int)$newValue;
                         }
-                        $locationSettings->upload_limit = $settings['captive_upload_limit'];
+                        
+                        if ($newValue !== $locationSettings->upload_limit) {
+                            Log::info('Captive upload limit updated from ' . $locationSettings->upload_limit . ' to ' . $newValue);
+                        }
+                        $locationSettings->upload_limit = $newValue;
                     }
+                    
+                    // Also handle the generic download_limit and upload_limit fields
+                    if (isset($settings['download_limit'])) {
+                        $newValue = $settings['download_limit'];
+                        // Convert empty string to null or 0 for proper comparison
+                        if ($newValue === '' || $newValue === null) {
+                            $newValue = null;
+                        } else {
+                            $newValue = (int)$newValue;
+                        }
+                        
+                        if ($newValue !== $locationSettings->download_limit) {
+                            Log::info('Download limit updated from ' . $locationSettings->download_limit . ' to ' . $newValue);
+                        }
+                        $locationSettings->download_limit = $newValue;
+                    }
+                    
+                    if (isset($settings['upload_limit'])) {
+                        $newValue = $settings['upload_limit'];
+                        // Convert empty string or "0" to null for proper comparison
+                        if ($newValue === '' || $newValue === null || $newValue === '0') {
+                            $newValue = null;
+                        } else {
+                            $newValue = (int)$newValue;
+                        }
+                        
+                        if ($newValue !== $locationSettings->upload_limit) {
+                            Log::info('Upload limit updated from ' . $locationSettings->upload_limit . ' to ' . $newValue);
+                        }
+                        $locationSettings->upload_limit = $newValue;
+                    }
+                    
+                    Log::info('Final DB download_limit: ' . $locationSettings->download_limit);
+                    Log::info('Final DB upload_limit: ' . $locationSettings->upload_limit);
+                    Log::info('=== END BANDWIDTH LIMITS DEBUG ===');
                     
                     // Captive Portal Design ID
                     if (isset($settings['captive_portal_design'])) {

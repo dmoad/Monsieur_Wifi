@@ -383,9 +383,18 @@ function populateLocationDetails(location, captive_portal_designs) {
         $('#captive-session-timeout').val(settings.session_timeout || 60);
         $('#captive-idle-timeout').val(settings.idle_timeout || 15);
         
-        // Bandwidth limits
-        $('#captive-download-limit').val(settings.download_limit || 10);
-        $('#captive-upload-limit').val(settings.upload_limit || 2);
+        // Bandwidth limits - handle null/undefined values properly
+        if (settings.download_limit !== undefined && settings.download_limit !== null) {
+            $('#captive-download-limit').val(settings.download_limit);
+        } else {
+            $('#captive-download-limit').val(''); // Default to empty for no limit
+        }
+        
+        if (settings.upload_limit !== undefined && settings.upload_limit !== null) {
+            $('#captive-upload-limit').val(settings.upload_limit);
+        } else {
+            $('#captive-upload-limit').val('0'); // Default to "0" option for no limit
+        }
         console.log("captive_portal_designs", captive_portal_designs);
         // Populate captive portal design
         for (var i = 0; i < captive_portal_designs.length; i++) {
