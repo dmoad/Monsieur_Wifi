@@ -2552,10 +2552,10 @@
                                                             <span class="interface-label">Subnet Mask</span>
                                                             <span class="interface-value" id="captive-netmask-display">-</span>
                                                         </div>
-                                                        <div class="interface-detail">
+                                                        <!-- <div class="interface-detail">
                                                             <span class="interface-label">Gateway</span>
                                                             <span class="interface-value" id="captive-gateway-display">-</span>
-                                                        </div>
+                                                        </div> -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -3900,11 +3900,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="captive-portal-netmask">Netmask</label>
                         <input type="text" class="form-control" id="captive-portal-netmask" placeholder="255.255.255.0">
                     </div>
-                    
+<!--                     
                     <div class="form-group">
                         <label for="captive-portal-gateway">Gateway</label>
                         <input type="text" class="form-control" id="captive-portal-gateway" placeholder="192.168.2.1">
-                    </div>
+                    </div> -->
                     
                     <div class="form-group vlan-setting">
                         <label for="captive-portal-vlan-modal">VLAN ID (Optional)</label>
