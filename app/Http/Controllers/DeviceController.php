@@ -185,7 +185,12 @@ class DeviceController extends Controller
             $settings->web_filter_categories = $enabled_categories;
             $domain_blocked = BlockedDomain::select('domain')->whereIn('category_id', $settings->web_filter_categories)->get();
         }
-        
+        // Remove duplicate domains
+        $domain_blocked = $domain_blocked->unique('domain');
+        // Remove domains that are empty
+        $domain_blocked = $domain_blocked->filter(function($domain) {
+            return !empty($domain->domain);
+        });
         // Clean up the settings object - remove internal fields
         unset($settings->web_filter_categories);
         $settings->blocked_domains = $domain_blocked;
