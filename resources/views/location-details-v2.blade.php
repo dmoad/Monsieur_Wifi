@@ -1809,22 +1809,45 @@
         
         /* Fix for modal close icon */
         #channel-scan-modal .modal-header .close {
-            color: #fff;
-            text-shadow: none;
-            opacity: 0.8;
-            padding: 1rem;
-            margin: -1rem;
+            color: #fff !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+            padding: 0.75rem !important;
+            margin: -0.75rem -1rem -0.75rem auto !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 0.357rem !important;
+            box-shadow: none !important;
+            transform: none !important;
+            position: relative !important;
+            font-size: 1.5rem !important;
+            line-height: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
         }
         
         #channel-scan-modal .modal-header .close:hover {
-            opacity: 1;
+            opacity: 1 !important;
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        #channel-scan-modal .modal-header .close:focus {
+            outline: none !important;
+            box-shadow: none !important;
         }
         
         /* Ensure feather icon in close button is visible */
         #channel-scan-modal .modal-header .close span {
-            font-size: 1.5rem;
-            display: block;
-            line-height: 1;
+            font-size: 1.5rem !important;
+            display: block !important;
+            line-height: 1 !important;
+            color: #fff !important;
         }
         
         /* Improve modal header icon alignment */
