@@ -23,15 +23,21 @@ Route::get('/terms-of-service', function () {
     return view('terms-of-service');
 })->name('terms-of-service');
 
+// Display login form at /login (for redirects)
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
 // Handle login submission
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
 // Add logout route
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
 
 Route::get('/devices', function () {
     return view('devices');
