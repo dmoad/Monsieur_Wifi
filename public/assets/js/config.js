@@ -39,11 +39,13 @@ const UserManager = {
      */
     setUser: function(user) {
         if (!user) return;
+        console.log("config user: ", user);
         
         localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify({
             id: user.id,
             name: user.name,
             email: user.email,
+            profile_picture: user.profile_picture,
             role: user.role,
             last_active: new Date().toISOString()
         }));
@@ -58,6 +60,7 @@ const UserManager = {
      */
     getUser: function() {
         const userData = localStorage.getItem(APP_CONFIG.AUTH.USER_KEY);
+        console.log("config userData: ", userData);
         return userData ? JSON.parse(userData) : null;
     },
     

@@ -561,8 +561,11 @@
                         UserManager.setToken(response.access_token);
                         
                         if (response.user) {
+                            console.log("login user: ", response.user);
                             UserManager.setUser(response.user);
                         }
+
+                        localStorage.setItem('profile_picture', response.user.profile_picture);
                         
                         // Reset button
                         $('#login-spinner').addClass('d-none');

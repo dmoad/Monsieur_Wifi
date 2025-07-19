@@ -1897,20 +1897,18 @@
                     </a>
                 </li>
                 <!-- Notifications -->
-                <li class="nav-item dropdown dropdown-notification mr-25">
+                <!-- <li class="nav-item dropdown dropdown-notification mr-25">
                     <a class="nav-link" href="javascript:void(0);" data-toggle="dropdown">
                         <i class="ficon" data-feather="bell"></i>
                         <span class="badge badge-pill badge-primary badge-up">5</span>
                     </a>
-                    <!-- Notification dropdown content -->
                     <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
-                        <!-- Notification content here -->
                         </ul>
-                    </li>
+                </li> -->
                 
                 <!-- User dropdown -->
                 <li class="nav-item dropdown dropdown-user"><a class="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round" src="app-assets/images/portrait/small/avatar-s-11.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
+                        <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
                         <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
@@ -4265,11 +4263,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 counter.removeClass('text-warning text-danger');
             }
         }
+
+        const user = UserManager.getUser();
+        const token = UserManager.getToken();
+        console.log("user: ", user);
+        console.log("token: ", token);
+        
+        if (!token || !user) {
+            // No token or user found, redirect to login page
+            window.location.href = '/';
+            // return;
+        }
+        $('.user-name').text(user.name);
+        $('.user-status').text(user.role);
+        var profile_picture = localStorage.getItem('profile_picture');
+        // alert("profile_picture: " + profile_picture);
+        $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
         
         var button_default_color = '#007bff';
         var button_default_text_color = '#fff';
         // var button_default_text = 'Save Changes';
-        
+
         // ==============================================
         // DOCUMENT READY FUNCTIONS
         // ==============================================

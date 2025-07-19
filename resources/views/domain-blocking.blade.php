@@ -120,20 +120,20 @@
                             </li>
                 
                 <!-- Notifications -->
-                <li class="nav-item dropdown dropdown-notification mr-25">
+                <!-- <li class="nav-item dropdown dropdown-notification mr-25">
                     <a class="nav-link" href="javascript:void(0);" data-toggle="dropdown">
                         <i class="ficon" data-feather="bell"></i>
                         <span class="badge badge-pill badge-primary badge-up">5</span>
                     </a>
-                    <!-- Notification dropdown content -->
+                  
                     <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
-                        <!-- Notification content here -->
+                        
                         </ul>
-                    </li>
+                    </li> -->
                 
                 <!-- User dropdown -->
                 <li class="nav-item dropdown dropdown-user"><a class="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round" src="app-assets/images/portrait/small/avatar-s-11.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
+                        <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
                         <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
@@ -801,9 +801,13 @@
                     });
                 });
             }
+
+            var profile_picture = localStorage.getItem('profile_picture');
+            $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
             
             // Load categories and update counters
             loadCategoriesData();
+
             
             // Initialize DataTable with server-side data
             var domainsTable = $('.datatables-domains').DataTable({

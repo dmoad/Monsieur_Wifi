@@ -823,6 +823,7 @@ function initializeDashboard() {
     
     // Check authentication
     const user = UserManager.getUser();
+    console.log("dashboard user: ", user);
     const token = UserManager.getToken();
     
     if (!token || !user) {
