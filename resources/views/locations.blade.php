@@ -375,7 +375,7 @@
                                         <h2 class="font-weight-bolder mb-0" id="total-locations"></h2>
                                         <p class="card-text">Total Locations</p>
                                     </div>
-                                    <div class="avatar bg-light-primary p-50 m-0">
+                                    <div class="avatar bg-light-primary p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
                                             <i data-feather="map-pin" class="font-medium-5"></i>
                                         </div>
@@ -390,7 +390,7 @@
                                         <h2 class="font-weight-bolder mb-0" id="online-locations"></h2>
                                         <p class="card-text">Online Locations</p>
                                     </div>
-                                    <div class="avatar bg-light-success p-50 m-0">
+                                    <div class="avatar bg-light-success p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
                                             <i data-feather="check-circle" class="font-medium-5"></i>
                                         </div>
@@ -405,7 +405,7 @@
                                         <h2 class="font-weight-bolder mb-0" id="total-users"></h2>
                                         <p class="card-text">Total Users</p>
                                     </div>
-                                    <div class="avatar bg-light-info p-50 m-0">
+                                    <div class="avatar bg-light-info p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
                                             <i data-feather="users" class="font-medium-5"></i>
                                         </div>
@@ -420,7 +420,7 @@
                                         <h2 class="font-weight-bolder mb-0" id="total-data"></h2>
                                         <p class="card-text">Total Data Usage</p>
                                     </div>
-                                    <div class="avatar bg-light-warning p-50 m-0">
+                                    <div class="avatar bg-light-warning p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
                                             <i data-feather="download" class="font-medium-5"></i>
                                         </div>
@@ -438,10 +438,10 @@
                                     <h4 class="card-title">Locations List</h4>
                                     <div class="d-flex align-items-center">
                                         <div class="form-group mb-0 mr-1">
-                                            <select class="form-control" id="status-filter">
+                                            <select class="form-control" id="status-filter" disabled>
                                                 <option value="">All Status</option>
-                                                <option value="online">Online</option>
-                                                <option value="offline">Offline</option>
+                                                <option value="Online">Online</option>
+                                                <option value="Offline">Offline</option>
                                             </select>
                                         </div>
                                         <div class="form-group mb-0">
@@ -458,7 +458,7 @@
                                                 
                                                 <th>Users</th>
                                                 <th>Data Usage</th>
-                                                <th>Router</th>
+                                                <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -724,6 +724,11 @@
                     if (typeof feather !== 'undefined') {
                         feather.replace();
                     }
+                    // disable status filter
+                    $('#status-filter').prop('disabled', false);
+                    // set value of status filter to ""
+                    $('#status-filter').val("");
+                    
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching locations:', error);
@@ -877,6 +882,26 @@
                         }
                     }
                 });
+            }
+        });
+
+        $('#status-filter').on('change', function() {
+            var status = $(this).val();
+            var table = $('#locations-table').DataTable();
+            
+            if (status !== '') {
+                // Use jQuery to filter table rows based on badge text content
+                $('#locations-table tbody tr').each(function() {
+                    var rowStatus = $(this).find('td:eq(4) .badge').text().trim();
+                    if (rowStatus === status) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            } else {
+                // Show all rows when "All Status" is selected
+                $('#locations-table tbody tr').show();
             }
         });
     </script>

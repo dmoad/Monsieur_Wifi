@@ -310,16 +310,15 @@ class DeviceController extends Controller
         // If device firmware_id is null return the defaukt firmware, else return firmware_id
 
         if($device->firmware_id == null) {
-            
 
             // Try to get the default firmware for the device model first
             $firmware = Firmware::getDefaultForModel($device->model);
-            
+
             // If no default firmware found, get the latest enabled firmware for the model
             if (!$firmware) {
                 $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
             }
-            
+
             // If still no firmware found, get the latest firmware for the model (even if disabled)
             if (!$firmware) {
                 $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
@@ -336,7 +335,7 @@ class DeviceController extends Controller
         }
 
         $settings = LocationSettings::where('location_id', $location->id)->first();
-        
+
         return response()->json(['status' => 'success', 'config_version' => $device->configuration_version, 'reboot_count' => $device->reboot_count, 'firmware_version' => $firmware_version, 'scan_counter' => $device->scan_counter]);
     }
 
