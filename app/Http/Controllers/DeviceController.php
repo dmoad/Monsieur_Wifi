@@ -307,20 +307,28 @@ class DeviceController extends Controller
         
         $device->save();
 
-        // Try to get the default firmware for the device model first
-        $firmware = Firmware::getDefaultForModel($device->model);
-        
-        // If no default firmware found, get the latest enabled firmware for the model
-        if (!$firmware) {
-            $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+        // If device firmware_id is null return the defaukt firmware, else return firmware_id
+
+        if($device->firmware_id == null) {
+            
+
+            // Try to get the default firmware for the device model first
+            $firmware = Firmware::getDefaultForModel($device->model);
+            
+            // If no default firmware found, get the latest enabled firmware for the model
+            if (!$firmware) {
+                $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+            }
+            
+            // If still no firmware found, get the latest firmware for the model (even if disabled)
+            if (!$firmware) {
+                $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
+            }
+            
+            $firmware_version = $firmware ? $firmware->id : 0;
+        } else {
+            $firmware_version = $device->firmware_id;
         }
-        
-        // If still no firmware found, get the latest firmware for the model (even if disabled)
-        if (!$firmware) {
-            $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
-        }
-        
-        $firmware_version = $firmware ? $firmware->id : 0;
 
         $location = Location::where('device_id', $device->id)->first();
         if (!$location) {
@@ -504,6 +512,7 @@ class DeviceController extends Controller
      */
     public function getScanStatus($locationId, $scanId)
     {
+        Log::info('getScanStatus called with locationId: ' . $locationId . ', scanId: ' . $scanId); 
         try {
             $location = Location::findOrFail($locationId);
             $device = $location->device;
@@ -594,6 +603,9 @@ class DeviceController extends Controller
      */
     public function update2GScanResults(Request $request, $device_key, $device_secret, $scan_id)
     {
+        Log::info('update2GScanResults called with device_key: ' . $device_key . ', device_secret: ' . $device_secret . ', scan_id: ' . $scan_id);
+        Log::info('update2GScanResults called with request: ' );
+        Log::info($request->all());
         try {
             $device = Device::where('device_key', $device_key)
                 ->where('device_secret', $device_secret)

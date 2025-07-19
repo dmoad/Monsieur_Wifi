@@ -69,7 +69,7 @@ class GuestNetworkUserController extends Controller
             'captive_auth_method',
             'session_timeout',
             'idle_timeout',
-            'redirect_url',
+            'captive_portal_redirect',
             'terms_enabled',
             'terms_content',
             'theme_color',
@@ -77,7 +77,6 @@ class GuestNetworkUserController extends Controller
             'welcome_message',
             'captive_portal_design',
             'captive_social_auth_method',
-            'redirect_url'
         ]);
 
         // Fetch the complete captive portal design if a design ID is set

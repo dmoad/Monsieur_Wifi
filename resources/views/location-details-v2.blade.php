@@ -20,7 +20,6 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
     <!-- END: Vendor CSS-->
-
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
@@ -3353,7 +3352,7 @@
                                 </div>
                                 
                                 <!-- Current Scan Info -->
-                                <div class="card bg-light-warning mb-2">
+                                <!-- <div class="card bg-light-warning mb-2">
                                     <div class="card-body p-2">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
@@ -3366,7 +3365,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+                                 -->
                                 <div class="progress progress-bar-primary mb-2">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
                                 </div>
@@ -6160,13 +6159,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     $('#captive-download-limit').val(''); // Default to empty for no limit
                 }
+            
                 if (settings.upload_limit !== undefined && settings.upload_limit !== null) {
                     $('#captive-upload-limit').val(settings.upload_limit);
                 } else {
                     $('#captive-upload-limit').val('0'); // Default to "0" option for no limit
                 }
-                if (settings.redirect_url || settings.captive_portal_redirect) {
-                    $('#captive-portal-redirect').val(settings.redirect_url || settings.captive_portal_redirect);
+                if (settings.captive_portal_redirect) {
+                    $('#captive-portal-redirect').val(settings.captive_portal_redirect);
                 }
                 
                 // **Captive Portal Network Settings**
@@ -6478,7 +6478,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (optimal5g) {
                     $('#channel-5g').val(optimal5g);
                 }
-                
+    
                 // Save channels with scan data
                 saveChannelSettings(optimal2g, optimal5g, true, 'channel_optimization');
             }
@@ -6522,7 +6522,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     clearInterval(window.scanPollingInterval);
                     window.scanPollingInterval = null;
                 }
-                
+
                 // Reset to pre-scan view for next time
                 showPreScanView();
             });
@@ -6530,25 +6530,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // Channel scan functions
             function startChannelScan() {
                 console.log('Starting real channel scan process');
-                
+
                 const locationId = getLocationId();
                 if (!locationId) {
                     toastr.error('Location ID not found');
                     return;
                 }
-                
+
                 // Hide pre-scan view and show progress view
                 $('#pre-scan-view').hide();
                 $('#scan-in-progress-view').show();
                 $('#scan-results-view').hide();
-                
+
                 // Reset progress
                 $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
                 $('.timeline-point-indicator').removeClass('timeline-point-primary timeline-point-success');
-                
+
                 // Initialize the first step
                 $('#step-initiated-indicator').addClass('timeline-point-primary');
-                
+
                 // Initiate scan via API
                 $.ajax({
                     url: `/api/locations/${locationId}/scan/initiate`,
@@ -6560,22 +6560,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     success: function(response) {
                         console.log('Scan initiated successfully:', response);
-                        
+
                         if (response.data && response.data.scan_id) {
                             // Store scan ID for polling
                             window.currentScanId = response.data.scan_id;
-                            
+
                             // Display scan ID prominently
                             $('#current-scan-id').text(response.data.scan_id);
-                            
+
                             // Update the next scan ID counter in pre-scan view for future reference
                             $('#modal-scan-counter').text(response.data.scan_counter || response.data.scan_id);
                             $('#modal-next-scan-id').text((response.data.scan_counter || response.data.scan_id) + 1);
-                            
+
                             // Start polling for scan status
                             pollScanStatus(locationId, response.data.scan_id);
-                            
-                            toastr.success(`Channel scan initiated! Scan ID: ${response.data.scan_id}`, 'Scan Started', {
+
+                            toastr.success(`Channel scan initiated!`, 'Scan Started', {
                                 timeOut: 5000,
                                 closeButton: true
                             });
@@ -6595,12 +6595,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function pollScanStatus(locationId, scanId) {
                 console.log('Polling scan status for scan ID:', scanId);
-                
+
                 // Clear any existing polling interval
                 if (window.scanPollingInterval) {
                     clearInterval(window.scanPollingInterval);
                 }
-                
+
                 window.scanPollingInterval = setInterval(function() {
                     $.ajax({
                         url: `/api/locations/${locationId}/scan/${scanId}/status`,
@@ -6612,17 +6612,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         success: function(response) {
                             console.log('Scan status:', response);
-                            
+
                             if (response.data) {
                                 const data = response.data;
-                                
+
                                 // Update progress bar
                                 const progress = data.progress || 0;
                                 $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
-                                
+
                                 // Update timeline indicators based on status
                                 updateTimelineIndicators(data.status);
-                                
+
                                 // Check if scan is completed
                                 if (data.is_completed) {
                                     clearInterval(window.scanPollingInterval);
@@ -6649,7 +6649,7 @@ document.addEventListener('DOMContentLoaded', function() {
             function updateTimelineIndicators(status) {
                 // Reset all indicators
                 $('.timeline-point-indicator').removeClass('timeline-point-primary timeline-point-success');
-                
+
                 switch (status) {
                     case 'initiated':
                         $('#step-initiated-indicator').addClass('timeline-point-primary');

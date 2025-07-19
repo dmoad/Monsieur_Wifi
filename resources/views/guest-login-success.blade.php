@@ -243,8 +243,8 @@
             applyDesignSettings(locationData.settings || {}, designData);
 
             // Get referrer URL from localStorage if available
-            const referrerUrl = localStorage.getItem('redirect_url') || 'https://citypassenger.com';
-
+            const referrerUrl = localStorage.getItem('captive_portal_redirect') || 'https://citypassenger.com';
+            // alert(localStorage.getItem('captive_portal_redirect'));
             // Update the continue button href
             $('#continue-button').attr('href', referrerUrl);
 
