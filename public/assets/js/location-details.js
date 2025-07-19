@@ -281,8 +281,12 @@ function populateLocationDetails(location, captive_portal_designs) {
         // Update status badge
         if (device.is_online) {
             $('.status-badge').removeClass('status-offline status-warning').addClass('status-online').text('Online');
+            $('#start-scan-btn').removeClass('hidden');
+            $('#scan-info-text').addClass('hidden');
         } else {
             $('.status-badge').removeClass('status-online status-warning').addClass('status-offline').text('Offline');
+            $('#start-scan-btn').addClass('hidden');
+            $('#scan-info-text').removeClass('hidden');
         }
         console.log("device:::::", device);
         // Update router details
@@ -710,6 +714,10 @@ $(document).ready(function() {
     // Save captive portal settings
     $(".save-captive-portal").on('click', function(e) {
         e.preventDefault();
+        
+        // Store button reference but don't change appearance
+        const $button = $(this);
+        
         // get the values from the form
         const captive_portal_ssid = $("#captive-portal-ssid").val();
         const captive_portal_visible = $("#captive-portal-visible").val();
@@ -861,7 +869,13 @@ $(document).ready(function() {
     });
 
     $("#toggle-password").on('click', function() {
-        $("#password-wifi-password").attr('type', 'text');
+        if ($("#password-wifi-password").attr('type') === 'password') {
+            $("#password-wifi-password").attr('type', 'text');
+            $("#toggle-password").find('i').removeClass('feather-eye').addClass('feather-eye-off');
+        } else {
+            $("#password-wifi-password").attr('type', 'password');
+            $("#toggle-password").find('i').removeClass('feather-eye-off').addClass('feather-eye');
+        }
     });
 
     // Save VLAN global settings and toggle VLAN field enabled state

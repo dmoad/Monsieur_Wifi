@@ -55,6 +55,12 @@
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
         }
+
+        .custom-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+        }
         
         .status-online {
             background: linear-gradient(45deg, #28c76f, #48da89);
@@ -948,12 +954,12 @@
             border: none;
         }
         
-        .btn-primary {
+        .custom-btn {
             background: linear-gradient(135deg, #7367f0 0%, #9c88ff 100%);
             box-shadow: 0 4px 15px rgba(115, 103, 240, 0.3);
         }
         
-        .btn-primary:hover {
+        .custom-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(115, 103, 240, 0.4);
         }
@@ -2049,7 +2055,7 @@
                 </div>
                 <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
                     <div class="form-group breadcrumb-right">
-                        <a href="#network-configuration-tabs" class="btn btn-primary btn-analytics">
+                        <a href="#network-configuration-tabs" class="btn custom-btn btn-analytics">
                             <i data-feather="settings" class="mr-1"></i>
                             Settings
                         </a>
@@ -2111,7 +2117,7 @@
                         </div>
                         
                         <div class="d-flex gap-2 mt-3">
-                            <button class="btn btn-primary btn-sm flex-fill" id="device-restart-btn">
+                            <button class="btn custom-btn btn-sm flex-fill" id="device-restart-btn">
                                 <i data-feather="refresh-cw" class="mr-1"></i>
                                 Restart
                             </button>
@@ -2437,7 +2443,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-actions">
-                                                    <button type="button" id="save-location-info" class="btn btn-primary">
+                                                    <button type="button" id="save-location-info" class="btn custom-btn">
                                                         <i data-feather="save" class="mr-1"></i>
                                                         Save Location Information
                                                     </button>
@@ -2757,7 +2763,7 @@
                                         </div>
                                         
                                         <div class="text-center mt-3">
-                                            <button class="btn btn-primary" id="save-radio-settings">
+                                            <button class="btn custom-btn" id="save-radio-settings">
                                                 <i data-feather="save" class="mr-2"></i>Save All Radio Settings
                                             </button>
                                         </div>
@@ -2767,7 +2773,7 @@
                                     <div class="content-section">
                                         <div class="section-header d-flex justify-content-between align-items-center">
                                             <h5 class="section-title">Web Content Filtering</h5>
-                                            <button class="btn btn-primary" id="save-web-filter-settings">
+                                            <button class="btn custom-btn" id="save-web-filter-settings">
                                                 <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
                                             </button>
                                         </div>
@@ -2802,10 +2808,16 @@
                                             <div class="card">
                                                 <div class="card-header d-flex justify-content-between align-items-center">
                                                     <h4 class="card-title mb-0">Captive Portal WiFi</h4>
-                                                    <button class="btn btn-primary save-captive-portal">
+                                                    <button class="btn custom-btn save-captive-portal" id="save-captive-portal-1">
                                                         <i data-feather="save" class="mr-1"></i> Save Settings
                                                     </button>
+
+                                                    <!-- <button class="btn custom-btn" id="save-web-filter-settings">
+                                                        <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
+                                                    </button> -->
                                                 </div>
+
+                                                
                                     
                                                 <div class="card-body">
                                                     <!-- Basic Settings Section -->
@@ -3101,7 +3113,7 @@
                                                                 </select>
                                                             </div>
                                                             <div class="col-2">
-                                                                <button class="btn btn-sm btn-primary w-100" id="captive-add-mac">Add</button>
+                                                                <button class="btn btn-sm custom-btn w-100" id="captive-add-mac">Add</button>
                                                             </div>
                                                         </div>
                                                         
@@ -3136,7 +3148,7 @@
                                             <div class="card">
                                         <div class="card-header d-flex justify-content-between align-items-center">
                                             <h4 class="card-title mb-0">Password WiFi</h4>
-                                            <button class="btn btn-primary save-password-network" id="save-secured-wifi">
+                                            <button class="btn custom-btn save-password-network" id="save-secured-wifi">
                                                 <i data-feather="save" class="mr-1"></i> Save Settings
                                             </button>
                                             </div>
@@ -3214,7 +3226,7 @@
                                                                 </select>
                                                             </div>
                                                             <div class="col-2">
-                                                                <button class="btn btn-sm btn-primary w-100" id="secured-add-mac">Add</button>
+                                                                <button class="btn btn-sm custom-btn w-100" id="secured-add-mac">Add</button>
                                                             </div>
                                                         </div>
                                                         
@@ -3336,10 +3348,16 @@
                                 </div>
                                 
                                 <div class="d-flex justify-content-center mt-2">
-                                    <button class="btn btn-primary" id="start-scan-btn">
+                                    <button class="btn custom-btn hidden" id="start-scan-btn">
                                         <i data-feather="refresh-cw" class="mr-1"></i> Start New Channel Scan
                                     </button>
                                 </div>
+                                <p class="text-muted text-center" id="scan-info-text">
+                                    <small>
+                                        <i data-feather="info" class="mr-1"></i>
+                                        <span>The AP needs to be online to start a channel scan.</span>
+                                    </small>
+                                </p>
                             </div>
                             
                             <!-- Scan in progress view -->
@@ -3478,7 +3496,7 @@
                                 
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-between">
-                                        <button class="btn btn-primary" id="apply-scan-results">
+                                        <button class="btn custom-btn" id="apply-scan-results">
                                             <i data-feather="check" class="mr-1"></i> Apply These Settings
                                         </button>
                                         <button class="btn btn-outline-primary" id="back-to-scan-btn">
@@ -3594,7 +3612,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn custom-btn">Save Changes</button>
                     </div>
                 </div>
             </div>
@@ -3657,7 +3675,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-captive-portal">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-captive-portal">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -3748,7 +3766,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-password-network">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-password-network">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -3814,7 +3832,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-wan-settings">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-wan-settings">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -3864,7 +3882,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-lan-settings">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-lan-settings">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -3923,7 +3941,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-captive-portal" id="save-captive-portal-settings">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-captive-portal" id="save-captive-portal-settings">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -4052,7 +4070,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="start-firmware-update-btn" disabled>
+                    <button type="button" class="btn custom-btn" id="start-firmware-update-btn" disabled>
                         <i data-feather="download" class="mr-1"></i>
                         <span>Update Firmware</span>
                     </button>
@@ -4156,7 +4174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="save-mac-address-btn">
+                    <button type="button" class="btn custom-btn" id="save-mac-address-btn">
                         <i data-feather="save" class="mr-1"></i>
                         <span>Save Changes</span>
                     </button>
@@ -4247,6 +4265,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 counter.removeClass('text-warning text-danger');
             }
         }
+        
+        var button_default_color = '#007bff';
+        var button_default_text_color = '#fff';
+        // var button_default_text = 'Save Changes';
         
         // ==============================================
         // DOCUMENT READY FUNCTIONS
@@ -7449,20 +7471,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 1000);
             });
             
-            // Password visibility toggle handlers
-            $('#toggle-password').on('click', function() {
-                const passwordField = $('#password-wifi-password');
-                const icon = $(this).find('i');
+            // // Password visibility toggle handlers
+            // $('#toggle-password').on('click', function() {
+            //     const passwordField = $('#password-wifi-password');
+            //     const icon = $(this).find('i');
                 
-                if (passwordField.attr('type') === 'password') {
-                    passwordField.attr('type', 'text');
-                    icon.attr('data-feather', 'eye-off');
-                } else {
-                    passwordField.attr('type', 'password');
-                    icon.attr('data-feather', 'eye');
-                }
-                feather.replace();
-            });
+            //     if (passwordField.attr('type') === 'password') {
+            //         passwordField.attr('type', 'text');
+            //         icon.attr('data-feather', 'eye-off');
+            //     } else {
+            //         passwordField.attr('type', 'password');
+            //         icon.attr('data-feather', 'eye');
+            //     }
+            //     feather.replace();
+            // });
             
             $('#toggle-captive-password').on('click', function() {
                 const passwordField = $('#captive_portal_password');
@@ -8059,292 +8081,223 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // **Fix for Password WiFi Save Handler**
             // Override the external JS handler to exclude problematic fields
-            $('.save-password-network').off('click').on('click', function(e) {
-                e.preventDefault();
-                console.log('Password WiFi save clicked - using fixed handler');
+            // $('.save-password-network').off('click').on('click', function(e) {
+            //     e.preventDefault();
+            //     console.log('Password WiFi save clicked - using fixed handler');
                 
-                const locationId = getLocationId();
-                if (!locationId) {
-                    toastr.error('Location ID not found');
-                    return;
-                }
+            //     const locationId = getLocationId();
+            //     if (!locationId) {
+            //         toastr.error('Location ID not found');
+            //         return;
+            //     }
                 
-                // Determine if we're in a modal context
-                const isModal = $(e.target).closest('.modal').length > 0;
-                const modalId = isModal ? $(e.target).closest('.modal').attr('id') : null;
+            //     // Determine if we're in a modal context
+            //     const isModal = $(e.target).closest('.modal').length > 0;
+            //     const modalId = isModal ? $(e.target).closest('.modal').attr('id') : null;
                 
-                console.log('Password WiFi save context:', isModal ? 'Modal: ' + modalId : 'Main form');
+            //     console.log('Password WiFi save context:', isModal ? 'Modal: ' + modalId : 'Main form');
                 
-                // Collect form data - EXCLUDING the problematic password_wifi_gateway field
-                const passwordWifiData = {
-                    password_wifi_ssid: $('#password-wifi-ssid').val(),
-                    password_wifi_password: $('#password-wifi-password').val(),
-                    password_wifi_security: $('#password-wifi-security').val(),
-                    password_wifi_cipher_suites: $('#password_wifi_cipher_suites').val(),
-                    password_wifi_ip_mode: $('#password-ip-assignment').val(),
-                    password_wifi_ip: $('#password-ip').val(),
-                    password_wifi_netmask: $('#password-netmask').val(),
-                    password_wifi_dns1: $('#password-primary-dns').val(),
-                    password_wifi_dns2: $('#password-secondary-dns').val(),
-                    password_wifi_vlan: $('#password-wifi-vlan').val(),
-                    // Use the correct VLAN tagging field based on context
-                    password_wifi_vlan_tagging: isModal && modalId === 'password-network-modal' 
-                        ? $('#password-wifi-vlan-tagging-modal').val() 
-                        : $('#password-wifi-vlan-tagging').val(),
-                    password_wifi_dhcp_enabled: $('#password-dhcp-server-toggle').is(':checked'),
-                    password_wifi_dhcp_start: $('#password-dhcp-start').val(),
-                    password_wifi_dhcp_end: $('#password-dhcp-end').val()
-                    // NOTE: Intentionally NOT including password_wifi_gateway since it doesn't exist in DB
-                };
+            //     // Collect form data - EXCLUDING the problematic password_wifi_gateway field
+            //     const passwordWifiData = {
+            //         password_wifi_ssid: $('#password-wifi-ssid').val(),
+            //         password_wifi_password: $('#password-wifi-password').val(),
+            //         password_wifi_security: $('#password-wifi-security').val(),
+            //         password_wifi_cipher_suites: $('#password_wifi_cipher_suites').val(),
+            //         password_wifi_ip_mode: $('#password-ip-assignment').val(),
+            //         password_wifi_ip: $('#password-ip').val(),
+            //         password_wifi_netmask: $('#password-netmask').val(),
+            //         password_wifi_dns1: $('#password-primary-dns').val(),
+            //         password_wifi_dns2: $('#password-secondary-dns').val(),
+            //         password_wifi_vlan: $('#password-wifi-vlan').val(),
+            //         // Use the correct VLAN tagging field based on context
+            //         password_wifi_vlan_tagging: isModal && modalId === 'password-network-modal' 
+            //             ? $('#password-wifi-vlan-tagging-modal').val() 
+            //             : $('#password-wifi-vlan-tagging').val(),
+            //         password_wifi_dhcp_enabled: $('#password-dhcp-server-toggle').is(':checked'),
+            //         password_wifi_dhcp_start: $('#password-dhcp-start').val(),
+            //         password_wifi_dhcp_end: $('#password-dhcp-end').val()
+            //         // NOTE: Intentionally NOT including password_wifi_gateway since it doesn't exist in DB
+            //     };
                 
-                console.log('Saving password WiFi data (without gateway):', passwordWifiData);
+            //     console.log('Saving password WiFi data (without gateway):', passwordWifiData);
                 
-                // Show loading state
-                const $button = $(this);
-                const originalText = $button.html();
-                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+            //     // Show loading state
+            //     const $button = $(this);
+            //     const originalText = $button.html();
+            //     $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
                 
-                // Save to API
-                $.ajax({
-                    url: `/api/locations/${locationId}`,
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer ' + UserManager.getToken(),
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    data: JSON.stringify({
-                        settings_type: 'password_network',
-                        settings: passwordWifiData
-                    }),
-                    success: function(response) {
-                        console.log('Password WiFi settings saved successfully:', response);
+            //     // Save to API
+            //     $.ajax({
+            //         url: `/api/locations/${locationId}`,
+            //         method: 'PUT',
+            //         headers: {
+            //             'Authorization': 'Bearer ' + UserManager.getToken(),
+            //             'Content-Type': 'application/json',
+            //             'Accept': 'application/json'
+            //         },
+            //         data: JSON.stringify({
+            //             settings_type: 'password_network',
+            //             settings: passwordWifiData
+            //         }),
+            //         success: function(response) {
+            //             console.log('Password WiFi settings saved successfully:', response);
                         
-                        // Reset button state
-                        $button.html(originalText).prop('disabled', false);
+            //             // Reset button state
+            //             $button.html(originalText).prop('disabled', false);
                         
-                        // Close modal if this was from a modal
-                        if ($(e.target).closest('.modal').length > 0) {
-                            $(e.target).closest('.modal').modal('hide');
-                        }
+            //             // Close modal if this was from a modal
+            //             if ($(e.target).closest('.modal').length > 0) {
+            //                 $(e.target).closest('.modal').modal('hide');
+            //             }
                         
-                        // Show success message
-                        toastr.success('Password WiFi settings saved successfully!');
+            //             // Show success message
+            //             toastr.success('Password WiFi settings saved successfully!');
                         
-                        // Reload device data to verify the update
-                        setTimeout(function() {
-                            loadDeviceSettings();
-                        }, 1000);
-                    },
-                    error: function(xhr, status, error) {
-                        // Reset button state
-                        $button.html(originalText).prop('disabled', false);
+            //             // Reload device data to verify the update
+            //             setTimeout(function() {
+            //                 loadDeviceSettings();
+            //             }, 1000);
+            //         },
+            //         error: function(xhr, status, error) {
+            //             // Reset button state
+            //             $button.html(originalText).prop('disabled', false);
                         
-                        // Handle API error
-                        handleApiError(xhr, status, error, 'saving password WiFi settings');
-                    }
-                                });
-            });
+            //             // Handle API error
+            //             handleApiError(xhr, status, error, 'saving password WiFi settings');
+            //         }
+            //                     });
+            // });
             
             // **Fix for Captive Portal Save Handler**
-            // Override any external handlers to ensure we only send valid fields
-            $('.save-captive-portal').off('click').on('click', function(e) {
-                e.preventDefault();
-                console.log('Captive Portal save clicked - using fixed handler');
-                console.log('Save clicked at:', new Date().toLocaleTimeString());
-                console.log('Save button element:', this);
-                console.log('Save button parent modal:', $(this).closest('.modal').attr('id'));
+            // Override any external handlers to ensure we only send valid fields and preserve button styling
+            // $('.save-captive-portal').off('click').on('click.fixed', function(e) {
+            // $('.save-captive-portal').on('click', function(e) {
+            //     e.preventDefault();
+            //     // alert('Captive portal save clicked - using fixed handler');
+            //     // Get button reference but don't change appearance
+            //     const $button = $(this);
                 
-                // Check modal visibility and state (CORRECT modal ID)
-                console.log('=== MODAL STATE CHECK ===');
-                const modal = $('#captive-portal-modal');
-                console.log('Modal exists:', modal.length);
-                console.log('Modal is visible:', modal.is(':visible'));
-                console.log('Modal has class "show":', modal.hasClass('show'));
+            //     const modal = $('#captive-portal-modal');
+            //     const modalContext = $(this).closest('.modal');
+
+            //     // Use the CORRECT field IDs from the captive-portal-modal that actually opens
+            //     const formData = {
+            //         ip: $('#captive-portal-ip').val(),
+            //         netmask: $('#captive-portal-netmask').val(),
+            //         gateway: $('#captive-portal-gateway').val(),
+            //         vlan: $('#captive-portal-vlan-modal').val(),
+            //         vlan_tagging: $('#captive-portal-vlan-tagging-modal').val()
+            //     };
                 
-                // Check if we can see the fields from the save button context (CORRECT field IDs)
-                console.log('=== FIELD VISIBILITY FROM SAVE CONTEXT ===');
-                const modalContext = $(this).closest('.modal');
-                console.log('Fields found in modal context:', {
-                    ip: modalContext.find('#captive-portal-ip').length,
-                    netmask: modalContext.find('#captive-portal-netmask').length,
-                    gateway: modalContext.find('#captive-portal-gateway').length,
-                    vlan: modalContext.find('#captive-portal-vlan-modal').length,
-                    vlan_tagging: modalContext.find('#captive-portal-vlan-tagging-modal').length
-                });
                 
-                // FIRST: Collect form data immediately before any other operations
-                console.log('=== COLLECTING FORM DATA IMMEDIATELY ===');
-                // Use the CORRECT field IDs from the captive-portal-modal that actually opens
-                const formData = {
-                    ip: $('#captive-portal-ip').val(),
-                    netmask: $('#captive-portal-netmask').val(),
-                    gateway: $('#captive-portal-gateway').val(),
-                    vlan: $('#captive-portal-vlan-modal').val(),
-                    vlan_tagging: $('#captive-portal-vlan-tagging-modal').val()
-                };
+            //     const alternativeData = {
+            //         ip_by_modal_context: modalContext.find('#captive-portal-ip').val(),
+            //         ip_by_document: $(document).find('#captive-portal-ip').val(),
+            //         ip_by_attribute: $('input[id="captive-portal-ip"]').val(),
+            //         // Also check the wrong IDs we were using before
+            //         wrong_ip_field: $('#captive-portal-ip-modal').val()
+            //     };
+            //     console.log('Alternative field selection results:', alternativeData);
                 
-                console.log('Form data collected immediately:', formData);
+            //     const locationId = getLocationId();
+            //     if (!locationId) {
+            //         toastr.error('Location ID not found');
+            //         return;
+            //     }
                 
-                // Try alternative field selection methods using CORRECT field IDs
-                console.log('=== ALTERNATIVE FIELD SELECTION ===');
-                const alternativeData = {
-                    ip_by_modal_context: modalContext.find('#captive-portal-ip').val(),
-                    ip_by_document: $(document).find('#captive-portal-ip').val(),
-                    ip_by_attribute: $('input[id="captive-portal-ip"]').val(),
-                    // Also check the wrong IDs we were using before
-                    wrong_ip_field: $('#captive-portal-ip-modal').val()
-                };
-                console.log('Alternative field selection results:', alternativeData);
-                
-                const locationId = getLocationId();
-                if (!locationId) {
-                    toastr.error('Location ID not found');
-                    return;
-                }
-                
-                // Determine if we're in a modal context
-                const isModal = $(e.target).closest('.modal').length > 0;
-                const modalId = isModal ? $(e.target).closest('.modal').attr('id') : null;
-                
-                console.log('Captive portal save context:', isModal ? 'Modal: ' + modalId : 'Main form');
-                
-                // Additional debugging
-                console.log('=== FORM FIELD DEBUGGING ===');
-                console.log('IP field element:', $('#captive-portal-ip-modal'));
-                console.log('IP field exists:', $('#captive-portal-ip-modal').length > 0);
-                console.log('IP field value:', $('#captive-portal-ip-modal').val());
-                console.log('IP field HTML value attribute:', $('#captive-portal-ip-modal').attr('value'));
-                console.log('Netmask field value:', $('#captive-portal-netmask-modal').val());
-                console.log('Gateway field value:', $('#captive-portal-gateway-modal').val());
-                console.log('DNS1 field value:', $('#captive-portal-dns1-modal').val());
-                console.log('DNS2 field value:', $('#captive-portal-dns2-modal').val());
-                
-                // Check if fields are being cleared by testing their actual DOM state
-                console.log('All modal form fields DOM state:', {
-                    ip_element: $('#captive-portal-ip-modal')[0],
-                    netmask_element: $('#captive-portal-netmask-modal')[0],
-                    gateway_element: $('#captive-portal-gateway-modal')[0],
-                    dns1_element: $('#captive-portal-dns1-modal')[0],
-                    dns2_element: $('#captive-portal-dns2-modal')[0]
-                });
-                
-                // **COLLECT ALL CAPTIVE PORTAL DATA FROM MAIN TAB AND MODAL**
-                console.log('=== COLLECTING CAPTIVE PORTAL DATA ===');
-                console.log('Download limit field value:', $('#captive-download-limit').val());
-                console.log('Upload limit field value:', $('#captive-upload-limit').val());
-                console.log('SSID field value:', $('#captive-portal-ssid').val());
-                console.log('Visible field value:', $('#captive-portal-visible').val());
-                console.log('Auth method field value:', $('#captive-auth-method').val());
-                console.log('Session timeout field value:', $('#captive-session-timeout').val());
-                console.log('Idle timeout field value:', $('#captive-idle-timeout').val());
-                
-                const captivePortalData = {
-                    // Network settings (from modal or form)
-                    captive_portal_ip: formData.ip,
-                    captive_portal_netmask: formData.netmask,
-                    captive_portal_gateway: formData.gateway,
-                    captive_portal_dns1: '8.8.8.8', // Default DNS since not in this modal
-                    captive_portal_dns2: '1.1.1.1', // Default DNS since not in this modal
-                    captive_portal_vlan: formData.vlan,
-                    captive_portal_vlan_tagging: formData.vlan_tagging,
+            //     // Determine if we're in a modal context
+            //     const isModal = $(e.target).closest('.modal').length > 0;
+            //     const modalId = isModal ? $(e.target).closest('.modal').attr('id') : null;
+
+            //     // Check if fields are being cleared by testing their actual DOM state
+            //     console.log('All modal form fields DOM state:', {
+            //         ip_element: $('#captive-portal-ip-modal')[0],
+            //         netmask_element: $('#captive-portal-netmask-modal')[0],
+            //         gateway_element: $('#captive-portal-gateway-modal')[0],
+            //         dns1_element: $('#captive-portal-dns1-modal')[0],
+            //         dns2_element: $('#captive-portal-dns2-modal')[0]
+            //     });
+
+            //     const captivePortalData = {
+            //         // Network settings (from modal or form)
+            //         captive_portal_ip: formData.ip,
+            //         captive_portal_netmask: formData.netmask,
+            //         captive_portal_gateway: formData.gateway,
+            //         captive_portal_dns1: '8.8.8.8', // Default DNS since not in this modal
+            //         captive_portal_dns2: '1.1.1.1', // Default DNS since not in this modal
+            //         captive_portal_vlan: formData.vlan,
+            //         captive_portal_vlan_tagging: formData.vlan_tagging,
                     
-                    // **BANDWIDTH LIMITS FROM MAIN TAB**
-                    download_limit: $('#captive-download-limit').val(),
-                    upload_limit: $('#captive-upload-limit').val(),
-                    captive_download_limit: $('#captive-download-limit').val(),
-                    captive_upload_limit: $('#captive-upload-limit').val(),
+            //         // **BANDWIDTH LIMITS FROM MAIN TAB**
+            //         download_limit: $('#captive-download-limit').val(),
+            //         upload_limit: $('#captive-upload-limit').val(),
+            //         captive_download_limit: $('#captive-download-limit').val(),
+            //         captive_upload_limit: $('#captive-upload-limit').val(),
                     
-                    // **OTHER CAPTIVE PORTAL SETTINGS FROM MAIN TAB**
-                    captive_portal_ssid: $('#captive-portal-ssid').val(),
-                    captive_portal_visible: $('#captive-portal-visible').val(),
-                    captive_auth_method: $('#captive-auth-method').val(),
-                    captive_portal_password: $('#captive_portal_password').val(),
-                    session_timeout: $('#captive-session-timeout').val(),
-                    idle_timeout: $('#captive-idle-timeout').val(),
-                    captive_portal_redirect: $('#captive-portal-redirect').val()
-                };
+            //         // **OTHER CAPTIVE PORTAL SETTINGS FROM MAIN TAB**
+            //         captive_portal_ssid: $('#captive-portal-ssid').val(),
+            //         captive_portal_visible: $('#captive-portal-visible').val(),
+            //         captive_auth_method: $('#captive-auth-method').val(),
+            //         captive_portal_password: $('#captive_portal_password').val(),
+            //         session_timeout: $('#captive-session-timeout').val(),
+            //         idle_timeout: $('#captive-idle-timeout').val(),
+            //         captive_portal_redirect: $('#captive-portal-redirect').val()
+            //     };
+
+            //     // $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
                 
-                console.log('=== COMPLETE CAPTIVE PORTAL DATA ===');
-                console.log('Full data object:', captivePortalData);
-                
-                console.log('=== CAPTIVE PORTAL NETWORK SAVE DEBUG ===');
-                console.log('Modal ID:', modalId);
-                console.log('Location ID:', locationId);
-                console.log('Form data being sent:', captivePortalData);
-                console.log('API endpoint:', `/api/locations/${locationId}`);
-                console.log('Settings type:', 'captive_portal');
-                console.log('Full request data:', {
-                    settings_type: 'captive_portal',
-                    settings: captivePortalData
-                });
-                
-                // Show loading state
-                const $button = $(this);
-                const originalText = $button.html();
-                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
-                
-                // Save to API using the correct endpoint and format
-                $.ajax({
-                    url: `/api/locations/${locationId}`,
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer ' + UserManager.getToken(),
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    data: JSON.stringify({
-                        settings_type: 'captive_portal',
-                        settings: captivePortalData
-                    }),
-                    success: function(response) {
-                        console.log('=== CAPTIVE PORTAL SAVE SUCCESS ===');
-                        console.log('Response:', response);
-                        console.log('Response type:', typeof response);
-                        console.log('Response success:', response.success);
-                        console.log('Response message:', response.message);
+            //     // Save to API using the correct endpoint and format
+            //     $.ajax({
+            //         url: `/api/locations/${locationId}`,
+            //         method: 'PUT',
+            //         headers: {
+            //             'Authorization': 'Bearer ' + UserManager.getToken(),
+            //             'Content-Type': 'application/json',
+            //             'Accept': 'application/json'
+            //         },
+            //         data: JSON.stringify({
+            //             settings_type: 'captive_portal',
+            //             settings: captivePortalData
+            //         }),
+            //         success: function(response) {
+            //             console.log('=== CAPTIVE PORTAL SAVE SUCCESS ===');
+            //             console.log('Response:', response);
+            //             console.log('Response type:', typeof response);
+            //             console.log('Response success:', response.success);
+            //             console.log('Response message:', response.message);
+            //             alert('Captive portal settings saved successfully!');
+
+            //             // Button appearance remains unchanged
                         
-                        // Reset button state
-                        $button.html(originalText).prop('disabled', false);
+            //             // Close modal if this was from a modal
+            //             if ($(e.target).closest('.modal').length > 0) {
+            //                 $(e.target).closest('.modal').modal('hide');
+            //             }
+
+            //             // Show success message
+            //             toastr.success('Captive portal settings saved successfully!');
                         
-                        // Close modal if this was from a modal
-                        if ($(e.target).closest('.modal').length > 0) {
-                            $(e.target).closest('.modal').modal('hide');
-                        }
-                        
-                        // Show success message
-                        toastr.success('Captive portal settings saved successfully!');
-                        
-                        // Reload device data to verify the update
-                        setTimeout(function() {
-                            console.log('Reloading device settings after captive portal save...');
-                            console.log('Previous captive portal settings before reload:', window.deviceSettings?.settings ? {
-                                captive_portal_ip: window.deviceSettings.settings.captive_portal_ip,
-                                captive_portal_netmask: window.deviceSettings.settings.captive_portal_netmask,
-                                captive_portal_gateway: window.deviceSettings.settings.captive_portal_gateway,
-                                captive_portal_dns1: window.deviceSettings.settings.captive_portal_dns1,
-                                captive_portal_dns2: window.deviceSettings.settings.captive_portal_dns2
-                            } : 'No settings available');
-                            loadDeviceSettings();
-                        }, 1000);
-                    },
-                    error: function(xhr, status, error) {
-                        console.log('=== CAPTIVE PORTAL SAVE ERROR ===');
-                        console.log('XHR:', xhr);
-                        console.log('Status:', status);
-                        console.log('Error:', error);
-                        console.log('Response Text:', xhr.responseText);
-                        console.log('Response JSON:', xhr.responseJSON);
-                        console.log('HTTP Status:', xhr.status);
-                        
-                        // Reset button state
-                        $button.html(originalText).prop('disabled', false);
-                        
-                        // Handle API error
-                        handleApiError(xhr, status, error, 'saving captive portal settings');
-                    }
-                });
-            });
+            //             // Reload device data to verify the update
+            //             setTimeout(function() {
+            //                 console.log('Reloading device settings after captive portal save...');
+            //                 console.log('Previous captive portal settings before reload:', window.deviceSettings?.settings ? {
+            //                     captive_portal_ip: window.deviceSettings.settings.captive_portal_ip,
+            //                     captive_portal_netmask: window.deviceSettings.settings.captive_portal_netmask,
+            //                     captive_portal_gateway: window.deviceSettings.settings.captive_portal_gateway,
+            //                     captive_portal_dns1: window.deviceSettings.settings.captive_portal_dns1,
+            //                     captive_portal_dns2: window.deviceSettings.settings.captive_portal_dns2
+            //                 } : 'No settings available');
+            //                 loadDeviceSettings();
+            //             }, 1000);
+            //         },
+            //         error: function(xhr, status, error) {
+            //             // Button appearance remains unchanged
+
+            //             // Handle API error
+            //             handleApiError(xhr, status, error, 'saving captive portal settings');
+            //         }
+            //     });
+            // });
             
             // **Fix for WAN Settings Save Handler**
             // Override any external handlers to ensure we only send valid fields
