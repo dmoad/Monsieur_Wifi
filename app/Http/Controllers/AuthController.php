@@ -91,7 +91,14 @@ class AuthController extends Controller
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $extension = $file->getClientOriginalExtension();
+            if($extension !== 'jpg' && $extension !== 'jpeg' && $extension !== 'png' && $extension !== 'JPG' && $extension !== 'JPEG' && $extension !== 'PNG') {
+                return response()->json(['error' => 'Invalid file type'], 400);
+            }
+            if($file->getSize() > 2 * 1024 * 1024) {
+                return response()->json(['error' => 'File size must be less than 2MB'], 400);
+            }
+            $filename = time() . '.' . $extension;
             $file->move(public_path('uploads/profile_pictures'), $filename);
             $user->profile_picture = $filename;
             $user->save();

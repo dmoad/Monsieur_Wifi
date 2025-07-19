@@ -258,7 +258,6 @@
                                                 <div class="media-body mt-75 ml-1">
                                                     <label for="account-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload New Photo</label>
                                                     <input type="file" id="account-upload" hidden accept="image/*" />
-                                                    <button class="btn btn-sm btn-outline-secondary mb-75">Reset</button>
                                                     <p>Allowed JPG or PNG. Max size of 2MB</p>
                                                 </div>
                                                 <!--/ upload and reset button -->
@@ -543,6 +542,12 @@
                     $('#account-upload-img').attr('src', '/uploads/profile_pictures/'+response.profile_picture);
                 },
                 error: function(xhr, status, error) {
+                    toastr.error('Error fetching user details', 'Error', {
+                        timeOut: 8000,
+                        extendedTimeOut: 3000,
+                        closeButton: true,
+                        progressBar: true
+                    });
                     console.error("Error fetching user details:", error);
                 }
             });
@@ -589,6 +594,12 @@
                         });
                     },
                     error: function(xhr, status, error) {
+                        toastr.error('Error updating user details', 'Error', {
+                            timeOut: 8000,
+                            extendedTimeOut: 3000,
+                            closeButton: true,
+                            progressBar: true
+                        });
                         console.error("Error updating user details:", error);
                     }
                 });
@@ -614,6 +625,12 @@
                             console.log("Profile picture uploaded successfully:", response);
                         },
                         error: function(xhr, status, error) {
+                            toastr.error('Error uploading profile picture', 'Error', {
+                                timeOut: 8000,
+                                extendedTimeOut: 3000,
+                                closeButton: true,
+                                progressBar: true
+                            });
                             console.error("Error uploading profile picture:", error);
                         }
                     });
