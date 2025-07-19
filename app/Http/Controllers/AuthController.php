@@ -50,6 +50,54 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
+    public function update(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        Log::info($user);
+        Log::info($request->all());
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        if ($request->has('name')) {
+            $user->name = $request->name;
+            Log::info($user->name);
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->email;
+            Log::info($user->email);
+        }
+
+        if ($request->has('password') && $request->password !== '' && $request->password !== null) {
+            if ($request->password !== $request->confirm_password) {
+                return response()->json(['error' => 'Passwords do not match'], 400);
+            }
+            $user->password = Hash::make($request->password);
+            Log::info($user->password);
+        }
+
+        $user->save();
+        return response()->json(['message' => 'User updated successfully'], 200);
+    }
+
+    public function uploadProfilePicture(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+
+        if(!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/profile_pictures'), $filename);
+            $user->profile_picture = $filename;
+            $user->save();
+        }
+    }
+
     /**
      * Get a JWT via given credentials.
      *

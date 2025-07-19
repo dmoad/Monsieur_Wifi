@@ -934,29 +934,6 @@
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
             
-            // Show welcome toast if toastr is available
-            // if (typeof toastr !== 'undefined') {
-            //     toastr.options = {
-            //         closeButton: true,
-            //         tapToDismiss: false,
-            //         progressBar: true,
-            //         positionClass: 'toast-top-right',
-            //         showDuration: '300',
-            //         hideDuration: '1000',
-            //         timeOut: '5000',
-            //         extendedTimeOut: '1000',
-            //         showEasing: 'swing',
-            //         hideEasing: 'linear',
-            //         showMethod: 'fadeIn',
-            //         hideMethod: 'fadeOut'
-            //     };
-                
-            //     toastr.success(
-            //         'Welcome back to the monsieur-wifi Dashboard',
-            //         'Hello, ' + user.name + '!'
-            //     );
-            // }
-            
             // Implement logout functionality using UserManager
             $('.logout-button, a[href="/logout"]').on('click', function(e) {
                 e.preventDefault();

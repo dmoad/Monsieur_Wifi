@@ -32,6 +32,8 @@
     <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/forms/pickers/form-pickadate.css">
     <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/forms/pickers/form-flat-pickr.css">
     <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/forms/form-validation.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.min.css">
+
     <!-- END: Page CSS-->
 
     <!-- BEGIN: Custom CSS-->
@@ -240,36 +242,8 @@
                 <!-- account setting page -->
                 <section id="page-account-settings">
                     <div class="row">
-                        <!-- left menu section -->
-                        <div class="col-md-3 mb-2 mb-md-0">
-                            <ul class="nav nav-pills flex-column nav-left">
-                                <!-- general -->
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="account-pill-general" data-toggle="pill" href="#account-vertical-general" aria-expanded="true">
-                                        <i data-feather="user" class="font-medium-3 mr-1"></i>
-                                        <span class="font-weight-bold">General Information</span>
-                                    </a>
-                                </li>
-                                <!-- change password -->
-                                <li class="nav-item">
-                                    <a class="nav-link" id="account-pill-password" data-toggle="pill" href="#account-vertical-password" aria-expanded="false">
-                                        <i data-feather="lock" class="font-medium-3 mr-1"></i>
-                                        <span class="font-weight-bold">Change Password</span>
-                                    </a>
-                                </li>
-                                <!-- notifications -->
-                                <!-- <li class="nav-item">
-                                    <a class="nav-link" id="account-pill-notifications" data-toggle="pill" href="#account-vertical-notifications" aria-expanded="false">
-                                        <i data-feather="bell" class="font-medium-3 mr-1"></i>
-                                        <span class="font-weight-bold">Notifications</span>
-                                    </a>
-                                </li> -->
-                            </ul>
-                        </div>
-                        <!--/ left menu section -->
-
-                        <!-- right content section -->
-                        <div class="col-md-9">
+                       
+                        <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="tab-content">
@@ -278,14 +252,14 @@
                                             <!-- header media -->
                                             <div class="media">
                                                 <a href="javascript:void(0);" class="mr-25">
-                                                    <img src="app-assets/images/portrait/small/avatar-s-11.jpg" id="account-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
+                                                    <img src="" id="account-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
                                                 </a>
                                                 <!-- upload and reset button -->
                                                 <div class="media-body mt-75 ml-1">
                                                     <label for="account-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload New Photo</label>
                                                     <input type="file" id="account-upload" hidden accept="image/*" />
                                                     <button class="btn btn-sm btn-outline-secondary mb-75">Reset</button>
-                                                    <p>Allowed JPG or PNG. Max size of 800kB</p>
+                                                    <p>Allowed JPG or PNG. Max size of 2MB</p>
                                                 </div>
                                                 <!--/ upload and reset button -->
                                             </div>
@@ -294,37 +268,37 @@
                                             <!-- form -->
                                             <form class="validate-form mt-2">
                                                 <div class="row">
-                                                    <div class="col-12 col-sm-6">
+                                                    <!-- <div class="col-12 col-sm-6">
                                                         <div class="form-group">
                                                             <label for="account-username">Username</label>
                                                             <input type="text" class="form-control" id="account-username" name="username" placeholder="Username" value="jsmith" />
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                                                     <div class="col-12 col-sm-6">
                                                         <div class="form-group">
                                                             <label for="account-name">Full Name</label>
-                                                            <input type="text" class="form-control" id="account-name" name="name" placeholder="Name" value="John Smith" />
+                                                            <input type="text" class="form-control" id="account-name" name="name" placeholder="Name" value="Your Name" />
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-sm-6">
                                                         <div class="form-group">
                                                             <label for="account-e-mail">Email</label>
-                                                            <input type="email" class="form-control" id="account-e-mail" name="email" placeholder="Email" value="john.smith@mrwifi.com" />
+                                                            <input type="email" class="form-control" id="account-e-mail" name="email" placeholder="Email" value="your@email.com" />
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-sm-6">
+                                                    <!-- <div class="col-12 col-sm-6">
                                                         <div class="form-group">
                                                             <label for="account-company">Company</label>
                                                             <input type="text" class="form-control" id="account-company" name="company" placeholder="Company name" value="monsieur-wifi Networks" />
                                                         </div>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6">
+                                                    </div> -->
+                                                    <!-- <div class="col-12 col-sm-6">
                                                         <div class="form-group">
                                                             <label for="account-phone">Phone</label>
                                                             <input type="text" class="form-control" id="account-phone" name="phone" placeholder="Phone number" value="+1 (555) 123-4567" />
                                                             </div>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6">
+                                                    </div> -->
+                                                    <!-- <div class="col-12 col-sm-6">
                                                         <div class="form-group">
                                                             <label for="account-role">Role</label>
                                                             <select class="form-control" id="account-role" name="role">
@@ -332,15 +306,43 @@
                                                                 <option value="manager">Network Owner</option>
                                                             </select>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-12">
+                                                    </div> -->
+                                                    <!-- <div class="col-12">
                                                         <div class="form-group">
                                                             <label for="account-bio">Bio</label>
                                                             <textarea class="form-control" id="account-bio" rows="3" placeholder="Your bio data">Network administrator with 8+ years of experience in setting up and managing enterprise-level WiFi networks. Specializing in high-density deployments and security optimization.</textarea>
                                                         </div>
+                                                    </div> -->
+                                                    
+                                                    <div class="col-12 col-sm-6">
+                                                        <div class="form-group">
+                                                            <label for="account-new-password1">New Password</label>
+                                                            <div class="input-group form-password-toggle input-group-merge">
+                                                                <input type="password" id="account-new-password1" name="new-password1" class="form-control" placeholder="New Password" />
+                                                                <div class="input-group-append">
+                                                                    <div class="input-group-text cursor-pointer">
+                                                                        <i data-feather="eye"></i>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <small class="form-text text-bold ">Leave blank if you don't want to change your password</small>
+                                                            <small class="form-text text-muted">Minimum 8 characters, must include letters, numbers, and special characters</small>
+                                                            <small class="form-text text-danger hidden" id="password-error-message">Passwords do not match</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-sm-6">
+                                                        <div class="form-group">
+                                                            <label for="account-retype-new-password1">Confirm New Password</label>
+                                                            <div class="input-group form-password-toggle input-group-merge">
+                                                                <input type="password" class="form-control" id="account-retype-new-password1" name="confirm-new-password1" placeholder="Confirm New Password" />
+                                                                <div class="input-group-append">
+                                                                    <div class="input-group-text cursor-pointer"><i data-feather="eye"></i></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div class="col-12">
-                                                        <button type="submit" class="btn btn-primary mt-1 mr-1">Save Changes</button>
+                                                        <button type="submit" class="btn btn-primary mt-1 mr-1" id="save-profile-btn">Save Changes</button>
                                                         <button type="reset" class="btn btn-outline-secondary mt-1">Cancel</button>
                                                     </div>
                                                 </div>
@@ -368,32 +370,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-12 col-sm-6">
-                                                        <div class="form-group">
-                                                            <label for="account-new-password">New Password</label>
-                                                            <div class="input-group form-password-toggle input-group-merge">
-                                                                <input type="password" id="account-new-password" name="new-password" class="form-control" placeholder="New Password" />
-                                                                <div class="input-group-append">
-                                                                    <div class="input-group-text cursor-pointer">
-                                                                        <i data-feather="eye"></i>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <small class="form-text text-muted">Minimum 8 characters, must include letters, numbers, and special characters</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6">
-                                                        <div class="form-group">
-                                                            <label for="account-retype-new-password">Confirm New Password</label>
-                                                            <div class="input-group form-password-toggle input-group-merge">
-                                                                <input type="password" class="form-control" id="account-retype-new-password" name="confirm-new-password" placeholder="Confirm New Password" />
-                                                                <div class="input-group-append">
-                                                                    <div class="input-group-text cursor-pointer"><i data-feather="eye"></i></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                
                                                     <div class="col-12">
                                                         <button type="submit" class="btn btn-primary mr-1 mt-1">Update Password</button>
                                                         <button type="reset" class="btn btn-outline-secondary mt-1">Cancel</button>
@@ -489,6 +466,9 @@
     <script src="app-assets/vendors/js/forms/select/select2.full.min.js"></script>
     <script src="app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
     <script src="app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <script src="/app-assets/js/scripts/extensions/ext-component-toastr.js"></script>
+
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -532,9 +512,12 @@
             }
         });
         $(document).ready(function() {
+            
+            console.log("User Manager:::::", UserManager);
             // Check if user is logged in using UserManager from config.js
             const user = UserManager.getUser();
             const token = UserManager.getToken();
+            console.log("User Manager:::::", user, token);
             
             if (!token || !user) {
                 // No token or user found, redirect to login page
@@ -545,7 +528,102 @@
             // Update user display in the top right dropdown
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
+
+            // Make API call to get user details
+            $.ajax({
+                url: '/api/auth/me',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function(response) {
+                    console.log("User details:::::", response);
+                    $('#account-name').val(response.name);
+                    $('#account-e-mail').val(response.email);
+                    $('#account-upload-img').attr('src', '/uploads/profile_pictures/'+response.profile_picture);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching user details:", error);
+                }
+            });
+
+            // Add event listener to save profile button
+            $('#save-profile-btn').on('click', function() {
+                console.log("Save profile button clicked");
+                var name = $('#account-name').val();
+                var email = $('#account-e-mail').val();
+                var password = $('#account-new-password1').val();
+                var confirm_password = $('#account-retype-new-password1').val();
+
+                if (password !== confirm_password && password !== '') {
+                    console.error("Passwords do not match");
+                    $('#password-error-message').removeClass('hidden');
+                    setTimeout(function() {
+                        $('#password-error-message').addClass('hidden');
+                    }, 3000);
+                    return;
+                }
+
+                // console.log("Perofile picture:::::", perofile_picture);
+                var data = {
+                    name: name,
+                    email: email,
+                    password: password,
+                    confirm_password: confirm_password
+                }
+                // Make API call to update user details
+                $.ajax({
+                    url: '/api/auth/me',
+                    type: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    data: data,
+                    success: function(response) {
+                        console.log("User details updated successfully:::::", response);
+                        toastr.success('Profile updated successfully', 'Profile Updated', {
+                            timeOut: 8000,
+                            extendedTimeOut: 3000,
+                            closeButton: true,
+                            progressBar: true
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error updating user details:", error);
+                    }
+                });
+            });
+
+            // Add event listener to upload profile picture button
+            $('#account-upload').on('change', function() {
+                const file = $(this).prop('files')[0];
+                if (file) {
+                    var formData = new FormData();
+                    formData.append('file', file);
+                    
+                    $.ajax({
+                        url: '/api/auth/upload-profile-picture',
+                        type: 'POST',
+                        data: formData,
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        processData: false, // Prevent jQuery from processing the data
+                        contentType: false, // Prevent jQuery from setting content type
+                        success: function(response) {
+                            console.log("Profile picture uploaded successfully:", response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error uploading profile picture:", error);
+                        }
+                    });
+                } else {
+                    console.error("No file selected.");
+                }
+            });
         });
+
+       
     </script>
 </body>
 <!-- END: Body-->

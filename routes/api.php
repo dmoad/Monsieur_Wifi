@@ -22,6 +22,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::get('me', [AuthController::class, 'me']);
+    Route::put('me', [AuthController::class, 'update']);
+    Route::post('upload-profile-picture', [AuthController::class, 'uploadProfilePicture']);
 });
 
 Route::get('/test', function () {
