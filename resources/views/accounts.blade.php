@@ -30,6 +30,7 @@
 
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.min.css">
     <!-- END: Page CSS-->
     
     <!-- BEGIN: Custom CSS-->
@@ -260,60 +261,7 @@
             </div>
             <div class="content-body">
                 <!-- Statistics Cards -->
-                    <div class="row">
-                    <div class="col-xl-3 col-md-6 col-sm-6">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <div class="avatar bg-light-primary p-50 mb-1">
-                                        <div class="avatar-content">
-                                        <i data-feather="users"></i>
-                                    </div>
-                                </div>
-                                <h2 class="font-weight-bolder" id="total-accounts">12</h2>
-                                <p class="card-text">Total Accounts</p>
-                            </div>
-                        </div>
-                                    </div>
-                    <div class="col-xl-3 col-md-6 col-sm-6">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <div class="avatar bg-light-info p-50 mb-1">
-                                        <div class="avatar-content">
-                                        <i data-feather="user-check"></i>
-                                    </div>
-                                </div>
-                                <h2 class="font-weight-bolder" id="active-accounts">10</h2>
-                                <p class="card-text">Active Accounts</p>
-                            </div>
-                        </div>
-                                    </div>
-                    <div class="col-xl-3 col-md-6 col-sm-6">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <div class="avatar bg-light-danger p-50 mb-1">
-                                        <div class="avatar-content">
-                                        <i data-feather="user-x"></i>
-                                    </div>
-                                </div>
-                                <h2 class="font-weight-bolder" id="inactive-accounts">2</h2>
-                                <p class="card-text">Inactive Accounts</p>
-                            </div>
-                        </div>
-                                    </div>
-                    <div class="col-xl-3 col-md-6 col-sm-6">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <div class="avatar bg-light-warning p-50 mb-1">
-                                        <div class="avatar-content">
-                                        <i data-feather="shield"></i>
-                                    </div>
-                                </div>
-                                <h2 class="font-weight-bolder" id="admin-accounts">4</h2>
-                                <p class="card-text">Admin Accounts</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
 
                 <!-- Accounts Table -->
                 <section id="basic-datatable">
@@ -325,103 +273,18 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="card-datatable table-responsive">
-                                        <table class="datatables-accounts table">
+                                        <table class="datatables-accounts table" id="accounts-table">
                                         <thead>
                                             <tr>
-                                                    <th>User</th>
-                                                    <th>Email</th>
-                                                    <th>Role</th>
-                                                <th>Status</th>
-                                                    <th>Company</th>
-                                                    <th>Last Login</th>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Profile Picture</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                            <div class="avatar mr-1">
-                                                                <img src="app-assets/images/portrait/small/avatar-s-11.jpg" alt="Avatar" width="32" height="32">
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-weight-bold">John Smith</div>
-                                                                <div class="small text-truncate text-muted">@jsmith</div>
-                                                            </div>
-                                                    </div>
-                                                </td>
-                                                    <td>john.smith@mrwifi.com</td>
-                                                    <td><span class="badge badge-pill badge-role-admin">Administrator</span></td>
-                                                    <td><span class="badge badge-pill badge-light-success">Active</span></td>
-                                                    <td>monsieur-wifi Networks</td>
-                                                    <td>Today at 10:30 AM</td>
-                                                    <td>
-                                                        <a href="profile.html" class="btn btn-sm btn-primary">View</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                            <div class="avatar mr-1">
-                                                                <img src="app-assets/images/portrait/small/avatar-s-3.jpg" alt="Avatar" width="32" height="32">
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-weight-bold">Sarah Johnson</div>
-                                                                <div class="small text-truncate text-muted">@sjohnson</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                    <td>sarah.j@mrwifi.com</td>
-                                                    <td><span class="badge badge-pill badge-role-owner">Network Owner</span></td>
-                                                    <td><span class="badge badge-pill badge-light-success">Active</span></td>
-                                                    <td>Downtown Cafe</td>
-                                                    <td>Yesterday at 5:25 PM</td>
-                                                    <td>
-                                                        <a href="profile.html" class="btn btn-sm btn-primary">View</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                            <div class="avatar mr-1">
-                                                                <img src="app-assets/images/portrait/small/avatar-s-4.jpg" alt="Avatar" width="32" height="32">
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-weight-bold">Michael Chen</div>
-                                                                <div class="small text-truncate text-muted">@mchen</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                    <td>m.chen@mrwifi.com</td>
-                                                    <td><span class="badge badge-pill badge-role-admin">Administrator</span></td>
-                                                    <td><span class="badge badge-pill badge-light-success">Active</span></td>
-                                                    <td>monsieur-wifi Networks</td>
-                                                    <td>Jan 12, 2025</td>
-                                                    <td>
-                                                        <a href="profile.html" class="btn btn-sm btn-primary">View</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                            <div class="avatar mr-1">
-                                                                <img src="app-assets/images/portrait/small/avatar-s-7.jpg" alt="Avatar" width="32" height="32">
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-weight-bold">Robert Wilson</div>
-                                                                <div class="small text-truncate text-muted">@rwilson</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                    <td>r.wilson@mrwifi.com</td>
-                                                    <td><span class="badge badge-pill badge-role-owner">Network Owner</span></td>
-                                                    <td><span class="badge badge-pill badge-light-danger">Inactive</span></td>
-                                                    <td>Wilson Hotels</td>
-                                                    <td>Dec 25, 2024</td>
-                                                    <td>
-                                                        <a href="profile.html" class="btn btn-sm btn-primary">View</a>
-                                                </td>
-                                            </tr>
+                                           
                                         </tbody>
                                     </table>
                                     </div>
@@ -445,38 +308,42 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="#">
+                <form action="#" id="add-account-form">
                 <div class="modal-body">
+                        <!-- Profile Picture Upload Section -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="media">
+                                    <a href="javascript:void(0);" class="mr-25">
+                                        <img src="/assets/avatar-default.jpg" id="new-account-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
+                                    </a>
+                                    <div class="media-body mt-75 ml-1">
+                                        <label for="new-account-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload Profile Picture</label>
+                                        <input type="file" id="new-account-upload" hidden accept="image/*" />
+                                        <p class="mb-0">Allowed JPG or PNG. Max size of 2MB</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="firstname">First Name</label>
-                                    <input type="text" class="form-control" id="firstname" placeholder="First Name" />
+                                    <label for="new-account-name">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="new-account-name" placeholder="Full Name" required />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="lastname">Last Name</label>
-                                    <input type="text" class="form-control" id="lastname" placeholder="Last Name" />
+                                    <label for="new-account-email">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="new-account-email" placeholder="Email" required />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="username">Username</label>
-                                    <input type="text" class="form-control" id="username" placeholder="Username" />
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" placeholder="Email" />
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                                    <label for="password">Password</label>
+                                    <label for="new-account-password">Password <span class="text-danger">*</span></label>
                                     <div class="input-group form-password-toggle">
-                                        <input type="password" class="form-control" id="password" placeholder="Password" />
+                                        <input type="password" class="form-control" id="new-account-password" placeholder="Password" required />
                                         <div class="input-group-append">
                                             <span class="input-group-text cursor-pointer">
                                                 <i data-feather="eye"></i>
@@ -485,56 +352,106 @@
                                     </div>
                                     <small class="form-text text-muted">Minimum 8 characters, must include letters, numbers and special characters</small>
                                 </div>
-                        </div>
+                            </div>
                             <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                                    <label for="confirm-password">Confirm Password</label>
+                                <div class="form-group">
+                                    <label for="new-account-confirm-password">Confirm Password <span class="text-danger">*</span></label>
                                     <div class="input-group form-password-toggle">
-                                        <input type="password" class="form-control" id="confirm-password" placeholder="Confirm Password" />
+                                        <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirm Password" required />
                                         <div class="input-group-append">
                                             <span class="input-group-text cursor-pointer">
                                                 <i data-feather="eye"></i>
                                             </span>
                                         </div>
                                     </div>
-                        </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <label for="role">Role</label>
-                                    <select class="form-control" id="role">
-                                        <option value="">Select Role</option>
-                                        <option value="admin">Administrator</option>
-                                        <option value="owner">Network Owner</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <label for="company">Company</label>
-                                    <input type="text" class="form-control" id="company" placeholder="Company Name" />
-                            </div>
-                        </div>
-                            <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                                    <label for="phone">Phone</label>
-                                    <input type="text" class="form-control" id="phone" placeholder="Phone Number" />
-                                </div>
-                        </div>
-                            <div class="col-12 col-sm-6">
-                        <div class="form-group">
-                                    <label>Status</label>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="status" checked />
-                                        <label class="custom-control-label" for="status">Active</label>
-                                    </div>
+                                    <small class="form-text text-danger hidden" id="new-password-error-message">Passwords do not match</small>
                                 </div>
                             </div>
                         </div>
                 </div>
                 <div class="modal-footer">
                         <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Create Account</button>
+                        <button type="submit" class="btn btn-primary" id="create-account-btn">Create Account</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade text-left" id="edit-user-modal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="editUserModalLabel">Edit User Account</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="#" id="edit-user-form">
+                <div class="modal-body">
+                        <!-- Profile Picture Upload Section -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="media">
+                                    <a href="javascript:void(0);" class="mr-25">
+                                        <img src="/assets/avatar-default.jpg" id="edit-user-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
+                                    </a>
+                                    <div class="media-body mt-75 ml-1">
+                                        <label for="edit-user-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload Profile Picture</label>
+                                        <input type="file" id="edit-user-upload" hidden accept="image/*" />
+                                        <p class="mb-0">Allowed JPG or PNG. Max size of 2MB</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="edit-user-name">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="edit-user-name" placeholder="Full Name" required />
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="edit-user-email">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="edit-user-email" placeholder="Email" required />
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="edit-user-password">New Password</label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="edit-user-password" placeholder="Leave blank to keep current password" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Leave blank if you don't want to change the password</small>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="edit-user-confirm-password">Confirm New Password</label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="edit-user-confirm-password" placeholder="Confirm new password" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-danger hidden" id="edit-password-error-message">Passwords do not match</small>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="update-user-btn">Update Account</button>
                 </div>
                 </form>
             </div>
@@ -565,6 +482,7 @@
     <script src="app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
     <script src="app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
     <script src="app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -595,23 +513,7 @@
                 });
             }
 
-            // Initialize DataTable
-            $('.datatables-accounts').DataTable({
-                responsive: true,
-                columnDefs: [
-                    {
-                        targets: [6],
-                        orderable: false
-                    }
-                ],
-                dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-                language: {
-                    paginate: {
-                        previous: '&nbsp;',
-                        next: '&nbsp;'
-                    }
-                }
-            });
+            // Initialize DataTable - moved to document ready to avoid conflicts
             
             // Initialize role select2
             if ($.fn.select2) {
@@ -662,6 +564,436 @@
             // Update user display in the top right dropdown
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
+
+            // Initialize DataTable with proper check to avoid reinitialisation
+            if (!$.fn.DataTable.isDataTable('#accounts-table')) {
+                $('#accounts-table').DataTable({
+                    responsive: true,
+                    columnDefs: [
+                        {
+                            targets: [4], // Actions column (0-based index: ID=0, Profile=1, Name=2, Email=3, Actions=4)
+                            orderable: false
+                        }
+                    ],
+                    dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                    language: {
+                        paginate: {
+                            previous: '&nbsp;',
+                            next: '&nbsp;'
+                        }
+                    }
+                });
+            }
+
+            // Function to load users data into the table
+            function loadUsersData() {
+                $.ajax({
+                url: '/api/accounts/users',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function(response) {
+                    console.log(response);
+                    if (response.status === 'success') {
+                        var users = response.users;
+                        var table = $('#accounts-table').DataTable(); // Get the DataTable instance
+
+                        // Clear existing rows if needed
+                        table.clear();
+
+                        // Loop through the users and add them to the table
+                        for (var i = 0; i < users.length; i++) {
+                            var id = i + 1; // Assuming you want to display a sequential ID
+                            var name = users[i].name;
+                            var email = users[i].email;
+                            var profile_picture = users[i].profile_picture;
+                            var profile_picture_path = '/uploads/profile_pictures/' + profile_picture;
+                            if (profile_picture === null) {
+                                profile_picture_path = '/assets/avatar-default.jpg';
+                                profile_picture = `<img src="/assets/avatar-default.jpg" alt="Profile Picture" class="img-fluid" style="width: 50px; height: 50px;">`;
+                            }else{
+                                profile_picture_path = '/uploads/profile_pictures/' + profile_picture;
+                                profile_picture = `<img src="/uploads/profile_pictures/${profile_picture}" alt="Profile Picture" class="img-fluid" style="width: 50px; height: 50px;">`;
+                            }
+                            var userId = users[i].id;
+                            var actions = `<button class="btn btn-sm btn-primary edit-user-btn" data-user-id="${userId}" data-name="${name}" data-email="${email}" data-profile-picture="${profile_picture_path}">
+                                              <i data-feather="edit-2"></i> Edit
+                                           </button> 
+                                           <button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}">
+                                              <i data-feather="trash-2"></i> Delete
+                                           </button>`;
+                            
+                            // Log the data being added
+                            console.log("Adding row:", [id, profile_picture, name, email, actions]);
+
+                            // Add the new row to the DataTable
+                            table.row.add([id, profile_picture, name, email, actions]).draw();
+                        }
+
+                        // Update the total accounts count
+                        $('#total-accounts').text(response.total);
+                        
+                        // Replace feather icons in the action buttons
+                        feather.replace();
+                    } else {
+                        alert('Failed to fetch users');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+            }
+
+            // Load users data initially
+            loadUsersData();
+
+            // Handle profile picture upload for new account
+            $('#new-account-upload').on('change', function() {
+                const file = $(this).prop('files')[0];
+                if (file) {
+                    // Validate file type
+                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                    if (!validTypes.includes(file.type)) {
+                        toastr.error('Please select a valid image file (JPG or PNG)', 'Invalid File');
+                        return;
+                    }
+                    
+                    // Validate file size (2MB max)
+                    if (file.size > 2 * 1024 * 1024) {
+                        toastr.error('File size must be less than 2MB', 'File Too Large');
+                        return;
+                    }
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#new-account-upload-img').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Handle add account form submission
+            $('#add-account-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const name = $('#new-account-name').val();
+                const email = $('#new-account-email').val();
+                const password = $('#new-account-password').val();
+                const confirmPassword = $('#new-account-confirm-password').val();
+                
+                // Validate required fields
+                if (!name || !email || !password || !confirmPassword) {
+                    toastr.error('Please fill in all required fields', 'Validation Error');
+                    return;
+                }
+                
+                // Validate password match
+                if (password !== confirmPassword) {
+                    $('#new-password-error-message').removeClass('hidden');
+                    setTimeout(function() {
+                        $('#new-password-error-message').addClass('hidden');
+                    }, 3000);
+                    return;
+                } else {
+                    $('#new-password-error-message').addClass('hidden');
+                }
+                
+                // Show loading state
+                const $button = $('#create-account-btn');
+                const originalText = $button.html();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...').prop('disabled', true);
+                
+                // Prepare data
+                const userData = {
+                    name: name,
+                    email: email,
+                    password: password,
+                    password_confirmation: confirmPassword
+                };
+                
+                // Create user via API
+                $.ajax({
+                    url: '/api/auth/register',
+                    type: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(userData),
+                    success: function(response) {
+                        console.log('User created successfully:', response);
+                        
+                        // If profile picture is selected, upload it
+                        const profileFile = $('#new-account-upload').prop('files')[0];
+                        if (profileFile && response.user) {
+                            // Upload profile picture for the newly created user
+                            const formData = new FormData();
+                            formData.append('file', profileFile);
+                            formData.append('user_id', response.user.id);
+                            
+                            $.ajax({
+                                url: '/api/auth/upload-profile-picture',
+                                type: 'POST',
+                                data: formData,
+                                headers: {
+                                    'Authorization': 'Bearer ' + response.access_token
+                                },
+                                processData: false,
+                                contentType: false,
+                                success: function() {
+                                    console.log('Profile picture uploaded successfully');
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error uploading profile picture:', error);
+                                }
+                            });
+                        }
+                        
+                        // Reset form and close modal
+                        $('#add-account-form')[0].reset();
+                        $('#new-account-upload-img').attr('src', '/assets/avatar-default.jpg');
+                        $('#add-new-account').modal('hide');
+                        
+                        // Show success message
+                        toastr.success('Account created successfully!', 'Success');
+                        
+                        // Refresh the users table data without reloading the page
+                        loadUsersData();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error creating user:', error);
+                        let errorMessage = 'Failed to create account. Please try again.';
+                        
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.email && xhr.responseJSON.email[0]) {
+                                errorMessage = xhr.responseJSON.email[0];
+                            } else if (xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                        }
+                        
+                        toastr.error(errorMessage, 'Error');
+                    },
+                    complete: function() {
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+
+            // Handle edit user button clicks (using event delegation)
+            $(document).on('click', '.edit-user-btn', function() {
+                const userId = $(this).data('user-id');
+                const userName = $(this).data('name');
+                const userEmail = $(this).data('email');
+                const userProfilePicture = $(this).data('profile-picture');
+                
+                // Store the user ID for later use
+                $('#edit-user-modal').data('user-id', userId);
+                
+                // Populate the form with current user data
+                $('#edit-user-name').val(userName);
+                $('#edit-user-email').val(userEmail);
+                $('#edit-user-password').val('');
+                $('#edit-user-confirm-password').val('');
+                
+                // Set profile picture
+                if (userProfilePicture && userProfilePicture !== 'null' && userProfilePicture !== '') {
+                    $('#edit-user-upload-img').attr('src', userProfilePicture);
+                } else {
+                    $('#edit-user-upload-img').attr('src', '/assets/avatar-default.jpg');
+                }
+                
+                // Show the modal
+                $('#edit-user-modal').modal('show');
+            });
+
+            // Handle profile picture upload for edit user
+            $('#edit-user-upload').on('change', function() {
+                const file = $(this).prop('files')[0];
+                if (file) {
+                    // Validate file type
+                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                    if (!validTypes.includes(file.type)) {
+                        toastr.error('Please select a valid image file (JPG or PNG)', 'Invalid File');
+                        return;
+                    }
+                    
+                    // Validate file size (2MB max)
+                    if (file.size > 2 * 1024 * 1024) {
+                        toastr.error('File size must be less than 2MB', 'File Too Large');
+                        return;
+                    }
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#edit-user-upload-img').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Handle edit user form submission
+            $('#edit-user-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const userId = $('#edit-user-modal').data('user-id');
+                const name = $('#edit-user-name').val();
+                const email = $('#edit-user-email').val();
+                const password = $('#edit-user-password').val();
+                const confirmPassword = $('#edit-user-confirm-password').val();
+                
+                // Validate required fields
+                if (!name || !email) {
+                    toastr.error('Please fill in all required fields', 'Validation Error');
+                    return;
+                }
+                
+                // Validate password match if password is provided
+                if (password && password !== confirmPassword) {
+                    $('#edit-password-error-message').removeClass('hidden');
+                    setTimeout(function() {
+                        $('#edit-password-error-message').addClass('hidden');
+                    }, 3000);
+                    return;
+                } else {
+                    $('#edit-password-error-message').addClass('hidden');
+                }
+                
+                // Show loading state
+                const $button = $('#update-user-btn');
+                const originalText = $button.html();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...').prop('disabled', true);
+                
+                // Prepare data
+                const userData = {
+                    name: name,
+                    email: email
+                };
+                
+                // Only include password if it's provided
+                if (password && password.trim() !== '') {
+                    userData.password = password;
+                    userData.confirm_password = confirmPassword;
+                }
+                
+                // Update user via API
+                $.ajax({
+                    url: `/api/accounts/users/${userId}`,
+                    type: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(userData),
+                    success: function(response) {
+                        console.log('User updated successfully:', response);
+                        
+                        // If profile picture is selected, upload it
+                        const profileFile = $('#edit-user-upload').prop('files')[0];
+                        if (profileFile) {
+                            const formData = new FormData();
+                            formData.append('file', profileFile);
+                            formData.append('user_id', userId); // Pass the user ID for admin upload
+                            
+                            $.ajax({
+                                url: '/api/auth/upload-profile-picture',
+                                type: 'POST',
+                                data: formData,
+                                headers: {
+                                    'Authorization': 'Bearer ' + token
+                                },
+                                processData: false,
+                                contentType: false,
+                                success: function() {
+                                    console.log('Profile picture uploaded successfully');
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error uploading profile picture:', error);
+                                    toastr.warning('User updated but profile picture upload failed', 'Partial Success');
+                                }
+                            });
+                        }
+                        
+                        // Reset form and close modal
+                        $('#edit-user-form')[0].reset();
+                        $('#edit-user-modal').modal('hide');
+                        
+                        // Show success message
+                        toastr.success('User account updated successfully!', 'Success');
+                        
+                        // Refresh the users table data without reloading the page
+                        loadUsersData();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error updating user:', error);
+                        let errorMessage = 'Failed to update user account. Please try again.';
+                        
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.email && xhr.responseJSON.email[0]) {
+                                errorMessage = xhr.responseJSON.email[0];
+                            } else if (xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                        }
+                        
+                        toastr.error(errorMessage, 'Error');
+                    },
+                    complete: function() {
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+
+            // Handle delete user button clicks (using event delegation)
+            $(document).on('click', '.delete-user-btn', function() {
+                const userId = $(this).data('user-id');
+                const userName = $(this).closest('tr').find('td:nth-child(2)').text(); // Get name from table row
+                
+                // Show confirmation dialog
+                if (confirm(`Are you sure you want to delete the user account for "${userName}"? This action cannot be undone.`)) {
+                    // Show loading state on button
+                    const $button = $(this);
+                    const originalHtml = $button.html();
+                    $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+                    
+                    // Delete user via API
+                    $.ajax({
+                        url: `/api/accounts/users/${userId}`,
+                        type: 'DELETE',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        success: function(response) {
+                            console.log('User deleted successfully:', response);
+                            
+                            // Show success message
+                            toastr.success(`User account for "${userName}" has been deleted successfully!`, 'User Deleted');
+                            
+                            // Refresh the users table data without reloading the page
+                            loadUsersData();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error deleting user:', error);
+                            let errorMessage = 'Failed to delete user account. Please try again.';
+                            
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                            
+                            toastr.error(errorMessage, 'Error');
+                            
+                            // Reset button state
+                            $button.html(originalHtml).prop('disabled', false);
+                        }
+                    });
+                }
+            });
 
         });
     </script>

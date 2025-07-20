@@ -10,6 +10,7 @@ use App\Http\Controllers\GuestNetworkUserController;
 use App\Http\Controllers\CaptivePortalDesignController;
 use App\Http\Controllers\FirmwareController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CaptivePortalWorkingHourController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DomainBlockingController;
 
@@ -24,6 +25,13 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::get('me', [AuthController::class, 'me']);
     Route::put('me', [AuthController::class, 'update']);
     Route::post('upload-profile-picture', [AuthController::class, 'uploadProfilePicture']);
+});
+
+Route::group(['middleware' => 'auth:api', 'prefix' => 'accounts'], function () {
+    Route::get('users', [AuthController::class, 'getUsers']);
+    Route::put('users/{user}', [AuthController::class, 'updateUser']);
+    Route::delete('users/{user}', [AuthController::class, 'deleteUser']);
+    Route::post('users', [AuthController::class, 'createUser']);
 });
 
 Route::get('/test', function () {
@@ -85,6 +93,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::get('/{id}/online-users', [LocationController::class, 'getOnlineUsers']);
     // Captive portal daily usage route
     Route::get('/{id}/captive-portal/daily-usage', [LocationController::class, 'getCaptivePortalDailyUsage']);
+    // Captive portal working hours route
+    Route::get('/{id}/captive-portal/working-hours', [CaptivePortalWorkingHourController::class, 'getWorkingHours']);
+    Route::post('/{id}/captive-portal/working-hours', [CaptivePortalWorkingHourController::class, 'updateWorkingHours']);
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], function () {

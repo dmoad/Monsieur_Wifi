@@ -96,6 +96,57 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0,0,0,0.12);
         }
+
+        /* ==============================================
+           WORKING HOURS STYLING
+        ============================================== */
+        .working-hours-container .card {
+            margin-bottom: 0;
+            box-shadow: 0 1px 10px rgba(0,0,0,0.05);
+        }
+        
+        .working-hours-day {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .working-hours-day:last-child {
+            border-bottom: none;
+        }
+        
+        .working-hours-day .time-inputs {
+            transition: opacity 0.3s ease;
+        }
+        
+        .working-hours-day .time-inputs input[type="time"] {
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 0.375rem 0.5rem;
+        }
+        
+        .working-hours-day .time-inputs span {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            min-width: 20px;
+            justify-content: center;
+        }
+        
+        .working-hours-day label {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .custom-control-primary .custom-control-input:checked ~ .custom-control-label::before {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .custom-control-primary .custom-control-input:focus ~ .custom-control-label::before {
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
         
         .card-header {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -3138,6 +3189,169 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <!-- Working Hours Section -->
+                                        <h5 class="border-bottom pb-1 mt-3">Working Hours</h5>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <label class="mb-0">Captive Portal Access Schedule</label>
+                                                        <div class="d-flex align-items-center">
+                                                            <small class="text-muted mr-2">Quick Set:</small>
+                                                            <button class="btn btn-sm btn-outline-primary mr-1" id="set-business-hours">Business Hours</button>
+                                                            <button class="btn btn-sm btn-outline-secondary" id="clear-all-hours">Clear All</button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="working-hours-container">
+                                                        <div class="card">
+                                                            <div class="card-body p-3">
+                                                                <div class="working-hours-grid">
+                                                                    <!-- Monday -->
+                                                                    <div class="working-hours-day" data-day="monday">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="custom-control custom-switch custom-control-primary mr-2">
+                                                                                    <input type="checkbox" class="custom-control-input day-enabled" id="monday-enabled" data-day="monday">
+                                                                                    <label class="custom-control-label" for="monday-enabled"></label>
+                                                                                </div>
+                                                                                <label class="mb-0 font-weight-semibold" style="min-width: 70px;">Monday</label>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center time-inputs" style="opacity: 0.5;">
+                                                                                <input type="time" class="form-control form-control-sm start-time" data-day="monday" style="width: 110px;" disabled>
+                                                                                <span class="mx-2">to</span>
+                                                                                <input type="time" class="form-control form-control-sm end-time" data-day="monday" style="width: 110px;" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Tuesday -->
+                                                                    <div class="working-hours-day" data-day="tuesday">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="custom-control custom-switch custom-control-primary mr-2">
+                                                                                    <input type="checkbox" class="custom-control-input day-enabled" id="tuesday-enabled" data-day="tuesday">
+                                                                                    <label class="custom-control-label" for="tuesday-enabled"></label>
+                                                                                </div>
+                                                                                <label class="mb-0 font-weight-semibold" style="min-width: 70px;">Tuesday</label>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center time-inputs" style="opacity: 0.5;">
+                                                                                <input type="time" class="form-control form-control-sm start-time" data-day="tuesday" style="width: 110px;" disabled>
+                                                                                <span class="mx-2">to</span>
+                                                                                <input type="time" class="form-control form-control-sm end-time" data-day="tuesday" style="width: 110px;" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Wednesday -->
+                                                                    <div class="working-hours-day" data-day="wednesday">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="custom-control custom-switch custom-control-primary mr-2">
+                                                                                    <input type="checkbox" class="custom-control-input day-enabled" id="wednesday-enabled" data-day="wednesday">
+                                                                                    <label class="custom-control-label" for="wednesday-enabled"></label>
+                                                                                </div>
+                                                                                <label class="mb-0 font-weight-semibold" style="min-width: 70px;">Wednesday</label>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center time-inputs" style="opacity: 0.5;">
+                                                                                <input type="time" class="form-control form-control-sm start-time" data-day="wednesday" style="width: 110px;" disabled>
+                                                                                <span class="mx-2">to</span>
+                                                                                <input type="time" class="form-control form-control-sm end-time" data-day="wednesday" style="width: 110px;" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Thursday -->
+                                                                    <div class="working-hours-day" data-day="thursday">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="custom-control custom-switch custom-control-primary mr-2">
+                                                                                    <input type="checkbox" class="custom-control-input day-enabled" id="thursday-enabled" data-day="thursday">
+                                                                                    <label class="custom-control-label" for="thursday-enabled"></label>
+                                                                                </div>
+                                                                                <label class="mb-0 font-weight-semibold" style="min-width: 70px;">Thursday</label>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center time-inputs" style="opacity: 0.5;">
+                                                                                <input type="time" class="form-control form-control-sm start-time" data-day="thursday" style="width: 110px;" disabled>
+                                                                                <span class="mx-2">to</span>
+                                                                                <input type="time" class="form-control form-control-sm end-time" data-day="thursday" style="width: 110px;" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Friday -->
+                                                                    <div class="working-hours-day" data-day="friday">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="custom-control custom-switch custom-control-primary mr-2">
+                                                                                    <input type="checkbox" class="custom-control-input day-enabled" id="friday-enabled" data-day="friday">
+                                                                                    <label class="custom-control-label" for="friday-enabled"></label>
+                                                                                </div>
+                                                                                <label class="mb-0 font-weight-semibold" style="min-width: 70px;">Friday</label>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center time-inputs" style="opacity: 0.5;">
+                                                                                <input type="time" class="form-control form-control-sm start-time" data-day="friday" style="width: 110px;" disabled>
+                                                                                <span class="mx-2">to</span>
+                                                                                <input type="time" class="form-control form-control-sm end-time" data-day="friday" style="width: 110px;" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Saturday -->
+                                                                    <div class="working-hours-day" data-day="saturday">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="custom-control custom-switch custom-control-primary mr-2">
+                                                                                    <input type="checkbox" class="custom-control-input day-enabled" id="saturday-enabled" data-day="saturday">
+                                                                                    <label class="custom-control-label" for="saturday-enabled"></label>
+                                                                                </div>
+                                                                                <label class="mb-0 font-weight-semibold" style="min-width: 70px;">Saturday</label>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center time-inputs" style="opacity: 0.5;">
+                                                                                <input type="time" class="form-control form-control-sm start-time" data-day="saturday" style="width: 110px;" disabled>
+                                                                                <span class="mx-2">to</span>
+                                                                                <input type="time" class="form-control form-control-sm end-time" data-day="saturday" style="width: 110px;" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Sunday -->
+                                                                    <div class="working-hours-day" data-day="sunday">
+                                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="custom-control custom-switch custom-control-primary mr-2">
+                                                                                    <input type="checkbox" class="custom-control-input day-enabled" id="sunday-enabled" data-day="sunday">
+                                                                                    <label class="custom-control-label" for="sunday-enabled"></label>
+                                                                                </div>
+                                                                                <label class="mb-0 font-weight-semibold" style="min-width: 70px;">Sunday</label>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center time-inputs" style="opacity: 0.5;">
+                                                                                <input type="time" class="form-control form-control-sm start-time" data-day="sunday" style="width: 110px;" disabled>
+                                                                                <span class="mx-2">to</span>
+                                                                                <input type="time" class="form-control form-control-sm end-time" data-day="sunday" style="width: 110px;" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div class="mt-3 pt-2 border-top">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <small class="text-muted">
+                                                                            <i data-feather="info" style="width: 14px; height: 14px;" class="mr-1"></i>
+                                                                            Access is restricted to configured hours. Leave unchecked for 24/7 access.
+                                                                        </small>
+                                                                        <button class="btn btn-sm btn-success" id="save-working-hours">
+                                                                            <i data-feather="save" class="mr-1"></i> Save Working Hours
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -3151,15 +3365,15 @@
                                             </button>
                                             </div>
                                         
-                                                <div class="card-body">
-                                            <!-- Basic Settings Section -->
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="wifi-ssid">Network Name (SSID)</label>
-                                                        <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                            <div class="card-body">
+                                                <!-- Basic Settings Section -->
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="wifi-ssid">Network Name (SSID)</label>
+                                                            <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                                    </div>
                                                 </div>
-                                            </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="password-wifi-password">WiFi Password</label>
@@ -4762,6 +4976,194 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 error: function(xhr, status, error) {
                     handleApiError(xhr, status, error, 'saving web filter settings');
+                }
+            });
+        }
+
+        // ==============================================
+        // WORKING HOURS FUNCTIONALITY
+        // ==============================================
+        
+        // Initialize working hours functionality
+        $(document).ready(function() {
+            // Load working hours when page loads
+            loadWorkingHours();
+            
+            // Handle day enable/disable toggle
+            $('.day-enabled').on('change', function() {
+                const day = $(this).data('day');
+                const isEnabled = $(this).is(':checked');
+                const timeInputs = $(`.working-hours-day[data-day="${day}"] .time-inputs`);
+                const startTime = $(`.working-hours-day[data-day="${day}"] .start-time`);
+                const endTime = $(`.working-hours-day[data-day="${day}"] .end-time`);
+                
+                if (isEnabled) {
+                    timeInputs.css('opacity', '1');
+                    startTime.prop('disabled', false);
+                    endTime.prop('disabled', false);
+                    
+                    // Set default times if not already set
+                    if (!startTime.val()) startTime.val('09:00');
+                    if (!endTime.val()) endTime.val('17:00');
+                } else {
+                    timeInputs.css('opacity', '0.5');
+                    startTime.prop('disabled', true);
+                    endTime.prop('disabled', true);
+                    startTime.val('');
+                    endTime.val('');
+                }
+            });
+            
+            // Quick set business hours (Monday-Friday 9AM-5PM)
+            $('#set-business-hours').on('click', function() {
+                const businessDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                businessDays.forEach(day => {
+                    const checkbox = $(`#${day}-enabled`);
+                    const startTime = $(`.start-time[data-day="${day}"]`);
+                    const endTime = $(`.end-time[data-day="${day}"]`);
+                    
+                    checkbox.prop('checked', true).trigger('change');
+                    startTime.val('09:00');
+                    endTime.val('17:00');
+                });
+                
+                // Clear weekend days
+                ['saturday', 'sunday'].forEach(day => {
+                    $(`#${day}-enabled`).prop('checked', false).trigger('change');
+                });
+                
+                toastr.info('Business hours set (Mon-Fri, 9AM-5PM)');
+            });
+            
+            // Clear all working hours
+            $('#clear-all-hours').on('click', function() {
+                $('.day-enabled').prop('checked', false).trigger('change');
+                toastr.info('All working hours cleared');
+            });
+            
+            // Save working hours
+            $('#save-working-hours').on('click', function() {
+                saveWorkingHours();
+            });
+        });
+        
+        // Load working hours from API
+        function loadWorkingHours() {
+            const locationId = getLocationId();
+            if (!locationId) {
+                console.error('No location ID found');
+                return;
+            }
+            
+            $.ajax({
+                url: `/api/locations/${locationId}/captive-portal/working-hours`,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Working hours loaded:', response);
+                    if (response.status === 'success' && response.data) {
+                        populateWorkingHours(response.data);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading working hours:', error);
+                    // Don't show error toast for 404 (no working hours set yet)
+                    if (xhr.status !== 404) {
+                        toastr.error('Failed to load working hours settings');
+                    }
+                }
+            });
+        }
+        
+        // Populate working hours form with data
+        function populateWorkingHours(workingHoursData) {
+            workingHoursData.forEach(dayData => {
+                const day = dayData.day_of_week;
+                const enabled = dayData.enabled || (dayData.start_time && dayData.end_time);
+                
+                const checkbox = $(`#${day}-enabled`);
+                const startTime = $(`.start-time[data-day="${day}"]`);
+                const endTime = $(`.end-time[data-day="${day}"]`);
+                
+                checkbox.prop('checked', enabled);
+                
+                if (enabled && dayData.start_time && dayData.end_time) {
+                    startTime.val(dayData.start_time);
+                    endTime.val(dayData.end_time);
+                }
+                
+                // Trigger change to update UI
+                checkbox.trigger('change');
+            });
+        }
+        
+        // Save working hours to API
+        function saveWorkingHours() {
+            const locationId = getLocationId();
+            if (!locationId) {
+                toastr.error('Location ID not found');
+                return;
+            }
+            
+            const workingHours = [];
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            
+            days.forEach(day => {
+                const enabled = $(`#${day}-enabled`).is(':checked');
+                const startTime = $(`.start-time[data-day="${day}"]`).val();
+                const endTime = $(`.end-time[data-day="${day}"]`).val();
+                
+                // Validate times if enabled
+                if (enabled && (!startTime || !endTime)) {
+                    toastr.error(`Please set both start and end times for ${day.charAt(0).toUpperCase() + day.slice(1)}`);
+                    return;
+                }
+                
+                if (enabled && startTime >= endTime) {
+                    toastr.error(`End time must be after start time for ${day.charAt(0).toUpperCase() + day.slice(1)}`);
+                    return;
+                }
+                
+                workingHours.push({
+                    day_of_week: day,
+                    start_time: enabled ? startTime : null,
+                    end_time: enabled ? endTime : null,
+                    enabled: enabled
+                });
+            });
+            
+            // Show loading state
+            $('#save-working-hours').prop('disabled', true).html('<i data-feather="loader" class="mr-1"></i> Saving...');
+            
+            $.ajax({
+                url: `/api/locations/${locationId}/captive-portal/working-hours`,
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                data: JSON.stringify({
+                    working_hours: workingHours
+                }),
+                success: function(response) {
+                    console.log('Working hours saved:', response);
+                    toastr.success('Working hours saved successfully!');
+                    
+                    // Re-render feather icons for the button
+                    feather.replace();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error saving working hours:', error);
+                    handleApiError(xhr, status, error, 'saving working hours');
+                },
+                complete: function() {
+                    // Reset button state
+                    $('#save-working-hours').prop('disabled', false).html('<i data-feather="save" class="mr-1"></i> Save Working Hours');
+                    feather.replace();
                 }
             });
         }

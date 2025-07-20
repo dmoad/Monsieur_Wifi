@@ -83,10 +83,19 @@ class AuthController extends Controller
 
     public function uploadProfilePicture(Request $request)
     {
-        $user = Auth::guard('api')->user();
-
-        if(!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+        // If user_id is provided, admin is uploading for another user
+        if ($request->has('user_id')) {
+            $targetUser = User::find($request->user_id);
+            if (!$targetUser) {
+                return response()->json(['error' => 'Target user not found'], 404);
+            }
+            $user = $targetUser;
+        } else {
+            // Regular user uploading their own profile picture
+            $user = Auth::guard('api')->user();
+            if(!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
         }
 
         if ($request->hasFile('file')) {
@@ -102,7 +111,11 @@ class AuthController extends Controller
             $file->move(public_path('uploads/profile_pictures'), $filename);
             $user->profile_picture = $filename;
             $user->save();
+            
+            return response()->json(['message' => 'Profile picture uploaded successfully', 'filename' => $filename], 200);
         }
+        
+        return response()->json(['error' => 'No file provided'], 400);
     }
 
     /**
@@ -170,6 +183,65 @@ class AuthController extends Controller
         return $this->respondWithToken(Auth::guard('api')->refresh());
     }
 
+    public function getUsers()
+    {
+        $user = Auth::guard('api')->user();
+        if(!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $users = User::all();
+        $users = $users->map(function($user) {
+            return $user->only(['id', 'name', 'email', 'profile_picture']);
+        });
+        return response()->json([
+            'users' => $users,
+            'total' => $users->count(),
+            'status' => 'success'
+        ]);
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = Auth::guard('api')->user();
+        if(!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $user = User::find($id);
+        if(!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        $user_info = $user->only(['id', 'name', 'email']);
+        if($request->has('password') && $request->password !== '' && $request->password !== null) {
+            if($request->password !== $request->confirm_password) {
+                return response()->json(['error' => 'Passwords do not match'], 400);
+            }
+            $user_info['password'] = Hash::make($request->password);
+        }
+        if($request->has('name')) {
+            $user_info['name'] = $request->name;
+        }
+        if($request->has('email')) {
+            $user_info['email'] = $request->email;
+        }
+        $user->update($user_info);
+        return response()->json(['message' => 'User updated successfully'], 200);
+    }
+
+    public function deleteUser(Request $request, $id)
+    
+    {
+        $user = Auth::guard('api')->user();
+        if(!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $user = User::find($id);
+        if(!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        $user->delete();
+        return response()->json(['message' => 'User deleted successfully'], 200);
+    }
+    
     /**
      * Get the token array structure.
      *

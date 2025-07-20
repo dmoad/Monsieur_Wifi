@@ -646,13 +646,7 @@
                         <span class="menu-title text-truncate">Locations</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/analytics">
-                        <i data-feather="bar-chart-2"></i>
-                        <span class="menu-title text-truncate">Usage Analytics</span>
-                    </a>
-                </li>
-
+            
                 <li class="nav-item active">
                     <a class="d-flex align-items-center" href="/captive-portals">
                         <i data-feather="layout"></i>

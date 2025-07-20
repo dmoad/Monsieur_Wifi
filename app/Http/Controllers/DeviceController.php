@@ -15,6 +15,7 @@ use App\Models\Category;
 use App\Models\BlockedDomain;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\CaptivePortalWorkingHour;
 
 class DeviceController extends Controller
 {
@@ -336,7 +337,63 @@ class DeviceController extends Controller
 
         $settings = LocationSettings::where('location_id', $location->id)->first();
 
-        return response()->json(['status' => 'success', 'config_version' => $device->configuration_version, 'reboot_count' => $device->reboot_count, 'firmware_version' => $firmware_version, 'scan_counter' => $device->scan_counter]);
+        // Check if captive portal should be enabled based on working hours
+        $captivePortalEnabled = $this->isCaptivePortalEnabledAtCurrentTime($location->id);
+        // convert to 1/0
+        $captivePortalEnabled = $captivePortalEnabled ? 1 : 0;
+
+        return response()->json([
+            'status' => 'success', 
+            'config_version' => $device->configuration_version, 
+            'reboot_count' => $device->reboot_count, 
+            'firmware_version' => $firmware_version, 
+            'scan_counter' => $device->scan_counter,
+            'captive_portal_enabled' => $captivePortalEnabled
+        ]);
+    }
+
+    /**
+     * Check if captive portal should be enabled based on current time and working hours
+     */
+    private function isCaptivePortalEnabledAtCurrentTime($locationId)
+    {
+        // Get current day of week and time
+        $currentDayOfWeek = strtolower(now()->format('l')); // monday, tuesday, etc.
+        $currentTime = now()->format('H:i');
+        
+        Log::info("Checking captive portal working hours for location {$locationId}: {$currentDayOfWeek} at {$currentTime}");
+        
+        // Get working hours for current day
+        $workingHour = CaptivePortalWorkingHour::where('location_id', $locationId)
+            ->where('day_of_week', $currentDayOfWeek)
+            ->first();
+        
+        // If no working hours are set for this location/day, captive portal is enabled (24/7 access)
+        if (!$workingHour || !$workingHour->start_time || !$workingHour->end_time) {
+            Log::info("No working hours configured for {$currentDayOfWeek} - captive portal enabled (24/7 access)");
+            return true;
+        }
+        
+        // Check if current time is within working hours
+        $startTime = $workingHour->start_time;
+        $endTime = $workingHour->end_time;
+        
+        Log::info("Working hours for {$currentDayOfWeek}: {$startTime} - {$endTime}");
+        
+        $isEnabled = false;
+        
+        // Handle cases where end time is before start time (overnight hours)
+        if ($endTime < $startTime) {
+            // Overnight hours (e.g., 22:00 to 06:00)
+            $isEnabled = $currentTime >= $startTime || $currentTime <= $endTime;
+            Log::info("Overnight hours detected - captive portal " . ($isEnabled ? 'enabled' : 'disabled'));
+        } else {
+            // Normal hours (e.g., 09:00 to 17:00)
+            $isEnabled = $currentTime >= $startTime && $currentTime <= $endTime;
+            Log::info("Normal hours - captive portal " . ($isEnabled ? 'enabled' : 'disabled'));
+        }
+        
+        return $isEnabled;
     }
 
     public function verify($mac_address, $verification_code)
