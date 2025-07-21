@@ -76,14 +76,21 @@ class GuestNetworkUserController extends Controller
             'logo_url',
             'welcome_message',
             'captive_portal_design',
-            'captive_social_auth_method',
+            'captive_social_auth_method' 
         ]);
+
+
 
         // Fetch the complete captive portal design if a design ID is set
         $captivePortalDesign = null;
         if ($location->settings && $location->settings->captive_portal_design) {
             $captivePortalDesign = \App\Models\CaptivePortalDesign::find($location->settings->captive_portal_design);
         }
+
+        Log::info("captivePortalDesign Id::");
+        Log::info($location->settings->captive_portal_design);
+        Log::info("captivePortalSettings::");
+        Log::info($captivePortalDesign);
 
         // Get the captive portal IP address from location settings or use a default
         $captivePortalIp = $location->settings->captive_portal_ip ?? '10.1.0.1';

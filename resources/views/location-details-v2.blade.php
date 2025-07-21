@@ -5080,7 +5080,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Populate working hours form with data
         function populateWorkingHours(workingHoursData) {
+            console.log('Populating working hours:', workingHoursData);
             workingHoursData.forEach(dayData => {
+                
                 const day = dayData.day_of_week;
                 const enabled = dayData.enabled || (dayData.start_time && dayData.end_time);
                 
@@ -5091,8 +5093,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkbox.prop('checked', enabled);
                 
                 if (enabled && dayData.start_time && dayData.end_time) {
-                    startTime.val(dayData.start_time);
-                    endTime.val(dayData.end_time);
+                    startTime.val(dayData.start_time.split(':')[0] + ':' + dayData.start_time.split(':')[1]);
+                    endTime.val(dayData.end_time.split(':')[0] + ':' + dayData.end_time.split(':')[1]);
                 }
                 
                 // Trigger change to update UI

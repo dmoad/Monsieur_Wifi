@@ -25,7 +25,9 @@ class CaptivePortalDesign extends Model
         'location_logo_path',
         'background_image_path',
         'additional_settings',
-        'is_default'
+        'is_default',
+        'background_color_gradient_start',
+        'background_color_gradient_end',
     ];
     
     protected $casts = [

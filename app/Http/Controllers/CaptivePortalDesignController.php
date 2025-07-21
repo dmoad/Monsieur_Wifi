@@ -77,6 +77,8 @@ class CaptivePortalDesignController extends Controller
             'privacy_content' => 'nullable|string',
             'location_logo' => 'nullable|image|max:2048',
             'background_image' => 'nullable|image|max:5120',
+            'background_color_gradient_start' => 'nullable|string|max:7',
+            'background_color_gradient_end' => 'nullable|string|max:7',
         ]);
         
         // Handle file uploads
@@ -199,6 +201,8 @@ class CaptivePortalDesignController extends Controller
             'privacy_content' => 'nullable|string',
             'location_logo' => 'nullable|image|max:2048',
             'background_image' => 'nullable|image|max:5120',
+            'background_color_gradient_start' => 'nullable|string|max:7',
+            'background_color_gradient_end' => 'nullable|string|max:7',
         ]);
 
         Log::info('terms of service: ' . $validated['terms_content']);

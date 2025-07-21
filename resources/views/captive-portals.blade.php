@@ -119,7 +119,7 @@
         }
         
         /* Add a semi-transparent overlay for better text readability when a background image is present */
-        .portal-preview::before {
+        .portal-preview.has-background-image::before {
             content: '';
             position: absolute;
             top: 0;
@@ -129,6 +129,10 @@
             background: rgba(255, 255, 255, 0.7);
             border-radius: 8px;
             z-index: -1;
+        }
+        
+        .portal-preview.has-gradient {
+            background: var(--gradient-bg) !important;
         }
 
         .preview-main {
@@ -896,6 +900,48 @@
                                                             <p class="note">This image will be displayed as the page background.</p>
                                                         </div>
                                                     </div>
+                                                    <div class="col-12 mb-2">
+                                                        <h6 class="mb-1">Background Gradient (Alternative to Image)</h6>
+                                                        <p class="text-muted small mb-2">Create a gradient background instead of using an image. This will override the background image if both are set.</p>
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-12 mb-1">
+                                                                <div class="form-group">
+                                                                    <label for="gradient-start">Gradient Start Color</label>
+                                                                    <div class="color-picker-container">
+                                                                        <input type="color" class="form-control form-control-color" id="gradient-start">
+                                                                        <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
+                                                                        <span class="color-value" id="gradient-start-value">None</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 col-12 mb-1">
+                                                                <div class="form-group">
+                                                                    <label for="gradient-end">Gradient End Color</label>
+                                                                    <div class="color-picker-container">
+                                                                        <input type="color" class="form-control form-control-color" id="gradient-end">
+                                                                        <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
+                                                                        <span class="color-value" id="gradient-end-value">None</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
+                                                                    <i data-feather="x" class="mr-25"></i>Clear Gradient
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
+                                                                    Blue to Purple
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
+                                                                    Orange to Pink
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
+                                                                    Test Gradient
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </form>
                                         </div>
@@ -1032,8 +1078,69 @@
         // Define token as a global variable
         let token;
         
+        // Function to update preview background with gradient or image (global scope)
+        function updatePreviewBackground() {
+            const startColor = $('#gradient-start').val() || '';
+            const endColor = $('#gradient-end').val() || '';
+            const backgroundImage = $('#background-preview').attr('src');
+            
+            console.log('updatePreviewBackground called:', { startColor, endColor, backgroundImage });
+            console.log('Portal preview element found:', $('.portal-preview').length);
+            console.log('Start color length:', startColor.length, 'End color length:', endColor.length);
+            
+            if (startColor && endColor) {
+                // Use gradient if both colors are set
+                console.log('Applying gradient:', `linear-gradient(135deg, ${startColor} 0%, ${endColor} 100%)`);
+                const $preview = $('.portal-preview');
+                $preview.removeClass('has-background-image');
+                
+                // Try multiple approaches to ensure the CSS is applied
+                const gradientCSS = `linear-gradient(135deg, ${startColor} 0%, ${endColor} 100%)`;
+                
+                // Method 1: Direct style property
+                $preview[0].style.setProperty('background', gradientCSS, 'important');
+                $preview[0].style.setProperty('background-image', 'none', 'important');
+                
+                // Method 2: jQuery CSS with !important
+                $preview.css('cssText', $preview.css('cssText') + `; background: ${gradientCSS} !important;`);
+                
+                // Method 3: Add a specific class and CSS custom property
+                $preview.addClass('has-gradient');
+                $preview[0].style.setProperty('--gradient-bg', gradientCSS);
+                
+                console.log('Applied CSS background:', $preview.css('background'));
+                console.log('Element style attribute:', $preview[0].style.cssText);
+                console.log('Computed background:', window.getComputedStyle($preview[0]).background);
+            } else if (startColor || endColor) {
+                // If only one gradient color is set, use solid color
+                const color = startColor || endColor;
+                console.log('Applying solid color:', color);
+                const $preview = $('.portal-preview');
+                $preview.removeClass('has-background-image').addClass('has-gradient');
+                $preview[0].style.setProperty('background', color, 'important');
+                $preview[0].style.setProperty('background-image', 'none', 'important');
+                $preview[0].style.setProperty('--gradient-bg', color);
+            } else if (backgroundImage && backgroundImage !== '') {
+                // Use background image if no gradient is set
+                $('.portal-preview').addClass('has-background-image').css({
+                    'background': '#fff',
+                    'background-image': `url(${backgroundImage})`,
+                    'background-size': 'cover',
+                    'background-position': 'center',
+                    'background-repeat': 'no-repeat'
+                });
+            } else {
+                // Clear background
+                $('.portal-preview').removeClass('has-background-image has-gradient').css({
+                    'background': '#fff',
+                    'background-image': 'none'
+                });
+            }
+        }
+        
         // Add this to ensure DOM is fully loaded before running scripts
         $(document).ready(function() {
+            
             // Initialize feather icons
             if (typeof feather !== 'undefined') {
                     feather.replace();
@@ -1074,6 +1181,9 @@
             
             // Make sure preview displays properly on initial load
             initializePreview();
+            
+            // Initialize preview background
+            updatePreviewBackground();
             
             // Fix for modal links in the preview to ensure they work in both normal and fullscreen modes
             $(document).on('click', '.preview-terms a[data-toggle="modal"]', function(e) {
@@ -1148,6 +1258,102 @@
                 $('#preview-privacy-content').text($(this).val() || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
             });
 
+            // Gradient color handlers
+            $('#gradient-start').on('change', function() {
+                const color = $(this).val();
+                $('#gradient-start-preview').css('background-color', color);
+                $('#gradient-start-value').text(color);
+                updatePreviewBackground();
+            });
+
+            $('#gradient-end').on('change', function() {
+                const color = $(this).val();
+                $('#gradient-end-preview').css('background-color', color);
+                $('#gradient-end-value').text(color);
+                updatePreviewBackground();
+            });
+
+            // Clear gradient button
+            $('#clear-gradient').on('click', function() {
+                $('#gradient-start').val('');
+                $('#gradient-end').val('');
+                $('#gradient-start-preview').css('background-color', 'transparent');
+                $('#gradient-end-preview').css('background-color', 'transparent');
+                $('#gradient-start-value').text('None');
+                $('#gradient-end-value').text('None');
+                updatePreviewGradient();
+            });
+
+            // Preset gradient buttons
+            $('#preset-gradient-1').on('click', function() {
+                $('#gradient-start').val('#667eea');
+                $('#gradient-end').val('#764ba2');
+                $('#gradient-start-preview').css('background-color', '#667eea');
+                $('#gradient-end-preview').css('background-color', '#764ba2');
+                $('#gradient-start-value').text('#667eea');
+                $('#gradient-end-value').text('#764ba2');
+                updatePreviewBackground();
+            });
+
+            $('#preset-gradient-2').on('click', function() {
+                $('#gradient-start').val('#f093fb');
+                $('#gradient-end').val('#f5576c');
+                $('#gradient-start-preview').css('background-color', '#f093fb');
+                $('#gradient-end-preview').css('background-color', '#f5576c');
+                $('#gradient-start-value').text('#f093fb');
+                $('#gradient-end-value').text('#f5576c');
+                updatePreviewBackground();
+            });
+
+            // Gradient color handlers
+            $('#gradient-start').on('change', function() {
+                const color = $(this).val();
+                $('#gradient-start-preview').css('background-color', color);
+                $('#gradient-start-value').text(color);
+                updatePreviewBackground();
+            });
+
+            $('#gradient-end').on('change', function() {
+                const color = $(this).val();
+                $('#gradient-end-preview').css('background-color', color);
+                $('#gradient-end-value').text(color);
+                updatePreviewBackground();
+            });
+
+            // Clear gradient button
+            $('#clear-gradient').on('click', function() {
+                $('#gradient-start').val('');
+                $('#gradient-end').val('');
+                $('#gradient-start-preview').css('background-color', 'transparent');
+                $('#gradient-end-preview').css('background-color', 'transparent');
+                $('#gradient-start-value').text('None');
+                $('#gradient-end-value').text('None');
+                updatePreviewBackground();
+            });
+
+            // Preset gradient buttons
+            $('#preset-gradient-1').on('click', function() {
+                $('#gradient-start').val('#667eea').trigger('change');
+                $('#gradient-end').val('#764ba2').trigger('change');
+            });
+
+            $('#preset-gradient-2').on('click', function() {
+                $('#gradient-start').val('#f093fb').trigger('change');
+                $('#gradient-end').val('#f5576c').trigger('change');
+            });
+            
+            // Test gradient button for debugging
+            $('#test-gradient').on('click', function() {
+                console.log('Test gradient button clicked');
+                $('#gradient-start').val('#ff0000');
+                $('#gradient-end').val('#0000ff');
+                $('#gradient-start-preview').css('background-color', '#ff0000');
+                $('#gradient-end-preview').css('background-color', '#0000ff');
+                $('#gradient-start-value').text('#ff0000');
+                $('#gradient-end-value').text('#0000ff');
+                updatePreviewBackground();
+            });
+
             // Update preview when uploading images
             function readURL(input, previewId) {
                 console.log('readURL called for', previewId);
@@ -1164,13 +1370,8 @@
                         if (previewId === 'location-logo-preview') {
                             $('#preview-logo').attr('src', e.target.result).show();
                         } else if (previewId === 'background-preview') {
-                            // Set the background image of the portal preview container
-                            $('.portal-preview').css({
-                                'background-image': `url(${e.target.result})`,
-                                'background-size': 'cover',
-                                'background-position': 'center',
-                                'background-repeat': 'no-repeat'
-                            });
+                            // Update the preview background using the unified function
+                            updatePreviewBackground();
                         }
                     }
                     
@@ -1308,6 +1509,10 @@
                 formData.append('terms_content', $('#terms-of-service').val());
                 formData.append('privacy_content', $('#privacy-policy').val());
                 
+                // Add gradient colors
+                formData.append('background_color_gradient_start', $('#gradient-start').val() || '');
+                formData.append('background_color_gradient_end', $('#gradient-end').val() || '');
+                
                 console.log('formData:', formData);
                 // Add files if selected
                 if ($('#location-logo-file')[0].files[0]) {
@@ -1431,6 +1636,8 @@
             }
         }
 
+
+
         // Global variable to store the current design ID being edited
         let currentDesignId = null;
 
@@ -1482,6 +1689,30 @@
                         // Load terms and privacy content if available
                         $('#terms-of-service').val(design.terms_content || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
                         $('#privacy-policy').val(design.privacy_content || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
+                        
+                        // Load gradient colors if available
+                        if (design.background_color_gradient_start) {
+                            $('#gradient-start').val(design.background_color_gradient_start);
+                            $('#gradient-start-preview').css('background-color', design.background_color_gradient_start);
+                            $('#gradient-start-value').text(design.background_color_gradient_start);
+                        } else {
+                            $('#gradient-start').val('');
+                            $('#gradient-start-preview').css('background-color', 'transparent');
+                            $('#gradient-start-value').text('None');
+                        }
+                        
+                        if (design.background_color_gradient_end) {
+                            $('#gradient-end').val(design.background_color_gradient_end);
+                            $('#gradient-end-preview').css('background-color', design.background_color_gradient_end);
+                            $('#gradient-end-value').text(design.background_color_gradient_end);
+                        } else {
+                            $('#gradient-end').val('');
+                            $('#gradient-end-preview').css('background-color', 'transparent');
+                            $('#gradient-end-value').text('None');
+                        }
+                        
+                        // Update preview with gradient
+                        updatePreviewBackground();
                         
                         // Update preview values
                         $('#preview-welcome').text(design.welcome_message || 'Welcome to our WiFi');
@@ -1778,10 +2009,19 @@
             $('#location-logo-preview').attr('src', '').hide();
             $('#background-preview').attr('src', '').hide();
             
+            // Reset gradient values
+            $('#gradient-start').val('');
+            $('#gradient-end').val('');
+            $('#gradient-start-preview').css('background-color', 'transparent');
+            $('#gradient-end-preview').css('background-color', 'transparent');
+            $('#gradient-start-value').text('None');
+            $('#gradient-end-value').text('None');
+            
             // Reset background of preview
             $('.portal-preview').css({
                 'background-image': 'none',
-                'background-color': '#fff'
+                'background-color': '#fff',
+                'background': '#fff'
             });
             
             // Update preview with default values
@@ -1794,6 +2034,9 @@
             });
             $('#preview-terms-container').show();
             $('#preview-logo').attr('src', '').hide();
+            
+            // Update preview background to clear any gradients
+            updatePreviewBackground();
         }
 
         // Function to delete a captive portal design

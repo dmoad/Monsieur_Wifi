@@ -305,7 +305,7 @@ class DeviceController extends Controller
             $uptime = $request->input('uptime');
         }
         $device->uptime = $uptime;
-        
+
         $device->save();
 
         // If device firmware_id is null return the defaukt firmware, else return firmware_id
@@ -324,7 +324,7 @@ class DeviceController extends Controller
             if (!$firmware) {
                 $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
             }
-            
+ 
             $firmware_version = $firmware ? $firmware->id : 0;
         } else {
             $firmware_version = $device->firmware_id;

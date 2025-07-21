@@ -449,6 +449,21 @@
                     document.body.style.backgroundImage = `url('/storage/${design.background_image_path}')`;
                 }
                 
+                // Apply gradient to portal container if gradient colors are available
+                if (design.background_color_gradient_start && design.background_color_gradient_end) {
+                    $('.portal-container').css({
+                        'background': `linear-gradient(135deg, ${design.background_color_gradient_start} 0%, ${design.background_color_gradient_end} 100%)`,
+                        'background-image': `linear-gradient(135deg, ${design.background_color_gradient_start} 0%, ${design.background_color_gradient_end} 100%)`
+                    });
+                } else if (design.background_color_gradient_start || design.background_color_gradient_end) {
+                    // If only one gradient color is set, use solid color
+                    const color = design.background_color_gradient_start || design.background_color_gradient_end;
+                    $('.portal-container').css({
+                        'background': color,
+                        'background-image': 'none'
+                    });
+                }
+                
                 // Set location logo from full design data
                 if (design.location_logo_path) {
                     $('#location-logo').html(`<img src="/storage/${design.location_logo_path}" alt="Location Logo">`);

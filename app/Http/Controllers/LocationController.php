@@ -9,6 +9,7 @@ use App\Models\SystemSetting;
 use App\Models\Radacct;
 use App\Models\Radcheck;
 use App\Models\Firmware;
+use App\Models\CaptivePortalWorkingHour;
 use App\Models\OnlineNetworkUser;
 use App\Services\GeocodingService;
 use Illuminate\Http\Request;
@@ -238,6 +239,10 @@ class LocationController extends Controller
         $locationSettings->welcome_message = 'Welcome to MrWiFi Network';
         $locationSettings->save();
 
+        // create the working hours for whole week with all day active 
+
+        $working_hours = $this->createBusinessWorkingHours($location->id);
+
         // Return JSON response
         return response()->json([
             'success' => true,
@@ -253,6 +258,7 @@ class LocationController extends Controller
         ]);
     }
 
+    
     /**
      * Display the specified location.
      *
@@ -472,7 +478,7 @@ class LocationController extends Controller
     {
         try {
             $location = Location::find($id);
-            
+
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -482,17 +488,27 @@ class LocationController extends Controller
 
             // Get period from request, default to 7 days
             $period = $request->get('period', 7);
-            
-            // Calculate date range
-            $endDate = Carbon::now();
-            $startDate = Carbon::now()->subDays($period - 1);
-            
+
+            // Calculate date range - ensure we include today's data
+            $endDate = Carbon::today()->endOfDay();
+            $startDate = Carbon::today()->subDays($period - 1)->startOfDay();
+
+            // Add debug info
+            Log::info("Date range calculation - Period: {$period} days");
+            Log::info("Start date: {$startDate->format('Y-m-d H:i:s')}");
+            Log::info("End date: {$endDate->format('Y-m-d H:i:s')}");
+            Log::info("Today: " . Carbon::today()->format('Y-m-d'));
+
             // Get daily statistics from Radacct
+            Log::info("Getting captive portal daily usage for location {$id}: {$startDate->format('Y-m-d H:i:s')} to {$endDate->format('Y-m-d H:i:s')}");
             $dailyStats = Radacct::getSessionStats($id, $startDate, $endDate);
-            
+            Log::info("Retrieved daily stats count: " . count($dailyStats));
+
             // Transform the data for the chart
             $chartData = [];
+            Log::info("Processing daily stats for chart data:");
             foreach ($dailyStats as $date => $stats) {
+                Log::info("Date: {$date}, Users: {$stats['unique_users']}, Sessions: {$stats['sessions']}");
                 $chartData[] = [
                     'date' => Carbon::parse($date)->format('M j'), // Format as "Jan 15"
                     'users' => $stats['unique_users'],
@@ -584,13 +600,16 @@ class LocationController extends Controller
                     $locationSettings->captive_portal_visible = true;
                     $locationSettings->captive_portal_enabled = true;
                 }
-                
+
                 // Handle different types of settings
                 if ($settingsType === 'captive' || $settingsType === 'captive_portal') {
                     Log::info('=== CAPTIVE PORTAL SETTINGS UPDATE ===');
                     Log::info('Settings type: ' . $settingsType);
                     Log::info('Location ID: ' . $location_id);
                     Log::info('Settings data captive: ' . json_encode($settings));
+                    
+                    // Ensure working hours exist for this location when updating captive portal settings
+                    $this->createBusinessWorkingHours($location_id);
                     
                     // Update captive portal settings
                     if (isset($settings['captive_portal_ssid'])) {
@@ -2283,5 +2302,99 @@ class LocationController extends Controller
                 'message' => 'Error syncing MAC addresses: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Create working hours entries for the whole week for a location if they don't exist
+     * By default, creates 24/7 access (no time restrictions)
+     * 
+     * @param int $locationId
+     * @return array
+     */
+    private function createWorkingHoursForWholeWeek($locationId)
+    {
+        $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        $createdWorkingHours = [];
+        
+        Log::info("Creating working hours for whole week for location ID: {$locationId}");
+        
+        foreach ($days as $day) {
+            // Check if working hours already exist for this day
+            $existingWorkingHour = CaptivePortalWorkingHour::where('location_id', $locationId)
+                ->where('day_of_week', $day)
+                ->first();
+            
+            if (!$existingWorkingHour) {
+                // Create new working hours entry with null times (24/7 access)
+                $workingHour = CaptivePortalWorkingHour::create([
+                    'location_id' => $locationId,
+                    'day_of_week' => $day,
+                    'start_time' => null, // null means 24/7 access
+                    'end_time' => null,   // null means 24/7 access
+                ]);
+                
+                $createdWorkingHours[] = $workingHour;
+                Log::info("Created working hours for {$day} (24/7 access) for location {$locationId}");
+            } else {
+                $createdWorkingHours[] = $existingWorkingHour;
+                Log::info("Working hours already exist for {$day} for location {$locationId}");
+            }
+        }
+        
+        Log::info("Working hours setup completed for location {$locationId}. Total entries: " . count($createdWorkingHours));
+        
+        return $createdWorkingHours;
+    }
+
+    /**
+     * Create working hours entries for the whole week with business hours preset
+     * Creates Monday-Friday 9AM-5PM, weekends disabled
+     * 
+     * @param int $locationId
+     * @return array
+     */
+    private function createBusinessWorkingHours($locationId)
+    {
+        Log::info("Creating business working hours for location ID: {$locationId}");
+        
+        $workingHoursConfig = [
+            'monday' => ['start_time' => '00:00', 'end_time' => '23:59'],
+            'tuesday' => ['start_time' => '00:00', 'end_time' => '23:59'],
+            'wednesday' => ['start_time' => '00:00', 'end_time' => '23:59'],
+            'thursday' => ['start_time' => '00:00', 'end_time' => '23:59'],
+            'friday' => ['start_time' => '00:00', 'end_time' => '23:59'],
+            'saturday' => ['start_time' => '00:00', 'end_time' => '23:59'],
+            'sunday' => ['start_time' => '00:00', 'end_time' => '23:59'],
+        ];
+
+        $createdWorkingHours = [];
+
+        Log::info("Creating business working hours for location ID: {$locationId}");
+
+        foreach ($workingHoursConfig as $day => $config) {
+            // Use updateOrCreate to handle existing entries
+            $workingHour = CaptivePortalWorkingHour::updateOrCreate(
+                [
+                    'location_id' => $locationId,
+                    'day_of_week' => $day,
+                ],
+                [
+                    'start_time' => $config['start_time'],
+                    'end_time' => $config['end_time'],
+                ]
+            );
+
+            $createdWorkingHours[] = $workingHour;
+
+            if ($config['start_time'] && $config['end_time']) {
+                Log::info("Set business hours for {$day}: {$config['start_time']}-{$config['end_time']} for location {$locationId}");
+            } else {
+                Log::info("Disabled {$day} for location {$locationId}");
+            }
+        }
+
+        Log::info("Business working hours setup completed for location {$locationId}");
+
+        return $createdWorkingHours;
     }
 }
