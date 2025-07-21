@@ -69,6 +69,7 @@ class LocationSettings extends Model
         'password_wifi_dhcp_enabled',
         'password_wifi_dhcp_start',
         'password_wifi_dhcp_end',
+        'password_wifi_gateway',
         
         // Captive portal IP settings
         'captive_portal_ip',
