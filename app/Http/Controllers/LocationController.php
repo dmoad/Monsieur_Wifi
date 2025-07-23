@@ -601,6 +601,9 @@ class LocationController extends Controller
                     $locationSettings->captive_portal_enabled = true;
                 }
 
+                Log::info("settingsType :: ");
+                Log::info($settingsType);
+
                 // Handle different types of settings
                 if ($settingsType === 'captive' || $settingsType === 'captive_portal') {
                     Log::info('=== CAPTIVE PORTAL SETTINGS UPDATE ===');
@@ -942,8 +945,15 @@ class LocationController extends Controller
                     Log::info('Updating router settings for location: ' . $location->id);
                 }
                 elseif ($settingsType === 'wan') {
+                    Log::info('Updating WAN settings for location: ' . $location->id);
+                    Log::info('WAN settings: ');
+                    Log::info($settings);
                     // Update WAN settings
                     if (isset($settings['wan_connection_type'])) {
+                        Log::info('WAN connection type: ');
+                        Log::info($settings['wan_connection_type']);
+                        Log::info('Location WAN connection type: ');
+                        Log::info($locationSettings->wan_connection_type);
                         if ($settings['wan_connection_type'] !== $locationSettings->wan_connection_type) {
                             $increment_version = 1;
                             Log::info('WAN connection type updated');
@@ -952,6 +962,10 @@ class LocationController extends Controller
                     }
 
                     if (isset($settings['wan_enabled'])) {
+                        Log::info('WAN enabled: ');
+                        Log::info($settings['wan_enabled']);
+                        Log::info('Location WAN enabled: ');
+                        Log::info($locationSettings->wan_enabled);
                         if ($settings['wan_enabled'] !== $locationSettings->wan_enabled) {
                             $increment_version = 1;
                             Log::info('WAN enabled status updated');
@@ -960,6 +974,10 @@ class LocationController extends Controller
                     }
 
                     if (isset($settings['wan_nat_enabled'])) {
+                        Log::info('WAN NAT enabled: ');
+                        Log::info($settings['wan_nat_enabled']);
+                        Log::info('Location WAN NAT enabled: ');
+                        Log::info($locationSettings->wan_nat_enabled);
                         if ($settings['wan_nat_enabled'] !== $locationSettings->wan_nat_enabled) {
                             $increment_version = 1;
                             Log::info('WAN NAT status updated');
@@ -970,6 +988,10 @@ class LocationController extends Controller
                     // Static IP settings
                     if ($settings['wan_connection_type'] === 'static') {
                         if (isset($settings['wan_ip_address'])) {
+                            Log::info('WAN IP address: ');
+                            Log::info($settings['wan_ip_address']);
+                            Log::info('Location WAN IP address: ');
+                            Log::info($locationSettings->wan_ip_address);
                             if ($settings['wan_ip_address'] !== $locationSettings->wan_ip_address) {
                                 $increment_version = 1;
                                 Log::info('WAN IP address updated');
@@ -978,6 +1000,10 @@ class LocationController extends Controller
                         }
 
                         if (isset($settings['wan_netmask'])) {
+                            Log::info('WAN netmask: ');
+                            Log::info($settings['wan_netmask']);
+                            Log::info('Location WAN netmask: ');
+                            Log::info($locationSettings->wan_netmask);
                             if ($settings['wan_netmask'] !== $locationSettings->wan_netmask) {
                                 $increment_version = 1;
                                 Log::info('WAN netmask updated');
@@ -986,6 +1012,10 @@ class LocationController extends Controller
                         }
 
                         if (isset($settings['wan_gateway'])) {
+                            Log::info('WAN gateway: ');
+                            Log::info($settings['wan_gateway']);
+                            Log::info('Location WAN gateway: ');
+                            Log::info($locationSettings->wan_gateway);
                             if ($settings['wan_gateway'] !== $locationSettings->wan_gateway) {
                                 $increment_version = 1;
                                 Log::info('WAN gateway updated');
@@ -994,6 +1024,10 @@ class LocationController extends Controller
                         }
 
                         if (isset($settings['wan_primary_dns'])) {
+                            Log::info('WAN primary DNS: ');
+                            Log::info($settings['wan_primary_dns']);
+                            Log::info('Location WAN primary DNS: ');
+                            Log::info($locationSettings->wan_primary_dns);
                             if ($settings['wan_primary_dns'] !== $locationSettings->wan_primary_dns) {
                                 $increment_version = 1;
                                 Log::info('WAN primary DNS updated');
@@ -1002,6 +1036,10 @@ class LocationController extends Controller
                         }
 
                         if (isset($settings['wan_secondary_dns'])) {
+                            Log::info('WAN secondary DNS: ');
+                            Log::info($settings['wan_secondary_dns']);
+                            Log::info('Location WAN secondary DNS: ');
+                            Log::info($locationSettings->wan_secondary_dns);
                             if ($settings['wan_secondary_dns'] !== $locationSettings->wan_secondary_dns) {
                                 $increment_version = 1;
                                 Log::info('WAN secondary DNS updated');
@@ -1582,7 +1620,7 @@ class LocationController extends Controller
             $device->firmware_id = $firmware->id;
             
             // Increment configuration version to trigger device update
-            $device->configuration_version = $device->configuration_version + 1;
+            // $device->configuration_version = $device->configuration_version + 1;
             
             $device->save();
             
@@ -1704,6 +1742,19 @@ class LocationController extends Controller
                 'captive_portal_vlan_tagging' => $settings->captive_portal_vlan_tagging,
                 'password_wifi_vlan_tagging' => $settings->password_wifi_vlan_tagging,
                 'vlan_enabled' => $settings->vlan_enabled,
+                'wan_connection_type' => $settings->wan_connection_type,
+                'wan_ip_address' => $settings->wan_ip_address,
+                'wan_netmask' => $settings->wan_netmask,
+                'wan_gateway' => $settings->wan_gateway,
+                'wan_primary_dns' => $settings->wan_primary_dns,
+                'wan_secondary_dns' => $settings->wan_secondary_dns,
+                'wan_pppoe_username' => $settings->wan_pppoe_username,
+                'wan_pppoe_password' => $settings->wan_pppoe_password,
+                'wan_pppoe_service_name' => $settings->wan_pppoe_service_name,
+                'wan_enabled' => $settings->wan_enabled,
+                'wan_mac_address' => $settings->wan_mac_address,
+                'wan_mtu' => $settings->wan_mtu,
+                'wan_nat_enabled' => $settings->wan_nat_enabled,
             ];
             
             // Update settings with provided data
@@ -1743,6 +1794,19 @@ class LocationController extends Controller
                 'captive_portal_vlan_tagging',
                 'password_wifi_vlan_tagging',
                 'vlan_enabled',
+                'wan_connection_type',
+                'wan_ip_address',
+                'wan_netmask',
+                'wan_gateway',
+                'wan_primary_dns',
+                'wan_secondary_dns',
+                'wan_pppoe_username',
+                'wan_pppoe_password',
+                'wan_pppoe_service_name',
+                'wan_enabled',
+                'wan_mac_address',
+                'wan_mtu',
+                'wan_nat_enabled',
             ]);
             
             // Check for router setting changes that require config version increment
@@ -1835,8 +1899,85 @@ class LocationController extends Controller
                     $settingsData['web_filter_categories'] = [];
                 }
             }
-            
 
+            // WAN settings changes
+            if (isset($settingsData['wan_connection_type']) && $settingsData['wan_connection_type'] !== $originalSettings['wan_connection_type']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN connection type updated from "' . $originalSettings['wan_connection_type'] . '" to "' . $settingsData['wan_connection_type'] . '"');
+            }
+            
+            if (isset($settingsData['wan_enabled']) && $settingsData['wan_enabled'] !== $originalSettings['wan_enabled']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN enabled updated from "' . ($originalSettings['wan_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['wan_enabled'] ? 'true' : 'false') . '"');
+            }
+            
+            if (isset($settingsData['wan_nat_enabled']) && $settingsData['wan_nat_enabled'] !== $originalSettings['wan_nat_enabled']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN NAT enabled updated from "' . ($originalSettings['wan_nat_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['wan_nat_enabled'] ? 'true' : 'false') . '"');
+            }
+
+            if (isset($settingsData['wan_ip_address']) && $settingsData['wan_ip_address'] !== $originalSettings['wan_ip_address']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN IP address updated from "' . $originalSettings['wan_ip_address'] . '" to "' . $settingsData['wan_ip_address'] . '"');
+            }
+
+            if (isset($settingsData['wan_netmask']) && $settingsData['wan_netmask'] !== $originalSettings['wan_netmask']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN netmask updated from "' . $originalSettings['wan_netmask'] . '" to "' . $settingsData['wan_netmask'] . '"');
+            }
+
+            if (isset($settingsData['wan_gateway']) && $settingsData['wan_gateway'] !== $originalSettings['wan_gateway']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN gateway updated from "' . $originalSettings['wan_gateway'] . '" to "' . $settingsData['wan_gateway'] . '"');
+            }
+
+            if (isset($settingsData['wan_primary_dns']) && $settingsData['wan_primary_dns'] !== $originalSettings['wan_primary_dns']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN primary DNS updated from "' . $originalSettings['wan_primary_dns'] . '" to "' . $settingsData['wan_primary_dns'] . '"');
+            }
+
+            if (isset($settingsData['wan_secondary_dns']) && $settingsData['wan_secondary_dns'] !== $originalSettings['wan_secondary_dns']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN secondary DNS updated from "' . $originalSettings['wan_secondary_dns'] . '" to "' . $settingsData['wan_secondary_dns'] . '"');
+            }
+
+            if (isset($settingsData['wan_pppoe_username']) && $settingsData['wan_pppoe_username'] !== $originalSettings['wan_pppoe_username']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN PPPoE username updated from "' . $originalSettings['wan_pppoe_username'] . '" to "' . $settingsData['wan_pppoe_username'] . '"');
+            }
+
+            if (isset($settingsData['wan_pppoe_password']) && $settingsData['wan_pppoe_password'] !== $originalSettings['wan_pppoe_password']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN PPPoE password updated from "' . $originalSettings['wan_pppoe_password'] . '" to "' . $settingsData['wan_pppoe_password'] . '"');
+            }
+
+            if (isset($settingsData['wan_pppoe_service_name']) && $settingsData['wan_pppoe_service_name'] !== $originalSettings['wan_pppoe_service_name']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN PPPoE service name updated from "' . $originalSettings['wan_pppoe_service_name'] . '" to "' . $settingsData['wan_pppoe_service_name'] . '"');
+            }
+
+            if (isset($settingsData['wan_mac_address']) && $settingsData['wan_mac_address'] !== $originalSettings['wan_mac_address']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN MAC address updated from "' . $originalSettings['wan_mac_address'] . '" to "' . $settingsData['wan_mac_address'] . '"');
+            }
+
+            if (isset($settingsData['wan_mtu']) && $settingsData['wan_mtu'] !== $originalSettings['wan_mtu']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('WAN MTU updated from "' . $originalSettings['wan_mtu'] . '" to "' . $settingsData['wan_mtu'] . '"');
+            }
             
             // Handle Captive Portal MAC filter list (adds to radcheck, no config version increment)
             if (isset($settingsData['captive_mac_filter_list'])) {
