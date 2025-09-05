@@ -574,6 +574,7 @@
             // Initialize DataTable
             const table = $('.datatables-firmware').DataTable({
                 responsive: true,
+                order: [[0, 'desc']], // Sort by first column (name/date) descending - latest first
                 columnDefs: [
                     {
                         targets: [5],
@@ -586,7 +587,44 @@
                         previous: '&nbsp;',
                         next: '&nbsp;'
                     }
+                },
+                drawCallback: function(settings) {
+                    // Re-initialize feather icons after each draw/pagination
+                    if (feather) {
+                        feather.replace({
+                            width: 14,
+                            height: 14
+                        });
+                    }
+                    
+                    // Re-initialize any dropdowns or tooltips if needed
+                    $('[data-toggle="dropdown"]').dropdown();
                 }
+            });
+            
+            // Add event delegation for firmware actions to work across pagination
+            $(document).on('click', '.firmware-edit', function(e) {
+                e.preventDefault();
+                const id = $(this).data('firmware-id');
+                editFirmware(parseInt(id));
+            });
+            
+            $(document).on('click', '.firmware-download', function(e) {
+                e.preventDefault();
+                const id = $(this).data('firmware-id');
+                downloadFirmware(parseInt(id));
+            });
+            
+            $(document).on('click', '.firmware-set-default', function(e) {
+                e.preventDefault();
+                const id = $(this).data('firmware-id');
+                setAsDefault(parseInt(id));
+            });
+            
+            $(document).on('click', '.firmware-delete', function(e) {
+                e.preventDefault();
+                const id = $(this).data('firmware-id');
+                deleteFirmware(parseInt(id));
             });
             
             // Initialize Select2 dropdowns
@@ -710,7 +748,16 @@
             const table = $('.datatables-firmware').DataTable();
             table.clear();
 
-            firmwareData.forEach(function(firmware) {
+            // Sort firmware data by creation date (latest first)
+            const sortedFirmwareData = [...firmwareData].sort((a, b) => {
+                // Sort by created_at if available, otherwise by id (assuming higher id = newer)
+                if (a.created_at && b.created_at) {
+                    return new Date(b.created_at) - new Date(a.created_at);
+                }
+                return b.id - a.id;
+            });
+
+            sortedFirmwareData.forEach(function(firmware) {
                 const statusBadge = firmware.is_enabled 
                     ? '<span class="badge badge-pill badge-light-success">Enable</span>'
                     : '<span class="badge badge-pill badge-light-secondary">Disable</span>';
@@ -743,20 +790,20 @@
                             <i data-feather="more-vertical"></i>
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="editFirmware(${firmware.id})">
+                            <a class="dropdown-item firmware-edit" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="edit-2" class="mr-50"></i>
                                 <span>Edit</span>
                             </a>
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="downloadFirmware(${firmware.id})">
+                            <a class="dropdown-item firmware-download" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="download" class="mr-50"></i>
                                 <span>Download</span>
                             </a>
                             ${!firmware.default_model_firmware ? `
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="setAsDefault(${firmware.id})">
+                            <a class="dropdown-item firmware-set-default" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="star" class="mr-50"></i>
                                 <span>Set as Default</span>
                             </a>` : ''}
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="deleteFirmware(${firmware.id})">
+                            <a class="dropdown-item firmware-delete" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="trash" class="mr-50"></i>
                                 <span>Delete</span>
                             </a>
@@ -766,7 +813,13 @@
             });
 
             table.draw();
-            feather.replace();
+            // Re-initialize feather icons after drawing
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+            }
         }
 
         function updateStats() {

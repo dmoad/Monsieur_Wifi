@@ -11,6 +11,7 @@ use App\Models\Radcheck;
 use App\Models\Firmware;
 use App\Models\CaptivePortalWorkingHour;
 use App\Models\OnlineNetworkUser;
+use App\Models\Category;
 use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -1755,6 +1756,7 @@ class LocationController extends Controller
                 'wan_mac_address' => $settings->wan_mac_address,
                 'wan_mtu' => $settings->wan_mtu,
                 'wan_nat_enabled' => $settings->wan_nat_enabled,
+                'web_filter_categories' => $settings->web_filter_categories,
             ];
             
             // Update settings with provided data
@@ -1890,13 +1892,27 @@ class LocationController extends Controller
                 $routerSettingsChanged = true;
                 Log::info('VLAN enabled updated from "' . ($originalSettings['vlan_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['vlan_enabled'] ? 'true' : 'false') . '"');
             }
-            
-            // Ensure web_filter_categories is properly handled as JSON
+
+            // Handle web_filter_categories comparison
             if (isset($settingsData['web_filter_categories'])) {
+                // Ensure web_filter_categories is properly handled as JSON
                 if (is_string($settingsData['web_filter_categories'])) {
                     $settingsData['web_filter_categories'] = json_decode($settingsData['web_filter_categories'], true) ?: [];
                 } elseif (!is_array($settingsData['web_filter_categories'])) {
                     $settingsData['web_filter_categories'] = [];
+                }
+
+                // Compare web_filter_categories with proper ordering
+                $newCategories = $this->sortCategoriesForComparison($settingsData['web_filter_categories']);
+                $oldCategories = $this->sortCategoriesForComparison($originalSettings['web_filter_categories'] ?: []);
+
+                if (json_encode($newCategories) !== json_encode($oldCategories)) {
+                    $increment_version = 1;
+                    $routerSettingsChanged = true;
+                    Log::info('Web filter categories updated', [
+                        'old_categories' => $oldCategories,
+                        'new_categories' => $newCategories
+                    ]);
                 }
             }
 
@@ -2537,5 +2553,41 @@ class LocationController extends Controller
         Log::info("Business working hours setup completed for location {$locationId}");
 
         return $createdWorkingHours;
+    }
+
+    /**
+     * Sort categories for comparison by fetching category names and ordering by name, then ID
+     * 
+     * @param array $categoryIds Array of category IDs
+     * @return array Sorted array of category objects with id and name
+     */
+    private function sortCategoriesForComparison($categoryIds)
+    {
+        if (empty($categoryIds) || !is_array($categoryIds)) {
+            return [];
+        }
+
+        // Fetch categories with their names from the database
+        $categories = \App\Models\Category::whereIn('id', $categoryIds)
+            ->select('id', 'name')
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'id' => (string)$category->id, // Ensure ID is string for consistent comparison
+                    'name' => $category->name
+                ];
+            })
+            ->toArray();
+
+        // Sort by name first, then by ID for consistent ordering
+        usort($categories, function ($a, $b) {
+            $nameComparison = strcmp($a['name'], $b['name']);
+            if ($nameComparison === 0) {
+                return strcmp($a['id'], $b['id']);
+            }
+            return $nameComparison;
+        });
+
+        return $categories;
     }
 }
