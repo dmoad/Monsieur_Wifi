@@ -6,7 +6,7 @@
     <meta name="description" content="monsieur-wifi cloud controller dashboard for managing and monitoring WiFi networks.">
     <meta name="keywords" content="wifi, cloud controller, network management, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
-    <title>Location Details - monsieur-wifi Controller</title>
+    <title>Location Details - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
 

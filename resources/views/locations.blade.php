@@ -9,7 +9,7 @@
     <meta name="description" content="Bloom WiFi cloud controller dashboard for managing and monitoring WiFi networks.">
     <meta name="keywords" content="wifi, cloud controller, network management, bloom">
     <meta name="author" content="Bloom Networks">
-    <title>Locations - monsieur-wifi Controller</title>
+    <title>Locations - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">

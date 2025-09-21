@@ -52,7 +52,7 @@ Route::get('/locations', function () {
 })->name('locations');
 
 Route::get('/locations/{location}', function () {
-    return view('location-details-v2');
+    return view('location-details-v3');
 })->name('location-details');
 
 Route::get('/locations/analytics/{location_id}', function ($location_id) {

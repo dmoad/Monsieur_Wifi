@@ -9,7 +9,7 @@
     <meta name="description" content="monsieur-wifi - WiFi network management system for administrators and network owners">
     <meta name="keywords" content="wifi, network, dashboard, admin, monsieur-wifi, captive portal, radius, management">
     <meta name="author" content="monsieur-wifi">
-    <title>Login - monsieur-wifi</title>
+    <title>Login - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">

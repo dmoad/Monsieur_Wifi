@@ -357,43 +357,28 @@ class DeviceController extends Controller
      */
     private function isCaptivePortalEnabledAtCurrentTime($locationId)
     {
-        // Get current day of week and time
+        // Get current day of week and hour
         $currentDayOfWeek = strtolower(now()->format('l')); // monday, tuesday, etc.
+        $currentHour = (int) now()->format('H'); // 0-23
         $currentTime = now()->format('H:i');
         
-        Log::info("Checking captive portal working hours for location {$locationId}: {$currentDayOfWeek} at {$currentTime}");
+        Log::info("Checking captive portal hourly schedule for location {$locationId}: {$currentDayOfWeek} hour {$currentHour} ({$currentTime})");
         
-        // Get working hours for current day
-        $workingHour = CaptivePortalWorkingHour::where('location_id', $locationId)
+        // Get hourly schedule for the current hour
+        $hourlySchedule = \App\Models\CaptivePortalHourlySchedule::where('location_id', $locationId)
             ->where('day_of_week', $currentDayOfWeek)
+            ->where('hour', $currentHour)
             ->first();
         
-        // If no working hours are set for this location/day, captive portal is enabled (24/7 access)
-        if (!$workingHour || !$workingHour->start_time || !$workingHour->end_time) {
-            Log::info("No working hours configured for {$currentDayOfWeek} - captive portal enabled (24/7 access)");
-            return true;
+        if ($hourlySchedule) {
+            // If hourly schedule exists, use its enabled status
+            Log::info("Hourly schedule found for {$currentDayOfWeek} hour {$currentHour}: " . ($hourlySchedule->enabled ? 'enabled' : 'disabled'));
+            return $hourlySchedule->enabled;
         }
         
-        // Check if current time is within working hours
-        $startTime = $workingHour->start_time;
-        $endTime = $workingHour->end_time;
-        
-        Log::info("Working hours for {$currentDayOfWeek}: {$startTime} - {$endTime}");
-        
-        $isEnabled = false;
-        
-        // Handle cases where end time is before start time (overnight hours)
-        if ($endTime < $startTime) {
-            // Overnight hours (e.g., 22:00 to 06:00)
-            $isEnabled = $currentTime >= $startTime || $currentTime <= $endTime;
-            Log::info("Overnight hours detected - captive portal " . ($isEnabled ? 'enabled' : 'disabled'));
-        } else {
-            // Normal hours (e.g., 09:00 to 17:00)
-            $isEnabled = $currentTime >= $startTime && $currentTime <= $endTime;
-            Log::info("Normal hours - captive portal " . ($isEnabled ? 'enabled' : 'disabled'));
-        }
-        
-        return $isEnabled;
+        // No hourly schedule found - return false (disabled)
+        Log::info("No hourly schedule found for {$currentDayOfWeek} hour {$currentHour} - captive portal disabled");
+        return false;
     }
 
     public function verify($mac_address, $verification_code)

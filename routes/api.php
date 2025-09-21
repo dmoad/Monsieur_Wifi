@@ -11,6 +11,7 @@ use App\Http\Controllers\CaptivePortalDesignController;
 use App\Http\Controllers\FirmwareController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CaptivePortalWorkingHourController;
+use App\Http\Controllers\CaptivePortalHourlyScheduleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DomainBlockingController;
 
@@ -96,6 +97,14 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     // Captive portal working hours route
     Route::get('/{id}/captive-portal/working-hours', [CaptivePortalWorkingHourController::class, 'getWorkingHours']);
     Route::post('/{id}/captive-portal/working-hours', [CaptivePortalWorkingHourController::class, 'updateWorkingHours']);
+    // Captive portal hourly schedule routes
+    Route::get('/{id}/captive-portal/hourly-schedule', [CaptivePortalHourlyScheduleController::class, 'getHourlySchedule']);
+    Route::post('/{id}/captive-portal/hourly-schedule', [CaptivePortalHourlyScheduleController::class, 'updateHourlySchedule']);
+    Route::post('/{id}/captive-portal/hourly-schedule/{dayOfWeek}', [CaptivePortalHourlyScheduleController::class, 'updateDaySchedule']);
+    Route::post('/{id}/captive-portal/hourly-schedule/{dayOfWeek}/bulk', [CaptivePortalHourlyScheduleController::class, 'bulkUpdateDay']);
+    Route::post('/{id}/captive-portal/hourly-schedule/{dayOfWeek}/{hour}/toggle', [CaptivePortalHourlyScheduleController::class, 'toggleHour']);
+    Route::post('/{id}/captive-portal/hourly-schedule/initialize', [CaptivePortalHourlyScheduleController::class, 'initializeFromWorkingHours']);
+    Route::get('/{id}/captive-portal/hourly-schedule/status', [CaptivePortalHourlyScheduleController::class, 'checkCurrentStatus']);
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], function () {
