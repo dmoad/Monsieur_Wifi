@@ -16,7 +16,7 @@ use Log;
 class DomainBlockingController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (API endpoint).
      */
     public function index(Request $request)
     {
@@ -37,14 +37,45 @@ class DomainBlockingController extends Controller
                 }
             });
 
-        if ($request->expectsJson()) {
-            $domains = $query->orderBy('created_at', 'desc')->paginate(15);
-            return response()->json($domains);
-        }
+        $domains = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $domains->items(),
+            'pagination' => [
+                'current_page' => $domains->currentPage(),
+                'last_page' => $domains->lastPage(),
+                'per_page' => $domains->perPage(),
+                'total' => $domains->total(),
+            ]
+        ]);
+    }
+
+    /**
+     * Display the domain blocking page (Web view).
+     */
+    public function show_page(Request $request, $locale)
+    {
+        $categories = Category::withCount('blockedDomains')->ordered()->get();
+
+        $query = BlockedDomain::with('category')
+            ->when($request->filled('category'), function ($q) use ($request) {
+                return $q->byCategory($request->category);
+            })
+            ->when($request->filled('search'), function ($q) use ($request) {
+                return $q->search($request->search);
+            })
+            ->when($request->filled('status'), function ($q) use ($request) {
+                if ($request->status === 'active') {
+                    return $q->where('is_active', true);
+                } elseif ($request->status === 'inactive') {
+                    return $q->where('is_active', false);
+                }
+            });
 
         $domains = $query->orderBy('created_at', 'desc')->paginate(15);
         
-        return view('domain-blocking', compact('categories', 'domains'));
+        return view('domain-blocking-' . $locale, compact('categories', 'domains', 'locale'));
     }
 
     /**

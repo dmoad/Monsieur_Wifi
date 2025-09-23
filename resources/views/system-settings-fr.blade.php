@@ -1,37 +1,37 @@
 <!DOCTYPE html>
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="fr" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="monsieur-wifi - Global settings for network administrators">
-    <meta name="keywords" content="wifi, network, settings, captive portal, radius, branding, dashboard, monsieur-wifi">
+    <meta name="description" content="monsieur-wifi - Paramètres globaux pour les administrateurs réseau">
+    <meta name="keywords" content="wifi, réseau, paramètres, portail captif, radius, image de marque, tableau de bord, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
-    <title>Global Settings - Monsieur WiFi</title>
-    <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <title>Paramètres globaux - Monsieur WiFi</title>
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/forms/select/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/forms/wizard/bs-stepper.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/wizard/bs-stepper.min.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/forms/form-validation.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/forms/form-wizard.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/form-validation.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/form-wizard.css">
     <!-- END: Page CSS-->
 
     <!-- BEGIN: Custom CSS-->
@@ -108,17 +108,17 @@
                 <!-- Language dropdown -->
                 <li class="nav-item dropdown dropdown-language">
                     <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-us"></i>
-                        <span class="selected-language">English</span>
+                        <i class="flag-icon flag-icon-fr"></i>
+                        <span class="selected-language">Français</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/system-settings" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/system-settings" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
-                                    </div>
+                    </div>
                 </li>
                 
                 <!-- Dark mode toggle -->
@@ -145,9 +145,9 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -179,17 +179,17 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
-                <li class="navigation-header"><span>Management</span></li>
+                <li class="navigation-header"><span>Gestion</span></li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/fr/dashboard">
                         <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
+                        <span class="menu-title text-truncate">Tableau de bord</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/locations">
+                    <a class="d-flex align-items-center" href="/fr/locations">
                         <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
+                        <span class="menu-title text-truncate">Emplacements</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
@@ -200,50 +200,50 @@
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/fr/captive-portals">
                         <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
+                        <span class="menu-title text-truncate">Portails captifs</span>
                     </a>
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/fr/accounts">
                         <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
+                        <span class="menu-title text-truncate">Comptes</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
                         <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
+                        <span class="menu-title text-truncate">Blocage de domaines</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                    <a class="d-flex align-items-center" href="/fr/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                <li class="nav-item active only_admin hidden">
+                    <a class="d-flex align-items-center" href="/fr/system-settings">
                         <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
+                        <span class="menu-title text-truncate">Paramètres système</span>
                     </a>
                 </li>
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
+                <li class="navigation-header"><span>Compte</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/fr/profile">
                          <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
+                         <span class="menu-title text-truncate">Profil</span>
                      </a>
                 </li>
                 <li class="nav-item">
                      <a class="d-flex align-items-center" href="/logout">
                          <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Logout</span>
+                         <span class="menu-title text-truncate">Déconnexion</span>
                      </a>
                 </li> 
             </ul>
@@ -260,12 +260,12 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Global Settings</h2>
+                            <h2 class="content-header-title float-left mb-0">Paramètres globaux</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard.html">Home</a>
+                                    <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a>
                                     </li>
-                                    <li class="breadcrumb-item active">Settings
+                                    <li class="breadcrumb-item active">Paramètres
                                     </li>
                                 </ol>
                             </div>
@@ -284,25 +284,25 @@
                                         <li class="nav-item">
                                             <a class="nav-link active" id="captive-portal-tab" data-toggle="pill" href="#captive-portal" aria-expanded="true" role="tab" aria-selected="true">
                                                 <i data-feather="wifi" class="mr-50"></i>
-                                                <span class="font-weight-bold">Captive Portal</span>
+                                                <span class="font-weight-bold">Portail captif</span>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="radius-tab" data-toggle="pill" href="#radius" aria-expanded="false" role="tab" aria-selected="false">
                                                 <i data-feather="shield" class="mr-50"></i>
-                                                <span class="font-weight-bold">RADIUS Configuration</span>
+                                                <span class="font-weight-bold">Configuration RADIUS</span>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="branding-tab" data-toggle="pill" href="#branding" aria-expanded="false" role="tab" aria-selected="false">
                                                 <i data-feather="image" class="mr-50"></i>
-                                                <span class="font-weight-bold">Branding</span>
+                                                <span class="font-weight-bold">Image de marque</span>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="system-tab" data-toggle="pill" href="#system" aria-expanded="false" role="tab" aria-selected="false">
                                                 <i data-feather="server" class="mr-50"></i>
-                                                <span class="font-weight-bold">System</span>
+                                                <span class="font-weight-bold">Système</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -317,35 +317,35 @@
                                                                 <i data-feather="wifi"></i>
                                                             </div>
                                                         </div>
-                                                        <h3 class="setting-section-title">Default WiFi Settings</h3>
+                                                        <h3 class="setting-section-title">Paramètres WiFi par défaut</h3>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="default_essid">Default ESSID</label>
+                                                                <label for="default_essid">ESSID par défaut</label>
                                                                 <input type="text" id="default_essid" class="form-control" name="default_essid" placeholder="MrWiFi-Guest" value="MrWiFi-Guest" />
-                                                                <small>This ESSID will be used as default for all new access points</small>
+                                                                <small>Cet ESSID sera utilisé par défaut pour tous les nouveaux points d'accès</small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="default_guest_essid">Default Guest ESSID</label>
+                                                                <label for="default_guest_essid">ESSID invité par défaut</label>
                                                                 <input type="text" id="default_guest_essid" class="form-control" name="default_guest_essid" placeholder="MrWiFi-Guest" value="MrWiFi-Guest" />
-                                                                <small>This ESSID will be used as default for guest networks</small>
+                                                                <small>Cet ESSID sera utilisé par défaut pour les réseaux invités</small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="default_password">Default Password</label>
+                                                                <label for="default_password">Mot de passe par défaut</label>
                                                                 <div class="input-group input-group-merge form-password-toggle">
                                                                     <input type="password" id="default_password" class="form-control" name="default_password" placeholder="············" value="Welcome123!" />
                                                                     <div class="input-group-append">
                                                                         <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                                                     </div>
                                                                 </div>
-                                                                <small>Default password for new access points (minimum 8 characters)</small>
+                                                                <small>Mot de passe par défaut pour les nouveaux points d'accès (minimum 8 caractères)</small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6 col-12">
@@ -361,52 +361,52 @@
                                                                 <i data-feather="layout"></i>
                                                             </div>
                                                         </div>
-                                                        <h3 class="setting-section-title">Captive Portal Behavior</h3>
+                                                        <h3 class="setting-section-title">Comportement du portail captif</h3>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="portal_timeout">Default Session Timeout</label>
+                                                                <label for="portal_timeout">Délai d'expiration de session par défaut</label>
                                                                 <div class="input-group">
                                                                     <input type="number" id="portal_timeout" class="form-control" name="portal_timeout" value="24" min="1" max="168" />
                                                                     <div class="input-group-append">
-                                                                        <span class="input-group-text">Hours</span>
+                                                                        <span class="input-group-text">Heures</span>
                                                                     </div>
                                                                 </div>
-                                                                <small>How long users stay authenticated before needing to log in again</small>
+                                                                <small>Durée pendant laquelle les utilisateurs restent authentifiés avant de devoir se reconnecter</small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="idle_timeout">Default Idle Timeout</label>
+                                                                <label for="idle_timeout">Délai d'inactivité par défaut</label>
                                                                 <div class="input-group">
                                                                     <input type="number" id="idle_timeout" class="form-control" name="idle_timeout" value="30" min="5" max="180" />
                                                                     <div class="input-group-append">
                                                                         <span class="input-group-text">Minutes</span>
                                                                     </div>
                                                                 </div>
-                                                                <small>Disconnect inactive users after this period</small>
+                                                                <small>Déconnecter les utilisateurs inactifs après cette période</small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="bandwidth_limit">Default Bandwidth Limit</label>
+                                                                <label for="bandwidth_limit">Limite de bande passante par défaut</label>
                                                                 <div class="input-group">
                                                                     <input type="number" id="bandwidth_limit" class="form-control" name="bandwidth_limit" value="5" min="1" max="1000" />
                                                                     <div class="input-group-append">
                                                                         <span class="input-group-text">Mbps</span>
                                                                     </div>
                                                                 </div>
-                                                                <small>Default bandwidth limit per user</small>
+                                                                <small>Limite de bande passante par défaut par utilisateur</small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="user_limit">Default Maximum Users</label>
+                                                                <label for="user_limit">Nombre maximum d'utilisateurs par défaut</label>
                                                                 <input type="number" id="user_limit" class="form-control" name="user_limit" value="50" min="1" max="500" />
-                                                                <small>Maximum concurrent users per access point</small>
+                                                                <small>Nombre maximum d'utilisateurs simultanés par point d'accès</small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -415,17 +415,17 @@
                                                             <div class="form-group">
                                                                 <div class="custom-control custom-switch custom-control-inline">
                                                                     <input type="checkbox" class="custom-control-input" id="enable_terms" name="enable_terms" checked />
-                                                                    <label class="custom-control-label" for="enable_terms">Display Terms & Conditions</label>
+                                                                    <label class="custom-control-label" for="enable_terms">Afficher les Conditions d'utilisation</label>
                                                                 </div>
-                                                                <small>Require acceptance of Terms & Conditions before connecting</small>
+                                                                <small>Exiger l'acceptation des Conditions d'utilisation avant la connexion</small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-12">
-                                                        <button type="submit" class="btn btn-primary mr-1">Save Changes</button>
-                                                        <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                                                        <button type="submit" class="btn btn-primary mr-1">Enregistrer les modifications</button>
+                                                        <!-- <button type="reset" class="btn btn-outline-secondary">Réinitialiser</button> -->
                                                     </div>
                                                 </div>
                                             </form>
@@ -441,50 +441,50 @@
                                                                 <i data-feather="shield"></i>
                                                             </div>
                                                         </div>
-                                                        <h3 class="setting-section-title">Primary RADIUS Server</h3>
+                                                        <h3 class="setting-section-title">Serveur RADIUS principal</h3>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="radius_ip">Server IP Address</label>
+                                                                <label for="radius_ip">Adresse IP du serveur</label>
                                                                 <input type="text" id="radius_ip" class="form-control" name="radius_ip" placeholder="192.168.1.100" value="192.168.1.100" />
-                                                                <small>IP address of your primary RADIUS server</small>
+                                                                <small>Adresse IP de votre serveur RADIUS principal</small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="radius_port">Authentication Port</label>
+                                                                <label for="radius_port">Port d'authentification</label>
                                                                 <input type="number" id="radius_port" class="form-control" name="radius_port" placeholder="1812" value="1812" min="1" max="65535" />
-                                                                <small>Port used for RADIUS authentication (default: 1812)</small>
+                                                                <small>Port utilisé pour l'authentification RADIUS (par défaut : 1812)</small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="radius_secret">Shared Secret</label>
+                                                                <label for="radius_secret">Secret partagé</label>
                                                                 <div class="input-group input-group-merge form-password-toggle">
                                                                     <input type="password" id="radius_secret" class="form-control" name="radius_secret" placeholder="············" value="RadiusSecret123" />
                                                                     <div class="input-group-append">
                                                                         <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                                                     </div>
                                                                 </div>
-                                                                <small>Shared secret for RADIUS authentication</small>
+                                                                <small>Secret partagé pour l'authentification RADIUS</small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
-                                                                <label for="accounting_port">Accounting Port</label>
+                                                                <label for="accounting_port">Port de comptabilité</label>
                                                                 <input type="number" id="accounting_port" class="form-control" name="accounting_port" placeholder="1813" value="1813" min="1" max="65535" />
-                                                                <small>Port used for RADIUS accounting (default: 1813)</small>
+                                                                <small>Port utilisé pour la comptabilité RADIUS (par défaut : 1813)</small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-12">
-                                                        <button type="submit" class="btn btn-primary mr-1">Save Changes</button>
-                                                        <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                                                        <button type="submit" class="btn btn-primary mr-1">Enregistrer les modifications</button>
+                                                        <!-- <button type="reset" class="btn btn-outline-secondary">Réinitialiser</button> -->
                                                     </div>
                                                 </div>
                                             </form>
@@ -500,37 +500,37 @@
                                                                                                         <i data-feather="type"></i>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <h3 class="setting-section-title">Company Information</h3>
+                                                                                                <h3 class="setting-section-title">Informations de l'entreprise</h3>
                                                                                             </div>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="company_name">Company Name</label>
-                                                                                                        <input type="text" id="company_name" class="form-control" name="company_name" placeholder="monsieur-wifi" value="monsieur-wifi" />
-                                                                                                        <small>Your company name as displayed on the captive portal</small>
+                                                                        <label for="company_name">Nom de l'entreprise</label>
+                                                                        <input type="text" id="company_name" class="form-control" name="company_name" placeholder="monsieur-wifi" value="monsieur-wifi" />
+                                                                        <small>Le nom de votre entreprise tel qu'affiché sur le portail captif</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="company_website">Company Website</label>
-                                                                                                        <input type="url" id="company_website" class="form-control" name="company_website" placeholder="https://www.example.com" value="https://www.mrwifi.com" />
-                                                                                                        <small>Your company website URL</small>
+                                                                        <label for="company_website">Site web de l'entreprise</label>
+                                                                        <input type="url" id="company_website" class="form-control" name="company_website" placeholder="https://www.example.com" value="https://www.mrwifi.com" />
+                                                                        <small>L'URL du site web de votre entreprise</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="contact_email">Contact Email</label>
-                                                                                                        <input type="email" id="contact_email" class="form-control" name="contact_email" placeholder="support@example.com" value="support@mrwifi.com" />
-                                                                                                        <small>Contact email displayed on the captive portal</small>
+                                                                        <label for="contact_email">Email de contact</label>
+                                                                        <input type="email" id="contact_email" class="form-control" name="contact_email" placeholder="support@example.com" value="support@mrwifi.com" />
+                                                                        <small>Email de contact affiché sur le portail captif</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="support_phone">Support Phone</label>
-                                                                                                        <input type="tel" id="support_phone" class="form-control" name="support_phone" placeholder="+1 (555) 123-4567" value="+1 (555) 123-4567" />
-                                                                                                        <small>Support phone number displayed on the captive portal</small>
+                                                                        <label for="support_phone">Téléphone de support</label>
+                                                                        <input type="tel" id="support_phone" class="form-control" name="support_phone" placeholder="+1 (555) 123-4567" value="+1 (555) 123-4567" />
+                                                                        <small>Numéro de téléphone de support affiché sur le portail captif</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -543,38 +543,38 @@
                                                                                                         <i data-feather="image"></i>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <h3 class="setting-section-title">Logo & Images</h3>
+                                                                                                <h3 class="setting-section-title">Logo et images</h3>
                                                                                             </div>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="logo-upload">Company Logo</label>
-                                                                                                        <div class="custom-file">
-                                                                                                            <input type="file" class="custom-file-input" id="logo-upload" accept="image/*" />
-                                                                                                            <label class="custom-file-label" for="logo-upload">Choose file</label>
-                                                                                                        </div>
-                                                                                                        <small>Recommended size: 300px x 100px (PNG or SVG with transparency)</small>
+                                                                        <label for="logo-upload">Logo de l'entreprise</label>
+                                                                        <div class="custom-file">
+                                                                            <input type="file" class="custom-file-input" id="logo-upload" accept="image/*" />
+                                                                            <label class="custom-file-label" for="logo-upload">Choisir un fichier</label>
+                                                                        </div>
+                                                                        <small>Taille recommandée : 300px x 100px (PNG ou SVG avec transparence)</small>
                                                                                                     </div>
                                                                                                     <div class="form-group">
-                                                                                                        <label>Current Logo</label>
+                                                                                                        <label>Logo actuel</label>
                                                                                                         <div class="d-flex justify-content-center p-2 border rounded mb-1">
-                                                                                                            <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Current logo" height="50" />
+                                                                                                            <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Current logo" height="50" />
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="favicon-upload">Favicon</label>
-                                                                                                        <div class="custom-file">
-                                                                                                            <input type="file" class="custom-file-input" id="favicon-upload" accept="image/x-icon,image/png,image/gif" />
-                                                                                                            <label class="custom-file-label" for="favicon-upload">Choose file</label>
-                                                                                                        </div>
-                                                                                                        <small>Recommended size: 32px x 32px (ICO, PNG, or GIF)</small>
+                                                                        <label for="favicon-upload">Favicon</label>
+                                                                        <div class="custom-file">
+                                                                            <input type="file" class="custom-file-input" id="favicon-upload" accept="image/x-icon,image/png,image/gif" />
+                                                                            <label class="custom-file-label" for="favicon-upload">Choisir un fichier</label>
+                                                                        </div>
+                                                                        <small>Taille recommandée : 32px x 32px (ICO, PNG ou GIF)</small>
                                                                                                     </div>
                                                                                                     <div class="form-group">
-                                                                                                        <label>Current Favicon</label>
+                                                                                                        <label>Favicon actuel</label>
                                                                                                         <div class="d-flex justify-content-center p-2 border rounded mb-1">
-                                                                                                            <img src="app-assets/mrwifi-assets/MrWifi.png" alt="Current favicon" height="32" />
+                                                                                                            <img src="/app-assets/mrwifi-assets/MrWifi.png" alt="Current favicon" height="32" />
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -582,12 +582,12 @@
                                                                                             <div class="row">
                                                                                                 <div class="col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="splash-background">Captive Portal Background</label>
-                                                                                                        <div class="custom-file">
-                                                                                                            <input type="file" class="custom-file-input" id="splash-background" accept="image/*" />
-                                                                                                            <label class="custom-file-label" for="splash-background">Choose file</label>
-                                                                                                        </div>
-                                                                                                        <small>Recommended size: 1920px x 1080px (JPG or PNG)</small>
+                                                                        <label for="splash-background">Arrière-plan du portail captif</label>
+                                                                        <div class="custom-file">
+                                                                            <input type="file" class="custom-file-input" id="splash-background" accept="image/*" />
+                                                                            <label class="custom-file-label" for="splash-background">Choisir un fichier</label>
+                                                                        </div>
+                                                                        <small>Taille recommandée : 1920px x 1080px (JPG ou PNG)</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -600,38 +600,38 @@
                                                                                                         <i data-feather="layers"></i>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <h3 class="setting-section-title">Portal Customization</h3>
+                                                                                                <h3 class="setting-section-title">Personnalisation du portail</h3>
                                                                                             </div>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="primary_color">Primary Color</label>
+                                                                                                        <label for="primary_color">Couleur principale</label>
                                                                                                         <div class="input-group">
                                                                                                             <input type="color" id="primary_color" class="form-control" name="primary_color" value="#7367f0" />
                                                                                                             <div class="input-group-append">
                                                                                                                 <span class="input-group-text">#7367f0</span>
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                        <small>Main color for buttons and highlights</small>
+                                                                                                        <small>Couleur principale pour les boutons et les mises en évidence</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="secondary_color">Secondary Color</label>
+                                                                                                        <label for="secondary_color">Couleur secondaire</label>
                                                                                                         <div class="input-group">
                                                                                                             <input type="color" id="secondary_color" class="form-control" name="secondary_color" value="#82868b" />
                                                                                                             <div class="input-group-append">
                                                                                                                 <span class="input-group-text">#82868b</span>
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                        <small>Secondary color for accents and alternate elements</small>
+                                                                                                        <small>Couleur secondaire pour les accents et les éléments alternatifs</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="font_family">Primary Font</label>
+                                                                                                        <label for="font_family">Police principale</label>
                                                                                                         <select id="font_family" class="form-control" name="font_family">
                                                                                                             <option value="montserrat" selected>Montserrat</option>
                                                                                                             <option value="roboto">Roboto</option>
@@ -639,18 +639,18 @@
                                                                                                             <option value="lato">Lato</option>
                                                                                                             <option value="poppins">Poppins</option>
                                                                                                         </select>
-                                                                                                        <small>Font family used throughout the portal</small>
+                                                                                                        <small>Famille de police utilisée dans tout le portail</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="portal_theme">Portal Theme</label>
-                                                                                                        <select id="portal_theme" class="form-control" name="portal_theme">
-                                                                                                            <option value="light" selected>Light</option>
-                                                                                                            <option value="dark">Dark</option>
-                                                                                                            <option value="auto">Auto (system preference)</option>
-                                                                                                        </select>
-                                                                                                        <small>Default theme for the captive portal</small>
+                                                                        <label for="portal_theme">Thème du portail</label>
+                                                                        <select id="portal_theme" class="form-control" name="portal_theme">
+                                                                            <option value="light" selected>Clair</option>
+                                                                            <option value="dark">Sombre</option>
+                                                                            <option value="auto">Automatique (préférence système)</option>
+                                                                        </select>
+                                                                        <small>Thème par défaut pour le portail captif</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -658,7 +658,7 @@
                                                                                         <div class="row">
                                                                                             <div class="col-12">
                                                                                                 <button type="submit" class="btn btn-primary mr-1">Save Changes</button>
-                                                                                                <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                                                                                                <!-- <button type="reset" class="btn btn-outline-secondary">Reset</button> -->
                                                                                             </div>
                                                                                         </div>
                                                                                     </form>
@@ -674,42 +674,42 @@
                                                                                                         <i data-feather="mail"></i>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <h3 class="setting-section-title">Email Configuration</h3>
+                                                                                                <h3 class="setting-section-title">Configuration email</h3>
                                                                                             </div>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="smtp_server">SMTP Server</label>
-                                                                                                        <input type="text" id="smtp_server" class="form-control" name="smtp_server" placeholder="smtp.example.com" value="smtp.gmail.com" />
-                                                                                                        <small>SMTP server for sending email notifications</small>
+                                                                        <label for="smtp_server">Serveur SMTP</label>
+                                                                        <input type="text" id="smtp_server" class="form-control" name="smtp_server" placeholder="smtp.example.com" value="smtp.gmail.com" />
+                                                                        <small>Serveur SMTP pour l'envoi de notifications par email</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="smtp_port">SMTP Port</label>
-                                                                                                        <input type="number" id="smtp_port" class="form-control" name="smtp_port" placeholder="587" value="587" min="1" max="65535" />
-                                                                                                        <small>Port for SMTP server connection</small>
+                                                                        <label for="smtp_port">Port SMTP</label>
+                                                                        <input type="number" id="smtp_port" class="form-control" name="smtp_port" placeholder="587" value="587" min="1" max="65535" />
+                                                                        <small>Port pour la connexion au serveur SMTP</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="sender_email">Sender Email</label>
-                                                                                                        <input type="email" id="sender_email" class="form-control" name="sender_email" placeholder="notifications@example.com" value="notifications@mrwifi.com" />
-                                                                                                        <small>Email address that notifications come from</small>
+                                                                        <label for="sender_email">Email expéditeur</label>
+                                                                        <input type="email" id="sender_email" class="form-control" name="sender_email" placeholder="notifications@example.com" value="notifications@mrwifi.com" />
+                                                                        <small>Adresse email à partir de laquelle les notifications sont envoyées</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
-                                                                                                        <label for="smtp_password">SMTP Password</label>
+                                                                                                        <label for="smtp_password">Mot de passe SMTP</label>
                                                                                                         <div class="input-group input-group-merge form-password-toggle">
                                                                                                             <input type="password" id="smtp_password" class="form-control" name="smtp_password" placeholder="············" />
                                                                                                             <div class="input-group-append">
                                                                                                                 <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                        <small>Password for authenticating with SMTP server</small>
+                                                                                                        <small>Mot de passe pour l'authentification avec le serveur SMTP</small>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -718,7 +718,7 @@
                                                                                                 <div class="col-12">
                                                                                                     <button type="button" class="btn btn-outline-primary btn-sm">
                                                                                                         <i data-feather="send" class="mr-25"></i>
-                                                                                                        <span>Send Test Email</span>
+                                                                                                        <span>Envoyer un email de test</span>
                                                                                                     </button>
                                                                                                 </div>
                                                                                             </div>
@@ -726,7 +726,7 @@
                                                                                         <div class="row">
                                                                                             <div class="col-12">
                                                                                                 <button type="submit" class="btn btn-primary mr-1">Save Changes</button>
-                                                                                                <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                                                                                                <!-- <button type="reset" class="btn btn-outline-secondary">Reset</button> -->
                                                                                             </div>
                                                                                         </div>
                                                                                     </form>
@@ -748,31 +748,31 @@
                                             <!-- BEGIN: Footer-->
                                             <footer class="footer footer-static footer-light">
                                                 <p class="clearfix mb-0">
-                                                    <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span>
-                                                    <span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span>
+                    <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, Tous droits réservés</span></span>
+                    <span class="float-md-right d-none d-md-block">Conçu avec soin & Créé avec<i data-feather="heart"></i></span>
                                                 </p>
                                             </footer>
                                             <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
                                             <!-- END: Footer-->
                                         
                                             <!-- BEGIN: Vendor JS-->
-                                            <script src="app-assets/vendors/js/vendors.min.js"></script>
+                                            <script src="/app-assets/vendors/js/vendors.min.js"></script>
                                             <!-- BEGIN Vendor JS-->
                                         
                                             <!-- BEGIN: Page Vendor JS-->
-                                            <script src="app-assets/vendors/js/forms/select/select2.full.min.js"></script>
-                                            <script src="app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
-                                            <script src="app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
-                                            <script src="app-assets/vendors/js/forms/wizard/bs-stepper.min.js"></script>
+                                            <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+                                            <script src="/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+                                            <script src="/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
+                                            <script src="/app-assets/vendors/js/forms/wizard/bs-stepper.min.js"></script>
                                             <!-- END: Page Vendor JS-->
                                         
                                             <!-- BEGIN: Theme JS-->
-                                            <script src="app-assets/js/core/app-menu.js"></script>
-                                            <script src="app-assets/js/core/app.js"></script>
+                                            <script src="/app-assets/js/core/app-menu.js"></script>
+                                            <script src="/app-assets/js/core/app.js"></script>
                                             <!-- END: Theme JS-->
                                         
                                             <!-- BEGIN: Page JS-->
-                                            <script src="app-assets/js/scripts/forms/form-validation.js"></script>
+                                            <script src="/app-assets/js/scripts/forms/form-validation.js"></script>
                                             <!-- Include config.js before other custom scripts -->
                                             <script src="/assets/js/config.js?v=1"></script>
                                             <!-- END: Page JS-->
@@ -846,7 +846,7 @@
                                                     // Custom file input label
                                                     $('.custom-file-input').on('change', function() {
                                                         var fileName = $(this).val().split('\\').pop();
-                                                        $(this).next('.custom-file-label').html(fileName || 'Choose file');
+                                                        $(this).next('.custom-file-label').html(fileName || 'Choisir un fichier');
                                                     });
                                                     
                                                     // Handle primary color input
@@ -897,20 +897,20 @@
                                                             // Show saving indicator
                                                             var submitBtn = form.find('button[type="submit"]');
                                                             var originalText = submitBtn.html();
-                                                            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+                                                            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enregistrement...');
                                                             submitBtn.attr('disabled', true);
                                                             
                                                             // Simulate API call
                                                             setTimeout(function() {
                                                                 // Success notification
                                                                 if (typeof toastr !== 'undefined') {
-                                                                    toastr.success('Your settings have been saved successfully.', 'Settings Saved', {
+                                                                    toastr.success('Vos paramètres ont été enregistrés avec succès.', 'Paramètres enregistrés', {
                                                                         closeButton: true,
                                                                         tapToDismiss: false,
                                                                         timeOut: 5000
                                                                     });
                                                                 } else {
-                                                                    alert('Settings saved successfully!');
+                                                                    alert('Paramètres enregistrés avec succès !');
                                                                 }
                                                                 
                                                                 // Restore button state
@@ -923,19 +923,19 @@
                                                                 
                                                                 switch(section) {
                                                                     case 'captive-portal':
-                                                                        notificationTitle = 'Captive Portal settings updated';
+                                                                        notificationTitle = 'Paramètres du portail captif mis à jour';
                                                                         break;
                                                                     case 'radius':
-                                                                        notificationTitle = 'RADIUS settings updated';
+                                                                        notificationTitle = 'Paramètres RADIUS mis à jour';
                                                                         break;
                                                                     case 'branding':
-                                                                        notificationTitle = 'Branding settings updated';
+                                                                        notificationTitle = 'Paramètres d\'image de marque mis à jour';
                                                                         break;
                                                                     case 'system':
-                                                                        notificationTitle = 'System settings updated';
+                                                                        notificationTitle = 'Paramètres système mis à jour';
                                                                         break;
                                                                     default:
-                                                                        notificationTitle = 'Settings updated';
+                                                                        notificationTitle = 'Paramètres mis à jour';
                                                                 }
                                                                 
                                                                 var newNotification = `
@@ -948,7 +948,7 @@
                                                                             </div>
                                                                             <div class="media-body">
                                                                                 <p class="media-heading"><span class="font-weight-bolder">${notificationTitle}</span></p>
-                                                                                <small class="notification-text">Settings have been saved successfully</small>
+                                                                                <small class="notification-text">Les paramètres ont été enregistrés avec succès</small>
                                                                                 <small class="notification-text text-muted mt-1"><i data-feather="clock"></i> Just now</small>
                                                                             </div>
                                                                         </div>
@@ -974,19 +974,19 @@
                                                     $('button:contains("Send Test Email")').on('click', function() {
                                                         var btn = $(this);
                                                         var originalText = btn.html();
-                                                        btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...');
+                                                        btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Envoi en cours...');
                                                         btn.attr('disabled', true);
                                                         
                                                         // Simulate sending test email
                                                         setTimeout(function() {
                                                             if (typeof toastr !== 'undefined') {
-                                                                toastr.info('Test email has been sent to ' + $('#sender_email').val(), 'Email Sent', {
+                                                                toastr.info('Un email de test a été envoyé à ' + $('#sender_email').val(), 'Email envoyé', {
                                                                     closeButton: true,
                                                                     tapToDismiss: false,
                                                                     timeOut: 5000
                                                                 });
                                                             } else {
-                                                                alert('Test email sent to ' + $('#sender_email').val());
+                                                                alert('Email de test envoyé à ' + $('#sender_email').val());
                                                             }
                                                             
                                                             btn.html(originalText);
@@ -1094,9 +1094,9 @@ function loadSettings() {
             
             // Show error message
             if (typeof toastr !== 'undefined') {
-                toastr.error('Failed to load settings. Please try again.', 'Error');
+                        toastr.error('Échec du chargement des paramètres. Veuillez réessayer.', 'Erreur');
             } else {
-                alert('Failed to load settings. Please try again.');
+                        alert('Échec du chargement des paramètres. Veuillez réessayer.');
             }
             
             console.error('Failed to load settings:', xhr.responseText);
@@ -1257,13 +1257,13 @@ function setupFormHandlers() {
                 },
                 success: function(response) {
                     if (typeof toastr !== 'undefined') {
-                        toastr.success('Your settings have been saved successfully.', 'Settings Saved', {
+                        toastr.success('Vos paramètres ont été enregistrés avec succès.', 'Paramètres enregistrés', {
                             closeButton: true,
                             tapToDismiss: false,
                             timeOut: 5000
                         });
                     } else {
-                        alert('Settings saved successfully!');
+                        alert('Paramètres enregistrés avec succès !');
                     }
                     
                     // Reload settings to ensure we have the latest data
@@ -1305,7 +1305,7 @@ function setupFormHandlers() {
                                 </div>
                                 <div class="media-body">
                                     <p class="media-heading"><span class="font-weight-bolder">${notificationTitle}</span></p>
-                                    <small class="notification-text">Settings have been saved successfully</small>
+                                    <small class="notification-text">Les paramètres ont été enregistrés avec succès</small>
                                     <small class="notification-text text-muted mt-1"><i data-feather="clock"></i> Just now</small>
                                 </div>
                             </div>
@@ -1324,7 +1324,7 @@ function setupFormHandlers() {
                     counter.text(count + 1);
                 },
                 error: function(xhr) {
-                    let errorMessage = 'Failed to save settings. Please try again.';
+                    let errorMessage = 'Échec de l\'enregistrement des paramètres. Veuillez réessayer.';
                     
                     if (xhr.responseJSON) {
                         if (xhr.responseJSON.errors) {
@@ -1343,7 +1343,7 @@ function setupFormHandlers() {
                             timeOut: 5000
                         });
                     } else {
-                        alert('Error: ' + errorMessage);
+                        alert('Erreur : ' + errorMessage);
                     }
                     
                     // Restore button state
@@ -1388,7 +1388,7 @@ function setupTestEmailButton() {
                 btn.attr('disabled', false);
             },
             error: function(xhr) {
-                let errorMessage = 'Failed to send test email. Please check your SMTP settings.';
+                let errorMessage = 'Échec de l\'envoi de l\'email de test. Veuillez vérifier vos paramètres SMTP.';
                 
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
@@ -1401,7 +1401,7 @@ function setupTestEmailButton() {
                         timeOut: 5000
                     });
                 } else {
-                    alert('Error: ' + errorMessage);
+                    alert('Erreur : ' + errorMessage);
                 }
                 
                 btn.html(originalText);

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="fr" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="monsieur-wifi - Domain blocking management for network administrators">
-    <meta name="keywords" content="wifi, network, domain blocking, content filtering, dashboard, administrator, monsieur-wifi">
+    <meta name="description" content="monsieur-wifi - Gestion du blocage de domaines pour les administrateurs réseau">
+    <meta name="keywords" content="wifi, réseau, blocage de domaines, filtrage de contenu, tableau de bord, administrateur, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
-    <title>Domain Blocking - Monsieur WiFi</title>
+    <title>Blocage de domaines - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -101,15 +101,15 @@
                 <!-- Language dropdown -->
                 <li class="nav-item dropdown dropdown-language">
                     <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-us"></i>
-                        <span class="selected-language">English</span>
+                        <i class="flag-icon flag-icon-fr"></i>
+                        <span class="selected-language">Français</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/domain-blocking" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/domain-blocking" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
                                     </div>
                 </li>
@@ -138,9 +138,9 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -172,17 +172,17 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
-                <li class="navigation-header"><span>Management</span></li>
+                <li class="navigation-header"><span>Gestion</span></li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/fr/dashboard">
                         <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
+                        <span class="menu-title text-truncate">Tableau de bord</span>
                     </a>
                 </li>
-                <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/locations">
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/fr/locations">
                         <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
+                        <span class="menu-title text-truncate">Emplacements</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
@@ -193,50 +193,50 @@
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/fr/captive-portals">
                         <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
+                        <span class="menu-title text-truncate">Portails captifs</span>
                     </a>
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/fr/accounts">
                         <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
+                        <span class="menu-title text-truncate">Comptes</span>
                     </a>
                 </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                <li class="nav-item active only_admin hidden">
+                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
                         <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
+                        <span class="menu-title text-truncate">Blocage de domaines</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                    <a class="d-flex align-items-center" href="/fr/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                    <a class="d-flex align-items-center" href="/fr/system-settings">
                         <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
+                        <span class="menu-title text-truncate">Paramètres système</span>
                     </a>
                 </li>
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
+                <li class="navigation-header"><span>Compte</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/fr/profile">
                          <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
+                         <span class="menu-title text-truncate">Profil</span>
                      </a>
                 </li>
                 <li class="nav-item">
                      <a class="d-flex align-items-center" href="/logout">
                          <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Logout</span>
+                         <span class="menu-title text-truncate">Déconnexion</span>
                      </a>
                 </li> 
             </ul>
@@ -253,12 +253,12 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Domain Blocking</h2>
+                            <h2 class="content-header-title float-left mb-0">Blocage de domaines</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard.html">Home</a>
+                                    <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a>
                                     </li>
-                                    <li class="breadcrumb-item active">Domain Blocking
+                                    <li class="breadcrumb-item active">Blocage de domaines
                                     </li>
                                 </ol>
                             </div>
@@ -280,8 +280,8 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="card-title">Blocking Categories</h4>
-                                <p class="card-text">Toggle categories to enable or disable domain blocking by category.</p>
+                                <h4 class="card-title">Catégories de blocage</h4>
+                                <p class="card-text">Activez ou désactivez les catégories pour activer ou désactiver le blocage de domaines par catégorie.</p>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -296,8 +296,8 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-0">Adult Content</h4>
-                                                            <span>1,024 domains</span>
+                                                            <h4 class="mb-0">Contenu adulte</h4>
+                                                            <span>1,024 domaines</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -319,8 +319,8 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-0">Gambling</h4>
-                                                            <span>856 domains</span>
+                                                            <h4 class="mb-0">Jeux d'argent</h4>
+                                                            <span>856 domaines</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -342,8 +342,8 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-0">Malware</h4>
-                                                            <span>2,345 domains</span>
+                                                            <h4 class="mb-0">Logiciels malveillants</h4>
+                                                            <span>2,345 domaines</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -365,8 +365,8 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-0">Social Media</h4>
-                                                            <span>342 domains</span>
+                                                            <h4 class="mb-0">Réseaux sociaux</h4>
+                                                            <span>342 domaines</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -389,7 +389,7 @@
                                                         </div>
                                                         <div>
                                                             <h4 class="mb-0">Streaming</h4>
-                                                            <span>128 domains</span>
+                                                            <span>128 domaines</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -411,8 +411,8 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h4 class="mb-0">Custom List</h4>
-                                                            <span>43 domains</span>
+                                                            <h4 class="mb-0">Liste personnalisée</h4>
+                                                            <span>43 domaines</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -435,11 +435,11 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h4 class="card-title">Blocked Domains</h4>
+                                    <h4 class="card-title">Domaines bloqués</h4>
                                     <div>
                                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-domain">
                                             <i data-feather="plus" class="mr-25"></i>
-                                            <span>Add Domain</span>
+                                            <span>Ajouter un domaine</span>
                                         </button>
                                     </div>
                                 </div>
@@ -448,10 +448,10 @@
                                         <table class="datatables-domains table">
                                             <thead>
                                                 <tr>
-                                                    <th>Domain</th>
-                                                    <th>Category</th>
-                                                    <th>Added Date</th>
-                                                    <th>Last Updated</th>
+                                                    <th>Domaine</th>
+                                                    <th>Catégorie</th>
+                                                    <th>Date d'ajout</th>
+                                                    <th>Dernière mise à jour</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
@@ -475,7 +475,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel33">Add New Category</h4>
+                    <h4 class="modal-title" id="myModalLabel33">Ajouter une nouvelle catégorie</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -483,15 +483,15 @@
                 <form action="#">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="category-name">Category Name</label>
-                            <input type="text" class="form-control" id="category-name" placeholder="Enter category name" />
+                            <label for="category-name">Nom de la catégorie</label>
+                            <input type="text" class="form-control" id="category-name" placeholder="Entrez le nom de la catégorie" />
                         </div>
                         <div class="form-group">
                             <label for="category-description">Description</label>
-                            <textarea class="form-control" id="category-description" rows="3" placeholder="Enter category description"></textarea>
+                            <textarea class="form-control" id="category-description" rows="3" placeholder="Entrez la description de la catégorie"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="category-icon">Icon</label>
+                            <label for="category-icon">Icône</label>
                             <select class="form-control" id="category-icon">
                                 <option value="tag">Tag</option>
                                 <option value="shield-off">Shield Off</option>
@@ -505,7 +505,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="category-color">Color</label>
+                            <label for="category-color">Couleur</label>
                             <select class="form-control" id="category-color">
                                 <option value="primary">Primary</option>
                                 <option value="secondary">Secondary</option>
@@ -518,13 +518,13 @@
                         <div class="form-group">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="category-enabled" checked>
-                                <label class="custom-control-label" for="category-enabled">Enabled</label>
+                                <label class="custom-control-label" for="category-enabled">Activé</label>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Category</button>
+                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter la catégorie</button>
                     </div>
                 </form>
             </div>
@@ -536,7 +536,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel34">Add New Domain</h4>
+                    <h4 class="modal-title" id="myModalLabel34">Ajouter un nouveau domaine</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -544,29 +544,29 @@
                 <form action="#">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="domain-name">Domain</label>
-                            <input type="text" class="form-control" id="domain-name" placeholder="example.com" />
-                            <small class="form-text text-muted">Enter a domain without http:// or https://</small>
+                            <label for="domain-name">Domaine</label>
+                            <input type="text" class="form-control" id="domain-name" placeholder="exemple.com" />
+                            <small class="form-text text-muted">Entrez un domaine sans http:// ou https://</small>
                         </div>
                         <div class="form-group">
-                            <label for="domain-category">Category</label>
+                            <label for="domain-category">Catégorie</label>
                             <select class="form-control" id="domain-category">
-                                <option value="1">Adult Content</option>
-                                <option value="2">Gambling</option>
-                                <option value="3">Malware</option>
-                                <option value="4">Social Media</option>
+                                <option value="1">Contenu adulte</option>
+                                <option value="2">Jeux d'argent</option>
+                                <option value="3">Logiciels malveillants</option>
+                                <option value="4">Réseaux sociaux</option>
                                 <option value="5">Streaming</option>
-                                <option value="6">Custom List</option>
+                                <option value="6">Liste personnalisée</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="domain-notes">Notes</label>
-                            <textarea class="form-control" id="domain-notes" rows="3" placeholder="Enter any notes"></textarea>
+                            <textarea class="form-control" id="domain-notes" rows="3" placeholder="Entrez des notes"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Domain</button>
+                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter le domaine</button>
                     </div>
                 </form>
             </div>
@@ -578,7 +578,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel35">Edit Domain</h4>
+                    <h4 class="modal-title" id="myModalLabel35">Modifier le domaine</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -586,34 +586,34 @@
                 <form action="#">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="edit-domain-name">Domain</label>
+                            <label for="edit-domain-name">Domaine</label>
                             <input type="text" class="form-control" id="edit-domain-name" value="adultsite.example.com" readonly />
                         </div>
                         <div class="form-group">
-                            <label for="edit-domain-category">Category</label>
+                            <label for="edit-domain-category">Catégorie</label>
                             <select class="form-control" id="edit-domain-category">
-                                <option value="1">Adult Content</option>
-                                <option value="2">Gambling</option>
-                                <option value="3">Malware</option>
-                                <option value="4">Social Media</option>
+                                <option value="1">Contenu adulte</option>
+                                <option value="2">Jeux d'argent</option>
+                                <option value="3">Logiciels malveillants</option>
+                                <option value="4">Réseaux sociaux</option>
                                 <option value="5">Streaming</option>
-                                <option value="6">Custom List</option>
+                                <option value="6">Liste personnalisée</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="edit-domain-notes">Notes</label>
-                            <textarea class="form-control" id="edit-domain-notes" rows="3">Added for content filtering purposes.</textarea>
+                            <textarea class="form-control" id="edit-domain-notes" rows="3">Ajouté à des fins de filtrage de contenu.</textarea>
                         </div>
                         <div class="form-group">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="edit-block-subdomains" checked>
-                                <label class="custom-control-label" for="edit-block-subdomains">Block all subdomains</label>
+                                <label class="custom-control-label" for="edit-block-subdomains">Bloquer tous les sous-domaines</label>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
                     </div>
                 </form>
             </div>
@@ -629,7 +629,7 @@
                 <div class="modal-header">
                     <h4 class="modal-title" id="myModalLabel37">
                         <i data-feather="info" class="mr-1"></i>
-                        How Domain Blocking Works
+                        Comment fonctionne le blocage de domaines
                     </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -643,12 +643,12 @@
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <i data-feather="shield" class="mr-1"></i>
-                                        What is Domain Blocking?
+                                        Qu'est-ce que le blocage de domaines ?
                                     </h5>
                                     <p class="card-text">
-                                        Domain blocking prevents users on your network from accessing specific websites by blocking their domain names. 
-                                        When a user tries to visit a blocked domain, the request is intercepted and denied, protecting your network from 
-                                        unwanted content, security threats, or productivity distractions.
+                                        Le blocage de domaines empêche les utilisateurs de votre réseau d'accéder à des sites web spécifiques en bloquant leurs noms de domaine. 
+                                        Lorsqu'un utilisateur tente de visiter un domaine bloqué, la demande est interceptée et refusée, protégeant votre réseau contre 
+                                        le contenu indésirable, les menaces de sécurité ou les distractions de productivité.
                                     </p>
                                 </div>
                             </div>
@@ -658,11 +658,11 @@
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <i data-feather="plus-circle" class="mr-1"></i>
-                                        How to Add Domains
+                                        Comment ajouter des domaines
                                     </h5>
                                     <ol class="mb-0">
-                                        <li><strong>Single Domain:</strong> Click "Add Domain" button to add individual websites</li>
-                                        <li><strong>Categories:</strong> Organize domains into predefined categories for better management</li>
+                                        <li><strong>Domaine unique :</strong> Cliquez sur le bouton "Ajouter un domaine" pour ajouter des sites web individuels</li>
+                                        <li><strong>Catégories :</strong> Organisez les domaines en catégories prédéfinies pour une meilleure gestion</li>
                                     </ol>
                                 </div>
                             </div>
@@ -672,11 +672,11 @@
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <i data-feather="alert-triangle" class="mr-1"></i>
-                                        Why Multiple Domains Are Needed
+                                        Pourquoi plusieurs domaines sont nécessaires
                                     </h5>
                                     <p class="card-text">
-                                        Many websites use multiple domains to deliver content, avoid blocking, or improve performance. 
-                                        To effectively block a service, you often need to block several related domains:
+                                        De nombreux sites web utilisent plusieurs domaines pour diffuser du contenu, éviter le blocage ou améliorer les performances. 
+                                        Pour bloquer efficacement un service, vous devez souvent bloquer plusieurs domaines liés :
                                     </p>
                                     
                                     <div class="table-responsive">
@@ -684,7 +684,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Service</th>
-                                                    <th>Domains to Block</th>
+                                                    <th>Domaines à bloquer</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -719,13 +719,13 @@
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <i data-feather="check-circle" class="mr-1"></i>
-                                        Best Practices
+                                        Meilleures pratiques
                                     </h5>
                                     <ul class="mb-0">
-                                        <li><strong>Use Categories:</strong> Group related domains for easier management</li>
-                                        <li><strong>Research Thoroughly:</strong> Look up all domains used by a service before blocking</li>
-                                        <li><strong>Test Blocking:</strong> Verify that the blocking works as expected</li>
-                                        <li><strong>Regular Updates:</strong> Keep your block lists updated as services change domains</li>
+                                        <li><strong>Utilisez les catégories :</strong> Regroupez les domaines connexes pour une gestion plus facile</li>
+                                        <li><strong>Recherchez minutieusement :</strong> Recherchez tous les domaines utilisés par un service avant de le bloquer</li>
+                                        <li><strong>Testez le blocage :</strong> Vérifiez que le blocage fonctionne comme prévu</li>
+                                        <li><strong>Mises à jour régulières :</strong> Maintenez vos listes de blocage à jour car les services changent de domaines</li>
                                     </ul>
                                 </div>
                             </div>
@@ -734,15 +734,15 @@
                             <div class="alert alert-info mt-3">
                                 <div class="alert-body">
                                     <i data-feather="zap" class="mr-1"></i>
-                                    <strong>Pro Tip:</strong> Use browser developer tools (F12) to inspect network requests and identify 
-                                    all domains used by a website. This helps ensure comprehensive blocking.
+                                    <strong>Conseil de pro :</strong> Utilisez les outils de développement du navigateur (F12) pour inspecter les requêtes réseau et identifier 
+                                    tous les domaines utilisés par un site web. Cela aide à assurer un blocage complet.
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got It!</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Compris !</button>
                 </div>
             </div>
         </div>
@@ -754,8 +754,8 @@
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
         <p class="clearfix mb-0">
-            <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span>
-            <span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span>
+            <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, Tous droits réservés</span></span>
+            <span class="float-md-right d-none d-md-block">Conçu avec soin & Créé avec<i data-feather="heart"></i></span>
         </p>
     </footer>
     <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
@@ -816,10 +816,12 @@
                 processing: true,
                 serverSide: false,
                 ajax: {
-                    url: '/blocked-domains',
+                    url: '/api/blocked-domains',
                     type: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     dataSrc: function(json) {
                         console.log("blocked-domains", json);
@@ -882,11 +884,11 @@
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item edit-domain-btn" href="javascript:void(0);" data-id="${data}">
                                             <i data-feather="edit-2" class="mr-50"></i>
-                                            <span>Edit</span>
+                                            <span>Modifier</span>
                                         </a>
                                         <a class="dropdown-item delete-domain-btn" href="javascript:void(0);" data-id="${data}">
                                             <i data-feather="trash" class="mr-50"></i>
-                                            <span>Delete</span>
+                                            <span>Supprimer</span>
                                         </a>
                                     </div>
                                 </div>
@@ -945,10 +947,12 @@
             // Load categories data and update counters
             function loadCategoriesData() {
                 $.ajax({
-                    url: '/categories',
+                    url: '/api/categories',
                     type: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     success: function(response) {
                         updateCategoryCounters(response.data || response);
@@ -963,12 +967,25 @@
             function updateCategoryCounters(categories) {
                 console.log("categories", categories);
                 categories = categories.categories;
+                
+                // Map English category names to French category names
+                const categoryNameMap = {
+                    'Adult Content': 'Contenu adulte',
+                    'Gambling': 'Jeux d\'argent',
+                    'Malware': 'Logiciels malveillants',
+                    'Social Media': 'Réseaux sociaux',
+                    'Streaming': 'Streaming',
+                    'Custom List': 'Liste personnalisée'
+                };
+                
                 categories.forEach(function(category) {
-                    var categoryCard = $(`.card h4:contains("${category.name}")`).closest('.card');
+                    // Use the French name for matching
+                    const frenchName = categoryNameMap[category.name] || category.name;
+                    var categoryCard = $(`.card h4:contains("${frenchName}")`).closest('.card');
                     if (categoryCard.length) {
                         // alert(category.blocked_domains_count);
                         console.log("category", category);
-                        categoryCard.find('span:first').text(`${category.blocked_domains_count || 0} domains`);
+                        categoryCard.find('span:first').text(`${category.blocked_domains_count || 0} domaines`);
 
                         // Update checkbox state
                         var checkbox = categoryCard.find('.custom-control-input');
@@ -1001,12 +1018,12 @@
             // Helper function to get category ID by name
             function getCategoryIdByName(categoryName) {
                 const categoryMapping = {
-                    'Adult Content': '1',
-                    'Gambling': '2',
-                    'Malware': '3',
-                    'Social Media': '4',
-                    'Streaming': '5',
-                    'Custom List': '6'
+                        'Contenu adulte': '1',
+                        'Jeux d\'argent': '2',
+                        'Logiciels malveillants': '3',
+                        'Réseaux sociaux': '4',
+                        'Streaming': '5',
+                        'Liste personnalisée': '6'
                 };
                 return categoryMapping[categoryName] || null;
             }
@@ -1101,12 +1118,13 @@
                 
                 // API call to add domain
                 $.ajax({
-                    url: '/blocked-domains',
+                    url: '/api/blocked-domains',
                     type: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     data: JSON.stringify({
                         domain: domainName,
@@ -1160,10 +1178,12 @@
                 
                 // Get domain data
                 $.ajax({
-                    url: `/blocked-domains/${domainId}`,
+                    url: `/api/blocked-domains/${domainId}`,
                     type: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     success: function(response) {
                         if (response.success) {
@@ -1198,12 +1218,13 @@
                 const blockSubdomains = $('#edit-block-subdomains').is(':checked');
                 
                 $.ajax({
-                    url: `/blocked-domains/${domainId}`,
+                    url: `/api/blocked-domains/${domainId}`,
                     type: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     data: JSON.stringify({
                         category_id: categoryId,
@@ -1245,13 +1266,14 @@
                 const row = $(this).closest('tr');
                 const domain = row.find('td:first span').text();
                 
-                if (confirm(`Are you sure you want to delete "${domain}" from the block list?`)) {
+                if (confirm(`Êtes-vous sûr de vouloir supprimer "${domain}" de la liste de blocage ?`)) {
                     $.ajax({
-                        url: `/blocked-domains/${domainId}`,
+                        url: `/api/blocked-domains/${domainId}`,
                         type: 'DELETE',
                         headers: {
                             'Accept': 'application/json',
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
                         },
                         success: function(response) {
                             if (response.success) {
@@ -1286,11 +1308,23 @@
                 const categoryName = $(this).find('h4').text();
                 const categoryCount = parseInt($(this).find('span').text()) || 0;
                 
-                // Update the blocked domains card title to show category
-                $('.card-title:contains("Blocked Domains")').html(`${categoryName} Blocked Domains <span class="text-muted font-small-3">(${categoryCount} domains)</span>`);
+                // Map French category names back to English for search
+                const frenchToEnglishMap = {
+                    'Contenu adulte': 'Adult Content',
+                    'Jeux d\'argent': 'Gambling', 
+                    'Logiciels malveillants': 'Malware',
+                    'Réseaux sociaux': 'Social Media',
+                    'Streaming': 'Streaming',
+                    'Liste personnalisée': 'Custom List'
+                };
                 
-                // Filter the datatable to show only this category
-                domainsTable.search(categoryName).draw();
+                const englishCategoryName = frenchToEnglishMap[categoryName] || categoryName;
+                
+                            // Update the blocked domains card title to show category
+                                $('.card-title:contains("Domaines bloqués")').html(`${categoryName} Domaines bloqués <span class="text-muted font-small-3">(${categoryCount} domaines)</span>`);
+                
+                // Filter the datatable to show only this category (search for English name)
+                domainsTable.search(englishCategoryName).draw();
                 
                 // Scroll to the domains section
                 $('html, body').animate({
@@ -1307,12 +1341,12 @@
                     // Find the category value in the dropdown
                     let categoryValue;
                     switch(window.selectedCategory.toLowerCase()) {
-                        case 'adult content': categoryValue = '1'; break;
-                        case 'gambling': categoryValue = '2'; break;
-                        case 'malware': categoryValue = '3'; break;
-                        case 'social media': categoryValue = '4'; break;
+                        case 'contenu adulte': categoryValue = '1'; break;
+                        case 'jeux d\'argent': categoryValue = '2'; break;
+                        case 'logiciels malveillants': categoryValue = '3'; break;
+                        case 'réseaux sociaux': categoryValue = '4'; break;
                         case 'streaming': categoryValue = '5'; break;
-                        case 'custom list': categoryValue = '6'; break;
+                        case 'liste personnalisée': categoryValue = '6'; break;
                     }
                     if (categoryValue) {
                         $('#domain-category').val(categoryValue).trigger('change');
@@ -1322,7 +1356,7 @@
 
             // "View All Domains" button click
             $(document).on('click', '#view-all-domains', function() {
-                $('.card-title:contains("Blocked Domains")').html('All Blocked Domains');
+                $('.card-title:contains("Domaines bloqués")').html('Tous les domaines bloqués');
                 domainsTable.search('').draw();
                 window.selectedCategory = null;
             });
@@ -1333,11 +1367,11 @@
                 const originalText = button.html();
                 
                 // Show loading state
-                button.prop('disabled', true).html('<i data-feather="loader" class="mr-25"></i>Exporting...');
+                button.prop('disabled', true).html('<i data-feather="loader" class="mr-25"></i>Exportation en cours...');
                 feather.replace();
                 
                 // Prepare export URL with parameters
-                let exportUrl = '/blocked-domains/export?format=txt&active_only=true';
+                let exportUrl = '/api/blocked-domains/export?format=txt&active_only=true';
                 
                 // If a specific category is selected, include it
                 if (window.selectedCategory) {
@@ -1363,9 +1397,9 @@
                 
                 // Show success message
                 if (typeof toastr !== 'undefined') {
-                    toastr.success('Export started! Check your downloads folder.');
+                    toastr.success('Exportation démarrée ! Vérifiez votre dossier de téléchargements.');
                 } else {
-                    alert('Export started! Check your downloads folder.');
+                    alert('Exportation démarrée ! Vérifiez votre dossier de téléchargements.');
                 }
             });
 
@@ -1373,13 +1407,13 @@
             $('.card.cursor-pointer').addClass('category-card');
 
             // Add the "All Domains" option at the top
-            $('.card-title:contains("Blocked Domains")').after(`
+            $('.card-title:contains("Domaines bloqués")').after(`
                 <div class="mb-2">
                     <button class="btn btn-sm btn-outline-primary mr-1" id="view-all-domains">
-                        <i data-feather="list" class="mr-25"></i>View All Domains
+                        <i data-feather="list" class="mr-25"></i>Voir tous les domaines
                     </button>
                     <button class="btn btn-sm btn-outline-secondary" id="export-all-domains">
-                        <i data-feather="download" class="mr-25"></i>Export All
+                        <i data-feather="download" class="mr-25"></i>Tout exporter
                     </button>
                 </div>
             `);

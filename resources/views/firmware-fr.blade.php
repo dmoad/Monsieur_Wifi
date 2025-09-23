@@ -1,41 +1,42 @@
-<html class="loading" lang="en" data-textdirection="ltr">
+<!DOCTYPE html>
+<html class="loading" lang="fr" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="monsieur-wifi - Firmware management for network administrators">
-    <meta name="keywords" content="wifi, network, firmware, updates, dashboard, administrator, monsieur-wifi">
+    <meta name="description" content="monsieur-wifi - Gestion de firmware pour les administrateurs réseau">
+    <meta name="keywords" content="wifi, réseau, firmware, mises à jour, tableau de bord, administrateur, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
-    <title>Firmware Management - Monsieur WiFi</title>
-    <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <title>Gestion de firmware - Monsieur WiFi</title>
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/file-uploaders/dropzone.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/forms/select/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/file-uploaders/dropzone.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/forms/form-file-uploader.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/form-file-uploader.css">
     <!-- END: Page CSS-->
 
     <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <!-- END: Custom CSS-->
 
     <!-- Add this right before the closing </head> tag -->
@@ -96,17 +97,17 @@
                 <!-- Language dropdown -->
                 <li class="nav-item dropdown dropdown-language">
                     <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-us"></i>
-                        <span class="selected-language">English</span>
+                        <i class="flag-icon flag-icon-fr"></i>
+                        <span class="selected-language">Français</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/firmware" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/firmware" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
-                                    </div>
+                    </div>
                 </li>
                 
                 <!-- Dark mode toggle -->
@@ -133,9 +134,9 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -167,17 +168,17 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
-                <li class="navigation-header"><span>Management</span></li>
+                <li class="navigation-header"><span>Gestion</span></li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/fr/dashboard">
                         <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
+                        <span class="menu-title text-truncate">Tableau de bord</span>
                     </a>
                 </li>
-                <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/locations">
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/fr/locations">
                         <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
+                        <span class="menu-title text-truncate">Emplacements</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
@@ -188,50 +189,50 @@
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/fr/captive-portals">
                         <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
+                        <span class="menu-title text-truncate">Portails captifs</span>
                     </a>
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/fr/accounts">
                         <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
+                        <span class="menu-title text-truncate">Comptes</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
                         <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
+                        <span class="menu-title text-truncate">Blocage de domaines</span>
                     </a>
                 </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                <li class="nav-item active only_admin hidden">
+                    <a class="d-flex align-items-center" href="/fr/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                    <a class="d-flex align-items-center" href="/fr/system-settings">
                         <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
+                        <span class="menu-title text-truncate">Paramètres système</span>
                     </a>
                 </li>
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
+                <li class="navigation-header"><span>Compte</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/fr/profile">
                          <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
+                         <span class="menu-title text-truncate">Profil</span>
                      </a>
                 </li>
                 <li class="nav-item">
                      <a class="d-flex align-items-center" href="/logout">
                          <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Logout</span>
+                         <span class="menu-title text-truncate">Déconnexion</span>
                      </a>
                 </li> 
             </ul>
@@ -248,10 +249,10 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Firmware Management</h2>
+                            <h2 class="content-header-title float-left mb-0">Gestion de firmware</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard.html">Home</a>
+                                    <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a>
                                     </li>
                                     <li class="breadcrumb-item active">Firmware
                                     </li>
@@ -264,7 +265,7 @@
                     <div class="form-group breadcrumb-right">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-firmware">
                             <i data-feather="upload-cloud" class="mr-25"></i>
-                            <span>Upload New Firmware</span>
+                            <span>Télécharger un nouveau firmware</span>
                         </button>
                     </div>
                 </div>
@@ -281,7 +282,7 @@
                                     </div>
                                 </div>
                                 <h2 class="font-weight-bolder firmware-stats total" id="total-firmware">0</h2>
-                                <p class="card-text">Total Firmware Versions</p>
+                                <p class="card-text">Total des versions de firmware</p>
                             </div>
                         </div>
                     </div>
@@ -294,7 +295,7 @@
                                     </div>
                                 </div>
                                 <h2 class="font-weight-bolder firmware-stats enabled" id="enabled-firmware">0</h2>
-                                <p class="card-text">Enabled Firmware</p>
+                                <p class="card-text">Firmware activés</p>
                             </div>
                         </div>
                     </div>
@@ -307,7 +308,7 @@
                                     </div>
                                 </div>
                                 <h2 class="font-weight-bolder firmware-stats disabled" id="disabled-firmware">0</h2>
-                                <p class="card-text">Disabled Firmware</p>
+                                <p class="card-text">Firmware désactivés</p>
                             </div>
                         </div>
                     </div>
@@ -320,7 +321,7 @@
                                     </div>
                                 </div>
                                 <h2 class="font-weight-bolder firmware-stats total" id="total-size">0 MB</h2>
-                                <p class="card-text">Total Size</p>
+                                <p class="card-text">Taille totale</p>
                             </div>
                         </div>
                     </div>
@@ -332,18 +333,18 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">All Firmware Versions</h4>
+                                    <h4 class="card-title">Toutes les versions de firmware</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="card-datatable table-responsive">
                                         <table class="datatables-firmware table">
                                             <thead>
                                                 <tr>
-                                                    <th>Name</th>
-                                                    <th>Status</th>
-                                                    <th>Device Model</th>
-                                                    <th>Default</th>
-                                                    <th>Size</th>
+                                                    <th>Nom</th>
+                                                    <th>Statut</th>
+                                                    <th>Modèle d'appareil</th>
+                                                    <th>Par défaut</th>
+                                                    <th>Taille</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
@@ -367,7 +368,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                                <h4 class="modal-title" id="myModalLabel33">Upload New Firmware</h4>
+                                <h4 class="modal-title" id="myModalLabel33">Télécharger un nouveau firmware</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -377,24 +378,24 @@
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="firmware-name">Firmware Name</label>
-                                                <input type="text" class="form-control" id="firmware-name" placeholder="e.g. v2.1.5 Security Update" required />
+                                                <label for="firmware-name">Nom du firmware</label>
+                                                <input type="text" class="form-control" id="firmware-name" placeholder="ex. v2.1.5 Mise à jour de sécurité" required />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="status">Status</label>
+                                                <label for="status">Statut</label>
                                                 <select class="form-control" id="status" required>
-                                                    <option value="1">Enable</option>
-                                                    <option value="0">Disable</option>
+                                                    <option value="1">Activer</option>
+                                                    <option value="0">Désactiver</option>
                                                 </select>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="model">Device Model</label>
+                                                <label for="model">Modèle d'appareil</label>
                                                 <select class="form-control" id="model">
-                                                    <option value="">Select Model</option>
+                                                    <option value="">Sélectionner un modèle</option>
                                                     <option value="1">820AX</option>
                                                     <option value="2">835AX</option>
                                                 </select>
@@ -404,32 +405,32 @@
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="default-firmware">
-                                        <label class="custom-control-label" for="default-firmware">Set as default firmware for this model</label>
+                                        <label class="custom-control-label" for="default-firmware">Définir comme firmware par défaut pour ce modèle</label>
                                     </div>
-                                    <small class="text-muted">When enabled, this firmware will be automatically assigned to new devices of this model.</small>
+                                    <small class="text-muted">Lorsqu'activé, ce firmware sera automatiquement assigné aux nouveaux appareils de ce modèle.</small>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
                                                 <label for="description">Description</label>
-                                                <textarea class="form-control" id="description" rows="3" placeholder="Firmware description and changelog"></textarea>
+                                                <textarea class="form-control" id="description" rows="3" placeholder="Description et changelog du firmware"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="form-group">
-                                                <label for="firmware-file">Firmware File</label>
+                                                <label for="firmware-file">Fichier firmware</label>
                                                 <div class="custom-file">
                                                     <input type="file" class="custom-file-input" id="firmware-file" accept=".tar.gz,.tgz,.tar" required>
-                                                    <label class="custom-file-label" for="firmware-file">Choose file</label>
+                                                    <label class="custom-file-label" for="firmware-file">Choisir un fichier</label>
                                     </div>
-                                                <small class="form-text text-muted">Max file size: 100MB. Accepted formats: .tar.gz, .tgz, .tar</small>
+                                                <small class="form-text text-muted">Taille max : 100MB. Formats acceptés : .tar.gz, .tgz, .tar</small>
                                 </div>
                             </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Upload Firmware</button>
+                                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                                    <button type="submit" class="btn btn-primary">Télécharger le firmware</button>
                                 </div>
                             </form>
                         </div>
@@ -441,7 +442,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="myModalLabel34">Edit Firmware</h4>
+                                <h4 class="modal-title" id="myModalLabel34">Modifier le firmware</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -451,24 +452,24 @@
                                     <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="edit-firmware-name">Firmware Name</label>
+                                                <label for="edit-firmware-name">Nom du firmware</label>
                                                 <input type="text" class="form-control" id="edit-firmware-name" value="v2.1.4 Security patch" />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="edit-status">Status</label>
+                                                <label for="edit-status">Statut</label>
                                                 <select class="form-control" id="edit-status">
-                                                    <option value="1" selected>Enable</option>
-                                                    <option value="0">Disable</option>
+                                                    <option value="1" selected>Activer</option>
+                                                    <option value="0">Désactiver</option>
                                                 </select>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="edit-model">Device Model</label>
+                                                <label for="edit-model">Modèle d'appareil</label>
                                                 <select class="form-control" id="edit-model">
-                                                    <option value="">Select Model</option>
+                                                    <option value="">Sélectionner un modèle</option>
                                                     <option value="1" selected>820AX</option>
                                                     <option value="2">835AX</option>
                                                 </select>
@@ -478,9 +479,9 @@
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="edit-default-firmware">
-                                        <label class="custom-control-label" for="edit-default-firmware">Set as default firmware for this model</label>
+                                        <label class="custom-control-label" for="edit-default-firmware">Définir comme firmware par défaut pour ce modèle</label>
                                     </div>
-                                    <small class="text-muted">When enabled, this firmware will be automatically assigned to new devices of this model.</small>
+                                    <small class="text-muted">Lorsqu'activé, ce firmware sera automatiquement assigné aux nouveaux appareils de ce modèle.</small>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -491,19 +492,19 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="form-group">
-                                                <label>Firmware File (Optional)</label>
+                                                <label>Fichier firmware (Optionnel)</label>
                                                 <div class="custom-file">
                                                     <input type="file" class="custom-file-input" id="edit-firmware-file" accept=".tar.gz,.tgz,.tar">
-                                                    <label class="custom-file-label" for="edit-firmware-file">Choose firmware file</label>
+                                                    <label class="custom-file-label" for="edit-firmware-file">Choisir un fichier firmware</label>
                                                 </div>
-                                                <small class="form-text text-muted">Accepted formats: .tar.gz, .tgz, .tar</small>
+                                                <small class="form-text text-muted">Formats acceptés : .tar.gz, .tgz, .tar</small>
                                     </div>
                                         </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
                     </div>
                 </form>
             </div>
@@ -516,35 +517,35 @@
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
         <p class="clearfix mb-0">
-            <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span>
-            <span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span>
+            <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, Tous droits réservés</span></span>
+            <span class="float-md-right d-none d-md-block">Conçu avec soin & Créé avec<i data-feather="heart"></i></span>
         </p>
     </footer>
     <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
     <!-- END: Footer-->
 
     <!-- BEGIN: Vendor JS-->
-    <script src="app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
-    <script src="app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
-                <script src="app-assets/vendors/js/forms/select/select2.full.min.js"></script>
-                <script src="app-assets/vendors/js/file-uploaders/dropzone.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
+                <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+                <script src="/app-assets/vendors/js/file-uploaders/dropzone.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
-    <script src="app-assets/js/core/app-menu.js"></script>
-    <script src="app-assets/js/core/app.js"></script>
+    <script src="/app-assets/js/core/app-menu.js"></script>
+    <script src="/app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->
-                <script src="app-assets/js/scripts/forms/form-file-uploader.js"></script>
+                <script src="/app-assets/js/scripts/forms/form-file-uploader.js"></script>
     <!-- END: Page JS-->
 
     <!-- Include config.js before other custom scripts -->
@@ -695,7 +696,7 @@
             // Reset forms when modals are hidden
             $('#add-new-firmware').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
-                $('.custom-file-label').text('Choose file');
+                $('.custom-file-label').text('Choisir un fichier');
                 // Reset Select2 dropdowns
                 $('#status').val('').trigger('change');
                 $('#model').val('').trigger('change');
@@ -704,7 +705,7 @@
             $('#edit-firmware').on('hidden.bs.modal', function() {
                 currentEditingId = null;
                 $(this).find('form')[0].reset();
-                $('.custom-file-label').text('Choose firmware file');
+                $('.custom-file-label').text('Choisir un fichier firmware');
                 // Reset Select2 dropdowns  
                 $('#edit-status').val('').trigger('change');
                 $('#edit-model').val('').trigger('change');
@@ -739,7 +740,7 @@
                 },
                 error: function(xhr) {
                     console.error('Error loading firmware:', xhr);
-                    showToast('Error loading firmware data', 'error');
+                    showToast('Erreur lors du chargement des données de firmware', 'error');
                 }
             });
         }
@@ -759,11 +760,11 @@
 
             sortedFirmwareData.forEach(function(firmware) {
                 const statusBadge = firmware.is_enabled 
-                    ? '<span class="badge badge-pill badge-light-success">Enable</span>'
-                    : '<span class="badge badge-pill badge-light-secondary">Disable</span>';
+                    ? '<span class="badge badge-pill badge-light-success">Activé</span>'
+                    : '<span class="badge badge-pill badge-light-secondary">Désactivé</span>';
                 
                 const defaultBadge = firmware.default_model_firmware 
-                    ? '<span class="badge badge-pill badge-light-primary">Default</span>'
+                    ? '<span class="badge badge-pill badge-light-primary">Par défaut</span>'
                     : '<span class="badge badge-pill badge-light-secondary">-</span>';
                 
                 const modelName = getModelName(firmware.model);
@@ -792,20 +793,20 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item firmware-edit" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="edit-2" class="mr-50"></i>
-                                <span>Edit</span>
+                                <span>Modifier</span>
                             </a>
                             <a class="dropdown-item firmware-download" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="download" class="mr-50"></i>
-                                <span>Download</span>
+                                <span>Télécharger</span>
                             </a>
                             ${!firmware.default_model_firmware ? `
                             <a class="dropdown-item firmware-set-default" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="star" class="mr-50"></i>
-                                <span>Set as Default</span>
+                                <span>Définir par défaut</span>
                             </a>` : ''}
                             <a class="dropdown-item firmware-delete" href="javascript:void(0);" data-firmware-id="${firmware.id}">
                                 <i data-feather="trash" class="mr-50"></i>
-                                <span>Delete</span>
+                                <span>Supprimer</span>
                             </a>
                         </div>
                     </div>`
@@ -840,7 +841,7 @@
             const fileInput = document.getElementById('firmware-file');
             
             if (!fileInput.files[0]) {
-                showToast('Please select a firmware file', 'error');
+                showToast('Veuillez sélectionner un fichier firmware', 'error');
                 return;
             }
 
@@ -863,16 +864,16 @@
                 contentType: false,
                 success: function(response) {
                     if (response.status === 'success') {
-                        showToast('Firmware uploaded successfully', 'success');
+                        showToast('Firmware téléchargé avec succès', 'success');
                         $('#add-new-firmware').modal('hide');
                         $('#add-new-firmware form')[0].reset();
-                        $('.custom-file-label').text('Choose file');
+                        $('.custom-file-label').text('Choisir un fichier');
                         loadFirmwareData();
                     }
                 },
                 error: function(xhr) {
                     console.error('Error uploading firmware:', xhr);
-                    let message = 'Error uploading firmware';
+                    let message = 'Erreur lors du téléchargement du firmware';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         message = xhr.responseJSON.message;
                     }
@@ -907,7 +908,7 @@
                 
                 // Clear file input
                 $('#edit-firmware-file').val('');
-                $('.custom-file-label').text('Choose firmware file');
+                $('.custom-file-label').text('Choisir un fichier firmware');
             }, 300);
         }
 
@@ -939,7 +940,7 @@
                 contentType: false,
                 success: function(response) {
                     if (response.status === 'success') {
-                        showToast('Firmware updated successfully', 'success');
+                        showToast('Firmware mis à jour avec succès', 'success');
                         $('#edit-firmware').modal('hide');
                         loadFirmwareData();
                         currentEditingId = null;
@@ -947,7 +948,7 @@
                 },
                 error: function(xhr) {
                     console.error('Error updating firmware:', xhr);
-                    let message = 'Error updating firmware';
+                    let message = 'Erreur lors de la mise à jour du firmware';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         message = xhr.responseJSON.message;
                     }
@@ -957,7 +958,7 @@
         }
 
         function deleteFirmware(id) {
-            if (!confirm('Are you sure you want to delete this firmware?')) return;
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce firmware ?')) return;
 
             $.ajax({
                 url: `/api/firmware/${id}`,
@@ -965,13 +966,13 @@
                 headers: getAuthHeaders(),
                 success: function(response) {
                     if (response.status === 'success') {
-                        showToast('Firmware deleted successfully', 'success');
+                        showToast('Firmware supprimé avec succès', 'success');
                         loadFirmwareData();
                     }
                 },
                 error: function(xhr) {
                     console.error('Error deleting firmware:', xhr);
-                    showToast('Error deleting firmware', 'error');
+                    showToast('Erreur lors de la suppression du firmware', 'error');
                 }
             });
         }
@@ -995,7 +996,7 @@
             if (!firmware) return;
 
             const modelName = getModelName(firmware.model);
-            if (!confirm(`Are you sure you want to set "${firmware.name}" as the default firmware for ${modelName} devices?`)) return;
+            if (!confirm(`Êtes-vous sûr de vouloir définir "${firmware.name}" comme firmware par défaut pour les appareils ${modelName} ?`)) return;
 
             $.ajax({
                 url: `/api/firmware/${id}/set-default`,
@@ -1003,13 +1004,13 @@
                 headers: getAuthHeaders(),
                 success: function(response) {
                     if (response.status === 'success') {
-                        showToast('Firmware set as default successfully', 'success');
+                        showToast('Firmware défini par défaut avec succès', 'success');
                         loadFirmwareData();
                     }
                 },
                 error: function(xhr) {
                     console.error('Error setting firmware as default:', xhr);
-                    let message = 'Error setting firmware as default';
+                    let message = 'Erreur lors de la définition du firmware par défaut';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         message = xhr.responseJSON.message;
                     }
@@ -1049,7 +1050,7 @@
                 1: '820AX',
                 2: '835AX'
             };
-            return modelMap[modelId] || 'Not specified';
+            return modelMap[modelId] || 'Non spécifié';
         }
 
         function showToast(message, type = 'info') {

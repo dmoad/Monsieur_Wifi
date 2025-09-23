@@ -6,11 +6,147 @@ use App\Http\Controllers\CaptivePortalController;
 use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\CategoryController;
 
-// Display the login form
+// Root login routes (language agnostic)
 Route::get('/', function () {
     return view('login');
 })->name('login.show');
 
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
+// Handle login submission (API endpoint - language agnostic)
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
+// Logout routes (API endpoints - language agnostic)
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+
+// English language routes group
+Route::prefix('en')->name('en.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard-en');
+    })->name('dashboard');
+    
+    Route::get('/devices', function () {
+        return view('devices');
+    })->name('devices');
+    
+    Route::get('/accounts', function () {
+        return view('accounts-en');
+    })->name('accounts');
+    
+    Route::get('/locations', function () {
+        return view('locations-en');
+    })->name('locations');
+    
+    Route::get('/locations/{location}', function () {
+        return view('location-details-en');
+    })->name('location-details');
+    
+    Route::get('/locations/analytics/{location_id}', function ($location_id) {
+        return view('location-analytics', compact('location_id'));
+    })->name('location-analytics');
+    
+    Route::get('/system-settings', function () {
+        return view('system-settings-en');
+    })->name('system-settings');
+    
+    Route::get('/profile', function () {
+        return view('profile-en');
+    })->name('profile');
+    
+    Route::get('/location-details', function () {
+        return view('location-details');
+    })->name('location-details');
+    
+    Route::get('/location-analytics', function () {
+        return view('location-analytics');
+    })->name('location-analytics');
+    
+    Route::get('/firmware', function () {
+        return view('firmware-en');
+    })->name('firmware');
+    
+    Route::get('/analytics', function () {
+        return view('analytics');
+    })->name('analytics');
+    
+    Route::get('/captive-portals', function () {
+        return view('captive-portals-en');
+    })->name('captive-portals');
+    
+    Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])->defaults('locale', 'en')->name('domain-blocking');
+    
+    // Domain Blocking Routes (English)
+    Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
+    Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
+    Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+});
+
+// French language routes group
+Route::prefix('fr')->name('fr.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard-fr');
+    })->name('dashboard');
+    
+    Route::get('/devices', function () {
+        return view('devices');
+    })->name('devices');
+    
+    Route::get('/accounts', function () {
+        return view('accounts-fr');
+    })->name('accounts');
+    
+    Route::get('/locations', function () {
+        return view('locations-fr');
+    })->name('locations');
+    
+    Route::get('/locations/{location}', function () {
+        return view('location-details-fr');
+    })->name('location-details');
+    
+    Route::get('/locations/analytics/{location_id}', function ($location_id) {
+        return view('location-analytics', compact('location_id'));
+    })->name('location-analytics');
+    
+    Route::get('/system-settings', function () {
+        return view('system-settings-fr');
+    })->name('system-settings');
+    
+    Route::get('/profile', function () {
+        return view('profile-fr');
+    })->name('profile');
+    
+    Route::get('/location-details', function () {
+        return view('location-details');
+    })->name('location-details');
+    
+    Route::get('/location-analytics', function () {
+        return view('location-analytics');
+    })->name('location-analytics');
+    
+    Route::get('/firmware', function () {
+        return view('firmware-fr');
+    })->name('firmware');
+    
+    Route::get('/analytics', function () {
+        return view('analytics');
+    })->name('analytics');
+    
+    Route::get('/captive-portals', function () {
+        return view('captive-portals-fr');
+    })->name('captive-portals');
+    
+    Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])->defaults('locale', 'fr')->name('domain-blocking');
+    
+    // Domain Blocking Routes (French)
+    Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
+    Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
+    Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+});
+
+// Static pages (language agnostic)
 Route::get('/tos', function () {
     return view('tos');
 })->name('tos');
@@ -23,77 +159,46 @@ Route::get('/terms-of-service', function () {
     return view('terms-of-service');
 })->name('terms-of-service');
 
-// Display login form at /login (for redirects)
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
-
-// Handle login submission
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-
+// Legacy routes (redirect to English by default or handle backward compatibility)
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
-
-// Add logout route
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
-Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+    return redirect('/en/dashboard');
+});
 
 Route::get('/devices', function () {
-    return view('devices');
-})->name('devices');
+    return redirect('/en/devices');
+});
 
 Route::get('/accounts', function () {
-    return view('accounts');
-})->name('accounts');
+    return redirect('/en/accounts');
+});
 
 Route::get('/locations', function () {
-    return view('locations');
-})->name('locations');
-
-Route::get('/locations/{location}', function () {
-    return view('location-details-v3');
-})->name('location-details');
-
-Route::get('/locations/analytics/{location_id}', function ($location_id) {
-    return view('location-analytics', compact('location_id'));
-})->name('location-analytics');
-
+    return redirect('/en/locations');
+});
 
 Route::get('/system-settings', function () {
-    return view('system-settings');
-})->name('system-settings');
+    return redirect('/en/system-settings');
+});
 
 Route::get('/profile', function () {
-    return view('profile');
-})->name('profile');
-
-Route::get('/location-details', function () {
-    return view('location-details');
-})->name('location-details');
-
-Route::get('/location-analytics', function () {
-    return view('location-analytics');
-})->name('location-analytics');
-
-// Domain Blocking Routes
-Route::get('/domain-blocking', [DomainBlockingController::class, 'index'])->name('domain-blocking');
-Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
-Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
-Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
-
+    return redirect('/en/profile');
+});
 
 Route::get('/firmware', function () {
-    return view('firmware');
-})->name('firmware');
+    return redirect('/en/firmware');
+});
 
 Route::get('/analytics', function () {
-    return view('analytics');
-})->name('analytics');
+    return redirect('/en/analytics');
+});
 
 Route::get('/captive-portals', function () {
-    return view('captive-portals');
-})->name('captive-portals');
+    return redirect('/en/captive-portals');
+});
+
+Route::get('/domain-blocking', function () {
+    return redirect('/en/domain-blocking');
+});
 
 Route::get('/guest-login', function () {
     $responseState = request('res', 'notyet');

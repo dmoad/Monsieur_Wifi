@@ -10,40 +10,40 @@
     <meta name="keywords" content="wifi, cloud controller, network management, bloom">
     <meta name="author" content="Monsieur WiFi">
     <title>Dashboard - Monsieur WiFi Controller</title>
-    <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/charts/apexcharts.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/extensions/toastr.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.min.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/pages/dashboard-ecommerce.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/charts/chart-apex.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/extensions/ext-component-toastr.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-ecommerce.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
     <!-- END: Page CSS-->
 
     <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <!-- END: Custom CSS-->
 
     <!-- Ensure proper loading of Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="app-assets/vendors/js/jquery/jquery.min.js"></script>
+    <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
 
     <!-- BEGIN: Page Vendor JS-->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
@@ -54,12 +54,12 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
 
     <!-- First, add this in the head section -->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/maps/leaflet.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/maps/map-leaflet.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/maps/leaflet.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
 
     <!-- Add this CSS in the head section -->
     <style>
@@ -194,11 +194,11 @@
                         <span class="selected-language">English</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/dashboard" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/dashboard" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
                                     </div>
                 </li>
@@ -227,7 +227,7 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/en/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
                     </div>
@@ -263,26 +263,26 @@
                 <!-- Management Section -->
                 <li class="navigation-header"><span>Management</span></li>
                 <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/en/dashboard">
                         <i data-feather="home"></i>
                         <span class="menu-title text-truncate">Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/locations">
+                    <a class="d-flex align-items-center" href="/en/locations">
                         <i data-feather="map-pin"></i>
                         <span class="menu-title text-truncate">Locations</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/analytics">
+                    <a class="d-flex align-items-center" href="/en/analytics">
                         <i data-feather="bar-chart-2"></i>
                         <span class="menu-title text-truncate">Usage Analytics</span>
                     </a>
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/en/captive-portals">
                         <i data-feather="layout"></i>
                         <span class="menu-title text-truncate">Captive Portals</span>
                     </a>
@@ -291,25 +291,25 @@
                <!-- For Admin Section -->
                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/en/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                    <a class="d-flex align-items-center" href="/en/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                    <a class="d-flex align-items-center" href="/en/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                    <a class="d-flex align-items-center" href="/en/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
                     </a>
@@ -317,7 +317,7 @@
                 <!-- Account Section -->
                 <li class="navigation-header"><span>Account</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/en/profile">
                          <i data-feather="user"></i>
                          <span class="menu-title text-truncate">Profile</span>
                      </a>
@@ -345,7 +345,7 @@
                             <h2 class="content-header-title float-left mb-0">Dashboard</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard.html">Home</a>
+                                    <li class="breadcrumb-item"><a href="/en/dashboard">Home</a>
                                     </li>
                                     <li class="breadcrumb-item active">Dashboard
                                     </li>
@@ -359,10 +359,10 @@
                         <div class="dropdown">
                             <button class="btn-icon btn btn-primary btn-round btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i data-feather="grid"></i></button>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="locations.html"><i class="mr-1" data-feather="plus"></i><span class="align-middle">Add Location</span></a>
-                                <!-- <a class="dropdown-item" href="devices.html"><i class="mr-1" data-feather="hard-drive"></i><span class="align-middle">Add Device</span></a> -->
-                                <a class="dropdown-item" href="users.html"><i class="mr-1" data-feather="user-plus"></i><span class="align-middle">Add User</span></a>
-                                <a class="dropdown-item" href="analytics.html"><i class="mr-1" data-feather="bar-chart-2"></i><span class="align-middle">Reports</span></a>
+                                <a class="dropdown-item" href="/en/locations"><i class="mr-1" data-feather="plus"></i><span class="align-middle">Add Location</span></a>
+                                <!-- <a class="dropdown-item" href="/en/devices"><i class="mr-1" data-feather="hard-drive"></i><span class="align-middle">Add Device</span></a> -->
+                                <a class="dropdown-item" href="/en/accounts"><i class="mr-1" data-feather="user-plus"></i><span class="align-middle">Add User</span></a>
+                                <a class="dropdown-item" href="/en/analytics"><i class="mr-1" data-feather="bar-chart-2"></i><span class="align-middle">Reports</span></a>
                             </div>
                         </div>
                     </div>
@@ -392,8 +392,8 @@
                                             <span class="font-weight-bold" id="welcome-offline-count">-</span> Offline
                             </div>
                         </div>
-                                    <a type="button" class="btn btn-primary mt-1" href="/locations">View Details</a>
-                                    <img src="app-assets/images/illustration/badge.svg" class="congratulation-medal" alt="Medal Pic" />
+                                    <a type="button" class="btn btn-primary mt-1" href="/en/locations">View Details</a>
+                                    <img src="/app-assets/images/illustration/badge.svg" class="congratulation-medal" alt="Medal Pic" />
                                 </div>
                             </div>
                         </div>
@@ -702,28 +702,28 @@
 
 
     <!-- BEGIN: Vendor JS-->
-    <script src="app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
-    <script src="app-assets/vendors/js/charts/apexcharts.min.js"></script>
-    <script src="app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
-    <script src="app-assets/js/core/app-menu.js"></script>
-    <script src="app-assets/js/core/app.js"></script>
+    <script src="/app-assets/js/core/app-menu.js"></script>
+    <script src="/app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->
-    <script src="app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
+    <script src="/app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
     <!-- END: Page JS-->
 
     <!-- Include config.js before other custom scripts -->
     <script src="/assets/js/config.js?v=1?v=2"></script>
     
     <!-- Include dashboard.js for dynamic data loading -->
-    <script src="assets/js/dashboard.js?v=10"></script>
+    <script src="/assets/js/dashboard.js?v=10"></script>
 
     <script>
         $(window).on('load', function() {
@@ -861,14 +861,14 @@
         });
     </script>
     
-    <script src="app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-    <script src="app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
-    <script src="app-assets/vendors/js/maps/leaflet.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+    <script src="/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
+    <script src="/app-assets/vendors/js/maps/leaflet.min.js"></script>
 
-    <script src="app-assets/js/scripts/maps/map-leaflet.js"></script>
+    <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
 
     <script>
         // Map initialization will be handled by dashboard.js when real data is loaded

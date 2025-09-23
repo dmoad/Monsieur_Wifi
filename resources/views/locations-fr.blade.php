@@ -1,49 +1,49 @@
 <!DOCTYPE html>
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="fr" data-textdirection="ltr">
 <!-- BEGIN: Head-->
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="Bloom WiFi cloud controller dashboard for managing and monitoring WiFi networks.">
-    <meta name="keywords" content="wifi, cloud controller, network management, bloom">
-    <meta name="author" content="Bloom Networks">
-    <title>Locations - Monsieur WiFi</title>
-    <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <meta name="description" content="Tableau de bord du contrôleur WiFi monsieur-wifi pour gérer et surveiller les réseaux WiFi.">
+    <meta name="keywords" content="wifi, contrôleur cloud, gestion réseau, monsieur-wifi">
+    <meta name="author" content="Monsieur WiFi">
+    <title>Emplacements - Monsieur WiFi</title>
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/charts/apexcharts.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/extensions/toastr.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.min.css">
     <!-- END: Vendor CSS-->
     
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/pages/dashboard-ecommerce.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/charts/chart-apex.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/extensions/ext-component-toastr.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-ecommerce.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
     <!-- END: Page CSS-->
     
     <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <!-- END: Custom CSS-->
     
     <!-- Ensure proper loading of Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="app-assets/vendors/js/jquery/jquery.min.js"></script>
+    <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
 
     <!-- BEGIN: Page Vendor JS-->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
@@ -54,12 +54,12 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
 
     <!-- First, add this in the head section -->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/maps/leaflet.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/maps/map-leaflet.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/maps/leaflet.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
 
     <!-- Add this CSS in the head section -->
     <style>
@@ -190,15 +190,15 @@
                 <!-- Language dropdown -->
                 <li class="nav-item dropdown dropdown-language">
                     <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-us"></i>
-                        <span class="selected-language">English</span>
+                        <i class="flag-icon flag-icon-fr"></i>
+                        <span class="selected-language">Français</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/locations" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/locations" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
                                     </div>
                 </li>
@@ -227,9 +227,9 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -261,71 +261,71 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
-                <li class="navigation-header"><span>Management</span></li>
+                <li class="navigation-header"><span>Gestion</span></li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/fr/dashboard">
                         <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
+                        <span class="menu-title text-truncate">Tableau de bord</span>
                     </a>
                 </li>
                 <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/locations">
+                    <a class="d-flex align-items-center" href="/fr/locations">
                         <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
+                        <span class="menu-title text-truncate">Emplacements</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/analytics">
+                    <a class="d-flex align-items-center" href="/fr/analytics">
                         <i data-feather="bar-chart-2"></i>
-                        <span class="menu-title text-truncate">Usage Analytics</span>
+                        <span class="menu-title text-truncate">Analytiques d'utilisation</span>
                     </a>
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/fr/captive-portals">
                         <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
+                        <span class="menu-title text-truncate">Portails captifs</span>
                     </a>
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/fr/accounts">
                         <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
+                        <span class="menu-title text-truncate">Comptes</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
                         <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
+                        <span class="menu-title text-truncate">Blocage de domaines</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                    <a class="d-flex align-items-center" href="/fr/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                    <a class="d-flex align-items-center" href="/fr/system-settings">
                         <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
+                        <span class="menu-title text-truncate">Paramètres système</span>
                     </a>
                 </li>
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
+                <li class="navigation-header"><span>Compte</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/fr/profile">
                          <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
+                         <span class="menu-title text-truncate">Profil</span>
                      </a>
                 </li>
                 <li class="nav-item">
                      <a class="d-flex align-items-center" href="/logout">
                          <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Logout</span>
+                         <span class="menu-title text-truncate">Déconnexion</span>
                      </a>
                 </li> 
             </ul>
@@ -342,12 +342,12 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Locations</h2>
+                            <h2 class="content-header-title float-left mb-0">Emplacements</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard.html">Home</a>
+                                    <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a>
                                     </li>
-                                    <li class="breadcrumb-item active">Locations
+                                    <li class="breadcrumb-item active">Emplacements
                                     </li>
                                 </ol>
                             </div>
@@ -358,7 +358,7 @@
                     <div class="form-group breadcrumb-right">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#add-location-modal">
                             <i data-feather="plus" class="mr-50"></i>
-                            <span>Add Location</span>
+                            <span>Ajouter un emplacement</span>
                         </button>
                     </div>
                 </div>
@@ -373,7 +373,7 @@
                                 <div class="card-header">
                                     <div>
                                         <h2 class="font-weight-bolder mb-0" id="total-locations"></h2>
-                                        <p class="card-text">Total Locations</p>
+                                        <p class="card-text">Total emplacements</p>
                                     </div>
                                     <div class="avatar bg-light-primary p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
@@ -388,7 +388,7 @@
                                 <div class="card-header">
                                     <div>
                                         <h2 class="font-weight-bolder mb-0" id="online-locations"></h2>
-                                        <p class="card-text">Online Locations</p>
+                                        <p class="card-text">Emplacements en ligne</p>
                                     </div>
                                     <div class="avatar bg-light-success p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
@@ -403,7 +403,7 @@
                                 <div class="card-header">
                                     <div>
                                         <h2 class="font-weight-bolder mb-0" id="total-users"></h2>
-                                        <p class="card-text">Total Users</p>
+                                        <p class="card-text">Total utilisateurs</p>
                                     </div>
                                     <div class="avatar bg-light-info p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
@@ -418,7 +418,7 @@
                                 <div class="card-header">
                                     <div>
                                         <h2 class="font-weight-bolder mb-0" id="total-data"></h2>
-                                        <p class="card-text">Total Data Usage</p>
+                                        <p class="card-text">Utilisation totale des données</p>
                                     </div>
                                     <div class="avatar bg-light-warning p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                                         <div class="avatar-content">
@@ -435,17 +435,17 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Locations List</h4>
+                                    <h4 class="card-title">Liste des emplacements</h4>
                                     <div class="d-flex align-items-center">
                                         <div class="form-group mb-0 mr-1">
                                             <select class="form-control" id="status-filter" disabled>
-                                                <option value="">All Status</option>
-                                                <option value="Online">Online</option>
-                                                <option value="Offline">Offline</option>
+                                                <option value="">Tous les statuts</option>
+                                                <option value="Online">En ligne</option>
+                                                <option value="Offline">Hors ligne</option>
                                             </select>
                                         </div>
                                         <div class="form-group mb-0">
-                                            <input type="text" class="form-control" id="search-locations" placeholder="Search locations...">
+                                            <input type="text" class="form-control" id="search-locations" placeholder="Rechercher des emplacements...">
                                         </div>
                                     </div>
                                 </div>
@@ -453,12 +453,12 @@
                                     <table class="table table-hover" id="locations-table">
                                         <thead>
                                             <tr>
-                                                <th>Location</th>
-                                                <th>Address</th>
+                                                <th>Emplacement</th>
+                                                <th>Adresse</th>
                                                 
-                                                <th>Users</th>
-                                                <th>Data Usage</th>
-                                                <th>Status</th>
+                                                <th>Utilisateurs</th>
+                                                <th>Utilisation des données</th>
+                                                <th>Statut</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -482,7 +482,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="add-location-title">Add New Location</h5>
+                    <h5 class="modal-title" id="add-location-title">Ajouter un nouvel emplacement</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -490,12 +490,12 @@
                 <div class="modal-body">
                     <form id="add-location-form">
                         <div class="form-group">
-                            <label for="location-name">Location Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="location-name" placeholder="Enter location name">
+                            <label for="location-name">Nom de l'emplacement <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="location-name" placeholder="Entrez le nom de l'emplacement">
                         </div>
                         <div class="form-group">
-                            <label for="location-address">Address</label>
-                            <input type="text" class="form-control" id="location-address" placeholder="Enter address">
+                            <label for="location-address">Adresse</label>
+                            <input type="text" class="form-control" id="location-address" placeholder="Entrez l'adresse">
                         </div>
                         <!-- 
                         <div class="form-row">
@@ -510,29 +510,29 @@
                         </div> -->
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="location-router">Router MAC Address <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="location-router" placeholder="Format: 00:11:22:33:44:55">
-                                <small class="form-text text-muted">This will be used to create a new device for this location.</small>
+                                <label for="location-router">Adresse MAC du routeur <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="location-router" placeholder="Format : 00:11:22:33:44:55">
+                                <small class="form-text text-muted">Ceci sera utilisé pour créer un nouvel appareil pour cet emplacement.</small>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="device-model">Device Model <span class="text-danger">*</span></label>
+                                <label for="device-model">Modèle d'appareil <span class="text-danger">*</span></label>
                                 <select class="form-control" id="device-model" required>
-                                    <option value="">Select Device Model</option>
+                                    <option value="">Sélectionner le modèle d'appareil</option>
                                     <option value="820AX">820AX</option>
                                     <option value="835AX">835AX</option>
                                 </select>
-                                <small class="form-text text-muted">Select the model of your WiFi device.</small>
+                                <small class="form-text text-muted">Sélectionnez le modèle de votre appareil WiFi.</small>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="location-notes">Description</label>
-                            <textarea class="form-control" id="location-notes" rows="3" placeholder="Enter additional notes or description"></textarea>
+                            <textarea class="form-control" id="location-notes" rows="3" placeholder="Entrez des notes ou une description supplémentaires"></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="add-location-btn">Add Location</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="add-location-btn">Ajouter un emplacement</button>
                 </div>
             </div>
         </div>
@@ -543,38 +543,38 @@
 
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
-        <p class="clearfix mb-0"><span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="https://mrwifi.com" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span><span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span></p>
+        <p class="clearfix mb-0"><span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="https://mrwifi.com" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, Tous droits réservés</span></span><span class="float-md-right d-none d-md-block">Conçu avec soin & Créé avec<i data-feather="heart"></i></span></p>
     </footer>
     <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
     <!-- END: Footer-->
 
 
     <!-- BEGIN: Vendor JS-->
-    <script src="app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
-    <script src="app-assets/vendors/js/charts/apexcharts.min.js"></script>
-    <script src="app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
-    <script src="app-assets/js/core/app-menu.js"></script>
-    <script src="app-assets/js/core/app.js"></script>
+    <script src="/app-assets/js/core/app-menu.js"></script>
+    <script src="/app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->
-    <script src="app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-    <script src="app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
-    <script src="app-assets/vendors/js/maps/leaflet.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+    <script src="/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
+    <script src="/app-assets/vendors/js/maps/leaflet.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Page JS-->
-    <script src="app-assets/js/scripts/tables/table-datatables-basic.js"></script>
+    <script src="/app-assets/js/scripts/tables/table-datatables-basic.js"></script>
     <!-- END: Page JS-->
 
     <!-- Include config.js before other custom scripts -->
@@ -712,11 +712,11 @@
                         table_content += '<td>' + location.users + '</td>';
                         table_content += '<td>' + location.data_usage + '</td>';
                         if (location.online_status == "online") {   
-                            table_content += '<td><span class="badge badge-pill badge-light-success">Online</span></td>';
+                            table_content += '<td><span class="badge badge-pill badge-light-success">En ligne</span></td>';
                         } else {
-                            table_content += '<td><span class="badge badge-pill badge-light-danger">Offline</span></td>';
+                            table_content += '<td><span class="badge badge-pill badge-light-danger">Hors ligne</span></td>';
                         }
-                        table_content += '<td><a href="/locations/' + location.id + '" class="btn btn-sm btn-primary">View</a></td>';
+                        table_content += '<td><a href="/fr/locations/' + location.id + '" class="btn btn-sm btn-primary">Voir</a></td>';
                         table_content += '</tr>';
                     });
                     $('#locations-table-body').html(table_content);
@@ -746,7 +746,7 @@
                 e.preventDefault();
                 
                 // Show loading state
-                $(this).html('<i data-feather="loader" class="mr-2"></i>Adding Location...');
+                $(this).html('<i data-feather="loader" class="mr-2"></i>Ajout de l\'emplacement...');
                 $(this).prop('disabled', true);
                 
                 // Clear previous error messages
@@ -765,20 +765,20 @@
                 // Validate required fields
                 let hasErrors = false;
                 if (!locationData.name) {
-                    showFieldError('location-name', 'Location name is required');
+                    showFieldError('location-name', 'Le nom de l\'emplacement est requis');
                     hasErrors = true;
                 }
 
                 if (!locationData.mac_address) {
-                    showFieldError('location-router', 'Router MAC address is required');
+                    showFieldError('location-router', 'L\'adresse MAC du routeur est requise');
                     hasErrors = true;
                 } else if (!isValidMacAddress(locationData.mac_address)) {
-                    showFieldError('location-router', 'Please enter a valid MAC address (e.g., 00:11:22:33:44:55)');
+                    showFieldError('location-router', 'Veuillez entrer une adresse MAC valide (ex : 00:11:22:33:44:55)');
                     hasErrors = true;
                 }
 
                 if (!locationData.model) {
-                    showFieldError('device-model', 'Device model is required');
+                    showFieldError('device-model', 'Le modèle de l\'appareil est requis');
                     hasErrors = true;
                 }
 
@@ -803,9 +803,9 @@
                         $('#add-location-btn').removeClass('btn-primary');
                         $('#add-location-btn').addClass('btn-success');
                         
-                        let successMessage = 'Location created successfully';
+                        let successMessage = 'Emplacement créé avec succès';
                         if (response.firmware) {
-                            successMessage += `<br><small>Assigned firmware: ${response.firmware.name}</small>`;
+                            successMessage += `<br><small>Firmware assigné : ${response.firmware.name}</small>`;
                         }
 
                         $('#add-location-btn').html(successMessage);
@@ -815,7 +815,7 @@
                         setTimeout(function() {
                             $('#add-location-btn').removeClass('btn-success');
                             $('#add-location-btn').addClass('btn-primary');
-                            $('#add-location-btn').html('Add Location');
+                            $('#add-location-btn').html('Ajouter un emplacement');
                             $('#add-location-btn').prop('disabled', false);
                             $('#add-location-modal').modal('hide');
                             
@@ -834,13 +834,13 @@
                         // Show error message on button
                         $('#add-location-btn').removeClass('btn-primary');
                         $('#add-location-btn').addClass('btn-danger');
-                        $('#add-location-btn').html('Error creating location');
+                        $('#add-location-btn').html('Erreur lors de la création de l\'emplacement');
                         $('#add-location-btn').prop('disabled', true);
 
                         setTimeout(function() {
                             $('#add-location-btn').removeClass('btn-danger');
                             $('#add-location-btn').addClass('btn-primary');
-                            $('#add-location-btn').html('Add Location');
+                            $('#add-location-btn').html('Ajouter un emplacement');
                             $('#add-location-btn').prop('disabled', false);
                         }, 3000);
                         // alert('Error creating location: ' + error);

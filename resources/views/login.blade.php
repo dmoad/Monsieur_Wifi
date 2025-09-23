@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="monsieur-wifi - WiFi network management system for administrators and network owners">
+    <meta name="description" content="monsieur-wifi - WiFi network management system for administrators and network owners" id="meta-description">
     <meta name="keywords" content="wifi, network, dashboard, admin, monsieur-wifi, captive portal, radius, management">
     <meta name="author" content="monsieur-wifi">
     <title>Login - Monsieur WiFi</title>
@@ -343,6 +343,62 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(115, 103, 240, 0.2);
         }
+        
+        /* Language switcher styles */
+        .language-switcher #languageDropdown {
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            min-width: 65px;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .language-switcher #languageDropdown:hover {
+            transform: scale(1.05);
+            border-color: #7367f0;
+            color: #7367f0;
+        }
+        
+        .language-switcher #languageDropdown:focus {
+            box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.25);
+            border-color: #7367f0;
+        }
+        
+        .language-switcher .dropdown-menu {
+            border-radius: 10px;
+            border: 1px solid rgba(115, 103, 240, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+            padding: 0.5rem 0;
+        }
+        
+        .language-switcher .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border: none;
+        }
+        
+        .language-switcher .dropdown-item:hover {
+            background-color: rgba(115, 103, 240, 0.05);
+            color: #7367f0;
+            transform: translateX(2px);
+        }
+        
+        .language-switcher .flag-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .language-switcher .lang-text {
+            font-weight: 500;
+        }
+        
+        .language-switcher #current-lang-flag {
+            margin-right: 4px;
+            font-size: 14px;
+        }
     </style>
 
 </head>
@@ -416,10 +472,30 @@
                         <!-- Login v1 -->
                         <div class="card mb-0">
                             <div class="card-body">
-                                <a href="javascript:void(0);" class="brand-logo">
-                                    <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
-                                    <h2 class="brand-text text-primary ml-1">monsieur-wifi</h2>
-                                </a>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <a href="javascript:void(0);" class="brand-logo">
+                                        <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
+                                        <h2 class="brand-text text-primary ml-1">monsieur-wifi</h2>
+                                    </a>
+                                    <div class="language-switcher">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span id="current-lang-flag">🇺🇸</span>
+                                                <span id="current-lang">EN</span>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageDropdown">
+                                                <a class="dropdown-item language-option" href="#" data-lang="en">
+                                                    <span class="flag-icon">🇺🇸</span>
+                                                    <span class="lang-text">English</span>
+                                                </a>
+                                                <a class="dropdown-item language-option" href="#" data-lang="fr">
+                                                    <span class="flag-icon">🇫🇷</span>
+                                                    <span class="lang-text">Français</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <h4 class="card-title mb-1">Welcome to monsieur-wifi! 👋</h4>
                                 <p class="card-text mb-2">Please sign-in to access your <span class="typing-text"></span></p>
@@ -500,7 +576,117 @@
     <script src="/assets/js/config.js?v=1"></script>
 
     <script>
+        // Language support system
+        const translations = {
+            en: {
+                pageTitle: 'Login - Monsieur WiFi',
+                metaDescription: 'monsieur-wifi - WiFi network management system for administrators and network owners',
+                welcome: 'Welcome to monsieur-wifi! 👋',
+                signInPrompt: 'Please sign-in to access your',
+                typingStrings: ['network management dashboard', 'WiFi control center', 'analytics platform'],
+                emailLabel: 'Email',
+                emailPlaceholder: 'admin@mrwifi.com',
+                passwordLabel: 'Password',
+                passwordPlaceholder: '············',
+                rememberMe: 'Remember Me',
+                signIn: 'Sign in',
+                signingIn: 'Signing in...',
+                forgotPassword: 'Forgot your password?',
+                resetPassword: 'Reset Password',
+                loginSuccessful: 'Login successful!',
+                loginError: 'An error occurred during login.',
+                langCode: 'EN',
+                flag: '🇺🇸'
+            },
+            fr: {
+                pageTitle: 'Connexion - Monsieur WiFi',
+                metaDescription: 'monsieur-wifi - Système de gestion de réseaux WiFi pour administrateurs et propriétaires de réseaux',
+                welcome: 'Bienvenue sur monsieur-wifi! 👋',
+                signInPrompt: 'Veuillez vous connecter pour accéder à votre',
+                typingStrings: ['tableau de bord de gestion réseau', 'centre de contrôle WiFi', 'plateforme d\'analytique'],
+                emailLabel: 'Email',
+                emailPlaceholder: 'admin@mrwifi.com',
+                passwordLabel: 'Mot de passe',
+                passwordPlaceholder: '············',
+                rememberMe: 'Se souvenir de moi',
+                signIn: 'Se connecter',
+                signingIn: 'Connexion en cours...',
+                forgotPassword: 'Mot de passe oublié?',
+                resetPassword: 'Réinitialiser le mot de passe',
+                loginSuccessful: 'Connexion réussie!',
+                loginError: 'Une erreur s\'est produite lors de la connexion.',
+                langCode: 'FR',
+                flag: '🇫🇷'
+            }
+        };
+
+        // Language detection and management
+        function detectLanguage() {
+            // Check for saved language preference first
+            const savedLang = localStorage.getItem('preferred_language');
+            if (savedLang && (savedLang === 'en' || savedLang === 'fr')) {
+                return savedLang;
+            }
+            
+            // Fallback to browser language detection
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.substring(0, 2).toLowerCase();
+            return langCode === 'fr' ? 'fr' : 'en'; // Default to English
+        }
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            
+            // Update page title and meta description
+            document.title = t.pageTitle;
+            $('#meta-description').attr('content', t.metaDescription);
+            
+            // Update static text elements
+            $('.card-title').text(t.welcome);
+            $('.card-text').html(t.signInPrompt + ' <span class="typing-text"></span>');
+            $('label[for="login-email"]').text(t.emailLabel);
+            $('#login-email').attr('placeholder', t.emailPlaceholder);
+            $('label[for="login-password"]').text(t.passwordLabel);
+            $('#login-password').attr('placeholder', t.passwordPlaceholder);
+            $('.custom-control-label[for="remember-me"]').text(t.rememberMe);
+            $('#login-text').text(t.signIn);
+            $('a[href="forgot-password.html"] span').first().text(t.forgotPassword);
+            $('a[href="forgot-password.html"] span').last().text(t.resetPassword);
+            
+            // Update language dropdown button
+            $('#current-lang').text(t.langCode);
+            $('#current-lang-flag').text(t.flag);
+            
+            // Store current language for use in other functions
+            window.currentLang = lang;
+            window.currentTranslations = t;
+            
+            // Save language preference to localStorage
+            localStorage.setItem('preferred_language', lang);
+        }
+
+        function switchLanguage(newLang) {
+            applyTranslations(newLang);
+            
+            // Reinitialize typing animation with new language strings
+            if (window.typed) {
+                window.typed.destroy();
+            }
+            window.typed = new Typed('.typing-text', {
+                strings: window.currentTranslations.typingStrings,
+                typeSpeed: 50,
+                backSpeed: 30,
+                backDelay: 2000,
+                loop: true
+            });
+        }
+
+        // Initialize language on page load
+        const currentLanguage = detectLanguage();
+        
         $(window).on('load', function() {
+            // Apply translations before other initializations
+            applyTranslations(currentLanguage);
             if (feather) {
                 feather.replace({
                     width: 14,
@@ -514,13 +700,24 @@
                 $('#router-icon').html(feather.icons['wifi'].toSvg({ width: 26, height: 26 }));
             }
             
-            // Initialize typing animation
-            var typed = new Typed('.typing-text', {
-                strings: ['network management dashboard', 'WiFi control center', 'analytics platform'],
+            // Initialize typing animation with translated strings
+            window.typed = new Typed('.typing-text', {
+                strings: window.currentTranslations.typingStrings,
                 typeSpeed: 50,
                 backSpeed: 30,
                 backDelay: 2000,
                 loop: true
+            });
+            
+            // Language dropdown event handlers
+            $('.language-option').on('click', function(e) {
+                e.preventDefault();
+                const selectedLang = $(this).data('lang');
+                if (selectedLang !== window.currentLang) {
+                    switchLanguage(selectedLang);
+                }
+                // Close dropdown
+                $('#languageDropdown').dropdown('hide');
             });
             
             // Set up CSRF token for all AJAX requests
@@ -536,7 +733,7 @@
                 console.log('Login button clicked');
                 // Show spinner, hide text
                 $('#login-spinner').removeClass('d-none');
-                $('#login-text').text('Signing in...');
+                $('#login-text').text(window.currentTranslations.signingIn);
                 $('#login-btn').attr('disabled', true);
                 $('#login-alert').hide();
                 $('#login-success').hide();
@@ -569,30 +766,31 @@
                         
                         // Reset button
                         $('#login-spinner').addClass('d-none');
-                        $('#login-text').text('Sign in');
+                        $('#login-text').text(window.currentTranslations.signIn);
                         $('#login-btn').attr('disabled', false);
                         
                         // Show success message with token and user information
                         var token = response.access_token;
                         var truncatedToken = token.substring(0, 20) + "..." + token.substring(token.length - 20);
-                        
+                    
                         $('#login-success').html(
-                            '<span class="text-success text-bold">Login successful!</span><br>'
+                            '<span class="text-success text-bold">' + window.currentTranslations.loginSuccessful + '</span><br>'
                         ).show();
-                        
+
                         // Set a timeout to redirect to dashboard after showing the success message
                         setTimeout(function() {
-                            window.location.href = '/dashboard?status=login';
+                            const langPrefix = window.currentLang === 'fr' ? '/fr' : '/en';
+                            window.location.href = langPrefix + '/dashboard?status=login';
                         }, 1500); // Redirect after 1.5 seconds
                     },
                     error: function(xhr) {
                         // Reset button
                         $('#login-spinner').addClass('d-none');
-                        $('#login-text').text('Sign in');
+                        $('#login-text').text(window.currentTranslations.signIn);
                         $('#login-btn').attr('disabled', false);
                         
                         // Show error message
-                        var errorMessage = 'An error occurred during login.';
+                        var errorMessage = window.currentTranslations.loginError;
                         if (xhr.responseJSON) {
                             if (xhr.responseJSON.error) {
                                 errorMessage = xhr.responseJSON.error;

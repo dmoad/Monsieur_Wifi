@@ -105,21 +105,21 @@
                         <span class="selected-language">English</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/domain-blocking" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/domain-blocking" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
-                                    </div>
+                    </div>
                 </li>
                 
                 <!-- Dark mode toggle -->
                 <li class="nav-item d-none d-lg-block">
                     <a class="nav-link nav-link-style">
                         <i class="ficon" data-feather="moon"></i>
-                                </a>
-                            </li>
+                    </a>
+                </li>
                 
                 <!-- Notifications -->
                 <!-- <li class="nav-item dropdown dropdown-notification mr-25">
@@ -138,7 +138,7 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/en/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
                     </div>
@@ -174,13 +174,13 @@
                 <!-- Management Section -->
                 <li class="navigation-header"><span>Management</span></li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/en/dashboard">
                         <i data-feather="home"></i>
                         <span class="menu-title text-truncate">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/locations">
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/locations">
                         <i data-feather="map-pin"></i>
                         <span class="menu-title text-truncate">Locations</span>
                     </a>
@@ -193,7 +193,7 @@
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/en/captive-portals">
                         <i data-feather="layout"></i>
                         <span class="menu-title text-truncate">Captive Portals</span>
                     </a>
@@ -202,25 +202,25 @@
                 <!-- For Admin Section -->
                 <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/en/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                <li class="nav-item active only_admin hidden">
+                    <a class="d-flex align-items-center" href="/en/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                    <a class="d-flex align-items-center" href="/en/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                    <a class="d-flex align-items-center" href="/en/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
                     </a>
@@ -228,7 +228,7 @@
                 <!-- Account Section -->
                 <li class="navigation-header"><span>Account</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/en/profile">
                          <i data-feather="user"></i>
                          <span class="menu-title text-truncate">Profile</span>
                      </a>
@@ -256,7 +256,7 @@
                             <h2 class="content-header-title float-left mb-0">Domain Blocking</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard.html">Home</a>
+                                    <li class="breadcrumb-item"><a href="/en/dashboard">Home</a>
                                     </li>
                                     <li class="breadcrumb-item active">Domain Blocking
                                     </li>
@@ -816,10 +816,12 @@
                 processing: true,
                 serverSide: false,
                 ajax: {
-                    url: '/blocked-domains',
+                    url: '/api/blocked-domains',
                     type: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     dataSrc: function(json) {
                         console.log("blocked-domains", json);
@@ -945,10 +947,12 @@
             // Load categories data and update counters
             function loadCategoriesData() {
                 $.ajax({
-                    url: '/categories',
+                    url: '/api/categories',
                     type: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     success: function(response) {
                         updateCategoryCounters(response.data || response);
@@ -1101,12 +1105,13 @@
                 
                 // API call to add domain
                 $.ajax({
-                    url: '/blocked-domains',
+                    url: '/api/blocked-domains',
                     type: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     data: JSON.stringify({
                         domain: domainName,
@@ -1160,10 +1165,12 @@
                 
                 // Get domain data
                 $.ajax({
-                    url: `/blocked-domains/${domainId}`,
+                    url: `/api/blocked-domains/${domainId}`,
                     type: 'GET',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     success: function(response) {
                         if (response.success) {
@@ -1198,12 +1205,13 @@
                 const blockSubdomains = $('#edit-block-subdomains').is(':checked');
                 
                 $.ajax({
-                    url: `/blocked-domains/${domainId}`,
+                    url: `/api/blocked-domains/${domainId}`,
                     type: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
                     },
                     data: JSON.stringify({
                         category_id: categoryId,
@@ -1247,11 +1255,12 @@
                 
                 if (confirm(`Are you sure you want to delete "${domain}" from the block list?`)) {
                     $.ajax({
-                        url: `/blocked-domains/${domainId}`,
+                        url: `/api/blocked-domains/${domainId}`,
                         type: 'DELETE',
                         headers: {
                             'Accept': 'application/json',
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
                         },
                         success: function(response) {
                             if (response.success) {
@@ -1337,7 +1346,7 @@
                 feather.replace();
                 
                 // Prepare export URL with parameters
-                let exportUrl = '/blocked-domains/export?format=txt&active_only=true';
+                let exportUrl = '/api/blocked-domains/export?format=txt&active_only=true';
                 
                 // If a specific category is selected, include it
                 if (window.selectedCategory) {

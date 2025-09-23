@@ -1,42 +1,42 @@
 <!DOCTYPE html>
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="fr" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="monsieur-wifi - User account management for network administrators">
-    <meta name="keywords" content="wifi, network, accounts, dashboard, administrator, monsieur-wifi">
+    <meta name="description" content="monsieur-wifi - Gestion des comptes utilisateurs pour les administrateurs réseau">
+    <meta name="keywords" content="wifi, réseau, comptes, tableau de bord, administrateur, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
-    <title>Accounts - Monsieur WiFi</title>
-    <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <title>Comptes - Monsieur WiFi</title>
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
     <!-- END: Vendor CSS-->
     
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.min.css">
     <!-- END: Page CSS-->
     
     <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <!-- END: Custom CSS-->
-    
+
     <!-- Add this right before the closing </head> tag -->
     <style>
         /* Ensure feather icons in avatars are visible */
@@ -90,15 +90,15 @@
                 <!-- Language dropdown -->
                 <li class="nav-item dropdown dropdown-language">
                     <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-us"></i>
-                        <span class="selected-language">English</span>
+                        <i class="flag-icon flag-icon-fr"></i>
+                        <span class="selected-language">Français</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/accounts" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/accounts" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
                     </div>
                 </li>
@@ -127,9 +127,9 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -161,17 +161,17 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
-                <li class="navigation-header"><span>Management</span></li>
+                <li class="navigation-header"><span>Gestion</span></li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/fr/dashboard">
                         <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
+                        <span class="menu-title text-truncate">Tableau de bord</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/locations">
+                    <a class="d-flex align-items-center" href="/fr/locations">
                         <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
+                        <span class="menu-title text-truncate">Emplacements</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
@@ -182,50 +182,50 @@
                 </li> -->
 
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/fr/captive-portals">
                         <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
+                        <span class="menu-title text-truncate">Portails captifs</span>
                     </a>
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
                 <li class="nav-item active only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/fr/accounts">
                         <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
+                        <span class="menu-title text-truncate">Comptes</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
                         <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
+                        <span class="menu-title text-truncate">Blocage de domaines</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                    <a class="d-flex align-items-center" href="/fr/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                    <a class="d-flex align-items-center" href="/fr/system-settings">
                         <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
+                        <span class="menu-title text-truncate">Paramètres système</span>
                     </a>
                 </li>
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
+                <li class="navigation-header"><span>Compte</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/fr/profile">
                          <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
+                         <span class="menu-title text-truncate">Profil</span>
                      </a>
                 </li>
                 <li class="nav-item">
                      <a class="d-flex align-items-center" href="/logout">
                          <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Logout</span>
+                         <span class="menu-title text-truncate">Déconnexion</span>
                      </a>
                 </li> 
             </ul>
@@ -242,12 +242,12 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">User Accounts</h2>
+                            <h2 class="content-header-title float-left mb-0">Comptes utilisateurs</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="dashboard.html">Home</a>
+                                    <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a>
                                     </li>
-                                    <li class="breadcrumb-item active">Accounts
+                                    <li class="breadcrumb-item active">Comptes
                                     </li>
                                 </ol>
                             </div>
@@ -258,7 +258,7 @@
                     <div class="form-group breadcrumb-right">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-account">
                             <i data-feather="user-plus" class="mr-25"></i>
-                            <span>Add New Account</span>
+                            <span>Ajouter un nouveau compte</span>
                         </button>
                     </div>
                 </div>
@@ -273,7 +273,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">All User Accounts</h4>
+                                    <h4 class="card-title">Tous les comptes utilisateurs</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="card-datatable table-responsive">
@@ -281,10 +281,10 @@
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
-                                                <th>Name</th>
+                                                <th>Nom</th>
                                                 <th>Email</th>
-                                                <th>Role</th>
-                                                <th>Profile Picture</th>
+                                                <th>Rôle</th>
+                                                <th>Photo de profil</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -308,7 +308,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel33">Add New Account</h4>
+                    <h4 class="modal-title" id="myModalLabel33">Ajouter un nouveau compte</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -323,9 +323,9 @@
                                         <img src="/assets/avatar-default.jpg" id="new-account-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
                                     </a>
                                     <div class="media-body mt-75 ml-1">
-                                        <label for="new-account-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload Profile Picture</label>
+                                        <label for="new-account-upload" class="btn btn-sm btn-primary mb-75 mr-75">Télécharger une photo de profil</label>
                                         <input type="file" id="new-account-upload" hidden accept="image/*" />
-                                        <p class="mb-0">Allowed JPG or PNG. Max size of 2MB</p>
+                                        <p class="mb-0">JPG ou PNG autorisés. Taille maximale de 2 Mo</p>
                                     </div>
                                 </div>
                             </div>
@@ -334,8 +334,8 @@
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="new-account-name">Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="new-account-name" placeholder="Full Name" required />
+                                    <label for="new-account-name">Nom complet <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="new-account-name" placeholder="Nom complet" required />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
@@ -346,47 +346,47 @@
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="new-account-password">Password <span class="text-danger">*</span></label>
+                                    <label for="new-account-password">Mot de passe <span class="text-danger">*</span></label>
                                     <div class="input-group form-password-toggle">
-                                        <input type="password" class="form-control" id="new-account-password" placeholder="Password" required />
+                                        <input type="password" class="form-control" id="new-account-password" placeholder="Mot de passe" required />
                                         <div class="input-group-append">
                                             <span class="input-group-text cursor-pointer">
                                                 <i data-feather="eye"></i>
                                             </span>
                                         </div>
                                     </div>
-                                    <small class="form-text text-muted">Minimum 8 characters, must include letters, numbers and special characters</small>
+                                    <small class="form-text text-muted">Minimum 8 caractères, doit inclure des lettres, des chiffres et des caractères spéciaux</small>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="new-account-confirm-password">Confirm Password <span class="text-danger">*</span></label>
+                                    <label for="new-account-confirm-password">Confirmer le mot de passe <span class="text-danger">*</span></label>
                                     <div class="input-group form-password-toggle">
-                                        <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirm Password" required />
+                                        <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirmer le mot de passe" required />
                                         <div class="input-group-append">
                                             <span class="input-group-text cursor-pointer">
                                                 <i data-feather="eye"></i>
                                             </span>
                                         </div>
                                     </div>
-                                    <small class="form-text text-danger hidden" id="new-password-error-message">Passwords do not match</small>
+                                    <small class="form-text text-danger hidden" id="new-password-error-message">Les mots de passe ne correspondent pas</small>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="new-account-role">Role <span class="text-danger">*</span></label>
+                                    <label for="new-account-role">Rôle <span class="text-danger">*</span></label>
                                     <select class="form-control" id="new-account-role" required>
-                                        <option value="">Select Role</option>
-                                        <option value="user">User</option>
-                                        <option value="admin">Admin</option>
+                                        <option value="">Sélectionner un rôle</option>
+                                        <option value="user">Utilisateur</option>
+                                        <option value="admin">Administrateur</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                 </div>
                 <div class="modal-footer">
-                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="create-account-btn">Create Account</button>
+                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary" id="create-account-btn">Créer un compte</button>
                 </div>
                 </form>
             </div>
@@ -398,7 +398,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="editUserModalLabel">Edit User Account</h4>
+                    <h4 class="modal-title" id="editUserModalLabel">Modifier le compte utilisateur</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -413,9 +413,9 @@
                                         <img src="/assets/avatar-default.jpg" id="edit-user-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
                                     </a>
                                     <div class="media-body mt-75 ml-1">
-                                        <label for="edit-user-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload Profile Picture</label>
+                                        <label for="edit-user-upload" class="btn btn-sm btn-primary mb-75 mr-75">Télécharger une photo de profil</label>
                                         <input type="file" id="edit-user-upload" hidden accept="image/*" />
-                                        <p class="mb-0">Allowed JPG or PNG. Max size of 2MB</p>
+                                        <p class="mb-0">JPG ou PNG autorisés. Taille maximale de 2 Mo</p>
                                     </div>
                                 </div>
                             </div>
@@ -424,8 +424,8 @@
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="edit-user-name">Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="edit-user-name" placeholder="Full Name" required />
+                                    <label for="edit-user-name">Nom complet <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="edit-user-name" placeholder="Nom complet" required />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
@@ -436,47 +436,47 @@
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="edit-user-password">New Password</label>
+                                    <label for="edit-user-password">Nouveau mot de passe</label>
                                     <div class="input-group form-password-toggle">
-                                        <input type="password" class="form-control" id="edit-user-password" placeholder="Leave blank to keep current password" />
+                                        <input type="password" class="form-control" id="edit-user-password" placeholder="Laisser vide pour conserver le mot de passe actuel" />
                                         <div class="input-group-append">
                                             <span class="input-group-text cursor-pointer">
                                                 <i data-feather="eye"></i>
                                             </span>
                                         </div>
                                     </div>
-                                    <small class="form-text text-muted">Leave blank if you don't want to change the password</small>
+                                    <small class="form-text text-muted">Laisser vide si vous ne voulez pas changer le mot de passe</small>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="edit-user-confirm-password">Confirm New Password</label>
+                                    <label for="edit-user-confirm-password">Confirmer le nouveau mot de passe</label>
                                     <div class="input-group form-password-toggle">
-                                        <input type="password" class="form-control" id="edit-user-confirm-password" placeholder="Confirm new password" />
+                                        <input type="password" class="form-control" id="edit-user-confirm-password" placeholder="Confirmer le nouveau mot de passe" />
                                         <div class="input-group-append">
                                             <span class="input-group-text cursor-pointer">
                                                 <i data-feather="eye"></i>
                                             </span>
                                         </div>
                                     </div>
-                                    <small class="form-text text-danger hidden" id="edit-password-error-message">Passwords do not match</small>
+                                    <small class="form-text text-danger hidden" id="edit-password-error-message">Les mots de passe ne correspondent pas</small>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="edit-user-role">Role <span class="text-danger">*</span></label>
+                                    <label for="edit-user-role">Rôle <span class="text-danger">*</span></label>
                                     <select class="form-control" id="edit-user-role" required>
-                                        <option value="">Select Role</option>
-                                        <option value="user">User</option>
-                                        <option value="admin">Admin</option>
+                                        <option value="">Sélectionner un rôle</option>
+                                        <option value="user">Utilisateur</option>
+                                        <option value="admin">Administrateur</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                 </div>
                 <div class="modal-footer">
-                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="update-user-btn">Update Account</button>
+                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary" id="update-user-btn">Mettre à jour le compte</button>
                 </div>
                 </form>
             </div>
@@ -489,34 +489,34 @@
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
         <p class="clearfix mb-0">
-            <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span>
-            <span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span>
+            <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, Tous droits réservés</span></span>
+            <span class="float-md-right d-none d-md-block">Conçu avec soin & Créé avec<i data-feather="heart"></i></span>
         </p>
     </footer>
     <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
     <!-- END: Footer-->
 
     <!-- BEGIN: Vendor JS-->
-    <script src="app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
-    <script src="app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
-    <script src="app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
+    <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
     <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
-    <script src="app-assets/js/core/app-menu.js"></script>
-    <script src="app-assets/js/core/app.js"></script>
+    <script src="/app-assets/js/core/app-menu.js"></script>
+    <script src="/app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->
-    <script src="app-assets/js/scripts/pages/app-user-list.js"></script>
+    <script src="/app-assets/js/scripts/pages/app-user-list.js"></script>
     <!-- END: Page JS-->
      <!-- Include config.js before other custom scripts -->
     <script src="/assets/js/config.js?v=1"></script>
@@ -540,7 +540,7 @@
             var user = UserManager.getUser();
             // if role != admin, then redirect to dashboard
             if (user.role != 'admin') {
-                window.location.href = '/dashboard';
+                window.location.href = '/fr/dashboard';
                 return;
             }
             // Initialize DataTable - moved to document ready to avoid conflicts
@@ -650,15 +650,15 @@
                             
                             // Create role badge
                             var roleBadge = role === 'admin' 
-                                ? `<span class="badge badge-role-admin">Admin</span>`
-                                : `<span class="badge badge-light-secondary">User</span>`;
+                                ? `<span class="badge badge-role-admin">Administrateur</span>`
+                                : `<span class="badge badge-light-secondary">Utilisateur</span>`;
                             
                             var userId = users[i].id;
                             var actions = `<button class="btn btn-sm btn-primary edit-user-btn" data-user-id="${userId}" data-name="${name}" data-email="${email}" data-role="${role}" data-profile-picture="${profile_picture_path}">
-                                              <i data-feather="edit-2"></i> Edit
+                                              <i data-feather="edit-2"></i> Modifier
                                            </button> 
                                            <button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}">
-                                              <i data-feather="trash-2"></i> Delete
+                                              <i data-feather="trash-2"></i> Supprimer
                                            </button>`;
                             
                             // Log the data being added
@@ -693,13 +693,13 @@
                     // Validate file type
                     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                     if (!validTypes.includes(file.type)) {
-                        toastr.error('Please select a valid image file (JPG or PNG)', 'Invalid File');
+                        toastr.error('Veuillez sélectionner un fichier image valide (JPG ou PNG)', 'Fichier invalide');
                         return;
                     }
                     
                     // Validate file size (2MB max)
                     if (file.size > 2 * 1024 * 1024) {
-                        toastr.error('File size must be less than 2MB', 'File Too Large');
+                        toastr.error('La taille du fichier doit être inférieure à 2 Mo', 'Fichier trop volumineux');
                         return;
                     }
                     
@@ -724,7 +724,7 @@
                 
                 // Validate required fields
                 if (!name || !email || !password || !confirmPassword || !role) {
-                    toastr.error('Please fill in all required fields', 'Validation Error');
+                    toastr.error('Veuillez remplir tous les champs obligatoires', 'Erreur de validation');
                     return;
                 }
                 
@@ -742,7 +742,7 @@
                 // Show loading state
                 const $button = $('#create-account-btn');
                 const originalText = $button.html();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...').prop('disabled', true);
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Création en cours...').prop('disabled', true);
                 
                 // Prepare data
                 const userData = {
@@ -797,7 +797,7 @@
                         $('#add-new-account').modal('hide');
                         
                         // Show success message
-                        toastr.success('Account created successfully!', 'Success');
+                        toastr.success('Compte créé avec succès !', 'Succès');
                         
                         // Refresh the users table data without reloading the page
                         loadUsersData();
@@ -859,13 +859,13 @@
                     // Validate file type
                     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                     if (!validTypes.includes(file.type)) {
-                        toastr.error('Please select a valid image file (JPG or PNG)', 'Invalid File');
+                        toastr.error('Veuillez sélectionner un fichier image valide (JPG ou PNG)', 'Fichier invalide');
                         return;
                     }
                     
                     // Validate file size (2MB max)
                     if (file.size > 2 * 1024 * 1024) {
-                        toastr.error('File size must be less than 2MB', 'File Too Large');
+                        toastr.error('La taille du fichier doit être inférieure à 2 Mo', 'Fichier trop volumineux');
                         return;
                     }
                     
@@ -891,7 +891,7 @@
                 
                 // Validate required fields
                 if (!name || !email || !role) {
-                    toastr.error('Please fill in all required fields', 'Validation Error');
+                    toastr.error('Veuillez remplir tous les champs obligatoires', 'Erreur de validation');
                     return;
                 }
                 
@@ -909,7 +909,7 @@
                 // Show loading state
                 const $button = $('#update-user-btn');
                 const originalText = $button.html();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...').prop('disabled', true);
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mise à jour en cours...').prop('disabled', true);
                 
                 // Prepare data
                 const userData = {
@@ -967,7 +967,7 @@
                         $('#edit-user-modal').modal('hide');
                         
                         // Show success message
-                        toastr.success('User account updated successfully!', 'Success');
+                        toastr.success('Compte utilisateur mis à jour avec succès !', 'Succès');
                         
                         // Refresh the users table data without reloading the page
                         loadUsersData();
@@ -999,7 +999,7 @@
                 const userName = $(this).closest('tr').find('td:nth-child(2)').text(); // Get name from table row
                 
                 // Show confirmation dialog
-                if (confirm(`Are you sure you want to delete the user account for "${userName}"? This action cannot be undone.`)) {
+                if (confirm(`Êtes-vous sûr de vouloir supprimer le compte utilisateur de "${userName}" ? Cette action ne peut pas être annulée.`)) {
                     // Show loading state on button
                     const $button = $(this);
                     const originalHtml = $button.html();
@@ -1016,7 +1016,7 @@
                             console.log('User deleted successfully:', response);
                             
                             // Show success message
-                            toastr.success(`User account for "${userName}" has been deleted successfully!`, 'User Deleted');
+                            toastr.success(`Le compte utilisateur de "${userName}" a été supprimé avec succès !`, 'Utilisateur supprimé');
                             
                             // Refresh the users table data without reloading the page
                             loadUsersData();

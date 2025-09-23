@@ -1,39 +1,39 @@
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="fr" data-textdirection="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="Mr WiFi cloud controller dashboard for managing and monitoring WiFi networks.">
-    <meta name="keywords" content="wifi, cloud controller, network management, mrwifi">
-    <meta name="author" content="Mr WiFi">
-    <title>Captive Portal Designer - Monsieur WiFi</title>
-    <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <meta name="description" content="Tableau de bord du contrôleur WiFi monsieur-wifi pour gérer et surveiller les réseaux WiFi.">
+    <meta name="keywords" content="wifi, contrôleur cloud, gestion réseau, monsieur-wifi">
+    <meta name="author" content="Monsieur WiFi">
+    <title>Concepteur de portail captif - Monsieur WiFi</title>
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/charts/apexcharts.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/extensions/toastr.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.min.css">
     <!-- END: Vendor CSS-->
     
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/pages/dashboard-ecommerce.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/charts/chart-apex.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/plugins/extensions/ext-component-toastr.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-ecommerce.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
     <!-- END: Page CSS-->
     
     <!-- BEGIN: Custom CSS-->
@@ -565,15 +565,15 @@
                 <!-- Language dropdown -->
                 <li class="nav-item dropdown dropdown-language">
                     <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-us"></i>
-                        <span class="selected-language">English</span>
+                        <i class="flag-icon flag-icon-fr"></i>
+                        <span class="selected-language">Français</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <a class="dropdown-item" href="/en/captive-portals" data-language="en">
                             <i class="flag-icon flag-icon-us"></i> English
                         </a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> French
+                        <a class="dropdown-item" href="/fr/captive-portals" data-language="fr">
+                            <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
                     </div>
                 </li>
@@ -603,9 +603,9 @@
                         <span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -637,66 +637,66 @@
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
-                <li class="navigation-header"><span>Management</span></li>
+                <li class="navigation-header"><span>Gestion</span></li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/dashboard">
+                    <a class="d-flex align-items-center" href="/fr/dashboard">
                         <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
+                        <span class="menu-title text-truncate">Tableau de bord</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/locations">
+                    <a class="d-flex align-items-center" href="/fr/locations">
                         <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
+                        <span class="menu-title text-truncate">Emplacements</span>
                     </a>
                 </li>
             
                 <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/captive-portals">
+                    <a class="d-flex align-items-center" href="/fr/captive-portals">
                         <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
+                        <span class="menu-title text-truncate">Portails captifs</span>
                     </a>
                 </li>
                 
                 <!-- For Admin Section -->
                 <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/accounts">
+                    <a class="d-flex align-items-center" href="/fr/accounts">
                         <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
+                        <span class="menu-title text-truncate">Comptes</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/domain-blocking">
+                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
                         <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
+                        <span class="menu-title text-truncate">Blocage de domaines</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/firmware">
+                    <a class="d-flex align-items-center" href="/fr/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/system-settings">
+                    <a class="d-flex align-items-center" href="/fr/system-settings">
                         <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
+                        <span class="menu-title text-truncate">Paramètres système</span>
                     </a>
                 </li>
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
+                <li class="navigation-header"><span>Compte</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/profile">
+                     <a class="d-flex align-items-center" href="/fr/profile">
                          <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
+                         <span class="menu-title text-truncate">Profil</span>
                      </a>
                 </li>
                 <li class="nav-item">
                      <a class="d-flex align-items-center" href="/logout">
                          <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Logout</span>
+                         <span class="menu-title text-truncate">Déconnexion</span>
                      </a>
                 </li> 
             </ul>
@@ -713,12 +713,12 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Captive Portal Designer</h2>
+                            <h2 class="content-header-title float-left mb-0">Concepteur de portail captif</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/dashboard">Home</a>
+                                    <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a>
                                     </li>
-                                    <li class="breadcrumb-item active">Captive Portals
+                                    <li class="breadcrumb-item active">Portails captifs
                                     </li>
                                 </ol>
                             </div>
@@ -734,13 +734,13 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Your Captive Portal Designs</h4>
+                                    <h4 class="card-title">Vos conceptions de portail captif</h4>
                                     <div class="heading-elements">
                                         <ul class="list-inline mb-0">
                                             <li>
                                                 <button type="button" class="btn btn-primary waves-effect waves-float waves-light" id="create-new-design">
                                                     <i data-feather="plus" class="mr-50"></i>
-                                                    <span>Create New Design</span>
+                                                    <span>Créer une nouvelle conception</span>
                                                 </button>
                                             </li>
                                         </ul>
@@ -762,7 +762,7 @@
                         <div class="col-12 mb-1">
                             <button class="btn btn-outline-secondary waves-effect" id="back-to-list">
                                 <i data-feather="arrow-left" class="mr-50"></i>
-                                <span>Back to Designs</span>
+                                <span>Retour aux conceptions</span>
                             </button>
                         </div>
                     </div>
@@ -770,7 +770,7 @@
                         <div class="col-lg-8 col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Design Your Login Page</h4>
+                                    <h4 class="card-title">Concevez votre page de connexion</h4>
                                     <div class="heading-elements">
                                         
                                     </div>
@@ -780,13 +780,13 @@
                                         <li class="nav-item">
                                             <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" aria-controls="general" role="tab" aria-selected="true">
                                                 <i data-feather="settings" class="mr-25"></i>
-                                                <span class="font-weight-bold">General</span>
+                                                <span class="font-weight-bold">Général</span>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="branding-tab" data-toggle="tab" href="#branding" aria-controls="branding" role="tab" aria-selected="false">
                                                 <i data-feather="image" class="mr-25"></i>
-                                                <span class="font-weight-bold">Branding</span>
+                                                <span class="font-weight-bold">Image de marque</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -796,23 +796,23 @@
                                             <form class="mt-2">
                                                 <div class="row">
                                                     <div class="col-12 mb-1">
-                                                        <h6 class="mb-1">Basic Information</h6>
+                                                        <h6 class="mb-1">Informations de base</h6>
                                                     </div>
                                                     <div class="col-md-6 col-12 mb-1">
                                                         <div class="form-group">
-                                                            <label for="portal-name">Portal Name</label>
-                                                            <input type="text" class="form-control" id="portal-name" placeholder="Enter a name for this login page">
+                                                            <label for="portal-name">Nom du portail</label>
+                                                            <input type="text" class="form-control" id="portal-name" placeholder="Entrez un nom pour cette page de connexion">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-12 mb-1">
                                                         <div class="form-group">
                                                             <label for="portal-description">Description</label>
-                                                            <textarea class="form-control" id="portal-description" rows="2" placeholder="Brief description of this design"></textarea>
+                                                            <textarea class="form-control" id="portal-description" rows="2" placeholder="Brève description de cette conception"></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 mb-1">
                                                         <div class="form-group">
-                                                            <label for="theme-color">Theme Color</label>
+                                                            <label for="theme-color">Couleur du thème</label>
                                                             <div class="color-picker-container">
                                                                 <input type="color" class="form-control form-control-color" id="theme-color" value="#7367f0">
                                                                 <div class="color-preview" style="background-color: #7367f0;"></div>
@@ -822,48 +822,48 @@
                                                     </div>
 
                                                     <div class="col-12 mt-2 mb-1">
-                                                        <h6 class="mb-1">Portal Content</h6>
+                                                        <h6 class="mb-1">Contenu du portail</h6>
                                                     </div>
                                                     <div class="col-md-6 col-12 mb-1">
                                                         <div class="form-group">
-                                                            <label for="welcome-message">Welcome Message</label>
-                                                            <input type="text" class="form-control" id="welcome-message" placeholder="Welcome to our WiFi" value="Welcome to our WiFi">
+                                                            <label for="welcome-message">Message de bienvenue</label>
+                                                            <input type="text" class="form-control" id="welcome-message" placeholder="Bienvenue sur notre WiFi" value="Bienvenue sur notre WiFi">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-12 mb-1">
                                                         <div class="form-group">
-                                                            <label for="button-text">Button Text</label>
-                                                            <input type="text" class="form-control" id="button-text" placeholder="Connect to WiFi" value="Connect to WiFi">
+                                                            <label for="button-text">Texte du bouton</label>
+                                                            <input type="text" class="form-control" id="button-text" placeholder="Se connecter au WiFi" value="Se connecter au WiFi">
                                                         </div>
                                                     </div>
                                                     <div class="col-12 mb-1">
                                                         <div class="form-group">
-                                                            <label for="login-instructions">Login Instructions</label>
-                                                            <textarea class="form-control" id="login-instructions" rows="2" placeholder="Enter your email to connect to our WiFi network">Enter your email to connect to our WiFi network</textarea>
+                                                            <label for="login-instructions">Instructions de connexion</label>
+                                                            <textarea class="form-control" id="login-instructions" rows="2" placeholder="Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="form-group">
                                                             <div class="custom-control custom-switch">
                                                                 <input type="checkbox" class="custom-control-input" id="show-terms" checked>
-                                                                <label class="custom-control-label" for="show-terms">Show Terms & Conditions Link</label>
+                                                                <label class="custom-control-label" for="show-terms">Afficher le lien Conditions générales</label>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="col-12 mt-2 mb-1">
-                                                        <h6 class="mb-1">Legal Content</h6>
+                                                        <h6 class="mb-1">Contenu légal</h6>
                                                     </div>
                                                     <div class="col-12 mb-1">
                                                         <div class="form-group">
-                                                            <label for="terms-of-service">Terms of Service Content</label>
-                                                            <textarea class="form-control" id="terms-of-service" rows="3" placeholder="Enter your terms of service content">By accessing this WiFi service, you agree to comply with all applicable laws and the network's acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.</textarea>
+                                                            <label for="terms-of-service">Contenu des conditions de service</label>
+                                                            <textarea class="form-control" id="terms-of-service" rows="3" placeholder="Entrez le contenu de vos conditions de service">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 mb-1">
                                                         <div class="form-group">
-                                                            <label for="privacy-policy">Privacy Policy Content</label>
-                                                            <textarea class="form-control" id="privacy-policy" rows="3" placeholder="Enter your privacy policy content">We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.</textarea>
+                                                            <label for="privacy-policy">Contenu de la politique de confidentialité</label>
+                                                            <textarea class="form-control" id="privacy-policy" rows="3" placeholder="Entrez le contenu de votre politique de confidentialité">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -876,37 +876,37 @@
                                                 <div class="row">
                                                     <div class="col-12 mb-2">
                                                         <div class="form-group">
-                                                            <label for="location-logo">Location Logo</label>
+                                                            <label for="location-logo">Logo de l'emplacement</label>
                                                             <div class="upload-area" id="location-logo-upload">
                                                                 <i data-feather="upload-cloud" class="upload-icon"></i>
-                                                                <h5 class="upload-text">Drop your location logo here or click to browse</h5>
-                                                                <p class="text-muted small">Recommended: PNG or SVG, 200x100px</p>
+                                                                <h5 class="upload-text">Déposez votre logo d'emplacement ici ou cliquez pour parcourir</h5>
+                                                                <p class="text-muted small">Recommandé : PNG ou SVG, 200x100px</p>
                                                             </div>
                                                             <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
                                                             <img src="" id="location-logo-preview" class="image-preview">
-                                                            <p class="note">Your location logo will appear at the top of the login page.</p>
+                                                            <p class="note">Votre logo d'emplacement apparaîtra en haut de la page de connexion.</p>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 mb-2">
                                                         <div class="form-group">
-                                                            <label for="background-image">Background Image</label>
+                                                            <label for="background-image">Image d'arrière-plan</label>
                                                             <div class="upload-area" id="background-upload">
                                                                 <i data-feather="image" class="upload-icon"></i>
-                                                                <h5 class="upload-text">Drop your background image here or click to browse</h5>
-                                                                <p class="text-muted small">Recommended: JPG or PNG, 1920x1080px</p>
+                                                                <h5 class="upload-text">Déposez votre image d'arrière-plan ici ou cliquez pour parcourir</h5>
+                                                                <p class="text-muted small">Recommandé : JPG ou PNG, 1920x1080px</p>
                                                             </div>
                                                             <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
                                                             <img src="" id="background-preview" class="image-preview">
-                                                            <p class="note">This image will be displayed as the page background.</p>
+                                                            <p class="note">Cette image sera affichée comme arrière-plan de la page.</p>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 mb-2">
-                                                        <h6 class="mb-1">Background Gradient (Alternative to Image)</h6>
-                                                        <p class="text-muted small mb-2">Create a gradient background instead of using an image. This will override the background image if both are set.</p>
+                                                        <h6 class="mb-1">Dégradé d'arrière-plan (Alternative à l'image)</h6>
+                                                        <p class="text-muted small mb-2">Créez un arrière-plan dégradé au lieu d'utiliser une image. Cela remplacera l'image d'arrière-plan si les deux sont définis.</p>
                                                         <div class="row">
                                                             <div class="col-md-6 col-12 mb-1">
                                                                 <div class="form-group">
-                                                                    <label for="gradient-start">Gradient Start Color</label>
+                                                                    <label for="gradient-start">Couleur de début du dégradé</label>
                                                                     <div class="color-picker-container">
                                                                         <input type="color" class="form-control form-control-color" id="gradient-start">
                                                                         <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
@@ -916,7 +916,7 @@
                                                             </div>
                                                             <div class="col-md-6 col-12 mb-1">
                                                                 <div class="form-group">
-                                                                    <label for="gradient-end">Gradient End Color</label>
+                                                                    <label for="gradient-end">Couleur de fin du dégradé</label>
                                                                     <div class="color-picker-container">
                                                                         <input type="color" class="form-control form-control-color" id="gradient-end">
                                                                         <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
@@ -928,16 +928,16 @@
                                                         <div class="row">
                                                             <div class="col-12">
                                                                 <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
-                                                                    <i data-feather="x" class="mr-25"></i>Clear Gradient
+                                                                    <i data-feather="x" class="mr-25"></i>Effacer le dégradé
                                                                 </button>
                                                                 <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
-                                                                    Blue to Purple
+                                                                    Bleu vers violet
                                                                 </button>
                                                                 <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
-                                                                    Orange to Pink
+                                                                    Orange vers rose
                                                                 </button>
                                                                 <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
-                                                                    Test Gradient
+                                                                    Tester le dégradé
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -949,7 +949,7 @@
                                     <div class="row mt-2">
                                         <div class="col-12 d-flex justify-content-end">
                                             <button id="save-design" class="btn btn-primary">
-                                                <i data-feather="save" class="mr-50"></i>Save Design
+                                                <i data-feather="save" class="mr-50"></i>Enregistrer la conception
                                             </button>
                                         </div>
                                     </div>
@@ -961,7 +961,7 @@
                         <div class="col-lg-4 col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Preview</h4>
+                                    <h4 class="card-title">Aperçu</h4>
                                     <div class="heading-elements">
                                         <ul class="list-inline mb-0">
                                             <li>
@@ -977,16 +977,16 @@
                                     <div class="portal-preview">
                                         <div class="preview-main">
                                             <div class="logo-container">
-                                                <img src="{{ asset('img/wifi-placeholder.png') }}" alt="Location Logo" id="preview-logo" class="preview-logo">
+                                                <img src="/img/wifi-placeholder.png" alt="Location Logo" id="preview-logo" class="preview-logo">
                                             </div>
-                                            <h2 id="preview-welcome">Welcome to our WiFi</h2>
-                                            <p id="preview-instructions">Enter your email to connect to our WiFi network</p>
+                                            <h2 id="preview-welcome">Bienvenue sur notre WiFi</h2>
+                                            <p id="preview-instructions">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</p>
                                             <div class="input-container">
-                                                <input type="text" class="preview-input" placeholder="Email Address">
-                                                <button id="preview-button" class="preview-button">Connect to WiFi</button>
+                                                <input type="text" class="preview-input" placeholder="Adresse e-mail">
+                                                <button id="preview-button" class="preview-button">Se connecter au WiFi</button>
                                             </div>
                                             <div id="preview-terms-container" class="preview-terms">
-                                                <small>By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#previewTermsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Privacy Policy</a>.</small>
+                                                <small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>
                                             </div>
                                         </div>
                                     </div>
@@ -1005,16 +1005,16 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <h5 class="modal-title" id="termsModalLabel">Conditions de service</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p id="preview-terms-content">By accessing this WiFi service, you agree to comply with all applicable laws and the network's acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.</p>
+                    <p id="preview-terms-content">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -1024,16 +1024,16 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <h5 class="modal-title" id="privacyModalLabel">Politique de confidentialité</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p id="preview-privacy-content">We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.</p>
+                    <p id="preview-privacy-content">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -1044,15 +1044,15 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteDesignModalLabel">Confirm Deletion</h5>
+                    <h5 class="modal-title" id="deleteDesignModalLabel">Confirmer la suppression</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete this design? This action cannot be undone.</p>
+                    <p>Êtes-vous sûr de vouloir supprimer cette conception ? Cette action ne peut pas être annulée.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
                 </div>
             </div>
         </div>
@@ -1063,26 +1063,26 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="changeOwnerModalLabel">Change Design Owner</h5>
+                    <h5 class="modal-title" id="changeOwnerModalLabel">Changer le propriétaire de la conception</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p id="changeOwnerText">Select a new owner for this captive portal design:</p>
+                    <p id="changeOwnerText">Sélectionnez un nouveau propriétaire pour cette conception de portail captif :</p>
                     <div class="form-group">
-                        <label for="newOwnerSelect">New Owner</label>
+                        <label for="newOwnerSelect">Nouveau propriétaire</label>
                         <select class="form-control" id="newOwnerSelect">
-                            <option value="">Loading users...</option>
+                            <option value="">Chargement des utilisateurs...</option>
                         </select>
                     </div>
                     <div class="alert alert-info mt-2">
-                        <strong>Note:</strong> This action will transfer ownership of the design to the selected user. The original creator information will be preserved.
+                        <strong>Note :</strong> Cette action transférera la propriété de la conception à l'utilisateur sélectionné. Les informations du créateur original seront préservées.
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmChangeOwnerBtn">Change Owner</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="confirmChangeOwnerBtn">Changer le propriétaire</button>
                 </div>
             </div>
         </div>
@@ -1090,18 +1090,18 @@
 
     <!-- BEGIN: Vendor JS-->
     <!-- Make sure jQuery is loaded first -->
-    <script src="{{ asset('app-assets/vendors/js/jquery/jquery.min.js') }}"></script>
+    <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
     <!-- Then load Bootstrap bundle which includes Popper.js -->
-    <script src="{{ asset('app-assets/vendors/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+    <script src="/app-assets/vendors/js/bootstrap/bootstrap.bundle.min.js"></script>
     <!-- Load other vendor scripts -->
-    <script src="{{ asset('app-assets/vendors/js/vendors.min.js') }}"></script>
-    <script src="{{ asset('app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
     <!-- END: Vendor JS-->
 
     <!-- BEGIN: Theme JS -->
-    <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
-    <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
-    <script src="{{ asset('assets/js/config.js?v=1') }}"></script>
+    <script src="/app-assets/js/core/app-menu.js"></script>
+    <script src="/app-assets/js/core/app.js"></script>
+    <script src="/assets/js/config.js?v=1"></script>
     <!-- END: Theme JS -->
 
     <script>
@@ -1878,7 +1878,7 @@
                                                     </div>
                                                     <div class="login-area-mini">${design.name}</div>
                                                     <div class="brand-logo-mini">
-                                                        <img src="{{ asset('app-assets/mrwifi-assets/Mr-Wifi.PNG') }}" alt="Mr WiFi" style="max-height: 15px;">
+                                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi" style="max-height: 15px;">
                                                     </div>
                                                 </div>
                                             </div>

@@ -150,11 +150,20 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'categories'], function ()
     Route::get('/{category}/stats', [CategoryController::class, 'stats'])->name('categories.stats');
 });
 
+// Domain Blocking API routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'blocked-domains'], function () {
+    Route::get('/', [DomainBlockingController::class, 'index']);
+    Route::post('/', [DomainBlockingController::class, 'store']);
+    Route::get('/{domain}', [DomainBlockingController::class, 'show']);
+    Route::put('/{domain}', [DomainBlockingController::class, 'update']);
+    Route::delete('/{domain}', [DomainBlockingController::class, 'destroy']);
+    Route::get('/export', [DomainBlockingController::class, 'export']);
+});
+
 // Additional Domain Blocking API routes
 Route::prefix('domain-blocking')->group(function () {
     Route::post('/bulk-delete', [DomainBlockingController::class, 'bulkDelete'])->name('domain-blocking.bulk-delete');
     Route::post('/import', [DomainBlockingController::class, 'import'])->name('domain-blocking.import');
-    Route::get('/export', [DomainBlockingController::class, 'export'])->name('domain-blocking.export');
     Route::post('/categories/{category}/toggle', [DomainBlockingController::class, 'toggleCategory'])->name('domain-blocking.toggle-category');
     Route::get('/stats', [DomainBlockingController::class, 'stats'])->name('domain-blocking.stats');
     Route::post('/check-domain', [DomainBlockingController::class, 'checkDomain'])->name('domain-blocking.check-domain');
