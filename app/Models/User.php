@@ -23,6 +23,7 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'profile_picture',
+        'role',
     ];
 
     /**
@@ -76,5 +77,25 @@ class User extends Authenticatable implements JWTSubject
     public function captivePortalDesigns()
     {
         return $this->hasMany(CaptivePortalDesign::class);
+    }
+
+    /**
+     * Get all captive portal designs owned by this user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ownedCaptivePortalDesigns()
+    {
+        return $this->hasMany(CaptivePortalDesign::class, 'owner_id');
+    }
+
+    /**
+     * Get all locations owned by this user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ownedLocations()
+    {
+        return $this->hasMany(Location::class, 'owner_id');
     }
 }

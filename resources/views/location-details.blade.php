@@ -525,26 +525,26 @@
                 </li>
 
                 <!-- For Admin Section -->
-                <li class="navigation-header"><span>For Admin</span></li>
-                <li class="nav-item">
+                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
@@ -2573,7 +2573,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/app-assets/js/scripts/extensions/ext-component-toastr.js"></script>
     <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
     <!-- END: Page JS-->
-    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/config.js?v=1"></script>
     <script src="/assets/js/location-details.js?time=<?php echo time(); ?>"></script>
     <script>
         // Firmware Update Modal functionality

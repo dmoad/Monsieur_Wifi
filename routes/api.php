@@ -121,6 +121,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'captive-portal-designs'],
     Route::put('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'update']);
     Route::delete('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'destroy']);
     Route::post('/{captivePortalDesign}/duplicate', [CaptivePortalDesignController::class, 'duplicate']);
+    Route::post('/{captivePortalDesign}/change-owner', [CaptivePortalDesignController::class, 'changeOwner']);
 });
 
 // Firmware routes (protected with auth)

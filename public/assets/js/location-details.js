@@ -64,22 +64,30 @@ function loadLocationDetails(location_id) {
             console.log("Location Details Response", response);
             // populate location details
             let captive_portal_designs = [];
-            let location = response.data;
-            $.ajax({
-                url: '/api/captive-portal-designs',
-                type: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + UserManager.getToken()
-                },
-                success: function(response) {
-                    console.log("captive-portal-designs response", response);
-                    let captive_portal_designs = response.data;
-                    populateLocationDetails(location, captive_portal_designs);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error loading captive portal designs:", error);
+            if (response.success) {
+                let location = response.data;
+
+                $.ajax({
+                    url: '/api/captive-portal-designs',
+                    type: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken()
+                    },
+                    success: function(response) {
+                        console.log("captive-portal-designs response", response);
+                        let captive_portal_designs = response.data;
+                        populateLocationDetails(location, captive_portal_designs);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error loading captive portal designs:", error);
+                    }
+                });
+            } else {
+                // if message is Unauthorized access, redirect to dashboard
+                if (response.message == 'Unauthorized access') {
+                    window.location.href = '/dashboard';
                 }
-            });
+            }
         },
         error: function(xhr, status, error) {
             console.error("Error loading location details:", error);

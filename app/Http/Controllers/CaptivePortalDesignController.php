@@ -27,27 +27,40 @@ class CaptivePortalDesignController extends Controller
 
     public function get_all()
     {
-        // Get all designs for the user or for admin user all design they own
-        if (auth()->user()->role == 'admin') {
-            $designs = CaptivePortalDesign::all();
+        $user = auth()->user();
+        
+        // Get designs based on user role
+        if ($user->role == 'admin') {
+            // Admin sees all designs with owner information
+            $designs = CaptivePortalDesign::with(['user', 'owner'])->latest()->get();
         } else {
-            $designs = auth()->user()->captivePortalDesigns()->latest()->get();
+            // Regular users only see their own designs
+            $designs = $user->captivePortalDesigns()->latest()->get();
         }
         
-        // Add the storage URL for logo paths
+        // Add the storage URL for logo paths and owner information
         $designs->transform(function ($design) {
             if ($design->location_logo_path) {
                 $design->location_logo_url = asset('storage/' . $design->location_logo_path);
             }
+            
+            // Include owner information for admin users
+            if (auth()->user()->role == 'admin') {
+                $design->creator_name = $design->user->name ?? 'Unknown';
+                $design->owner_name = $design->owner->name ?? $design->user->name ?? 'Unknown';
+                $design->current_owner_id = $design->owner_id ?? $design->user_id;
+            }
+            
             return $design;
         });
         
         return response()->json([
             'success' => true,
             'data' => $designs,
+            'is_admin' => $user->role == 'admin',
             'debug' => [
-                'user_id' => auth()->user()->id,
-                'user_role' => auth()->user()->role,
+                'user_id' => $user->id,
+                'user_role' => $user->role,
                 'design_count' => $designs->count()
             ]
         ]);
@@ -91,6 +104,9 @@ class CaptivePortalDesignController extends Controller
             $bgPath = $request->file('background_image')->store('captive-portals/backgrounds', 'public');
             $validated['background_image_path'] = $bgPath;
         }
+        
+        // Set the owner_id to the creator's ID if not specified
+        $validated['owner_id'] = $validated['owner_id'] ?? auth()->user()->id;
         
         $design = auth()->user()->captivePortalDesigns()->create($validated);
         
@@ -302,6 +318,55 @@ class CaptivePortalDesignController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Captive portal design deleted successfully'
+        ]);
+    }
+    
+    /**
+     * Change the owner of the specified captive portal design.
+     * Only admins can perform this action.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $design_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeOwner(Request $request, $design_id)
+    {
+        // Check if the current user is an admin
+        if (auth()->user()->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Only admins can change ownership.'
+            ], 403);
+        }
+        
+        $validated = $request->validate([
+            'owner_id' => 'required|exists:users,id'
+        ]);
+        
+        $design = CaptivePortalDesign::find($design_id);
+        
+        if (!$design) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Design not found'
+            ], 404);
+        }
+        
+        // Update the owner
+        $design->update(['owner_id' => $validated['owner_id']]);
+        
+        // Load the new owner information
+        $design->load(['user', 'owner']);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Ownership changed successfully',
+            'data' => [
+                'design_id' => $design->id,
+                'new_owner_id' => $design->owner_id,
+                'new_owner_name' => $design->owner->name,
+                'creator_name' => $design->user->name
+            ]
         ]);
     }
 }

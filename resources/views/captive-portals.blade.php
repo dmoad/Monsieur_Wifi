@@ -659,27 +659,27 @@
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header"><span>For Admin</span></li>
-                <li class="nav-item">
+                <!-- For Admin Section -->
+                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
-                
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
@@ -1058,6 +1058,36 @@
         </div>
     </div>
 
+    <!-- Change Owner Modal -->
+    <div class="modal fade" id="changeOwnerModal" tabindex="-1" aria-labelledby="changeOwnerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeOwnerModalLabel">Change Design Owner</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="changeOwnerText">Select a new owner for this captive portal design:</p>
+                    <div class="form-group">
+                        <label for="newOwnerSelect">New Owner</label>
+                        <select class="form-control" id="newOwnerSelect">
+                            <option value="">Loading users...</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-info mt-2">
+                        <strong>Note:</strong> This action will transfer ownership of the design to the selected user. The original creator information will be preserved.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmChangeOwnerBtn">Change Owner</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- BEGIN: Vendor JS-->
     <!-- Make sure jQuery is loaded first -->
     <script src="{{ asset('app-assets/vendors/js/jquery/jquery.min.js') }}"></script>
@@ -1071,7 +1101,7 @@
     <!-- BEGIN: Theme JS -->
     <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
     <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
-    <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/config.js?v=1') }}"></script>
     <!-- END: Theme JS -->
 
     <script>
@@ -1800,10 +1830,38 @@
                     $('#portal-designs-container').empty();
                     
                     if (response.data && response.data.length > 0) {
+                        // Check if user is admin to show admin features
+                        const isAdmin = response.is_admin || false;
+                        
                         // Populate designs
                         response.data.forEach(function(design) {
                             const bgColorClass = getRandomBgColorClass();
                             const formattedDate = new Date(design.updated_at).toISOString().split('T')[0];
+                            
+                            // Build owner information for admin users
+                            let ownerInfo = '';
+                            if (isAdmin && design.owner_name) {
+                                ownerInfo = `<small class="text-info d-block">Owner: ${design.owner_name}</small>`;
+                                if (design.creator_name && design.creator_name !== design.owner_name) {
+                                    ownerInfo += `<small class="text-muted d-block">Creator: ${design.creator_name}</small>`;
+                                }
+                            }
+                            
+                            // Build dropdown menu items
+                            let dropdownItems = '';
+                            if (isAdmin) {
+                                dropdownItems += `
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="showChangeOwnerModal(${design.id}, '${design.owner_name || design.creator_name}', ${design.current_owner_id || design.user_id})">
+                                        <i data-feather="user-check" class="mr-50"></i> Change Owner
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                `;
+                            }
+                            dropdownItems += `
+                                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteDesign(${design.id})">
+                                    <i data-feather="trash-2" class="mr-50"></i> Delete
+                                </a>
+                            `;
                             
                             const designCard = `
                                 <div class="col-md-3 col-sm-6 mb-2">
@@ -1827,6 +1885,7 @@
                                             <div class="mt-1">
                                                 <h5 class="mb-0">${design.name}</h5>
                                                 <small class="text-muted">Last modified: ${formattedDate}</small>
+                                                ${ownerInfo}
                                             </div>
                                             <div class="design-actions mt-1 d-flex justify-content-between align-items-center">
                                                 <button class="btn btn-sm btn-outline-primary edit-design" data-id="${design.id}">
@@ -1837,10 +1896,7 @@
                                                         <i data-feather="more-vertical"></i>
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-right">
-                                                        
-                                                        <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteDesign(${design.id})">
-                                                            <i data-feather="trash-2" class="mr-50"></i> Delete
-                                                        </a>
+                                                        ${dropdownItems}
                                                     </div>
                                                 </div>
                                             </div>
@@ -2111,7 +2167,117 @@
                     }
                 });
             });
+            
+            // Set up the change owner confirmation button
+            $('#confirmChangeOwnerBtn').on('click', function() {
+                const designId = $('#changeOwnerModal').data('designId');
+                const newOwnerId = $('#newOwnerSelect').val();
+                
+                if (!newOwnerId) {
+                    toastr.error('Please select a new owner');
+                    return;
+                }
+                
+                // Show loading state
+                const $btn = $(this);
+                const originalText = $btn.text();
+                $btn.text('Changing...').prop('disabled', true);
+                
+                // Send change owner request
+                $.ajax({
+                    url: `/api/captive-portal-designs/${designId}/change-owner`,
+                    method: 'POST',
+                    data: {
+                        owner_id: newOwnerId,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    success: function(response) {
+                        console.log('Change owner response:', response);
+                        toastr.success('Owner changed successfully');
+                        
+                        // Hide the modal
+                        $('#changeOwnerModal').modal('hide');
+                        
+                        // Refresh the designs list
+                        fetchDesigns();
+                    },
+                    error: function(xhr) {
+                        console.error('Error changing owner:', xhr.responseText);
+                        
+                        try {
+                            const responseObj = JSON.parse(xhr.responseText);
+                            toastr.error(responseObj.message || 'Failed to change owner. Please try again.');
+                        } catch (e) {
+                            toastr.error('Failed to change owner. Please try again.');
+                        }
+                    },
+                    complete: function() {
+                        // Reset button state
+                        $btn.text(originalText).prop('disabled', false);
+                    }
+                });
+            });
         });
+        
+        // Function to show the change owner modal
+        function showChangeOwnerModal(designId, currentOwnerName, currentOwnerId) {
+            console.log('Showing change owner modal for design:', designId, 'current owner:', currentOwnerName);
+            
+            // Store design ID in modal
+            $('#changeOwnerModal').data('designId', designId);
+            
+            // Update modal text
+            $('#changeOwnerText').text(`Select a new owner for this captive portal design (currently owned by ${currentOwnerName}):`);
+            
+            // Load users list
+            loadUsersForOwnerChange(currentOwnerId);
+            
+            // Show the modal
+            $('#changeOwnerModal').modal('show');
+        }
+        
+        // Function to load users for the owner change dropdown
+        function loadUsersForOwnerChange(currentOwnerId) {
+            const $select = $('#newOwnerSelect');
+            $select.html('<option value="">Loading users...</option>');
+            
+            // Fetch users from the API
+            $.ajax({
+                url: '/api/accounts/users',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function(response) {
+                    console.log('Users response:', response);
+                    $select.empty();
+                    
+                    if (response.users && response.users.length > 0) {
+                        response.users.forEach(function(user) {
+                            const isCurrentOwner = user.id == currentOwnerId;
+                            const selected = isCurrentOwner ? 'selected' : '';
+                            const disabled = isCurrentOwner ? 'disabled' : '';
+                            
+                            $select.append(`
+                                <option value="${user.id}" ${selected} ${disabled}>
+                                    ${user.name} (${user.email})${isCurrentOwner ? ' - Current Owner' : ''}
+                                </option>
+                            `);
+                        });
+                    } else {
+                        $select.append('<option value="">No users found</option>');
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error loading users:', xhr.responseText);
+                    $select.html('<option value="">Error loading users</option>');
+                    toastr.error('Failed to load users list');
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -288,27 +288,27 @@
                     </a>
                 </li>
                 
-                <!-- For Admin Section -->
-                <li class="navigation-header"><span>For Admin</span></li>
-                <li class="nav-item">
+               <!-- For Admin Section -->
+               <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
@@ -720,10 +720,10 @@
     <!-- END: Page JS-->
 
     <!-- Include config.js before other custom scripts -->
-    <script src="assets/js/config.js?v=2"></script>
+    <script src="/assets/js/config.js?v=1?v=2"></script>
     
     <!-- Include dashboard.js for dynamic data loading -->
-    <script src="assets/js/dashboard.js?v=9"></script>
+    <script src="assets/js/dashboard.js?v=10"></script>
 
     <script>
         $(window).on('load', function() {
@@ -918,6 +918,7 @@
     </script>
 
     <script>
+        
         // Authentication check and user display
         $(document).ready(function() {
             // Check if user is logged in using UserManager from config.js

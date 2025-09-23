@@ -44,8 +44,13 @@ class LocationController extends Controller
      */
     public function index()
     {
-        // Get locations with their associated devices
-        $locations = Location::with('device')->get();
+        $user = Auth::user();
+        if ($user->role == 'admin') {
+            // Get locations with their associated devices
+            $locations = Location::with('device')->get();
+        } else {
+            $locations = Location::with('device')->where('owner_id', $user->id)->get();
+        }
         
         // Determine online status for each location's device
         $locationsWithStatus = $locations->map(function ($location) {
@@ -97,13 +102,13 @@ class LocationController extends Controller
         foreach ($locations as $location) {
             // Get all-time data usage for each location
             $allTimeUsage = Radacct::getLocationDataUsage($location->id);
-            
+
             $networkTotals['total_input_bytes'] += $allTimeUsage['total_input_bytes'];
             $networkTotals['total_output_bytes'] += $allTimeUsage['total_output_bytes'];
             $networkTotals['total_users'] += $allTimeUsage['unique_users'];
             $networkTotals['total_data_gb'] += $allTimeUsage['total_gb'];
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Locations fetched successfully',
@@ -268,13 +273,24 @@ class LocationController extends Controller
      */
     public function show($id)
     {
-        $location = Location::find($id);
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ], 401);
+        }
+        if ($user->role == 'admin') {
+            $location = Location::with('device')->find($id);
+        } else {
+            $location = Location::with('device')->where('owner_id', $user->id)->find($id);
+        }
         
         if (!$location) {
             return response()->json([
                 'success' => false,
-                'message' => 'Location not found'
-            ], 404);
+                'message' => 'Unauthorized access'
+            ], 200);
         }
         
         $device = Device::find($location->device_id);
@@ -1279,6 +1295,32 @@ class LocationController extends Controller
                         $location->description = $settings['description'];
                     }
 
+                    if (isset($settings['owner_id'])) {
+                        // Check if user has admin role before allowing owner_id changes
+                        $currentUser = Auth::guard('api')->user();
+                        if (!$currentUser || $currentUser->role !== 'admin') {
+                            Log::warning('Non-admin user attempted to change location owner', [
+                                'user_id' => $currentUser ? $currentUser->id : null,
+                                'user_role' => $currentUser ? $currentUser->role : null,
+                                'location_id' => $location->id
+                            ]);
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Only administrators can change location ownership'
+                            ], 403);
+                        }
+                        
+                        if ($settings['owner_id'] !== $location->owner_id) {
+                            Log::info('Location owner updated by admin', [
+                                'admin_id' => $currentUser->id,
+                                'location_id' => $location->id,
+                                'old_owner_id' => $location->owner_id,
+                                'new_owner_id' => $settings['owner_id']
+                            ]);
+                        }
+                        $location->owner_id = $settings['owner_id'];
+                    }
+
                     if (isset($settings['latitude'])) {
                         if ($settings['latitude'] !== $location->latitude) {
                             // $increment_version = 1;
@@ -1471,6 +1513,22 @@ class LocationController extends Controller
                 ], 404);
             }
             
+            // Check if owner_id is being updated and validate admin role
+            if ($request->has('owner_id')) {
+                $currentUser = Auth::guard('api')->user();
+                if (!$currentUser || $currentUser->role !== 'admin') {
+                    Log::warning('Non-admin user attempted to change location owner via updateGeneral', [
+                        'user_id' => $currentUser ? $currentUser->id : null,
+                        'user_role' => $currentUser ? $currentUser->role : null,
+                        'location_id' => $location_id
+                    ]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Only administrators can change location ownership'
+                    ], 403);
+                }
+            }
+            
             // Validate the request data
             $validated = $request->validate([
                 'name' => 'sometimes|required|string|max:255',
@@ -1486,6 +1544,7 @@ class LocationController extends Controller
                 'contact_email' => 'sometimes|nullable|email|max:255',
                 'contact_phone' => 'sometimes|nullable|string|max:255',
                 'status' => 'sometimes|nullable|string|in:active,inactive,maintenance',
+                'owner_id' => 'sometimes|nullable|exists:users,id',
             ]);
             Log::info('Validated data: ');
             Log::info($validated);
@@ -1523,6 +1582,17 @@ class LocationController extends Controller
                 } else {
                     Log::warning('Failed to geocode updated address');
                 }
+            }
+            
+            // Log owner_id changes if any
+            if (isset($validated['owner_id']) && $validated['owner_id'] !== $location->owner_id) {
+                $currentUser = Auth::guard('api')->user();
+                Log::info('Location owner updated via updateGeneral', [
+                    'admin_id' => $currentUser->id,
+                    'location_id' => $location_id,
+                    'old_owner_id' => $location->owner_id,
+                    'new_owner_id' => $validated['owner_id']
+                ]);
             }
             
             // Update the location with validated data
@@ -2550,9 +2620,43 @@ class LocationController extends Controller
             }
         }
 
+        // Create hourly schedule records from the working hours
+        $this->createHourlyScheduleFromWorkingHours($locationId);
+
         Log::info("Business working hours setup completed for location {$locationId}");
 
         return $createdWorkingHours;
+    }
+
+    /**
+     * Create hourly schedule records from working hours for a location
+     * 
+     * @param int $locationId
+     * @return void
+     */
+    private function createHourlyScheduleFromWorkingHours($locationId)
+    {
+        Log::info("Creating hourly schedule from working hours for location ID: {$locationId}");
+        
+        $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        
+        foreach ($days as $day) {
+            for ($hour = 0; $hour < 24; $hour++) {
+                // Default to enabled (24/7 access for new locations)
+                \App\Models\CaptivePortalHourlySchedule::updateOrCreate(
+                    [
+                        'location_id' => $locationId,
+                        'day_of_week' => $day,
+                        'hour' => $hour,
+                    ],
+                    [
+                        'enabled' => true,
+                    ]
+                );
+            }
+        }
+        
+        Log::info("Hourly schedule created for location {$locationId} - all hours enabled (24/7)");
     }
 
     /**

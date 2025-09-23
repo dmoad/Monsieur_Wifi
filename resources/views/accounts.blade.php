@@ -66,9 +66,13 @@
             color: #7367f0;
         }
         .badge-role-owner {
-        background-color: rgba(40, 199, 111, 0.12);
-        color: #28c76f;
-    }
+            background-color: rgba(40, 199, 111, 0.12);
+            color: #28c76f;
+        }
+        .badge-light-secondary {
+            background-color: rgba(108, 117, 125, 0.12);
+            color: #6c757d;
+        }
     </style>
 </head>
 
@@ -96,7 +100,7 @@
                         <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
                             <i class="flag-icon flag-icon-fr"></i> French
                         </a>
-                                    </div>
+                    </div>
                 </li>
                 
                 <!-- Dark mode toggle -->
@@ -185,26 +189,26 @@
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header"><span>For Admin</span></li>
-                <li class="nav-item active">
+                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="nav-item active only_admin hidden">
                     <a class="d-flex align-items-center" href="/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
@@ -279,6 +283,7 @@
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
+                                                <th>Role</th>
                                                 <th>Profile Picture</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -367,6 +372,16 @@
                                     <small class="form-text text-danger hidden" id="new-password-error-message">Passwords do not match</small>
                                 </div>
                             </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="new-account-role">Role <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="new-account-role" required>
+                                        <option value="">Select Role</option>
+                                        <option value="user">User</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -447,6 +462,16 @@
                                     <small class="form-text text-danger hidden" id="edit-password-error-message">Passwords do not match</small>
                                 </div>
                             </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="edit-user-role">Role <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="edit-user-role" required>
+                                        <option value="">Select Role</option>
+                                        <option value="user">User</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -494,7 +519,7 @@
     <script src="app-assets/js/scripts/pages/app-user-list.js"></script>
     <!-- END: Page JS-->
      <!-- Include config.js before other custom scripts -->
-    <script src="assets/js/config.js"></script>
+    <script src="/assets/js/config.js?v=1"></script>
 
     <script>
         $(window).on('load', function() {
@@ -512,7 +537,12 @@
                     });
                 });
             }
-
+            var user = UserManager.getUser();
+            // if role != admin, then redirect to dashboard
+            if (user.role != 'admin') {
+                window.location.href = '/dashboard';
+                return;
+            }
             // Initialize DataTable - moved to document ready to avoid conflicts
             
             // Initialize role select2
@@ -571,7 +601,7 @@
                     responsive: true,
                     columnDefs: [
                         {
-                            targets: [4], // Actions column (0-based index: ID=0, Profile=1, Name=2, Email=3, Actions=4)
+                            targets: [5], // Actions column (0-based index: ID=0, Name=1, Email=2, Role=3, Profile=4, Actions=5)
                             orderable: false
                         }
                     ],
@@ -607,6 +637,7 @@
                             var id = i + 1; // Assuming you want to display a sequential ID
                             var name = users[i].name;
                             var email = users[i].email;
+                            var role = users[i].role || 'user';
                             var profile_picture = users[i].profile_picture;
                             var profile_picture_path = '/uploads/profile_pictures/' + profile_picture;
                             if (profile_picture === null) {
@@ -616,8 +647,14 @@
                                 profile_picture_path = '/uploads/profile_pictures/' + profile_picture;
                                 profile_picture = `<img src="/uploads/profile_pictures/${profile_picture}" alt="Profile Picture" class="img-fluid" style="width: 50px; height: 50px;">`;
                             }
+                            
+                            // Create role badge
+                            var roleBadge = role === 'admin' 
+                                ? `<span class="badge badge-role-admin">Admin</span>`
+                                : `<span class="badge badge-light-secondary">User</span>`;
+                            
                             var userId = users[i].id;
-                            var actions = `<button class="btn btn-sm btn-primary edit-user-btn" data-user-id="${userId}" data-name="${name}" data-email="${email}" data-profile-picture="${profile_picture_path}">
+                            var actions = `<button class="btn btn-sm btn-primary edit-user-btn" data-user-id="${userId}" data-name="${name}" data-email="${email}" data-role="${role}" data-profile-picture="${profile_picture_path}">
                                               <i data-feather="edit-2"></i> Edit
                                            </button> 
                                            <button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}">
@@ -625,10 +662,10 @@
                                            </button>`;
                             
                             // Log the data being added
-                            console.log("Adding row:", [id, profile_picture, name, email, actions]);
+                            console.log("Adding row:", [id, name, email, roleBadge, profile_picture, actions]);
 
                             // Add the new row to the DataTable
-                            table.row.add([id, profile_picture, name, email, actions]).draw();
+                            table.row.add([id, name, email, roleBadge, profile_picture, actions]).draw();
                         }
 
                         // Update the total accounts count
@@ -683,9 +720,10 @@
                 const email = $('#new-account-email').val();
                 const password = $('#new-account-password').val();
                 const confirmPassword = $('#new-account-confirm-password').val();
+                const role = $('#new-account-role').val();
                 
                 // Validate required fields
-                if (!name || !email || !password || !confirmPassword) {
+                if (!name || !email || !password || !confirmPassword || !role) {
                     toastr.error('Please fill in all required fields', 'Validation Error');
                     return;
                 }
@@ -711,7 +749,8 @@
                     name: name,
                     email: email,
                     password: password,
-                    password_confirmation: confirmPassword
+                    password_confirmation: confirmPassword,
+                    role: role
                 };
                 
                 // Create user via API
@@ -789,6 +828,7 @@
                 const userId = $(this).data('user-id');
                 const userName = $(this).data('name');
                 const userEmail = $(this).data('email');
+                const userRole = $(this).data('role');
                 const userProfilePicture = $(this).data('profile-picture');
                 
                 // Store the user ID for later use
@@ -797,6 +837,7 @@
                 // Populate the form with current user data
                 $('#edit-user-name').val(userName);
                 $('#edit-user-email').val(userEmail);
+                $('#edit-user-role').val(userRole);
                 $('#edit-user-password').val('');
                 $('#edit-user-confirm-password').val('');
                 
@@ -844,11 +885,12 @@
                 const userId = $('#edit-user-modal').data('user-id');
                 const name = $('#edit-user-name').val();
                 const email = $('#edit-user-email').val();
+                const role = $('#edit-user-role').val();
                 const password = $('#edit-user-password').val();
                 const confirmPassword = $('#edit-user-confirm-password').val();
                 
                 // Validate required fields
-                if (!name || !email) {
+                if (!name || !email || !role) {
                     toastr.error('Please fill in all required fields', 'Validation Error');
                     return;
                 }
@@ -872,7 +914,8 @@
                 // Prepare data
                 const userData = {
                     name: name,
-                    email: email
+                    email: email,
+                    role: role
                 };
                 
                 // Only include password if it's provided

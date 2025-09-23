@@ -13,6 +13,7 @@ class CaptivePortalDesign extends Model
     
     protected $fillable = [
         'user_id',
+        'owner_id',
         'name',
         'description',
         'theme_color',
@@ -65,5 +66,13 @@ class CaptivePortalDesign extends Model
         $newDesign->save();
         
         return $newDesign;
+    }
+
+    /**
+     * Get the owner of this design
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }

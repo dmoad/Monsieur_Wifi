@@ -40,10 +40,20 @@ class DashboardController extends Controller
      */
     public function getOverview()
     {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ], 401);
+        }
         try {
-            // Get all locations with their devices
-            $locations = Location::with('device')->get();
-            
+            // Get all locations with their devices$locations = Location::with('device')->get();
+            if ($user->role == 'admin') {
+                $locations = Location::with('device')->get();
+            } else {
+                $locations = Location::with('device')->where('owner_id', $user->id)->get();
+            }
             // Calculate location statistics
             $totalLocations = $locations->count();
             $onlineLocations = 0;
@@ -129,6 +139,13 @@ class DashboardController extends Controller
      */
     public function getAnalytics(Request $request)
     {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ], 401);
+        }
         try {
             $period = $request->input('period', '7'); // Default 7 days
             
@@ -151,7 +168,12 @@ class DashboardController extends Controller
                     $startDate = Carbon::now()->subDays(7);
             }
             
-            $locations = Location::with('device')->get();
+            
+            if ($user->role == 'admin') {
+                $locations = Location::with('device')->get();
+            } else {
+                $locations = Location::with('device')->where('owner_id', $user->id)->get();
+            }
             
             $analyticsStats = [
                 'total_users' => 0,
@@ -218,6 +240,13 @@ class DashboardController extends Controller
      */
     public function getDataUsageTrends(Request $request)
     {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ], 401);
+        }
         try {
             $period = $request->input('period', '7'); // Default 7 days
             
@@ -236,9 +265,11 @@ class DashboardController extends Controller
                 default:
                     $startDate = Carbon::now()->subDays(6);
             }
-            
-            // Get all locations
-            $locations = Location::all();
+            if ($user->role == 'admin') {
+                $locations = Location::all();
+            } else {
+                $locations = Location::where('owner_id', $user->id)->get();
+            }
             
             // Initialize daily usage array
             $dailyUsage = [];

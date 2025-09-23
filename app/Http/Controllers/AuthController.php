@@ -33,6 +33,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|in:admin,user',
         ]);
 
         if ($validator->fails()) {
@@ -43,6 +44,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
         $token = Auth::guard('api')->login($user);
@@ -67,6 +69,11 @@ class AuthController extends Controller
         if ($request->has('email')) {
             $user->email = $request->email;
             Log::info($user->email);
+        }
+
+        if ($request->has('role') && $user->role == 'admin') {
+            $user->role = $request->role;
+            Log::info($user->role);
         }
 
         if ($request->has('password') && $request->password !== '' && $request->password !== null) {
@@ -191,7 +198,7 @@ class AuthController extends Controller
         }
         $users = User::all();
         $users = $users->map(function($user) {
-            return $user->only(['id', 'name', 'email', 'profile_picture']);
+            return $user->only(['id', 'name', 'email', 'role', 'profile_picture']);
         });
         return response()->json([
             'users' => $users,
@@ -206,25 +213,61 @@ class AuthController extends Controller
         if(!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $user = User::find($id);
-        if(!$user) {
+        $targetUser = User::find($id);
+        if(!$targetUser) {
             return response()->json(['error' => 'User not found'], 404);
         }
-        $user_info = $user->only(['id', 'name', 'email']);
+        
+        // Update the target user's fields
+        if($request->has('name')) {
+            $targetUser->name = $request->name;
+        }
+        if($request->has('email')) {
+            $targetUser->email = $request->email;
+        }
+        if($request->has('role') && $user->role == 'admin') {
+            $targetUser->role = $request->role;
+        }
         if($request->has('password') && $request->password !== '' && $request->password !== null) {
             if($request->password !== $request->confirm_password) {
                 return response()->json(['error' => 'Passwords do not match'], 400);
             }
-            $user_info['password'] = Hash::make($request->password);
+            $targetUser->password = Hash::make($request->password);
         }
-        if($request->has('name')) {
-            $user_info['name'] = $request->name;
-        }
-        if($request->has('email')) {
-            $user_info['email'] = $request->email;
-        }
-        $user->update($user_info);
+        
+        $targetUser->save();
         return response()->json(['message' => 'User updated successfully'], 200);
+    }
+
+    public function createUser(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        if(!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|in:admin,user',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $newUser = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        return response()->json([
+            'message' => 'User created successfully',
+            'user' => $newUser->only(['id', 'name', 'email', 'role'])
+        ], 201);
     }
 
     public function deleteUser(Request $request, $id)

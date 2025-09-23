@@ -497,7 +497,7 @@
     <!-- END: Page JS-->
 
     <!-- Add this right after the Page JS scripts -->
-    <script src="assets/js/config.js"></script>
+    <script src="/assets/js/config.js?v=1"></script>
 
     <script>
         $(window).on('load', function() {

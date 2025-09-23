@@ -2262,7 +2262,7 @@
         #channel-scan-modal .progress-bar {
             transition: width 0.5s linear;
         }
-
+        
         /* Hourly Schedule Styles */
         .hourly-schedule-container {
             background: #f8f9fa;
@@ -2554,50 +2554,45 @@
                 </li>
 
                 <!-- For Admin Section -->
-                <li class="navigation-header">
-                    <span>For Admin</span>
-                </li>
-                <li class="nav-item">
+                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
                     </a>
                 </li>
-                
                 <!-- Account Section -->
-                <li class="navigation-header">
-                    <span>Account</span>
+                <li class="navigation-header"><span>Account</span></li>
+                <li class="nav-item">
+                     <a class="d-flex align-items-center" href="/profile">
+                         <i data-feather="user"></i>
+                         <span class="menu-title text-truncate">Profile</span>
+                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/profile">
-                        <i data-feather="user"></i>
-                        <span class="menu-title text-truncate">Profile</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/logout">
-                        <i data-feather="power"></i>
-                        <span class="menu-title text-truncate">Logout</span>
-                    </a>
-                </li>
+                     <a class="d-flex align-items-center" href="/logout">
+                         <i data-feather="power"></i>
+                         <span class="menu-title text-truncate">Logout</span>
+                     </a>
+                </li> 
             </ul>
         </div>
     </div>
@@ -3006,6 +3001,14 @@
                                                                 <option value="inactive">Inactive</option>
                                                                 <option value="maintenance">Maintenance</option>
                                                             </select>
+                                                        </div>
+                                                        <div class="form-group" id="location-owner-group" data-admin-only="true">
+                                                            <label for="location-owner">Location Owner</label>
+                                                            <select class="form-control" id="location-owner">
+                                                                <option value="">Select Owner</option>
+                                                                <!-- Options will be populated via JavaScript -->
+                                                            </select>
+                                                            <small class="form-text text-muted">Only administrators can assign location owners</small>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
@@ -4837,8 +4840,8 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/app-assets/js/scripts/extensions/ext-component-toastr.js"></script>
     <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
     <!-- END: Page JS-->
-    <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/location-details.js?time=<?php echo time(); ?>"></script>
+    <script src="/assets/js/config.js?v=1"></script>
+    <script src="/assets/js/location-details.js?v=1"></script>
     <script>
         // ==============================================
         // FORM VALIDATION UTILITIES
@@ -5445,7 +5448,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.setupEventListeners();
                 
                 if (this.options.mode !== "hourly") {
-                    this.setupInteractions();
+                this.setupInteractions();
                 }
 
                 if (this.options.initialData.length > 0) {
@@ -5477,8 +5480,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="schedule-header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                                    <h5 class="mb-1">Working Hours</h5>
-                                                    <p class="mb-0 text-muted">Captive Portal Access Schedule - Click individual hours to enable/disable</p>
+                                    <h5 class="mb-1">Working Hours</h5>
+                                    <p class="mb-0 text-muted">Captive Portal Access Schedule</p>
                                 </div>
                                 <div class="quick-actions">
                                     <small class="text-muted me-2">Quick Set:</small>
@@ -5526,10 +5529,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         <div class="p-3 border-top bg-light">
                             <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">
-                                                    <i class="bi bi-info-circle me-1"></i>
-                                                    <span id="schedule-instructions">Click individual hours to enable/disable access. Green = Enabled, Gray = Disabled.</span>
-                                                </small>
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Click empty cells to create slots. Drag to move, resize with handles, hover for delete.
+                                </small>
                                 <button class="btn btn-success btn-sm" data-action="save">
                                     <i class="bi bi-check-lg me-1"></i> Save Schedule
                                 </button>
@@ -5564,16 +5567,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (action === "save") {
                         this.saveSchedule();
                     } else if (e.target.classList.contains("time-cell")) {
-                        if (this.options.mode === "hourly") {
-                            // In hourly mode, toggle individual hours
-                            this.toggleHour(e.target);
-                        } else if (!e.target.querySelector(".time-slot")) {
-                            // In slot mode, create slots
-                            this.createSlot(e.target);
+                        if (!e.target.querySelector(".time-slot")) {
+                            // Create slots in both modes (visual slots represent hourly data)
+                        this.createSlot(e.target);
                         }
-                    } else if (e.target.closest('.time-cell') && this.options.mode === "hourly") {
-                        // Handle clicks on child elements of time-cell in hourly mode
-                        this.toggleHour(e.target.closest('.time-cell'));
                     } else if (e.target.classList.contains("delete-btn")) {
                         const slotId = e.target.closest(".time-slot").dataset.slotId;
                         this.deleteSlot(slotId);
@@ -5612,9 +5609,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             renderSlot(slot) {
                 const dayRow = this.container.querySelector(`[data-day="${slot.day}"]`);
-                const startCell = dayRow.querySelector(
-                    `[data-hour="${slot.startHour}"]`
-                );
+                if (!dayRow) return;
+                
+                const startCell = dayRow.querySelector(`[data-hour="${slot.startHour}"]`);
+                if (!startCell) return;
 
                 const slotElement = document.createElement("div");
                 slotElement.className = "time-slot";
@@ -5878,26 +5876,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.setBusinessHoursHourly();
                     this.showMessage("Business hours applied", "success");
                 } else {
-                    this.clearAll();
+                this.clearAll();
 
-                    this.options.businessDays.forEach((day) => {
-                        const slot = {
-                            id: `slot-${this.slotIdCounter++}`,
-                            day: day,
-                            startHour: this.options.businessHours.start,
-                            endHour: this.options.businessHours.end,
-                        };
-                        this.slots.push(slot);
-                        this.renderSlot(slot);
-                    });
+                this.options.businessDays.forEach((day) => {
+                    const slot = {
+                        id: `slot-${this.slotIdCounter++}`,
+                        day: day,
+                        startHour: this.options.businessHours.start,
+                        endHour: this.options.businessHours.end,
+                    };
+                    this.slots.push(slot);
+                    this.renderSlot(slot);
+                });
 
-                    this.showMessage("Business hours applied", "success");
+                this.showMessage("Business hours applied", "success");
                 }
             }
 
             clearAll() {
+                // Clear all slots (works for both modes)
+                this.slots = [];
+                this.container
+                    .querySelectorAll(".time-slot")
+                    .forEach((slot) => slot.remove());
+                
                 if (this.options.mode === "hourly") {
-                    // In hourly mode, disable all hours
+                    // In hourly mode, also clear hourly data
                     this.hourlyData = {};
                     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                     days.forEach(day => {
@@ -5906,15 +5910,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             this.hourlyData[day][hour] = false;
                         }
                     });
-                    this.renderHourlyVisuals();
                     this.showMessage("All hours disabled", "info");
                 } else {
-                    // In slot mode, remove all slots
-                    this.slots = [];
-                    this.container
-                        .querySelectorAll(".time-slot")
-                        .forEach((slot) => slot.remove());
-                    this.showMessage("All slots cleared", "info");
+                this.showMessage("All slots cleared", "info");
                 }
             }
 
@@ -6059,38 +6057,95 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                // Update visuals
-                this.renderHourlyVisuals();
+                // Convert hourly data to time slots for visual display
+                this.convertHourlyDataToSlots();
             }
 
-            renderHourlyVisuals() {
+            convertHourlyDataToSlots() {
+                // Clear existing slots (but preserve hourly data)
+                this.slots = [];
+                this.container
+                    .querySelectorAll(".time-slot")
+                    .forEach((slot) => slot.remove());
+                
+                // Convert hourly data to continuous time slots
                 const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                 
                 days.forEach(day => {
+                    if (!this.hourlyData[day]) return;
+                    
+                    let slotStart = null;
+                    
                     for (let hour = 0; hour < 24; hour++) {
-                        const cell = this.container.querySelector(`[data-day="${day}"] [data-hour="${hour}"]`);
-                        if (cell) {
-                            const enabled = this.hourlyData[day] && this.hourlyData[day][hour];
-                            this.updateHourVisual(cell, enabled);
+                        const isEnabled = this.hourlyData[day][hour];
+                        
+                        if (isEnabled && slotStart === null) {
+                            // Start of a new slot
+                            slotStart = hour;
+                        } else if (!isEnabled && slotStart !== null) {
+                            // End of current slot
+                            this.createSlotFromHours(day, slotStart, hour);
+                            slotStart = null;
                         }
                     }
+                    
+                    // Handle slot that goes to end of day
+                    if (slotStart !== null) {
+                        this.createSlotFromHours(day, slotStart, 24);
+                    }
                 });
+            }
+
+            createSlotFromHours(day, startHour, endHour) {
+                const slot = {
+                    id: `slot-${this.slotIdCounter++}`,
+                    day: day,
+                    startHour: startHour,
+                    endHour: endHour,
+                };
                 
-                console.log('Hourly visuals rendered for', Object.keys(this.hourlyData).length, 'days');
+                this.slots.push(slot);
+                this.renderSlot(slot);
+            }
+
+            renderHourlyVisuals() {
+                // This method is now replaced by convertHourlyDataToSlots
+                // but kept for backward compatibility
+                console.log('renderHourlyVisuals called - using slot-based display instead');
             }
 
             getHourlyData() {
-                // Convert internal format to API format
+                // Convert slots back to hourly format for API
                 const result = [];
-                Object.keys(this.hourlyData).forEach(day => {
-                    Object.keys(this.hourlyData[day]).forEach(hour => {
+                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                
+                // Initialize all hours as disabled
+                const hourlyData = {};
+                days.forEach(day => {
+                    hourlyData[day] = {};
+                    for (let hour = 0; hour < 24; hour++) {
+                        hourlyData[day][hour] = false;
+                    }
+                });
+                
+                // Mark hours as enabled based on slots
+                this.slots.forEach(slot => {
+                    for (let hour = slot.startHour; hour < slot.endHour; hour++) {
+                        hourlyData[slot.day][hour] = true;
+                    }
+                });
+                
+                // Convert to API format
+                days.forEach(day => {
+                    for (let hour = 0; hour < 24; hour++) {
                         result.push({
                             day_of_week: day,
-                            hour: parseInt(hour),
-                            enabled: this.hourlyData[day][hour]
+                            hour: hour,
+                            enabled: hourlyData[day][hour]
                         });
-                    });
+                    }
                 });
+                
                 return result;
             }
 
@@ -6203,23 +6258,13 @@ document.addEventListener('DOMContentLoaded', function() {
             workingHoursScheduler = new InteractiveScheduler({
                 container: "#schedule-container",
                 mode: "hourly", // Enable hourly mode
-                onSave: saveWorkingHoursFromHourlyData,
-                onHourToggle: function(day, hour, enabled) {
-                    console.log('Hour toggled:', day, hour, enabled);
-                },
-                onSlotCreate: function(slot) {
-                    console.log('Slot created:', slot);
-                },
-                onSlotUpdate: function(slot, oldSlot) {
-                    console.log('Slot updated:', slot, 'from', oldSlot);
-                },
-                onSlotDelete: function(slot) {
-                    console.log('Slot deleted:', slot);
-                }
+                onSave: saveWorkingHoursFromHourlyData
             });
-
-            // Load working hours when page loads
-            loadWorkingHoursAsHourlyData();
+            
+            // Add a small delay to ensure DOM is fully ready
+            setTimeout(function() {
+                loadWorkingHoursAsHourlyData();
+            }, 500);
         });
         
         // Load working hours as hourly data from new API
@@ -6236,8 +6281,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            console.log('Loading working hours as hourly data for location:', locationId);
-
             $.ajax({
                 url: `/api/locations/${locationId}/captive-portal/hourly-schedule`,
                 method: 'GET',
@@ -6247,15 +6290,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json'
                 },
                 success: function(response) {
-                    console.log('Hourly working hours loaded:', response);
                     if (response.status === 'success' && workingHoursScheduler) {
                         workingHoursScheduler.loadHourlyData(response.data);
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error loading hourly working hours:', error);
                     if (xhr.status === 404) {
-                        console.log('No hourly schedule found, initializing with default data');
                         // Initialize with default all-enabled schedule
                         initializeDefaultWorkingHours();
                     } else {
@@ -7377,6 +7417,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.log('Authentication token found:', UserManager.getToken().substring(0, 20) + '...');
             }
+            
+            // Check user role and hide admin-only elements
+            if (!UserManager.hasRole('admin')) {
+                console.log('Non-admin user detected, hiding admin-only elements');
+                $('[data-admin-only="true"]').hide();
+            } else {
+                console.log('Admin user detected, showing all elements');
+            }
 
             // Clear/unset router model on page load
             console.log('Clearing router model on page load');
@@ -7468,6 +7516,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         // Store location data globally for use in other functions
                         window.currentLocationData = location;
+                        
+                        // Populate location form fields with API data
+                        if (location) {
+                            console.log('Populating location form with API data:', location);
+                            $('#location-name').val(location.name || '');
+                            $('#location-address').val(location.address || '');
+                            $('#location-city').val(location.city || '');
+                            $('#location-state').val(location.state || '');
+                            $('#location-postal-code').val(location.postal_code || '');
+                            $('#location-country').val(location.country || '');
+                            $('#location-manager').val(location.manager_name || '');
+                            $('#location-contact-email').val(location.contact_email || '');
+                            $('#location-contact-phone').val(location.contact_phone || '');
+                            $('#location-status').val(location.status || 'active');
+                            $('#location-description').val(location.description || '');
+                            
+                            // Store owner_id to set after users are loaded
+                            if (location.owner_id) {
+                                console.log('Location has owner_id:', location.owner_id);
+                                // Reload the owner dropdown with the correct selected value
+                                if (UserManager.hasRole('admin')) {
+                                    loadUsersForOwnerDropdown(location.owner_id);
+                                }
+                            } else {
+                                console.log('Location has no owner assigned');
+                                // Still reload to ensure dropdown is populated
+                                if (UserManager.hasRole('admin')) {
+                                    loadUsersForOwnerDropdown();
+                                }
+                            }
+                            
+                            // Update UI elements
+                            $('.location_name').text(location.name || 'Unnamed Location');
+                            $('.location_address').text((location.address || '') + ', ' + (location.city || '') + ', ' + (location.state || ''));
+                        }
 
                         // Initialize map if location has coordinates
                         if (location && location.latitude && location.longitude) {
@@ -7825,6 +7908,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     description: $('#location-description').val(),
                 };
 
+                // Only include owner_id if user is admin
+                if (UserManager.hasRole('admin')) {
+                    locationData.owner_id = $('#location-owner').val() || null;
+                }
+
                 // Validate required fields
                 if (!locationData.name) {
                     toastr.error('Location name is required.');
@@ -7853,7 +7941,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Saving location data:', locationData);
 
                 $.ajax({
-                    url: '/api/locations/' + locationId,
+                    url: '/api/locations/' + locationId + '/general',
                     method: 'PUT',
                     headers: {
                         'Authorization': 'Bearer ' + UserManager.getToken(),
@@ -8026,10 +8114,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 100);
 
+            // Function to load all users for the owner dropdown
+            function loadUsersForOwnerDropdown(selectedOwnerId = null) {
+                console.log('Loading users for owner dropdown...');
+                
+                $.ajax({
+                    url: '/api/accounts/users',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('Users loaded successfully:', response);
+                        
+                        const $ownerSelect = $('#location-owner');
+                        $ownerSelect.empty();
+                        $ownerSelect.append('<option value="">Select Owner</option>');
+                        
+                        if (response.status === 'success' && response.users) {
+                            response.users.forEach(function(user) {
+                                $ownerSelect.append(`<option value="${user.id}">${user.name} (${user.email})</option>`);
+                            });
+                        }
+                        
+                        // Set the selected owner if provided
+                        if (selectedOwnerId) {
+                            console.log('Setting selected owner to:', selectedOwnerId);
+                            $ownerSelect.val(selectedOwnerId);
+                            
+                            // Verify it was set correctly
+                            const actualValue = $ownerSelect.val();
+                            console.log('Owner dropdown value after setting:', actualValue);
+                            if (actualValue !== selectedOwnerId.toString()) {
+                                console.warn('Failed to set owner dropdown value. Expected:', selectedOwnerId, 'Actual:', actualValue);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading users for owner dropdown:', error);
+                        // Fallback - just show empty dropdown with error message
+                        const $ownerSelect = $('#location-owner');
+                        $ownerSelect.empty();
+                        $ownerSelect.append('<option value="">Unable to load users</option>');
+                    }
+                });
+            }
+
             // Load device data when page loads - with delay to ensure DOM is ready
             $(document).ready(function() {
                 setTimeout(function() {
                     loadDeviceData();
+                    // Note: loadUsersForOwnerDropdown() will be called from within loadDeviceData 
+                    // when location data is populated, with the correct owner selected
                 }, 500);
             });
 

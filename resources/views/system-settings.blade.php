@@ -35,7 +35,7 @@
     <!-- END: Page CSS-->
 
     <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <!-- END: Custom CSS-->
 
     <style>
@@ -207,26 +207,26 @@
                 </li>
                 
                 <!-- For Admin Section -->
-                <li class="navigation-header"><span>For Admin</span></li>
-                <li class="nav-item">
+                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/accounts">
                         <i data-feather="users"></i>
                         <span class="menu-title text-truncate">Accounts</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/domain-blocking">
                         <i data-feather="slash"></i>
                         <span class="menu-title text-truncate">Domain Blocking</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
-                <li class="nav-item active">
+                <li class="nav-item only_admin hidden">
                     <a class="d-flex align-items-center" href="/system-settings">
                         <i data-feather="settings"></i>
                         <span class="menu-title text-truncate">System Settings</span>
@@ -774,7 +774,7 @@
                                             <!-- BEGIN: Page JS-->
                                             <script src="app-assets/js/scripts/forms/form-validation.js"></script>
                                             <!-- Include config.js before other custom scripts -->
-                                            <script src="assets/js/config.js"></script>
+                                            <script src="/assets/js/config.js?v=1"></script>
                                             <!-- END: Page JS-->
                                         
                                             <script>

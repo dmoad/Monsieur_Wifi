@@ -31,6 +31,7 @@ class Location extends Model
         'status',
         'device_id',
         'user_id',
+        'owner_id',
     ];
 
     /**
@@ -70,5 +71,13 @@ class Location extends Model
         return $this->setConnection('radius')->hasMany(Radacct::class, 'location_id')
             ->whereNull('acctstoptime')
             ->orderBy('acctstarttime', 'desc');
+    }
+
+    /**
+     * Get the owner of this location.
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }

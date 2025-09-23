@@ -264,6 +264,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentUser) {
         UserManager.updateUserUI(currentUser);
     }
+
+    // if user is admin, show admin menu items
+    if (currentUser.role === 'admin') {
+        $('.only_admin').removeClass('hidden');
+    } 
 });
 
 // Export the objects for use in other scripts
