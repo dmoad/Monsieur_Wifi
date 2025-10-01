@@ -1809,7 +1809,7 @@
 
     <!-- Add this CSS right after the existing styles and before closing the head tag -->
     <style>
-        /* Enhanced Channel Scanning Modal Styles */
+        /* Enhanced Canal Scanning Modal Styles */
         .scan-pulse-container {
             position: relative;
             width: 80px;
@@ -1899,7 +1899,7 @@
             background-color: #28c76f !important;
         }
         
-        /* Channel recommendation cards */
+        /* Canal recommendation cards */
         .channel-recommendation {
             padding: 1rem;
             background-color: #f8f8f8;
@@ -2655,7 +2655,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="interface-detail">
-                                    <span class="interface-label">Router Model</span>
+                                    <span class="interface-label">Modèle de routeur</span>
                                     <span class="interface-value router_model_updated"></span>
                                 </div>
                                 <div class="interface-detail">
@@ -2951,27 +2951,27 @@
                                                             <input type="text" class="form-control" id="location-address" placeholder="Street address">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-city">City</label>
-                                                            <input type="text" class="form-control" id="location-city" placeholder="City">
+                                                            <label for="location-city">Ville</label>
+                                                            <input type="text" class="form-control" id="location-city" placeholder="Ville">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-state">State/Province</label>
-                                                            <input type="text" class="form-control" id="location-state" placeholder="State/Province">
+                                                            <label for="location-state">État/Province</label>
+                                                            <input type="text" class="form-control" id="location-state" placeholder="État/Province">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="location-postal-code">Postal Code</label>
+                                                            <label for="location-postal-code">Code postal</label>
                                                             <input type="text" class="form-control" id="location-postal-code" placeholder="Postal code">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-country">Country</label>
-                                                            <input type="text" class="form-control" id="location-country" placeholder="Country">
+                                                            <label for="location-country">Pays</label>
+                                                            <input type="text" class="form-control" id="location-country" placeholder="Pays">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="router-model-select">Router Model</label>
+                                                            <label for="router-model-select">Modèle de routeur</label>
                                                             <select class="form-control" id="router-model-select" aria-describedby="router-model-help">
-                                                                <option value="">Select Router Model</option>
+                                                                <option value="">Sélectionner le modèle de routeur</option>
                                                                 <option value="820AX">820AX</option>
                                                                 <option value="835AX">835AX</option>
                                                             </select>
@@ -3041,7 +3041,7 @@
                                     <!-- Section de configuration WAN -->
                                     <div class="content-section">
                                         <div class="section-header d-flex justify-content-between align-items-center">
-                                            <h5 class="section-title">WAN Connection</h5>
+                                            <h5 class="section-title">Connexion WAN</h5>
                                             <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#wan-settings-modal">
                                                 <i data-feather="edit" class="mr-1"></i>Modifier les paramètres WAN
                                             </button>
@@ -3049,7 +3049,7 @@
                                         <div class="row">
                                             <div class="col-md-3">
                                                 <div class="interface-detail">
-                                                    <span class="interface-label">Connection Type</span>
+                                                    <span class="interface-label">Type de connexion</span>
                                                     <span class="interface-value" id="wan-type-display">DHCP</span>
                                                 </div>
                                             </div>
@@ -3100,10 +3100,10 @@
                                         </div>
                                     </div>
 
-                                                        <!-- Network Interfaces Section -->
+                                                        <!-- Section interfaces réseau -->
                     <div class="content-section">
                         <div class="section-header">
-                            <h5 class="section-title">Local Network Interfaces</h5>
+                            <h5 class="section-title">Interfaces réseau locales</h5>
                         </div>
                         
                         <!-- Paramètres globaux VLAN -->
@@ -3112,9 +3112,9 @@
                                 <div class="form-group">
                                     <div class="custom-control custom-switch">
                                         <input type="checkbox" class="custom-control-input" id="vlan-enabled">
-                                        <label class="custom-control-label" for="vlan-enabled">Enable VLAN Support</label>
+                                        <label class="custom-control-label" for="vlan-enabled">Activer le support VLAN</label>
                                     </div>
-                                    <small class="text-muted">Master switch to enable/disable VLAN functionality for this location.</small>
+                                    <small class="text-muted">Commutateur principal pour activer/désactiver la fonctionnalité VLAN pour cet emplacement.</small>
                                 </div>
                             </div>
                         </div>
@@ -3154,7 +3154,7 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Connection Type</span>
+                                                            <span class="interface-label">Type de connexion</span>
                                                             <span class="interface-value" id="password-wifi-ip-type-display">Static IP</span>
                                                         </div>
                                                         <div class="hidden password-ip-assignment-display_div">
@@ -3190,9 +3190,9 @@
                                             <!-- Paramètres radio et puissance -->
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="wifi-country">Country/Region</label>
+                                                    <label for="wifi-country">Pays/Région</label>
                                                     <select class="form-control" id="wifi-country">
-                                                        <option value="US" selected>United States (US)</option>
+                                                        <option value="US" selected>États-Unis (US)</option>
                                                         <option value="CA">Canada (CA)</option>
                                                         <option value="GB">United Kingdom (GB)</option>
                                                         <option value="FR">France (FR)</option>
@@ -3211,7 +3211,7 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="power-level-2g">2.4 GHz Power</label>
+                                                    <label for="power-level-2g">Puissance 2.4 GHz</label>
                                                     <select class="form-control" id="power-level-2g">
                                                         <option value="20">Maximum (20 dBm)</option>
                                                         <option value="17">High (17 dBm)</option>
@@ -3222,7 +3222,7 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="power-level-5g">5 GHz Power</label>
+                                                    <label for="power-level-5g">Puissance 5 GHz</label>
                                                     <select class="form-control" id="power-level-5g">
                                                         <option value="23">Maximum (23 dBm)</option>
                                                         <option value="20">High (20 dBm)</option>
@@ -3236,7 +3236,7 @@
                                             <!-- Paramètres de canal -->
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="channel-width-2g">2.4 GHz Channel Width</label>
+                                                    <label for="channel-width-2g">Largeur de canal 2.4 GHz</label>
                                                     <select class="form-control" id="channel-width-2g">
                                                         <option value="20">20 MHz</option>
                                                         <option value="40" selected>40 MHz</option>
@@ -3244,7 +3244,7 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="channel-width-5g">5 GHz Channel Width</label>
+                                                    <label for="channel-width-5g">Largeur de canal 5 GHz</label>
                                                     <select class="form-control" id="channel-width-5g">
                                                         <option value="20">20 MHz</option>
                                                         <option value="40">40 MHz</option>
@@ -3254,85 +3254,85 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="channel-2g">2.4 GHz Channel</label>
+                                                    <label for="channel-2g">Canal 2.4 GHz</label>
                                                     <select class="form-control" id="channel-2g">
-                                                        <option value="1">Channel 1 (2412 MHz)</option>
-                                                        <option value="2">Channel 2 (2417 MHz)</option>
-                                                        <option value="3">Channel 3 (2422 MHz)</option>
-                                                        <option value="4">Channel 4 (2427 MHz)</option>
-                                                        <option value="5">Channel 5 (2432 MHz)</option>
-                                                        <option value="6" selected>Channel 6 (2437 MHz)</option>
-                                                        <option value="7">Channel 7 (2442 MHz)</option>
-                                                        <option value="8">Channel 8 (2447 MHz)</option>
-                                                        <option value="9">Channel 9 (2452 MHz)</option>
-                                                        <option value="10">Channel 10 (2457 MHz)</option>
-                                                        <option value="11">Channel 11 (2462 MHz)</option>
-                                                        <option value="12">Channel 12 (2467 MHz)</option>
-                                                        <option value="13">Channel 13 (2472 MHz)</option>
-                                                        <option value="14">Channel 14 (2484 MHz)</option>
+                                                        <option value="1">Canal 1 (2412 MHz)</option>
+                                                        <option value="2">Canal 2 (2417 MHz)</option>
+                                                        <option value="3">Canal 3 (2422 MHz)</option>
+                                                        <option value="4">Canal 4 (2427 MHz)</option>
+                                                        <option value="5">Canal 5 (2432 MHz)</option>
+                                                        <option value="6" selected>Canal 6 (2437 MHz)</option>
+                                                        <option value="7">Canal 7 (2442 MHz)</option>
+                                                        <option value="8">Canal 8 (2447 MHz)</option>
+                                                        <option value="9">Canal 9 (2452 MHz)</option>
+                                                        <option value="10">Canal 10 (2457 MHz)</option>
+                                                        <option value="11">Canal 11 (2462 MHz)</option>
+                                                        <option value="12">Canal 12 (2467 MHz)</option>
+                                                        <option value="13">Canal 13 (2472 MHz)</option>
+                                                        <option value="14">Canal 14 (2484 MHz)</option>
                                                     </select>
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="channel-5g">5 GHz Channel</label>
+                                                    <label for="channel-5g">5 GHz Canal</label>
                                                     <select class="form-control" id="channel-5g">
-                                                        <option value="36" selected>Channel 36 (5180 MHz)</option>
-                                                        <option value="40">Channel 40 (5200 MHz)</option>
-                                                        <option value="44">Channel 44 (5220 MHz)</option>
-                                                        <option value="48">Channel 48 (5240 MHz)</option>
-                                                        <option value="52">Channel 52 (5260 MHz)</option>
-                                                        <option value="56">Channel 56 (5280 MHz)</option>
-                                                        <option value="60">Channel 60 (5300 MHz)</option>
-                                                        <option value="64">Channel 64 (5320 MHz)</option>
-                                                        <option value="100">Channel 100 (5500 MHz)</option>
-                                                        <option value="104">Channel 104 (5520 MHz)</option>
-                                                        <option value="108">Channel 108 (5540 MHz)</option>
-                                                        <option value="112">Channel 112 (5560 MHz)</option>
-                                                        <option value="116">Channel 116 (5580 MHz)</option>
-                                                        <option value="120">Channel 120 (5600 MHz)</option>
-                                                        <option value="124">Channel 124 (5620 MHz)</option>
-                                                        <option value="128">Channel 128 (5640 MHz)</option>
-                                                        <option value="132">Channel 132 (5660 MHz)</option>
-                                                        <option value="136">Channel 136 (5680 MHz)</option>
-                                                        <option value="140">Channel 140 (5700 MHz)</option>
-                                                        <option value="149">Channel 149 (5745 MHz)</option>
-                                                        <option value="153">Channel 153 (5765 MHz)</option>
-                                                        <option value="157">Channel 157 (5785 MHz)</option>
-                                                        <option value="161">Channel 161 (5805 MHz)</option>
-                                                        <option value="165">Channel 165 (5825 MHz)</option>
+                                                        <option value="36" selected>Canal 36 (5180 MHz)</option>
+                                                        <option value="40">Canal 40 (5200 MHz)</option>
+                                                        <option value="44">Canal 44 (5220 MHz)</option>
+                                                        <option value="48">Canal 48 (5240 MHz)</option>
+                                                        <option value="52">Canal 52 (5260 MHz)</option>
+                                                        <option value="56">Canal 56 (5280 MHz)</option>
+                                                        <option value="60">Canal 60 (5300 MHz)</option>
+                                                        <option value="64">Canal 64 (5320 MHz)</option>
+                                                        <option value="100">Canal 100 (5500 MHz)</option>
+                                                        <option value="104">Canal 104 (5520 MHz)</option>
+                                                        <option value="108">Canal 108 (5540 MHz)</option>
+                                                        <option value="112">Canal 112 (5560 MHz)</option>
+                                                        <option value="116">Canal 116 (5580 MHz)</option>
+                                                        <option value="120">Canal 120 (5600 MHz)</option>
+                                                        <option value="124">Canal 124 (5620 MHz)</option>
+                                                        <option value="128">Canal 128 (5640 MHz)</option>
+                                                        <option value="132">Canal 132 (5660 MHz)</option>
+                                                        <option value="136">Canal 136 (5680 MHz)</option>
+                                                        <option value="140">Canal 140 (5700 MHz)</option>
+                                                        <option value="149">Canal 149 (5745 MHz)</option>
+                                                        <option value="153">Canal 153 (5765 MHz)</option>
+                                                        <option value="157">Canal 157 (5785 MHz)</option>
+                                                        <option value="161">Canal 161 (5805 MHz)</option>
+                                                        <option value="165">Canal 165 (5825 MHz)</option>
                                                     </select>
                                                 </div>
                                             </div>
 
-                                            <!-- Channel Optimization -->
+                                            <!-- Canal Optimization -->
                                             <div class="col-md-4">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <label class="mb-0">Channel Optimization</label>
+                                                    <label class="mb-0">Canal Optimization</label>
                                                     <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn">
-                                                        <i data-feather="wifi" class="mr-1"></i>Scan
+                                                        <i data-feather="wifi" class="mr-1"></i>Scanner
                                                     </button>
                                                 </div>
                                                 
                                                 <div class="alert alert-info mb-3" id="scan-status-alert">
                                                     <div class="alert-body">
                                                         <i data-feather="info" class="mr-2"></i>
-                                                        <span id="scan-status-text">Click Scan to analyze optimal channels.</span>
+                                                        <span id="scan-status-text">Cliquez sur Scanner pour analyser les canaux optimaux.</span>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="row text-center mb-3">
                                                     <div class="col-6">
                                                         <div class="stat-value text-primary" id="last-optimal-2g">--</div>
-                                                        <div class="stat-label">Best 2.4G</div>
+                                                        <div class="stat-label">Meilleur 2.4G</div>
                                                     </div>
                                                     <div class="col-6">
                                                         <div class="stat-value text-success" id="last-optimal-5g">--</div>
-                                                        <div class="stat-label">Best 5G</div>
+                                                        <div class="stat-label">Meilleur 5G</div>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="text-center mb-2">
-                                                    <small class="text-muted" id="last-scan-timestamp">No scan performed yet</small>
+                                                    <small class="text-muted" id="last-scan-timestamp">Aucun scan effectué pour le moment</small>
                                                 </div>
                                                 
                                                 <button class="btn btn-success btn-block btn-sm" id="save-channels-btn" disabled>
@@ -3351,7 +3351,7 @@
                                     <!-- Content Filtering Section -->
                                     <div class="content-section">
                                         <div class="section-header d-flex justify-content-between align-items-center">
-                                            <h5 class="section-title">Web Content Filtering</h5>
+                                            <h5 class="section-title">Filtrage de contenu web</h5>
                                             <button class="btn custom-btn" id="save-web-filter-settings">
                                                 <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
                                             </button>
@@ -3404,29 +3404,29 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="portal-ssid">Nom du réseau (SSID)</label>
-                                                                <input type="text" class="form-control" id="captive-portal-ssid" placeholder="Guest WiFi">
+                                                                <input type="text" class="form-control" id="captive-portal-ssid" placeholder="WiFi invité">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="portal-visibility">Network Visibility</label>
                                                                 <select class="form-control" id="captive-portal-visible">
-                                                                    <option value="1" selected>Visible (Broadcast SSID)</option>
-                                                                    <option value="0">Hidden (Don't Broadcast SSID)</option>
+                                                                    <option value="1" selected>Visible (Diffuser SSID)</option>
+                                                                    <option value="0">Caché (Ne pas diffuser SSID)</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     
 
-                                                    <!-- Authentication Section -->
-                                                    <h5 class="border-bottom pb-1">Authentication</h5>
+                                                    <!-- Section d'authentification -->
+                                                    <h5 class="border-bottom pb-1">Authentification</h5>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="captive-auth-method">Authentication Method</label>
+                                                                <label for="captive-auth-method">Méthode d'authentification</label>
                                                                 <select class="form-control" id="captive-auth-method">
-                                                                    <option value="click-through" selected>Click-through (No Authentication)</option>
+                                                                    <option value="click-through" selected>Clic simple (Aucune authentification)</option>
                                                                     <option value="password">Password-based</option>
                                                                     <option value="sms">SMS Verification</option>
                                                                     <option value="email">Vérification par email</option>
@@ -3592,13 +3592,13 @@
                                                     </button>
                                                 </div>
                                             </div> -->
-                                            <!-- Bandwidth Section -->
-                                            <h5 class="border-bottom pb-1 mt-3">Bandwidth & Portal</h5>
+                                            <!-- Section bande passante -->
+                                            <h5 class="border-bottom pb-1 mt-3">Bande passante et portail</h5>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">Bandwidth Limits</label>
+                                                            <label class="mb-0">Limites de bande passante</label>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-6">
@@ -3656,20 +3656,20 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
-                                            <i data-feather="settings" class="mr-1"></i> Configure IP & VLAN Settings
+                                            <i data-feather="settings" class="mr-1"></i> Configurer les paramètres IP et VLAN
                                         </button>
-                                        <small class="text-muted d-block mt-1">Configure IP address, gateway, and VLAN settings for the captive portal network.</small>
+                                        <small class="text-muted d-block mt-1">Configurez l'adresse IP, la passerelle et les paramètres VLAN pour le réseau du portail captif.</small>
                                     </div>
                                 </div>
                             </div>
-                                            <!-- Access Control Section -->
-                                            <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
+                                            <!-- Contrôle d'accès Section -->
+                                            <h5 class="border-bottom pb-1 mt-3">Contrôle d'accès</h5>
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <!-- MAC Filtering -->
                                                             <div class="form-group">
                                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                                            <label class="mb-0">MAC Address Filtering</label>
+                                                            <label class="mb-0">Filtrage d'adresses MAC</label>
                                                             <div class="d-flex align-items-center">
                                                                 <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
                                                                 <select class="form-control form-control-sm" id="captive-mac-view-filter" style="width: auto;">
@@ -3699,13 +3699,13 @@
                                                         <!-- MAC Address List -->
                                                         <div class="mac-address-container">
                                                             <div class="mac-filter-status text-muted mb-1" id="captive-mac-status">
-                                                                <small>No MAC addresses added yet</small>
+                                                                <small>Aucune adresse MAC ajoutée pour le moment</small>
                                                             </div>
                                                             <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
                                                                 <div class="text-center text-muted p-3" id="captive-mac-empty">
                                                                     <i data-feather="shield" class="mb-2"></i>
-                                                                    <div><small>No MAC addresses configured</small></div>
-                                                                    <div><small class="text-muted">Add MAC addresses above to control access</small></div>
+                                                                    <div><small>Aucune adresse MAC configurée</small></div>
+                                                                    <div><small class="text-muted">Ajoutez des adresses MAC ci-dessus pour contrôler l'accès</small></div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -3718,8 +3718,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
+                                        
                                         <!-- Working Hours Section -->
                                         <h5 class="border-bottom pb-1 mt-3">Working Hours</h5>
                                         <div class="row">
@@ -3729,7 +3728,8 @@
                                                         <div class="schedule-container" id="schedule-container"></div>
                                                         </div>
                                                     </div>
-                                                                                </div>
+                                                </div>
+                                        </div>
                                         </div>
 
                                         <!-- Hourly Schedule Section (Now integrated into Working Hours above) 
@@ -3770,6 +3770,7 @@
                                                 
                                             </div>
                                         </div>
+                                        -->
                                         
                                     </div>
                                 </div>
@@ -3789,54 +3790,54 @@
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <label for="wifi-ssid">Network Name (SSID)</label>
-                                                            <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                                            <label for="wifi-ssid">Nom du réseau (SSID)</label>
+                                                            <input type="text" class="form-control" id="password-wifi-ssid" placeholder="WiFi domicile">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="password-wifi-password">WiFi Password</label>
-                                                        <div class="input-group">
-                                                            <input type="password" class="form-control" id="password-wifi-password" placeholder="Mot de passe">
-                                                            <div class="input-group-append">
-                                                                <button class="btn btn-outline-secondary" type="button" id="toggle-password">
-                                                                    <i data-feather="eye"></i>
-                                                                </button>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="password-wifi-password">Mot de passe WiFi</label>
+                                                            <div class="input-group">
+                                                                <input type="password" class="form-control" id="password-wifi-password" placeholder="Mot de passe">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-outline-secondary" type="button" id="toggle-password">
+                                                                        <i data-feather="eye"></i>
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="wifi-security">Security Type</label>
-                                                        <select class="form-control" id="password-wifi-security">
-                                                            <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
-                                                            <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
-                                                            <option value="wpa3-psk">WPA3-PSK (Most Secure)</option>
-                                                            <option value="wep">WEP (Legacy, Not Recommended)</option>
-                                                        </select>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label for="wifi-security">Type de sécurité</label>
+                                                            <select class="form-control" id="password-wifi-security">
+                                                                <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
+                                                                <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
+                                                                <option value="wpa3-psk">WPA3-PSK (Most Secure)</option>
+                                                                <option value="wep">WEP (Legacy, Not Recommended)</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label for="password_wifi_cipher_suites">Cipher Suites</label>
+                                                            <select class="form-control" id="password_wifi_cipher_suites">
+                                                                <option value="CCMP" selected>CCMP</option>
+                                                                <option value="TKIP">TKIP</option>
+                                                                <option value="TKIP+CCMP">TKIP+CCMP</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="password_wifi_cipher_suites">Cipher Suites</label>
-                                                        <select class="form-control" id="password_wifi_cipher_suites">
-                                                            <option value="CCMP" selected>CCMP</option>
-                                                            <option value="TKIP">TKIP</option>
-                                                            <option value="TKIP+CCMP">TKIP+CCMP</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
                                             
-                                            <!-- Access Control Section -->
-                                            <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
+                                            <!-- Contrôle d'accès Section -->
+                                            <h5 class="border-bottom pb-1 mt-3">Contrôle d'accès</h5>
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <!-- MAC Filtering -->
                                                     <div class="form-group">
                                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                                            <label class="mb-0">MAC Address Filtering</label>
+                                                            <label class="mb-0">Filtrage d'adresses MAC</label>
                                                             <div class="d-flex align-items-center">
                                                                 <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
                                                                 <select class="form-control form-control-sm" id="secured-mac-view-filter" style="width: auto;">
@@ -3864,13 +3865,13 @@
                                                         <!-- MAC Address List -->
                                                         <div class="mac-address-container">
                                                             <div class="mac-filter-status text-muted mb-1" id="secured-mac-status">
-                                                                <small>No MAC addresses added yet</small>
+                                                                <small>Aucune adresse MAC ajoutée pour le moment</small>
                                                             </div>
                                                             <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
                                                                 <div class="text-center text-muted p-3" id="secured-mac-empty">
                                                                     <i data-feather="shield" class="mb-2"></i>
-                                                                    <div><small>No MAC addresses configured</small></div>
-                                                                    <div><small class="text-muted">Add MAC addresses above to control access</small></div>
+                                                                    <div><small>Aucune adresse MAC configurée</small></div>
+                                                                    <div><small class="text-muted">Ajoutez des adresses MAC ci-dessus pour contrôler l'accès</small></div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -3884,7 +3885,7 @@
                                                 </div>
 
                                                 <div class="col-lg-6">
-                                                    <!-- Network Security Settings -->
+                                                    <!-- Paramètres de sécurité réseau -->
                                                 </div>
                                             </div>
                                         </div>
@@ -3904,12 +3905,12 @@
     <!-- END: Content -->
 
     <!-- BEGIN: Modals -->
-    <!-- Enhanced Channel Scan Modal with Results View -->
+    <!-- Modal de scan de canaux amélioré avec vue des résultats -->
     <div class="modal fade" id="channel-scan-modal" tabindex="-1" role="dialog" aria-labelledby="channel-scan-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="channel-scan-modal-title">Channel Scan</h5>
+                    <h5 class="modal-title" id="channel-scan-modal-title">Canal Scan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -3922,7 +3923,7 @@
                                 <div class="alert alert-info">
                                     <div class="alert-body">
                                         <i data-feather="info" class="mr-1 align-middle"></i>
-                                        <span>Scanning will analyze nearby WiFi networks and interference to determine optimal channel settings.</span>
+                                        <span>Le scan analysera les réseaux WiFi à proximité et les interférences pour déterminer les paramètres de canal optimaux.</span>
                                     </div>
                                 </div>
                                 
@@ -3949,12 +3950,12 @@
                                         <h6>Last Scan Results:</h6>
                                         <ul class="list-group mb-2">
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>2.4 GHz Best Channel</span>
-                                                <span class="badge badge-primary" id="last-best-channel-2g">Channel 6</span>
+                                                <span>2.4 GHz Best Canal</span>
+                                                <span class="badge badge-primary" id="last-best-channel-2g">Canal 6</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>5 GHz Best Channel</span>
-                                                <span class="badge badge-primary" id="last-best-channel-5g">Channel 36</span>
+                                                <span>5 GHz Best Canal</span>
+                                                <span class="badge badge-primary" id="last-best-channel-5g">Canal 36</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 <span>Scan Time</span>
@@ -3980,7 +3981,7 @@
                                 
                                 <div class="d-flex justify-content-center mt-2">
                                     <button class="btn custom-btn hidden" id="start-scan-btn">
-                                        <i data-feather="refresh-cw" class="mr-1"></i> Start New Channel Scan
+                                        <i data-feather="refresh-cw" class="mr-1"></i> Start New Canal Scan
                                     </button>
                                 </div>
                                 <p class="text-muted text-center" id="scan-info-text">
@@ -3996,7 +3997,7 @@
                                 <div class="alert alert-warning">
                                     <div class="alert-body">
                                         <i data-feather="clock" class="mr-1 align-middle"></i>
-                                        <span>Scanning for available WiFi channels and detecting interference. This may take a minute...</span>
+                                        <span>Scan des canaux WiFi disponibles et détection des interférences. Cela peut prendre une minute...</span>
                                     </div>
                                 </div>
                                 
@@ -4027,7 +4028,7 @@
                                                 <h6>Scan Initiated</h6>
                                                 <span class="text-muted">Step 1/4</span>
                                             </div>
-                                            <p>Preparing device for channel scanning</p>
+                                            <p>Préparation de l'appareil pour le scan des canaux</p>
                                         </div>
                                     </div>
                                     <div class="timeline-item">
@@ -4044,7 +4045,7 @@
                                         <div class="timeline-point-indicator" id="step-2g-indicator"></div>
                                         <div class="timeline-event">
                                             <div class="d-flex justify-content-between">
-                                                <h6>Scanning 2.4 GHz Band</h6>
+                                                <h6>Scan de la bande 2.4 GHz</h6>
                                                 <span class="text-muted">Step 3/4</span>
                                             </div>
                                             <p>Checking channels 1-11 for signal strength and interference</p>
@@ -4054,7 +4055,7 @@
                                         <div class="timeline-point-indicator" id="step-5g-indicator"></div>
                                         <div class="timeline-event">
                                             <div class="d-flex justify-content-between">
-                                                <h6>Scanning 5 GHz Band</h6>
+                                                <h6>Scan de la bande 5 GHz</h6>
                                                 <span class="text-muted">Step 4/4</span>
                                             </div>
                                             <p>Checking channels 36-165 for signal strength and interference</p>
@@ -4078,7 +4079,7 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">2.4 GHz Results</h5>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span>Recommended Channel:</span>
+                                                    <span>Recommended Canal:</span>
                                                     <h3 class="mb-0" id="result-channel-2g">6</h3>
                                                 </div>
                                             </div>
@@ -4090,7 +4091,7 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">5 GHz Results</h5>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span>Recommended Channel:</span>
+                                                    <span>Recommended Canal:</span>
                                                     <h3 class="mb-0" id="result-channel-5g">36</h3>
                                                 </div>
                                             </div>
@@ -8576,20 +8577,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
                 
                 // Get current channel settings to check if they changed
-                getCurrentChannelSettings(locationId)
+                getCurrentCanalSettings(locationId)
                     .then(function(currentSettings) {
                         console.log('Current settings for radio save:', currentSettings);
                         
-                        const currentChannel2g = currentSettings.channel_2g || null;
-                        const currentChannel5g = currentSettings.channel_5g || null;
+                        const currentCanal2g = currentSettings.channel_2g || null;
+                        const currentCanal5g = currentSettings.channel_5g || null;
                         
                         // Check if channels have changed
-                        const channelsChanged = (currentChannel2g != radioSettings.channel_2g) || (currentChannel5g != radioSettings.channel_5g);
+                        const channelsChanged = (currentCanal2g != radioSettings.channel_2g) || (currentCanal5g != radioSettings.channel_5g);
                         
                         console.log('Radio settings - channels changed:', channelsChanged, {
-                            current2g: currentChannel2g,
+                            current2g: currentCanal2g,
                             new2g: radioSettings.channel_2g,
-                            current5g: currentChannel5g,
+                            current5g: currentCanal5g,
                             new5g: radioSettings.channel_5g
                         });
                         
@@ -8657,11 +8658,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Apply optimal channels (from scan results)
             $('#save-channels-btn').on('click', function() {
-                applyOptimalChannels();
+                applyOptimalCanals();
             });
             
             // Function to apply optimal channels from last scan
-            function applyOptimalChannels() {
+            function applyOptimalCanals() {
                 const scanData = window.lastScanResults;
                 
                 if (!scanData || (!scanData.optimal_channel_2g && !scanData.optimal_channel_5g)) {
@@ -8683,12 +8684,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
     
                 // Save channels with scan data
-                saveChannelSettings(optimal2g, optimal5g, true, 'channel_optimization');
+                saveCanalSettings(optimal2g, optimal5g, true, 'channel_optimization');
             }
 
-            // Channel scan button event handler
+            // Canal scan button event handler
             $('#scan-channels-btn').on('click', function() {
-                console.log('Channel scan button clicked');
+                console.log('Canal scan button clicked');
                 
                 // Populate device info in modal
                 const locationId = getLocationId();
@@ -8702,10 +8703,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#channel-scan-modal').modal('show');
             });
 
-            // Channel scan modal event handlers
+            // Canal scan modal event handlers
             $('#start-scan-btn').on('click', function() {
                 console.log('Starting channel scan');
-                startChannelScan();
+                startCanalScan();
             });
 
             $('#back-to-scan-btn').on('click', function() {
@@ -8720,7 +8721,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clean up polling when modal is closed
             $('#channel-scan-modal').on('hidden.bs.modal', function() {
-                console.log('Channel scan modal closed, cleaning up polling');
+                console.log('Canal scan modal closed, cleaning up polling');
                 if (window.scanPollingInterval) {
                     clearInterval(window.scanPollingInterval);
                     window.scanPollingInterval = null;
@@ -8730,8 +8731,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 showPreScanView();
             });
 
-            // Channel scan functions
-            function startChannelScan() {
+            // Canal scan functions
+            function startCanalScan() {
                 console.log('Starting real channel scan process');
 
                 const locationId = getLocationId();
@@ -8778,7 +8779,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Start polling for scan status
                             pollScanStatus(locationId, response.data.scan_id);
 
-                            toastr.success(`Channel scan initiated!`, 'Scan Started', {
+                            toastr.success(`Canal scan initiated!`, 'Scan Started', {
                                 timeOut: 5000,
                                 closeButton: true
                             });
@@ -8897,8 +8898,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#result-channel-5g').text(optimal5g);
                     
                     // Update last scan info
-                    $('#last-best-channel-2g').text('Channel ' + optimal2g);
-                    $('#last-best-channel-5g').text('Channel ' + optimal5g);
+                    $('#last-best-channel-2g').text('Canal ' + optimal2g);
+                    $('#last-best-channel-5g').text('Canal ' + optimal5g);
                     
                     if (scanData.completed_at) {
                         $('#last-scan-time').text(new Date(scanData.completed_at).toLocaleString());
@@ -8917,8 +8918,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Populate nearby networks table with real data
                     populateNearbyNetworksTable(scanData);
                     
-                    // Update Channel Optimization display with new scan results
-                    updateChannelOptimizationDisplay(scanData);
+                    // Update Canal Optimization display with new scan results
+                    updateCanalOptimizationDisplay(scanData);
                     
                     // Store scan results for apply function
                     window.lastScanResults = scanData;
@@ -8930,8 +8931,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#result-channel-2g').text(optimal2g);
                     $('#result-channel-5g').text(optimal5g);
                     
-                    $('#last-best-channel-2g').text('Channel ' + optimal2g);
-                    $('#last-best-channel-5g').text('Channel ' + optimal5g);
+                    $('#last-best-channel-2g').text('Canal ' + optimal2g);
+                    $('#last-best-channel-5g').text('Canal ' + optimal5g);
                     $('#last-scan-time').text(new Date().toLocaleString());
                     
                     // Show fallback data for nearby networks
@@ -8997,10 +8998,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // Add common channels that might not have networks
-                    const common2gChannels = [1, 6, 11];
-                    const common5gChannels = [36, 40, 44, 48, 149, 153, 157, 161];
+                    const common2gCanals = [1, 6, 11];
+                    const common5gCanals = [36, 40, 44, 48, 149, 153, 157, 161];
                     
-                    common2gChannels.forEach(function(channel) {
+                    common2gCanals.forEach(function(channel) {
                         const key = `2.4GHz-${channel}`;
                         if (!channelMap[key]) {
                             channelMap[key] = {
@@ -9013,7 +9014,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                     
-                    common5gChannels.forEach(function(channel) {
+                    common5gCanals.forEach(function(channel) {
                         const key = `5GHz-${channel}`;
                         if (!channelMap[key]) {
                             channelMap[key] = {
@@ -9027,7 +9028,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     
                     // Sort channels and create table rows
-                    const sortedChannels = Object.values(channelMap).sort(function(a, b) {
+                    const sortedCanals = Object.values(channelMap).sort(function(a, b) {
                         // Sort by band first (2.4GHz then 5GHz), then by channel number
                         if (a.band !== b.band) {
                             return a.band === '2.4 GHz' ? -1 : 1;
@@ -9035,7 +9036,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         return parseInt(a.channel) - parseInt(b.channel);
                     });
                     
-                    sortedChannels.forEach(function(channelData) {
+                    sortedCanals.forEach(function(channelData) {
                         const avgSignal = channelData.signals.length > 0 ? 
                             Math.round(channelData.signals.reduce((a, b) => a + b, 0) / channelData.signals.length) + ' dBm' : 
                             'N/A';
@@ -9204,8 +9205,8 @@ document.addEventListener('DOMContentLoaded', function() {
             function applyScanResults() {
                 console.log('Applying scan results');
                 
-                const newChannel2g = $('#result-channel-2g').text();
-                const newChannel5g = $('#result-channel-5g').text();
+                const newCanal2g = $('#result-channel-2g').text();
+                const newCanal5g = $('#result-channel-5g').text();
                 const locationId = getLocationId();
                 
                 if (!locationId) {
@@ -9219,32 +9220,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 $button.html('<i data-feather="loader" class="mr-1"></i> Applying...').prop('disabled', true);
                 
                 // Get current channel settings first
-                getCurrentChannelSettings(locationId)
+                getCurrentCanalSettings(locationId)
                     .then(function(currentSettings) {
                         console.log('Current channel settings:', currentSettings);
                         
-                        const currentChannel2g = currentSettings.channel_2g || null;
-                        const currentChannel5g = currentSettings.channel_5g || null;
+                        const currentCanal2g = currentSettings.channel_2g || null;
+                        const currentCanal5g = currentSettings.channel_5g || null;
                         
                         // Check if channels have changed
-                        const channelsChanged = (currentChannel2g != newChannel2g) || (currentChannel5g != newChannel5g);
+                        const channelsChanged = (currentCanal2g != newCanal2g) || (currentCanal5g != newCanal5g);
                         
-                        console.log('Channels changed:', channelsChanged, {
-                            current2g: currentChannel2g,
-                            new2g: newChannel2g,
-                            current5g: currentChannel5g,
-                            new5g: newChannel5g
+                        console.log('Canals changed:', channelsChanged, {
+                            current2g: currentCanal2g,
+                            new2g: newCanal2g,
+                            current5g: currentCanal5g,
+                            new5g: newCanal5g
                         });
                         
                         // Save the new channel settings
-                        return saveChannelSettings(locationId, newChannel2g, newChannel5g, channelsChanged);
+                        return saveCanalSettings(locationId, newCanal2g, newCanal5g, channelsChanged);
                     })
                     .then(function(response) {
-                        console.log('Channel settings saved successfully:', response);
+                        console.log('Canal settings saved successfully:', response);
                         
                         // Update the main form with optimal channels
-                        $('#channel-2g').val(newChannel2g);
-                        $('#channel-5g').val(newChannel5g);
+                        $('#channel-2g').val(newCanal2g);
+                        $('#channel-5g').val(newCanal5g);
                         
                         // Reset button state
                         $button.html(originalText).prop('disabled', false);
@@ -9254,12 +9255,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Show success message
                         if (response.config_version_incremented) {
-                            toastr.success(`Optimal channels applied and saved: 2.4GHz Channel ${newChannel2g}, 5GHz Channel ${newChannel5g}. Config version incremented to ${response.new_config_version}.`, 'Channels Updated', {
+                            toastr.success(`Optimal channels applied and saved: 2.4GHz Canal ${newCanal2g}, 5GHz Canal ${newCanal5g}. Config version incremented to ${response.new_config_version}.`, 'Canals Updated', {
                                 timeOut: 6000,
                                 closeButton: true
                             });
                         } else {
-                            toastr.success(`Optimal channels applied: 2.4GHz Channel ${newChannel2g}, 5GHz Channel ${newChannel5g}. No changes detected.`, 'Channels Applied', {
+                            toastr.success(`Optimal channels applied: 2.4GHz Canal ${newCanal2g}, 5GHz Canal ${newCanal5g}. No changes detected.`, 'Canals Applied', {
                                 timeOut: 4000,
                                 closeButton: true
                             });
@@ -9276,7 +9277,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Function to get current channel settings from location_settings
-            function getCurrentChannelSettings(locationId) {
+            function getCurrentCanalSettings(locationId) {
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         url: `/api/locations/${locationId}/settings`,
@@ -9316,7 +9317,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Function to save channel settings to location_settings
-            function saveChannelSettings(locationId, channel2g, channel5g, shouldIncrementVersion) {
+            function saveCanalSettings(locationId, channel2g, channel5g, shouldIncrementVersion) {
                 return new Promise(function(resolve, reject) {
                     const settingsData = {
                         channel_2g: parseInt(channel2g),
@@ -9337,7 +9338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         data: JSON.stringify(settingsData),
                         success: function(response) {
-                            console.log('Channel settings saved successfully:', response);
+                            console.log('Canal settings saved successfully:', response);
                             resolve(response);
                         },
                         error: function(xhr, status, error) {
@@ -9384,10 +9385,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (response.data) {
                             const scanData = response.data;
-                            updateChannelOptimizationDisplay(scanData);
+                            updateCanalOptimizationDisplay(scanData);
                         } else {
                             console.log('No previous scan results found');
-                            updateChannelOptimizationDisplay(null);
+                            updateCanalOptimizationDisplay(null);
                         }
                     },
                     error: function(xhr, status, error) {
@@ -9419,27 +9420,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                         
                                         const latestScan = completedScans[0];
                                         console.log('Found latest completed scan:', latestScan);
-                                        updateChannelOptimizationDisplay(latestScan);
+                                        updateCanalOptimizationDisplay(latestScan);
                                     } else {
                                         console.log('No completed scans found in scan history');
-                                        updateChannelOptimizationDisplay(null);
+                                        updateCanalOptimizationDisplay(null);
                                     }
                                 } else {
                                     console.log('No scan history found');
-                                    updateChannelOptimizationDisplay(null);
+                                    updateCanalOptimizationDisplay(null);
                                 }
                             },
                             error: function(xhr2, status2, error2) {
                                 console.log('Failed to load scan history:', error2);
-                                updateChannelOptimizationDisplay(null);
+                                updateCanalOptimizationDisplay(null);
                             }
                         });
                     }
                 });
             }
             
-            // Function to update the Channel Optimization display
-            function updateChannelOptimizationDisplay(scanData) {
+            // Function to update the Canal Optimization display
+            function updateCanalOptimizationDisplay(scanData) {
                 console.log('Updating channel optimization display with:', scanData);
                 
                 if (scanData && scanData.is_completed && !scanData.is_failed) {
@@ -9458,7 +9459,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Update status alert
                     $('#scan-status-alert').removeClass('alert-info alert-warning').addClass('alert-success');
-                    $('#scan-status-text').html('Optimal channels available from last scan.');
+                    $('#scan-status-text').html('Canaux optimaux disponibles du dernier scan.');
                     
                     // Enable Apply button
                     $('#save-channels-btn').prop('disabled', false);
@@ -9480,7 +9481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#last-optimal-5g').text('--');
                     $('#last-scan-timestamp').text('Last scan failed');
                     $('#scan-status-alert').removeClass('alert-info alert-success').addClass('alert-warning');
-                    $('#scan-status-text').html('<i data-feather="alert-triangle" class="mr-2"></i>Previous scan failed. Try scanning again.');
+                    $('#scan-status-text').html('<i data-feather="alert-triangle" class="mr-2"></i>Le scan précédent a échoué. Essayez de scanner à nouveau.');
                     $('#save-channels-btn').prop('disabled', true);
                     
                 } else {
@@ -10066,7 +10067,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const blacklisted = window.macAddresses[context].filter(item => item.type === 'blacklist').length;
                 
                 if (total === 0) {
-                    statusElement.text('No MAC addresses added yet');
+                    statusElement.text('Aucune adresse MAC ajoutée pour le moment');
                 } else {
                     statusElement.text(`Total: ${total} | Liste blanche: ${whitelisted} | Liste noire: ${blacklisted}`);
                 }
@@ -10587,7 +10588,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log('✅ /scan-results/latest SUCCESS:', response);
                         if (response.data) {
                             console.log('🎯 Found scan data in latest endpoint, testing update...');
-                            updateChannelOptimizationDisplay(response.data);
+                            updateCanalOptimizationDisplay(response.data);
                         }
                     },
                     error: function(xhr) {
@@ -10615,7 +10616,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return bDate - aDate;
                                 });
                                 console.log('📊 Testing with latest scan:', completedScans[0]);
-                                updateChannelOptimizationDisplay(completedScans[0]);
+                                updateCanalOptimizationDisplay(completedScans[0]);
                             }
                         }
                     },

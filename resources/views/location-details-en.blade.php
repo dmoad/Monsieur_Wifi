@@ -3718,8 +3718,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
+                                        
                                         <!-- Working Hours Section -->
                                         <h5 class="border-bottom pb-1 mt-3">Working Hours</h5>
                                         <div class="row">
@@ -3730,6 +3729,7 @@
                                                         </div>
                                                     </div>
                                                                                 </div>
+                                        </div>
                                         </div>
 
                                         <!-- Hourly Schedule Section (Now integrated into Working Hours above) 
@@ -3770,6 +3770,7 @@
                                                 
                                             </div>
                                         </div>
+                                        -->
                                         
                                     </div>
                                 </div>
@@ -3791,43 +3792,43 @@
                                                         <div class="form-group">
                                                             <label for="wifi-ssid">Network Name (SSID)</label>
                                                             <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="password-wifi-password">WiFi Password</label>
-                                                        <div class="input-group">
-                                                            <input type="password" class="form-control" id="password-wifi-password" placeholder="Password">
-                                                            <div class="input-group-append">
-                                                                <button class="btn btn-outline-secondary" type="button" id="toggle-password">
-                                                                    <i data-feather="eye"></i>
-                                                                </button>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="password-wifi-password">WiFi Password</label>
+                                                            <div class="input-group">
+                                                                <input type="password" class="form-control" id="password-wifi-password" placeholder="Password">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-outline-secondary" type="button" id="toggle-password">
+                                                                        <i data-feather="eye"></i>
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="wifi-security">Security Type</label>
-                                                        <select class="form-control" id="password-wifi-security">
-                                                            <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
-                                                            <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
-                                                            <option value="wpa3-psk">WPA3-PSK (Most Secure)</option>
-                                                            <option value="wep">WEP (Legacy, Not Recommended)</option>
-                                                        </select>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label for="wifi-security">Security Type</label>
+                                                            <select class="form-control" id="password-wifi-security">
+                                                                <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
+                                                                <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
+                                                                <option value="wpa3-psk">WPA3-PSK (Most Secure)</option>
+                                                                <option value="wep">WEP (Legacy, Not Recommended)</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label for="password_wifi_cipher_suites">Cipher Suites</label>
+                                                            <select class="form-control" id="password_wifi_cipher_suites">
+                                                                <option value="CCMP" selected>CCMP</option>
+                                                                <option value="TKIP">TKIP</option>
+                                                                <option value="TKIP+CCMP">TKIP+CCMP</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="password_wifi_cipher_suites">Cipher Suites</label>
-                                                        <select class="form-control" id="password_wifi_cipher_suites">
-                                                            <option value="CCMP" selected>CCMP</option>
-                                                            <option value="TKIP">TKIP</option>
-                                                            <option value="TKIP+CCMP">TKIP+CCMP</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
                                             
                                             <!-- Access Control Section -->
                                             <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
