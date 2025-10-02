@@ -200,7 +200,7 @@
                         <a class="dropdown-item" href="/fr/dashboard" data-language="fr">
                             <i class="flag-icon flag-icon-fr"></i> Français
                         </a>
-                                    </div>
+                    </div>
                 </li>
                 
                 <!-- Dark mode toggle -->

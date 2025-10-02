@@ -144,6 +144,43 @@
             margin-bottom: 1.5rem;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .language-switcher:hover {
+            opacity: 1;
+        }
+
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 576px) {
             .portal-container {
                 padding: 1.5rem;
@@ -160,6 +197,11 @@
     </style>
 </head>
 <body>
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
+
     <div class="portal-container">
         <!-- Header with Location Logo -->
         <div class="text-center">
@@ -171,7 +213,7 @@
         </div>
 
         <!-- Welcome Text -->
-        <div class="welcome-text" id="welcome-text">
+        <div class="welcome-text" id="welcome-text" data-i18n-default="welcomeText">
             Please enter the password to connect to our WiFi network.
         </div>
 
@@ -182,9 +224,9 @@
         <div id="password-form" class="password-container">
             <form id="password-login-form">
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password" data-i18n="passwordLabel">Password</label>
                     <div class="input-group">
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter network password" required>
+                        <input type="password" class="form-control" id="password" name="password" data-i18n-placeholder="passwordPlaceholder" placeholder="Enter network password" required>
                         <div class="input-group-append">
                             <span class="input-group-text" id="toggle-password">
                                 <i class="fa fa-eye-slash" id="eye-icon"></i>
@@ -192,7 +234,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="login-button" id="connect-button"></button>
+                <button type="submit" class="login-button" id="connect-button" data-i18n-default="connectButton"></button>
             </form>
         </div>
 
@@ -201,8 +243,8 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms" id="terms-text">
-                Powered by Mr WiFi
+            <div class="terms" id="terms-text" data-i18n-default="footer">
+                Powered by Monsieur WiFi
             </div>
         </div>
     </div>
@@ -258,6 +300,103 @@
     <script src="/app-assets/js/core/app.js"></script>
     
     <script>
+        // Language system - Initialize before DOM ready
+        const translations = {
+            en: {
+                welcomeText: 'Please enter the password to connect to our WiFi network.',
+                passwordLabel: 'Password',
+                passwordPlaceholder: 'Enter network password',
+                connectButton: 'Connect to WiFi',
+                footer: 'Powered by Monsieur WiFi',
+                connecting: 'Connecting...',
+                passwordVerified: 'Password Verified!',
+                connectingWifi: 'Connecting to WiFi...',
+                incorrectPassword: 'Incorrect Password',
+                verificationFailed: 'Verification Failed',
+                enterPassword: 'Please enter the network password',
+                errorMissing: 'Required information is missing. Please check your connection or contact support.'
+            },
+            fr: {
+                welcomeText: 'Veuillez entrer le mot de passe pour vous connecter à notre réseau WiFi.',
+                passwordLabel: 'Mot de passe',
+                passwordPlaceholder: 'Entrez le mot de passe du réseau',
+                connectButton: 'Se connecter au WiFi',
+                footer: 'Propulsé par Monsieur WiFi',
+                connecting: 'Connexion...',
+                passwordVerified: 'Mot de passe vérifié !',
+                connectingWifi: 'Connexion au WiFi...',
+                incorrectPassword: 'Mot de passe incorrect',
+                verificationFailed: 'Échec de la vérification',
+                enterPassword: 'Veuillez entrer le mot de passe du réseau',
+                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.'
+            }
+        };
+
+        function getLanguage() {
+            let lang = localStorage.getItem('wifiPortalLanguage');
+            if (lang && (lang === 'en' || lang === 'fr')) {
+                return lang;
+            }
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.toLowerCase().split('-')[0];
+            return (langCode === 'fr') ? 'fr' : 'en';
+        }
+
+        function applyTranslations(lang) {
+            // Update elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update elements with data-i18n-default (only if no custom content)
+            document.querySelectorAll('[data-i18n-default]').forEach(element => {
+                const key = element.getAttribute('data-i18n-default');
+                const isDefault = element.getAttribute('data-is-custom') !== 'true';
+                if (isDefault && translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function switchLanguage(lang) {
+            if (lang === 'en' || lang === 'fr') {
+                localStorage.setItem('wifiPortalLanguage', lang);
+                applyTranslations(lang);
+            }
+        }
+
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
+        // Apply translations immediately
+        const currentLang = getLanguage();
+        applyTranslations(currentLang);
+
         $(document).ready(function() {
             // Get location data from localStorage
             const locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
@@ -269,8 +408,12 @@
             console.log('Design data:', designData);
             $('#terms-content').html(designData.terms_content);
             $('#privacy-content').html(designData.privacy_content);
-            var button_text = designData.button_text || 'Connect to WiFi';
-            $('#connect-button').text(button_text);
+            var button_text = designData.button_text || translations[currentLang].connectButton;
+            if (designData.button_text) {
+                $('#connect-button').text(button_text).attr('data-is-custom', 'true');
+            } else {
+                $('#connect-button').text(button_text);
+            }
             
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
@@ -300,16 +443,17 @@
                 e.preventDefault();
                 
                 const password = $('#password').val();
+                const lang = getLanguage();
                 
                 if (!password) {
-                    showAlert('Please enter the network password', 'danger');
+                    showAlert(translations[lang].enterPassword, 'danger');
                     return;
                 }
                 
                 // Show loading state
                 const $button = $('#connect-button');
                 const originalText = $button.text();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Connecting...').prop('disabled', true);
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].connecting).prop('disabled', true);
                 
                 // Get location data and challenge
                 const challenge = localStorage.getItem('challenge');
@@ -335,16 +479,17 @@
                     data: login_data,
                     success: function(response) {
                         console.log('Login response:', response);
+                        const lang = getLanguage();
                         var orginal_button_color = $button.css('background-color');
                         if (response.success) {
                             // Show first success part on button
                             $button.removeClass('btn-primary').addClass('btn-success')
-                                .html('Password Verified! <i class="fa fa-check"></i>')
+                                .html(translations[lang].passwordVerified + ' <i class="fa fa-check"></i>')
                                 .prop('disabled', true);
                             
                             // After a short delay, show the second part
                             setTimeout(function() {
-                                $button.html('Connecting to WiFi... <i class="fa fa-wifi"></i>');
+                                $button.html(translations[lang].connectingWifi + ' <i class="fa fa-wifi"></i>');
                                 
                                 // Redirect after another delay
                                 setTimeout(function() {
@@ -355,7 +500,7 @@
                         } else {
                             // Show first error part on button
                             $button.removeClass('btn-primary').addClass('btn-danger')
-                                .html('<i class="fa fa-times-circle"></i> Incorrect Password')
+                                .html('<i class="fa fa-times-circle"></i> ' + translations[lang].incorrectPassword)
                                 .prop('disabled', false);
                                 
                             // Show error in alert
@@ -368,13 +513,14 @@
                         }
                     },
                     error: function(xhr) {
+                        const lang = getLanguage();
                         // Show first error part on button
                         $button.removeClass('btn-primary').addClass('btn-danger')
-                            .html('<i class="fa fa-exclamation-circle"></i> Verification Failed')
+                            .html('<i class="fa fa-exclamation-circle"></i> ' + translations[lang].verificationFailed)
                             .prop('disabled', false);
                         
                         // Show detailed error in alert
-                        let errorMessage = 'Verification Failed';
+                        let errorMessage = translations[lang].verificationFailed;
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
@@ -449,10 +595,10 @@
                 // Set welcome message from full design data, fallback to settings
                 const welcomeMessage = design.welcome_message || settings.welcome_message;
                 if (welcomeMessage) {
-                    $('#welcome-text').text(welcomeMessage);
+                    $('#welcome-text').text(welcomeMessage).attr('data-is-custom', 'true');
                     
                     // Add login instructions if available
-                    const loginInstructions = design.login_instructions || 'Please enter the password to connect to our WiFi network.';
+                    const loginInstructions = design.login_instructions;
                     if (loginInstructions) {
                         $('#welcome-text').append(`<p class="mt-2">${loginInstructions}</p>`);
                     }
@@ -510,11 +656,12 @@
             
             // If location_id or mac_address is missing, show error
             if (!locationId || !macAddress) {
+                const lang = getLanguage();
                 $('.portal-container').html(`
                     <div class="text-center">
                         <div class="alert alert-danger" role="alert">
                             <h4 class="alert-heading">Error</h4>
-                            <p>Required information is missing. Please check your connection or contact support.</p>
+                            <p>${translations[lang].errorMissing}</p>
                         </div>
                     </div>
                 `);

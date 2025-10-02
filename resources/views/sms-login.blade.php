@@ -168,6 +168,43 @@
             margin-bottom: 1.5rem;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .language-switcher:hover {
+            opacity: 1;
+        }
+
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 576px) {
             .portal-container {
                 padding: 1.5rem;
@@ -184,6 +221,11 @@
     </style>
 </head>
 <body>
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
+
     <div class="portal-container">
         <!-- Header with Location Logo -->
         <div class="text-center">
@@ -195,7 +237,7 @@
         </div>
 
         <!-- Welcome Text -->
-        <div class="welcome-text" id="welcome-text">
+        <div class="welcome-text" id="welcome-text" data-i18n-default="welcomeText">
             Please enter your phone number to receive a one-time password and connect to our WiFi network.
         </div>
 
@@ -206,18 +248,18 @@
         <div id="phone-form" class="phone-container">
             <form id="phone-form">
                 <div class="form-group">
-                    <label for="phone">Phone Number</label>
+                    <label for="phone" data-i18n="phoneLabel">Phone Number</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text" style="border-top-right-radius: 0; border-bottom-right-radius: 0; padding: 0.375rem 0.75rem;">
                                 <img src="https://flagcdn.com/w20/fr.png" style="margin-right: 5px; height: 15px;" alt="French flag"> +33
                             </span>
                         </div>
-                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+                        <input type="tel" class="form-control" id="phone" name="phone" data-i18n-placeholder="phonePlaceholder" placeholder="Enter your phone number" required>
                         <input type="hidden" id="full-phone" name="full-phone" value="">
                     </div>
                 </div>
-                <button type="submit" class="login-button" id="request-otp-button">Send Verification Code</button>
+                <button type="submit" class="login-button" id="request-otp-button" data-i18n="sendCode">Send Verification Code</button>
             </form>
         </div>
 
@@ -225,7 +267,7 @@
         <div id="otp-form" class="otp-container">
             <form id="verify-otp-form">
                 <div class="form-group">
-                    <label for="otp-1">Verification Code</label>
+                    <label for="otp-1" data-i18n="verificationCodeLabel">Verification Code</label>
                     <div class="d-flex justify-content-between">
                         <input type="text" class="form-control text-center otp-input" style="width: 22%; margin-right: 4%;" id="otp-1" name="otp-1" maxlength="1" required>
                         <input type="text" class="form-control text-center otp-input" style="width: 22%; margin-right: 4%;" id="otp-2" name="otp-2" maxlength="1" required>
@@ -235,12 +277,12 @@
                     <input type="hidden" id="otp" name="otp" value="">
                 </div>
                 <div class="resend-container">
-                    <span id="timer-text">Request OTP again in <span id="timer">05:00</span></span>
+                    <span id="timer-text"><span data-i18n="requestAgainIn">Request OTP again in</span> <span id="timer">05:00</span></span>
                     <div id="resend-container" style="display: none;">
-                        <span>Didn't receive code? <a class="resend-link" id="resend-link">Resend</a></span>
+                        <span><span data-i18n="didntReceive">Didn't receive code?</span> <a class="resend-link" id="resend-link" data-i18n="resend">Resend</a></span>
                     </div>
                 </div>
-                <button type="submit" class="login-button" id="verify-otp-button"></button>
+                <button type="submit" class="login-button" id="verify-otp-button" data-i18n-default="connectButton"></button>
             </form>
         </div>
 
@@ -249,8 +291,8 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms" id="terms-text">
-                Powered by Mr WiFi
+            <div class="terms" id="terms-text" data-i18n-default="footer">
+                Powered by Monsieur WiFi
             </div>
         </div>
     </div>
@@ -306,6 +348,127 @@
     <script src="/app-assets/js/core/app.js"></script>
     
     <script>
+        // Language system - Initialize before DOM ready
+        const translations = {
+            en: {
+                welcomeText: 'Please enter your phone number to receive a one-time password and connect to our WiFi network.',
+                phoneLabel: 'Phone Number',
+                phonePlaceholder: 'Enter your phone number',
+                sendCode: 'Send Verification Code',
+                verificationCodeLabel: 'Verification Code',
+                requestAgainIn: 'Request OTP again in',
+                didntReceive: "Didn't receive code?",
+                resend: 'Resend',
+                connectButton: 'Connect to WiFi',
+                footer: 'Powered by Monsieur WiFi',
+                sending: 'Sending...',
+                verifying: 'Verifying...',
+                verifiedSuccess: 'Verified Successfully!',
+                connectingWifi: 'Connecting to WiFi...',
+                verificationFailed: 'Verification Failed',
+                enterValidPhone: 'Please enter a valid phone number',
+                maxSmsLimit: 'Maximum SMS send limit reached (5). Please try again later.',
+                codeSent: 'Verification code sent to your phone',
+                failedToSend: 'Failed to send verification code',
+                enterValid4Digit: 'Please enter a valid 4-digit verification code',
+                newCodeSent: 'New verification code sent to your phone',
+                finalAttempt: ' (final attempt - limit reached)',
+                failedToResend: 'Failed to resend verification code',
+                errorMissing: 'Required information is missing. Please check your connection or contact support.'
+            },
+            fr: {
+                welcomeText: 'Veuillez entrer votre numéro de téléphone pour recevoir un mot de passe unique et vous connecter à notre réseau WiFi.',
+                phoneLabel: 'Numéro de téléphone',
+                phonePlaceholder: 'Entrez votre numéro de téléphone',
+                sendCode: 'Envoyer le code de vérification',
+                verificationCodeLabel: 'Code de vérification',
+                requestAgainIn: 'Demander à nouveau le code dans',
+                didntReceive: 'Code non reçu ?',
+                resend: 'Renvoyer',
+                connectButton: 'Se connecter au WiFi',
+                footer: 'Propulsé par Monsieur WiFi',
+                sending: 'Envoi...',
+                verifying: 'Vérification...',
+                verifiedSuccess: 'Vérifié avec succès !',
+                connectingWifi: 'Connexion au WiFi...',
+                verificationFailed: 'Échec de la vérification',
+                enterValidPhone: 'Veuillez entrer un numéro de téléphone valide',
+                maxSmsLimit: 'Limite maximale d\'envoi de SMS atteinte (5). Veuillez réessayer plus tard.',
+                codeSent: 'Code de vérification envoyé à votre téléphone',
+                failedToSend: 'Échec de l\'envoi du code de vérification',
+                enterValid4Digit: 'Veuillez entrer un code de vérification valide à 4 chiffres',
+                newCodeSent: 'Nouveau code de vérification envoyé à votre téléphone',
+                finalAttempt: ' (dernière tentative - limite atteinte)',
+                failedToResend: 'Échec du renvoi du code de vérification',
+                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.'
+            }
+        };
+
+        function getLanguage() {
+            let lang = localStorage.getItem('wifiPortalLanguage');
+            if (lang && (lang === 'en' || lang === 'fr')) {
+                return lang;
+            }
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.toLowerCase().split('-')[0];
+            return (langCode === 'fr') ? 'fr' : 'en';
+        }
+
+        function applyTranslations(lang) {
+            // Update elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update elements with data-i18n-default (only if no custom content)
+            document.querySelectorAll('[data-i18n-default]').forEach(element => {
+                const key = element.getAttribute('data-i18n-default');
+                const isDefault = element.getAttribute('data-is-custom') !== 'true';
+                if (isDefault && translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function switchLanguage(lang) {
+            if (lang === 'en' || lang === 'fr') {
+                localStorage.setItem('wifiPortalLanguage', lang);
+                applyTranslations(lang);
+            }
+        }
+
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
+        // Apply translations immediately
+        const currentLang = getLanguage();
+        applyTranslations(currentLang);
+
         $(document).ready(function() {
             // Get location data from localStorage
             const locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
@@ -317,8 +480,12 @@
             console.log('Design data:', designData);
             $('#terms-content').html(designData.terms_content);
             $('#privacy-content').html(designData.privacy_content);
-            var button_text = designData.button_text || 'Connect to WiFi';
-            $('#verify-otp-button').text(button_text);
+            var button_text = designData.button_text || translations[currentLang].connectButton;
+            if (designData.button_text) {
+                $('#verify-otp-button').text(button_text).attr('data-is-custom', 'true');
+            } else {
+                $('#verify-otp-button').text(button_text);
+            }
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
@@ -372,15 +539,16 @@
             $('#phone-form').on('submit', function(e) {
                 e.preventDefault();
                 
+                const lang = getLanguage();
                 let phoneNumber = $('#phone').val().trim();
                 if (!phoneNumber) {
-                    showAlert('Please enter a valid phone number', 'danger');
+                    showAlert(translations[lang].enterValidPhone, 'danger');
                     return;
                 }
                 
                 // Check if we've reached the maximum SMS limit
                 if (smsSendCount >= MAX_SMS_SENDS) {
-                    showAlert('Maximum SMS send limit reached (5). Please try again later.', 'warning');
+                    showAlert(translations[lang].maxSmsLimit, 'warning');
                     return;
                 }
                 
@@ -401,7 +569,7 @@
                 // Show loading state
                 const $button = $('#request-otp-button');
                 const originalText = $button.text();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...').prop('disabled', true);
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].sending).prop('disabled', true);
                 
                 // Call the requestOtp API
                 $.ajax({
@@ -414,6 +582,7 @@
                     },
                     success: function(response) {
                         console.log('OTP request response:', response);
+                        const lang = getLanguage();
                         if (response.success) {
                             // Increment SMS send count
                             smsSendCount++;
@@ -432,19 +601,20 @@
                             // Start the timer
                             startTimer();
                             
-                            showAlert('Verification code sent to your phone', 'success');
+                            showAlert(translations[lang].codeSent, 'success');
                         } else {
                             // Show error
                             $button.html(originalText).prop('disabled', false);
-                            showAlert(response.message || 'Failed to send verification code', 'danger');
+                            showAlert(response.message || translations[lang].failedToSend, 'danger');
                         }
                     },
                     error: function(xhr) {
+                        const lang = getLanguage();
                         // Restore button
                         $button.html(originalText).prop('disabled', false);
                         
                         // Show error
-                        let errorMessage = 'Failed to send verification code';
+                        let errorMessage = translations[lang].failedToSend;
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
@@ -457,6 +627,7 @@
             $('#verify-otp-form').on('submit', function(e) {
                 e.preventDefault();
                 
+                const lang = getLanguage();
                 const otp = $('#otp').val();
                 const challenge = localStorage.getItem('challenge');
                 const location_data = JSON.parse(localStorage.getItem('location_data') || '{}');
@@ -464,14 +635,14 @@
                 console.log('IP address:', ipAddress);
                 console.log('location_data:', location_data);
                 if (!otp || otp.length !== 4) {
-                    showAlert('Please enter a valid 4-digit verification code', 'danger');
+                    showAlert(translations[lang].enterValid4Digit, 'danger');
                     return;
                 }
                 
                 // Show loading state
                 const $button = $('#verify-otp-button');
                 const originalText = $button.text();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verifying...').prop('disabled', true);
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].verifying).prop('disabled', true);
                 var login_data = {
                     location_id: locationId,
                     mac_address: macAddress,
@@ -489,6 +660,7 @@
                     data: login_data,
                     success: function(response) {
                         console.log('Login response:', response);
+                        const lang = getLanguage();
                         var orginal_button_color = $button.css('background-color');
                         if (response.success) {
                             // Stop the timer
@@ -496,7 +668,7 @@
                             
                             // Show first success message part on button
                             $button.removeClass('btn-primary').addClass('btn-success')
-                                .html('Verified Successfully! <i class="fa fa-check"></i>')
+                                .html(translations[lang].verifiedSuccess + ' <i class="fa fa-check"></i>')
                                 .prop('disabled', true);
                             
                             // Show alert for confirmation
@@ -504,7 +676,7 @@
                             
                             // After a short delay, show the second part of the message
                             setTimeout(function() {
-                                $button.html('Connecting to WiFi... <i class="fa fa-wifi"></i>');
+                                $button.html(translations[lang].connectingWifi + ' <i class="fa fa-wifi"></i>');
                                 
                                 // Redirect to success page or Internet after a further delay
                                 setTimeout(function() {
@@ -515,7 +687,7 @@
                         } else {
                             // Show first error part on button
                             $button.removeClass('btn-primary').addClass('btn-danger')
-                                .html('Verification Failed')
+                                .html(translations[lang].verificationFailed)
                                 .prop('disabled', false);
                                 
                             // Show alert with error details
@@ -528,13 +700,14 @@
                         }
                     },
                     error: function(xhr) {
+                        const lang = getLanguage();
                         // Show first error part on button
                         $button.removeClass('btn-primary').addClass('btn-danger')
-                            .html('<i class="fa fa-exclamation-circle"></i> Verification Failed')
+                            .html('<i class="fa fa-exclamation-circle"></i> ' + translations[lang].verificationFailed)
                             .prop('disabled', false);
                         
                         // Show error alert
-                        let errorMessage = 'Failed to verify code';
+                        let errorMessage = translations[lang].failedToSend;
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
@@ -550,9 +723,10 @@
             
             // Handle resend OTP
             $('#resend-link').on('click', function() {
+                const lang = getLanguage();
                 // Check if we've reached the maximum SMS limit
                 if (smsSendCount >= MAX_SMS_SENDS) {
-                    showAlert('Maximum SMS send limit reached (5). Please try again later.', 'warning');
+                    showAlert(translations[lang].maxSmsLimit, 'warning');
                     return;
                 }
                 
@@ -582,6 +756,7 @@
                         mac_address: macAddress
                     },
                     success: function(response) {
+                        const lang = getLanguage();
                         // Always restore link text, regardless of response
                         $link.text(originalText).css('pointer-events', 'auto');
                         
@@ -590,11 +765,11 @@
                             smsSendCount++;
                             console.log(`SMS sent ${smsSendCount} of ${MAX_SMS_SENDS} allowed`);
                             
-                            let successMessage = 'New verification code sent to your phone';
+                            let successMessage = translations[lang].newCodeSent;
                             
                             // If this is the last allowed attempt, inform the user
                             if (smsSendCount >= MAX_SMS_SENDS) {
-                                successMessage += ' (final attempt - limit reached)';
+                                successMessage += translations[lang].finalAttempt;
                                 // Disable the resend link permanently
                                 $('#resend-link').addClass('disabled').css({
                                     'color': '#999',
@@ -605,7 +780,7 @@
                             
                             showAlert(successMessage, 'success');
                         } else {
-                            let errorMessage = 'Failed to resend verification code';
+                            let errorMessage = translations[lang].failedToResend;
                             if (response.message) {
                                 errorMessage = response.message;
                             }
@@ -613,10 +788,11 @@
                         }
                     },
                     error: function(xhr) {
+                        const lang = getLanguage();
                         // Restore the link text and enable it even when error occurs
                         $link.text(originalText).css('pointer-events', 'auto');
                         
-                        let errorMessage = 'Failed to resend verification code';
+                        let errorMessage = translations[lang].failedToResend;
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
@@ -714,10 +890,10 @@
                 // Set welcome message from full design data, fallback to settings
                 const welcomeMessage = design.welcome_message || settings.welcome_message;
                 if (welcomeMessage) {
-                    $('#welcome-text').text(welcomeMessage);
+                    $('#welcome-text').text(welcomeMessage).attr('data-is-custom', 'true');
                     
                     // Add login instructions if available
-                    const loginInstructions = design.login_instructions || 'Please enter your phone number to receive a verification code.';
+                    const loginInstructions = design.login_instructions;
                     if (loginInstructions) {
                         $('#welcome-text').append(`<p class="mt-2">${loginInstructions}</p>`);
                     }
@@ -775,11 +951,12 @@
             
             // If location_id or mac_address is missing, show error
             if (!locationId || !macAddress) {
+                const lang = getLanguage();
                 $('.portal-container').html(`
                     <div class="text-center">
                         <div class="alert alert-danger" role="alert">
                             <h4 class="alert-heading">Error</h4>
-                            <p>Required information is missing. Please check your connection or contact support.</p>
+                            <p>${translations[lang].errorMissing}</p>
                         </div>
                     </div>
                 `);

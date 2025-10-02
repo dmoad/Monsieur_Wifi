@@ -200,6 +200,38 @@
             margin-bottom: 1.5rem;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .language-switcher:hover {
+            opacity: 1;
+        }
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 576px) {
             .portal-container {
                 padding: 1.5rem;
@@ -216,6 +248,12 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
+
     <div class="portal-container">
         <!-- Header with Location Logo -->
         <div class="text-center">
@@ -227,7 +265,7 @@
         </div>
 
         <!-- Welcome Text -->
-        <div class="welcome-text" id="welcome-text">
+        <div class="welcome-text" id="welcome-text" data-i18n-default="welcomeText">
             Connect to our WiFi network using your Facebook account.
         </div>
 
@@ -241,7 +279,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" style="margin-right: 12px;">
                     <path fill="#1877F2" d="M17 9.5a7.5 7.5 0 10-8.674 7.4v-5.23H6.201V9.5h2.125V7.724c0-2.1 1.253-3.26 3.161-3.26.914 0 1.871.164 1.871.164v2.062h-1.053c-1.04 0-1.365.645-1.365 1.306V9.5h2.322l-.37 2.17h-1.951V16.9A7.5 7.5 0 0017 9.5z"/>
                     <path fill="#ffffff" d="M11.89 11.67l.372-2.17h-2.32V8.001c0-.667.323-1.307 1.365-1.307h1.052V4.633s-.957-.164-1.87-.164c-1.91 0-3.162 1.156-3.162 3.256V9.5H5.202v2.17h2.125V16.9a8.471 8.471 0 002.625 0v-5.23h1.94z"/>
-                </svg> Connect with Facebook
+                </svg> <span data-i18n="connectFacebook">Connect with Facebook</span>
             </button>
         </div>
 
@@ -250,8 +288,8 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms" id="terms-text">
-                Powered by Mr WiFi
+            <div class="terms" id="terms-text" data-i18n-default="footer">
+                Powered by Monsieur WiFi
             </div>
         </div>
     </div>
@@ -307,6 +345,75 @@
     <script src="/app-assets/js/core/app.js"></script>
     
     <script>
+        // Translations
+        const translations = {
+            en: {
+                welcomeText: 'Connect to our WiFi network using your Facebook account.',
+                connectFacebook: 'Connect with Facebook',
+                footer: 'Powered by Monsieur WiFi',
+                connecting: 'Connecting...',
+                missingParams: 'Missing required parameters (location ID or MAC address)',
+                errorMissing: 'Required information is missing. Please check your connection or contact support.'
+            },
+            fr: {
+                welcomeText: 'Connectez-vous à notre réseau WiFi en utilisant votre compte Facebook.',
+                connectFacebook: 'Se connecter avec Facebook',
+                footer: 'Propulsé par Monsieur WiFi',
+                connecting: 'Connexion...',
+                missingParams: 'Paramètres requis manquants (ID de localisation ou adresse MAC)',
+                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.'
+            }
+        };
+
+        // Get user's language preference
+        function getLanguage() {
+            const stored = localStorage.getItem('wifiPortalLanguage');
+            if (stored) return stored;
+            
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('fr') ? 'fr' : 'en';
+        }
+
+        // Apply translations
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('[data-i18n-default]').forEach(el => {
+                const key = el.getAttribute('data-i18n-default');
+                if (translations[lang] && translations[lang][key] && !el.hasAttribute('data-is-custom')) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update active language button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+        }
+
+        // Switch language
+        function switchLanguage(lang) {
+            localStorage.setItem('wifiPortalLanguage', lang);
+            applyTranslations(lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentLang = getLanguage();
+            applyTranslations(currentLang);
+            
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
         $(document).ready(function() {
             console.log('Document ready, initializing Facebook login page');
             console.log('Full URL:', window.location.href);
@@ -368,14 +475,16 @@
                 console.log('Facebook login button clicked');
 
                 if (!locationId || !macAddress) {
-                    showAlert('Missing required parameters (location ID or MAC address)', 'danger');
+                    const lang = getLanguage();
+                    showAlert(translations[lang].missingParams, 'danger');
                     console.error('Missing parameters - Location ID:', locationId, 'MAC Address:', macAddress);
                     return;
                 }
 
                 const $button = $(this);
                 const originalText = $button.html();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Connecting...')
+                const lang = getLanguage();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].connecting)
                     .prop('disabled', true);
 
                 // Get current URL as login_url for callback redirection
@@ -464,9 +573,9 @@
                 }
                 
                 // Set welcome message from full design data, fallback to settings
-                const welcomeMessage = design.welcome_message || settings.welcome_message || 'Connect to our WiFi network using your Facebook account.';
+                const welcomeMessage = design.welcome_message || settings.welcome_message;
                 if (welcomeMessage) {
-                    $('#welcome-text').text(welcomeMessage);
+                    $('#welcome-text').text(welcomeMessage).attr('data-is-custom', 'true');
                     
                     // Add login instructions if available
                     const loginInstructions = design.login_instructions || '';
@@ -549,11 +658,12 @@
             
             // If location_id or mac_address is missing, show error
             if (!locationId || !macAddress) {
+                const lang = getLanguage();
                 $('.portal-container').html(`
                     <div class="text-center">
                         <div class="alert alert-danger" role="alert">
                             <h4 class="alert-heading">Error</h4>
-                            <p>Required information is missing. Please check your connection or contact support.</p>
+                            <p>${translations[lang].errorMissing}</p>
                         </div>
                     </div>
                 `);

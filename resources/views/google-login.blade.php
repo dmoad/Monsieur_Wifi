@@ -201,6 +201,43 @@
             margin-bottom: 1.5rem;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .language-switcher:hover {
+            opacity: 1;
+        }
+
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 576px) {
             .portal-container {
                 padding: 1.5rem;
@@ -217,6 +254,11 @@
     </style>
 </head>
 <body>
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
+
     <div class="portal-container">
         <!-- Header with Location Logo -->
         <div class="text-center">
@@ -228,7 +270,7 @@
         </div>
 
         <!-- Welcome Text -->
-        <div class="welcome-text" id="welcome-text">
+        <div class="welcome-text" id="welcome-text" data-i18n-default="welcomeText">
             Connect to our WiFi network using your Google account.
         </div>
 
@@ -244,7 +286,7 @@
                     <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
                     <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
                     <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                </svg> Sign in with Google
+                </svg> <span data-i18n="signInGoogle">Sign in with Google</span>
             </button>
         </div>
 
@@ -253,8 +295,8 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms" id="terms-text">
-                Powered by Mr WiFi
+            <div class="terms" id="terms-text" data-i18n-default="footer">
+                Powered by Monsieur WiFi
             </div>
         </div>
     </div>
@@ -310,6 +352,83 @@
     <script src="/app-assets/js/core/app.js"></script>
     
     <script>
+        // Language system - Initialize before DOM ready
+        const translations = {
+            en: {
+                welcomeText: 'Connect to our WiFi network using your Google account.',
+                signInGoogle: 'Sign in with Google',
+                footer: 'Powered by Monsieur WiFi',
+                connecting: 'Connecting...',
+                missingParams: 'Missing required parameters (location ID or MAC address)',
+                errorMissing: 'Required information is missing. Please check your connection or contact support.'
+            },
+            fr: {
+                welcomeText: 'Connectez-vous à notre réseau WiFi en utilisant votre compte Google.',
+                signInGoogle: 'Se connecter avec Google',
+                footer: 'Propulsé par Monsieur WiFi',
+                connecting: 'Connexion...',
+                missingParams: 'Paramètres requis manquants (ID de localisation ou adresse MAC)',
+                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.'
+            }
+        };
+
+        function getLanguage() {
+            let lang = localStorage.getItem('wifiPortalLanguage');
+            if (lang && (lang === 'en' || lang === 'fr')) {
+                return lang;
+            }
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.toLowerCase().split('-')[0];
+            return (langCode === 'fr') ? 'fr' : 'en';
+        }
+
+        function applyTranslations(lang) {
+            // Update elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update elements with data-i18n-default (only if no custom content)
+            document.querySelectorAll('[data-i18n-default]').forEach(element => {
+                const key = element.getAttribute('data-i18n-default');
+                const isDefault = element.getAttribute('data-is-custom') !== 'true';
+                if (isDefault && translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function switchLanguage(lang) {
+            if (lang === 'en' || lang === 'fr') {
+                localStorage.setItem('wifiPortalLanguage', lang);
+                applyTranslations(lang);
+            }
+        }
+
+        // Initialize language switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
+        // Apply translations immediately
+        const currentLang = getLanguage();
+        applyTranslations(currentLang);
+
         $(document).ready(function() {
             console.log('Document ready, initializing Google login page');
             console.log('Full URL:', window.location.href);
@@ -369,16 +488,17 @@
             // Handle Google login button click
             $('#google-login-button').on('click', function () {
                 console.log('Google login button clicked');
+                const lang = getLanguage();
 
                 if (!locationId || !macAddress) {
-                    showAlert('Missing required parameters (location ID or MAC address)', 'danger');
+                    showAlert(translations[lang].missingParams, 'danger');
                     console.error('Missing parameters - Location ID:', locationId, 'MAC Address:', macAddress);
                     return;
                 }
 
                 const $button = $(this);
                 const originalText = $button.html();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Connecting...')
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].connecting)
                     .prop('disabled', true);
 
                 // Get current URL as login_url for callback redirection
@@ -470,12 +590,12 @@
                 }
                 
                 // Set welcome message from full design data, fallback to settings
-                const welcomeMessage = design.welcome_message || settings.welcome_message || 'Connect to our WiFi network using your Google account.';
+                const welcomeMessage = design.welcome_message || settings.welcome_message;
                 if (welcomeMessage) {
-                    $('#welcome-text').text(welcomeMessage);
+                    $('#welcome-text').text(welcomeMessage).attr('data-is-custom', 'true');
                     
                     // Add login instructions if available
-                    const loginInstructions = design.login_instructions || '';
+                    const loginInstructions = design.login_instructions;
                     if (loginInstructions) {
                         $('#welcome-text').append(`<p class="mt-2">${loginInstructions}</p>`);
                     }
@@ -555,11 +675,12 @@
             
             // If location_id or mac_address is missing, show error
             if (!locationId || !macAddress) {
+                const lang = getLanguage();
                 $('.portal-container').html(`
                     <div class="text-center">
                         <div class="alert alert-danger" role="alert">
                             <h4 class="alert-heading">Error</h4>
-                            <p>Required information is missing. Please check your connection or contact support.</p>
+                            <p>${translations[lang].errorMissing}</p>
                         </div>
                     </div>
                 `);

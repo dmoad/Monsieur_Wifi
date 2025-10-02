@@ -134,6 +134,38 @@
             margin-bottom: 1.5rem;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .language-switcher:hover {
+            opacity: 1;
+        }
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 576px) {
             .portal-container {
                 padding: 1.5rem;
@@ -150,6 +182,12 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
+
     <div class="portal-container">
         <!-- Header with Location Logo -->
         <div class="text-center">
@@ -168,7 +206,7 @@
             <div class="status-icon">
                 <i class="spinner-border text-primary"></i>
             </div>
-            <div class="status-message" id="status-message">
+            <div class="status-message" id="status-message" data-i18n="connecting">
                 Connecting you to our WiFi network...
             </div>
         </div>
@@ -178,8 +216,8 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms" id="terms-text">
-                Powered by Mr WiFi
+            <div class="terms" id="terms-text" data-i18n-default="footer">
+                Powered by Monsieur WiFi
             </div>
         </div>
     </div>
@@ -232,6 +270,77 @@
     <script src="/app-assets/js/core/app.js"></script>
     
     <script>
+        // Translations
+        const translations = {
+            en: {
+                connecting: 'Connecting you to our WiFi network...',
+                authSuccess: 'Authentication Successful',
+                authSuccessMsg: 'Authentication successful. Connecting to WiFi...',
+                connectingWifi: 'Connecting to WiFi Network',
+                footer: 'Powered by Monsieur WiFi',
+                authFailed: 'Authentication failed',
+                missingUrl: 'Error: Missing WiFi activation URL'
+            },
+            fr: {
+                connecting: 'Connexion à notre réseau WiFi...',
+                authSuccess: 'Authentification Réussie',
+                authSuccessMsg: 'Authentification réussie. Connexion au WiFi...',
+                connectingWifi: 'Connexion au Réseau WiFi',
+                footer: 'Propulsé par Monsieur WiFi',
+                authFailed: 'Échec de l\'authentification',
+                missingUrl: 'Erreur : URL d\'activation WiFi manquante'
+            }
+        };
+
+        // Get user's language preference
+        function getLanguage() {
+            const stored = localStorage.getItem('wifiPortalLanguage');
+            if (stored) return stored;
+            
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('fr') ? 'fr' : 'en';
+        }
+
+        // Apply translations
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('[data-i18n-default]').forEach(el => {
+                const key = el.getAttribute('data-i18n-default');
+                if (translations[lang] && translations[lang][key] && !el.hasAttribute('data-is-custom')) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update active language button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+        }
+
+        // Switch language
+        function switchLanguage(lang) {
+            localStorage.setItem('wifiPortalLanguage', lang);
+            applyTranslations(lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentLang = getLanguage();
+            applyTranslations(currentLang);
+            
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
         $(document).ready(function() {
             console.log('Document ready, initializing Facebook callback page');
             
@@ -301,7 +410,7 @@
             
             // Update status message
             function updateStatus(message, isError = false) {
-                $('#status-message').text(message);
+                $('#status-message').text(message).removeAttr('data-i18n');
                 if (isError) {
                     $('.status-icon').html('<i class="fa fa-times-circle text-danger" style="font-size: 48px;"></i>');
                     showAlert(message, 'danger');
@@ -341,18 +450,19 @@
                 data: loginData,
                 success: function(response) {
                     console.log('Login response:', response);
+                    const lang = getLanguage();
                     if (response.success) {
                         // First part: Show initial success verification message
-                        updateStatus('Authentication Successful');
+                        updateStatus(translations[lang].authSuccess);
                         $('.status-icon').html('<i class="fa fa-check-circle text-success" style="font-size: 48px;"></i>');
                         
                         // Show alert for facebook auth success
-                        showAlert('Authentication successful. Connecting to WiFi...', 'success');
+                        showAlert(translations[lang].authSuccessMsg, 'success');
                         
                         // After a short delay, show the second part of the message
                         setTimeout(function() {
                             // Second part: Update to connection message
-                            updateStatus('Connecting to WiFi Network');
+                            updateStatus(translations[lang].connectingWifi);
                             $('.status-icon').html('<i class="fa fa-wifi text-primary" style="font-size: 48px;"></i>');
                             
                             // Redirect to success page or Internet after a further delay
@@ -360,21 +470,22 @@
                                 const redirectUrl = response.login_url;
                                 if (redirectUrl) {
                                     // Final update before redirecting
-                                    updateStatus('Redirecting to WiFi network...');
+                                    updateStatus(lang === 'fr' ? 'Redirection vers le réseau WiFi...' : 'Redirecting to WiFi network...');
                                     
                                     console.log('Redirecting to WiFi authentication URL:', redirectUrl);
                                     window.location.href = redirectUrl;
                                 } else {
-                                    updateStatus('Error: Missing WiFi activation URL', true);
+                                    updateStatus(translations[lang].missingUrl, true);
                                 }
                             }, 1500);
                         }, 1500);
                     } else {
-                        updateStatus('Authentication failed: ' + (response.message || 'Unknown error'), true);
+                        updateStatus(translations[lang].authFailed + ': ' + (response.message || 'Unknown error'), true);
                     }
                 },
                 error: function(xhr) {
-                    let errorMessage = 'Authentication failed';
+                    const lang = getLanguage();
+                    let errorMessage = translations[lang].authFailed;
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMessage = xhr.responseJSON.message;
                     }

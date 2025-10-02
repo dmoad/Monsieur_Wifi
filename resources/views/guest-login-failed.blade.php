@@ -163,6 +163,43 @@
             text-decoration: underline;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .language-switcher:hover {
+            opacity: 1;
+        }
+
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 576px) {
             .error-container {
                 padding: 1.5rem;
@@ -179,6 +216,11 @@
     </style>
 </head>
 <body>
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
+
     <div class="error-container">
         <!-- Header with Location Logo -->
         <div class="text-center">
@@ -192,16 +234,16 @@
         <div class="error-icon">
             <i class="fa fa-times-circle"></i>
         </div>
-        <h1 class="error-title">Connection Failed</h1>
-        <p class="error-message" id="error-message">We couldn't connect you to the WiFi network. This might be due to authentication issues or network problems.</p>
+        <h1 class="error-title" data-i18n="errorTitle">Connection Failed</h1>
+        <p class="error-message" id="error-message" data-i18n-default="errorMessage">We couldn't connect you to the WiFi network. This might be due to authentication issues or network problems.</p>
         
         <div id="error-details" class="error-details" style="display: none;">
-            <div id="error-detail-message">No specific error details available.</div>
+            <div id="error-detail-message" data-i18n="noErrorDetails">No specific error details available.</div>
         </div>
         
         <div class="buttons">
             <a href="#" id="try-again-btn" class="action-button">
-                <i class="fa fa-refresh"></i> Try Again
+                <i class="fa fa-refresh"></i> <span data-i18n="tryAgain">Try Again</span>
             </a>
             <!-- <a href="#" id="show-details-btn" class="action-button secondary">
                 <i class="fa fa-info-circle"></i> Show Details
@@ -213,7 +255,7 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms" id="terms-text">
+            <div class="terms" id="terms-text" data-i18n-default="footer">
                 Powered by Mr WiFi
             </div>
         </div>
@@ -268,6 +310,76 @@
     <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
     <script src="/app-assets/vendors/js/bootstrap/bootstrap.min.js"></script>
     <script>
+        // Language system - Initialize before DOM ready
+        const translations = {
+            en: {
+                errorTitle: 'Connection Failed',
+                errorMessage: 'We couldn\'t connect you to the WiFi network. This might be due to authentication issues or network problems.',
+                noErrorDetails: 'No specific error details available.',
+                tryAgain: 'Try Again',
+                footer: 'Powered by Mr WiFi'
+            },
+            fr: {
+                errorTitle: 'Connexion échouée',
+                errorMessage: 'Nous n\'avons pas pu vous connecter au réseau WiFi. Cela peut être dû à des problèmes d\'authentification ou de réseau.',
+                noErrorDetails: 'Aucun détail d\'erreur spécifique disponible.',
+                tryAgain: 'Réessayer',
+                footer: 'Propulsé par Mr WiFi'
+            }
+        };
+
+        function getLanguage() {
+            let lang = localStorage.getItem('wifiPortalLanguage');
+            if (lang && (lang === 'en' || lang === 'fr')) {
+                return lang;
+            }
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.toLowerCase().split('-')[0];
+            return (langCode === 'fr') ? 'fr' : 'en';
+        }
+
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('[data-i18n-default]').forEach(element => {
+                const key = element.getAttribute('data-i18n-default');
+                const isDefault = element.getAttribute('data-is-custom') !== 'true';
+                if (isDefault && translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function switchLanguage(lang) {
+            if (lang === 'en' || lang === 'fr') {
+                localStorage.setItem('wifiPortalLanguage', lang);
+                applyTranslations(lang);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
+        const currentLang = getLanguage();
+        applyTranslations(currentLang);
+
         $(document).ready(function() {
             // Get location data from localStorage
             const locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
@@ -333,7 +445,7 @@
                 
                 // Set custom error message if available
                 if (design.error_message) {
-                    $('#error-message').text(design.error_message);
+                    $('#error-message').text(design.error_message).attr('data-is-custom', 'true');
                 }
                 
                 // Set terms visibility from full design data, fallback to settings

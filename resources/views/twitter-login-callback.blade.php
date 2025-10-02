@@ -87,13 +87,50 @@
             border-radius: 8px;
             margin-bottom: 1.5rem;
         }
+
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .language-switcher:hover {
+            opacity: 1;
+        }
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
     <div class="portal-container">
         <div class="welcome-text">
-            <h3>Processing Twitter Login</h3>
-            <p>Please wait while we connect you to the WiFi network...</p>
+            <h3 data-i18n="processingTitle">Processing Twitter Login</h3>
+            <p data-i18n="processingMsg">Please wait while we connect you to the WiFi network...</p>
         </div>
 
         <div id="alert-container" style="display: none;"></div>
@@ -108,8 +145,8 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms">
-                Powered by Mr WiFi
+            <div class="terms" data-i18n-default="footer">
+                Powered by Monsieur WiFi
             </div>
         </div>
     </div>
@@ -118,6 +155,75 @@
     <script src="/app-assets/vendors/js/vendors.min.js"></script>
     
     <script>
+        // Translations
+        const translations = {
+            en: {
+                processingTitle: 'Processing Twitter Login',
+                processingMsg: 'Please wait while we connect you to the WiFi network...',
+                footer: 'Powered by Monsieur WiFi',
+                authSuccess: 'Successfully authenticated! Connecting to WiFi...',
+                authFailed: 'Failed to complete Twitter authentication',
+                returnToLogin: 'Return to Login Page'
+            },
+            fr: {
+                processingTitle: 'Traitement de la Connexion Twitter',
+                processingMsg: 'Veuillez patienter pendant que nous vous connectons au réseau WiFi...',
+                footer: 'Propulsé par Monsieur WiFi',
+                authSuccess: 'Authentification réussie! Connexion au WiFi...',
+                authFailed: 'Échec de l\'authentification Twitter',
+                returnToLogin: 'Retour à la Page de Connexion'
+            }
+        };
+
+        // Get user's language preference
+        function getLanguage() {
+            const stored = localStorage.getItem('wifiPortalLanguage');
+            if (stored) return stored;
+            
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('fr') ? 'fr' : 'en';
+        }
+
+        // Apply translations
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('[data-i18n-default]').forEach(el => {
+                const key = el.getAttribute('data-i18n-default');
+                if (translations[lang] && translations[lang][key] && !el.hasAttribute('data-is-custom')) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update active language button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+        }
+
+        // Switch language
+        function switchLanguage(lang) {
+            localStorage.setItem('wifiPortalLanguage', lang);
+            applyTranslations(lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentLang = getLanguage();
+            applyTranslations(currentLang);
+            
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
         $(document).ready(function() {
             console.log('Twitter callback page loaded');
             
@@ -215,10 +321,11 @@
         
         // Function to show return button
         function showReturnButton(url) {
+            const lang = getLanguage();
             $('#alert-container').append(`
                 <div class="text-center mt-3">
                     <a href="${url}" class="btn btn-primary">
-                        Return to Login Page
+                        ${translations[lang].returnToLogin}
                     </a>
                 </div>
             `);
@@ -252,9 +359,10 @@
                     data: login_data,
                     success: function(response) {
                     console.log('Auth completion response:', response);
+                    const lang = getLanguage();
                     
                     if (response.success) {
-                        showAlert('Successfully authenticated! Connecting to WiFi...', 'success');
+                        showAlert(translations[lang].authSuccess, 'success');
                         
                         // Redirect to success URL or final URL
                         setTimeout(function() {
@@ -274,8 +382,9 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Auth completion error:', xhr.responseJSON || xhr.responseText);
+                    const lang = getLanguage();
                     
-                    let errorMessage = 'Failed to complete Twitter authentication';
+                    let errorMessage = translations[lang].authFailed;
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMessage = xhr.responseJSON.message;
                     }

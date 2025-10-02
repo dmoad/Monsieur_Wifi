@@ -292,6 +292,39 @@
             color: #555;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+        .language-switcher:hover {
+            opacity: 1;
+        }
+        .language-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .language-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .language-btn.active {
+            color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 576px) {
             .portal-container {
                 padding: 1.5rem;
@@ -308,6 +341,12 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn" data-lang="en">English</button>
+        <button class="language-btn" data-lang="fr">Français</button>
+    </div>
+
     <div class="portal-container">
         <!-- Header with Location Logo -->
         <div class="text-center">
@@ -325,8 +364,8 @@
                 <div class="spinner-border mb-3" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
-                <h4 class="mb-2">Processing Your Connection</h4>
-                <p class="mb-0">Please wait while we authenticate your WiFi access...</p>
+                <h4 class="mb-2" data-i18n="processingTitle">Processing Your Connection</h4>
+                <p class="mb-0" data-i18n="processingMsg">Please wait while we authenticate your WiFi access...</p>
             </div>
             
             <!-- Success State (Hidden by Default) -->
@@ -334,8 +373,8 @@
                 <div class="success-icon mb-3">
                     <i class="fa fa-check-circle" style="font-size: 48px; color: #28c76f;"></i>
                 </div>
-                <h4 class="mb-2">Authentication Successful</h4>
-                <p class="mb-3">Your Google login was verified successfully.<br>Connecting to WiFi network...</p>
+                <h4 class="mb-2" id="success-title">Authentication Successful</h4>
+                <p class="mb-3" id="success-message">Your Google login was verified successfully.<br>Connecting to WiFi network...</p>
                 <div id="redirect-container"></div>
             </div>
             
@@ -344,7 +383,7 @@
                 <div class="error-icon">
                     <i class="fa fa-times-circle"></i>
                 </div>
-                <h4 class="mb-2">Connection Failed</h4>
+                <h4 class="mb-2" id="error-title">Connection Failed</h4>
                 <p id="error-message" class="mb-0">There was a problem connecting to the WiFi network.</p>
             </div>
         </div>
@@ -363,8 +402,8 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
-            <div class="terms" id="terms-text">
-                Powered by Mr WiFi
+            <div class="terms" id="terms-text" data-i18n-default="footer">
+                Powered by Monsieur WiFi
             </div>
         </div>
     </div>
@@ -417,6 +456,81 @@
 
     <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
     <script>
+        // Translations
+        const translations = {
+            en: {
+                processingTitle: 'Processing Your Connection',
+                processingMsg: 'Please wait while we authenticate your WiFi access...',
+                authSuccess: 'Authentication Successful',
+                authSuccessMsg: 'Your Google login was verified successfully.',
+                connectingWifi: 'Connecting to WiFi',
+                connectingWifiMsg: 'Initializing your connection to the WiFi network...',
+                continueWifi: 'Continue to WiFi',
+                connectionFailed: 'Connection Failed',
+                footer: 'Powered by Monsieur WiFi'
+            },
+            fr: {
+                processingTitle: 'Traitement de Votre Connexion',
+                processingMsg: 'Veuillez patienter pendant que nous authentifions votre accès WiFi...',
+                authSuccess: 'Authentification Réussie',
+                authSuccessMsg: 'Votre connexion Google a été vérifiée avec succès.',
+                connectingWifi: 'Connexion au WiFi',
+                connectingWifiMsg: 'Initialisation de votre connexion au réseau WiFi...',
+                continueWifi: 'Continuer vers le WiFi',
+                connectionFailed: 'Échec de la Connexion',
+                footer: 'Propulsé par Monsieur WiFi'
+            }
+        };
+
+        // Get user's language preference
+        function getLanguage() {
+            const stored = localStorage.getItem('wifiPortalLanguage');
+            if (stored) return stored;
+            
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('fr') ? 'fr' : 'en';
+        }
+
+        // Apply translations
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('[data-i18n-default]').forEach(el => {
+                const key = el.getAttribute('data-i18n-default');
+                if (translations[lang] && translations[lang][key] && !el.hasAttribute('data-is-custom')) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update active language button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+        }
+
+        // Switch language
+        function switchLanguage(lang) {
+            localStorage.setItem('wifiPortalLanguage', lang);
+            applyTranslations(lang);
+        }
+
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentLang = getLanguage();
+            applyTranslations(currentLang);
+            
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchLanguage(this.getAttribute('data-lang'));
+                });
+            });
+        });
+
         $(document).ready(function() {
             console.log('Google callback page loaded');
             
@@ -605,6 +719,7 @@
                         console.log('Guest login response:', response);
                         $('#api-response').text(JSON.stringify(response));
                         
+                        const lang = getLanguage();
                         if (response.success) {
                             // First part: Show authentication success
                             $('#loading-status').hide();
@@ -612,14 +727,14 @@
                             $('#success-status').show();
                             
                             // Set initial success message
-                            $('#success-status').find('h4').text('Authentication Successful');
-                            $('#success-status').find('p').text('Your Google login was verified successfully.');
+                            $('#success-title').text(translations[lang].authSuccess);
+                            $('#success-message').text(translations[lang].authSuccessMsg);
                             
                             // After a short delay, show the second part
                             setTimeout(function() {
                                 // Update to connection message
-                                $('#success-status').find('h4').text('Connecting to WiFi');
-                                $('#success-status').find('p').text('Initializing your connection to the WiFi network...');
+                                $('#success-title').text(translations[lang].connectingWifi);
+                                $('#success-message').text(translations[lang].connectingWifiMsg);
                                 
                                 // Change icon to WiFi
                                 $('#success-status .success-icon i').removeClass('fa-check-circle').addClass('fa-wifi');
@@ -633,7 +748,7 @@
                                     if (!$('#redirect-container').html()) {
                                         $('#redirect-container').html(`
                                             <a href="${redirectUrl}" class="login-button btn-success">
-                                                <i class="fa fa-wifi"></i> Continue to WiFi
+                                                <i class="fa fa-wifi"></i> ${translations[lang].continueWifi}
                                             </a>
                                         `);
                                     }
@@ -646,7 +761,7 @@
                             }, 1500);
                         } else {
                             // Show error with the message from the response
-                            showError('Connection Failed', response.message || 'There was an error connecting to the WiFi network.');
+                            showError(translations[lang].connectionFailed, response.message || 'There was an error connecting to the WiFi network.');
                             $('#debug-info').show();
                         }
                     },
@@ -676,7 +791,7 @@
             function showError(title, message) {
                 $('#loading-status').hide();
                 $('#success-status').hide();
-                $('#error-status').find('h4').text(title);
+                $('#error-title').text(title);
                 $('#error-message').text(message);
                 $('#error-status').show();
             }
