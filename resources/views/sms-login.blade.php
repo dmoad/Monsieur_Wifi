@@ -374,7 +374,8 @@
                 newCodeSent: 'New verification code sent to your phone',
                 finalAttempt: ' (final attempt - limit reached)',
                 failedToResend: 'Failed to resend verification code',
-                errorMissing: 'Required information is missing. Please check your connection or contact support.'
+                errorMissing: 'Required information is missing. Please check your connection or contact support.',
+                termsText: 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>'
             },
             fr: {
                 welcomeText: 'Veuillez entrer votre numéro de téléphone pour recevoir un mot de passe unique et vous connecter à notre réseau WiFi.',
@@ -400,7 +401,8 @@
                 newCodeSent: 'Nouveau code de vérification envoyé à votre téléphone',
                 finalAttempt: ' (dernière tentative - limite atteinte)',
                 failedToResend: 'Échec du renvoi du code de vérification',
-                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.'
+                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.',
+                termsText: 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#termsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#privacyModal">Politique de confidentialité</a>'
             }
         };
 
@@ -900,9 +902,10 @@
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
-                const showTerms = design.show_terms || settings.terms_enabled;
+                const showTerms = design.show_terms === true || settings.terms_enabled === true;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                    const lang = getLanguage();
+                    $('#terms-text').html(translations[lang].termsText);
                 }
                 
                 // Set custom terms and privacy content if available

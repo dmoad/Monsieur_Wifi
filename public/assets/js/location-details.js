@@ -677,6 +677,11 @@ $(document).ready(function() {
         const password_wifi_password = $("#password-wifi-password").val();
         const password_wifi_vlan = $("#password-wifi-vlan").val();
         const password_wifi_vlan_tagging = $("#password-wifi-vlan-tagging").val();
+        const password_wifi_visible = $("#password-wifi-visible").val();
+        // if password_wifi_visible is not set, set it to 1
+        if (!password_wifi_visible) {
+            password_wifi_visible = 1;
+        }
         var settings = {
             password_wifi_ip: password_wifi_ip,
             password_wifi_netmask: password_wifi_netmask,
@@ -694,7 +699,8 @@ $(document).ready(function() {
             password_wifi_lease_time: password_wifi_lease_time,
             password_wifi_dhcp_enabled: password_wifi_dhcp_enabled,
             password_wifi_vlan: password_wifi_vlan,
-            password_wifi_vlan_tagging: password_wifi_vlan_tagging
+            password_wifi_vlan_tagging: password_wifi_vlan_tagging,
+            password_wifi_visible: password_wifi_visible
         };
         console.log("settings", settings);
         // make ajax request to save the values 

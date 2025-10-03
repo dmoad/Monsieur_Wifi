@@ -279,7 +279,8 @@
                 connectingWifi: 'Connecting to WiFi Network',
                 footer: 'Powered by Monsieur WiFi',
                 authFailed: 'Authentication failed',
-                missingUrl: 'Error: Missing WiFi activation URL'
+                missingUrl: 'Error: Missing WiFi activation URL',
+                termsText: 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>'
             },
             fr: {
                 connecting: 'Connexion à notre réseau WiFi...',
@@ -288,7 +289,8 @@
                 connectingWifi: 'Connexion au Réseau WiFi',
                 footer: 'Propulsé par Monsieur WiFi',
                 authFailed: 'Échec de l\'authentification',
-                missingUrl: 'Erreur : URL d\'activation WiFi manquante'
+                missingUrl: 'Erreur : URL d\'activation WiFi manquante',
+                termsText: 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#termsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#privacyModal">Politique de confidentialité</a>'
             }
         };
 
@@ -517,9 +519,10 @@
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
-                const showTerms = design.show_terms || settings.terms_enabled;
+                const showTerms = design.show_terms === true || settings.terms_enabled === true;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                    const lang = getLanguage();
+                    $('#terms-text').html(translations[lang].termsText);
                 }
                 
                 // Set custom terms and privacy content if available

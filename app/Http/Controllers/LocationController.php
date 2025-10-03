@@ -882,6 +882,22 @@ class LocationController extends Controller
                         $locationSettings->wifi_security_type = $settings['encryption_type'];
                     }
                     
+                    // Handle wifi_visible
+                    if (isset($settings['wifi_visible'])) {
+                        // Convert both values to boolean for proper comparison
+                        $newValue = (bool)$settings['wifi_visible'];
+                        $oldValue = (bool)$locationSettings->wifi_visible;
+                        
+                        if ($newValue !== $oldValue) {
+                            $increment_version = 1;
+                            Log::info('Wifi visible updated');
+                            Log::info('New value: ' . ($newValue ? 1 : 0));
+                            Log::info('Old value: ' . ($oldValue ? 1 : 0));
+                        }
+                        $locationSettings->wifi_visible = $newValue;
+                        Log::info('Wifi visible updated to: ' . ($newValue ? 1 : 0));
+                    }
+                    
                     // Access control for secured WiFi
                     if (isset($settings['access_control_enabled'])) {
                         if ($settings['access_control_enabled'] !== $locationSettings->web_filter_enabled) {
@@ -1198,6 +1214,22 @@ class LocationController extends Controller
                             Log::info('Password network VLAN updated');
                         }
                         $locationSettings->password_wifi_vlan = $settings['password_wifi_vlan'];
+                    }
+
+                    // handke password_wifi_visible 
+                    if (isset($settings['password_wifi_visible'])) {
+                        // Convert both values to boolean for proper comparison
+                        $newValue = (bool)$settings['password_wifi_visible'];
+                        $oldValue = (bool)$locationSettings->wifi_visible;
+                        
+                        if ($newValue !== $oldValue) {
+                            $increment_version = 1;
+                            Log::info('Wifi visible updated');
+                            Log::info('New value: ' . ($newValue ? 1 : 0));
+                            Log::info('Old value: ' . ($oldValue ? 1 : 0));
+                        }
+                        $locationSettings->wifi_visible = $newValue;
+                        Log::info('Wifi visible updated to: ' . ($newValue ? 1 : 0));
                     }
 
                     Log::info('Updating password network settings for location: ' . $location->id);

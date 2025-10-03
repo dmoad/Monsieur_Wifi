@@ -434,7 +434,7 @@
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
-                const showTerms = design.show_terms || settings.terms_enabled;
+                const showTerms = design.show_terms === true || settings.terms_enabled === true;
                 if (showTerms) {
                     $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
                 }

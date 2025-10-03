@@ -317,14 +317,16 @@
                 errorMessage: 'We couldn\'t connect you to the WiFi network. This might be due to authentication issues or network problems.',
                 noErrorDetails: 'No specific error details available.',
                 tryAgain: 'Try Again',
-                footer: 'Powered by Mr WiFi'
+                footer: 'Powered by Monsieur WiFi',
+                termsText: 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>'
             },
             fr: {
-                errorTitle: 'Connexion échouée',
+                errorTitle: 'Échec de la connexion',
                 errorMessage: 'Nous n\'avons pas pu vous connecter au réseau WiFi. Cela peut être dû à des problèmes d\'authentification ou de réseau.',
                 noErrorDetails: 'Aucun détail d\'erreur spécifique disponible.',
                 tryAgain: 'Réessayer',
-                footer: 'Propulsé par Mr WiFi'
+                footer: 'Propulsé par Monsieur WiFi',
+                termsText: 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#termsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#privacyModal">Politique de confidentialité</a>'
             }
         };
 
@@ -449,9 +451,10 @@
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
-                const showTerms = design.show_terms || settings.terms_enabled;
+                const showTerms = design.show_terms === true || settings.terms_enabled === true;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                    const lang = getLanguage();
+                    $('#terms-text').html(translations[lang].termsText);
                 }
                 
                 // Set custom terms and privacy content if available

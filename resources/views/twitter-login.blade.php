@@ -307,7 +307,8 @@
                 footer: 'Powered by Monsieur WiFi',
                 connecting: 'Connecting...',
                 missingParams: 'Missing required parameters (location ID or MAC address)',
-                errorMissing: 'Required information is missing. Please check your connection or contact support.'
+                errorMissing: 'Required information is missing. Please check your connection or contact support.',
+                termsText: 'By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>'
             },
             fr: {
                 welcomeText: 'Connectez-vous à notre réseau WiFi en utilisant votre compte Twitter/X.',
@@ -315,7 +316,8 @@
                 footer: 'Propulsé par Monsieur WiFi',
                 connecting: 'Connexion...',
                 missingParams: 'Paramètres requis manquants (ID de localisation ou adresse MAC)',
-                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.'
+                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.',
+                termsText: 'En vous connectant, vous acceptez nos <a href="#">Conditions de service</a> et notre <a href="#">Politique de confidentialité</a>'
             }
         };
 
@@ -540,9 +542,10 @@
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
-                const showTerms = design.show_terms || settings.terms_enabled;
+                const showTerms = design.show_terms === true || settings.terms_enabled === true;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>');
+                    const lang = getLanguage();
+                    $('#terms-text').html(translations[lang].termsText);
                 }
             }
             

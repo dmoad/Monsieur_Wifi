@@ -3788,13 +3788,13 @@
                                             <div class="card-body">
                                                 <!-- Basic Settings Section -->
                                                 <div class="row">
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="wifi-ssid">Nom du réseau (SSID)</label>
                                                             <input type="text" class="form-control" id="password-wifi-ssid" placeholder="WiFi domicile">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="password-wifi-password">Mot de passe WiFi</label>
                                                             <div class="input-group">
@@ -3804,6 +3804,17 @@
                                                                         <i data-feather="eye"></i>
                                                                     </button>
                                                                 </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label for="password-wifi-visible">WiFi visible</label>
+                                                            <div class="input-group">
+                                                                <select class="form-control" id="password-wifi-visible">
+                                                                    <option value="1">Visible</option>
+                                                                    <option value="0">Caché</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -8414,6 +8425,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (settings.password_wifi_password || settings.wifi_password) {
                     $('#password-wifi-password').val(settings.password_wifi_password || settings.wifi_password);
+                }
+                if (settings.wifi_visible) {
+                    console.log('WiFi visible du mot de passe:', settings.wifi_visible);
+                    if (settings.wifi_visible) {
+                        $('#password-wifi-visible').val(1);
+                    } 
+                }else{
+                    console.log('WiFi visible du mot de passe:', settings.wifi_visible);
+                    $('#password-wifi-visible').val(0);
                 }
                 if (settings.password_wifi_security || settings.wifi_security_type) {
                     const security = settings.password_wifi_security || settings.wifi_security_type;

@@ -314,7 +314,8 @@
                 incorrectPassword: 'Incorrect Password',
                 verificationFailed: 'Verification Failed',
                 enterPassword: 'Please enter the network password',
-                errorMissing: 'Required information is missing. Please check your connection or contact support.'
+                errorMissing: 'Required information is missing. Please check your connection or contact support.',
+                termsText: 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>'
             },
             fr: {
                 welcomeText: 'Veuillez entrer le mot de passe pour vous connecter à notre réseau WiFi.',
@@ -328,7 +329,8 @@
                 incorrectPassword: 'Mot de passe incorrect',
                 verificationFailed: 'Échec de la vérification',
                 enterPassword: 'Veuillez entrer le mot de passe du réseau',
-                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.'
+                errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.',
+                termsText: 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#termsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#privacyModal">Politique de confidentialité</a>'
             }
         };
 
@@ -605,9 +607,10 @@
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
-                const showTerms = design.show_terms || settings.terms_enabled;
+                const showTerms = design.show_terms === true || settings.terms_enabled === true;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                    const lang = getLanguage();
+                    $('#terms-text').html(translations[lang].termsText);
                 }
                 
                 // Set custom terms and privacy content if available
