@@ -2948,7 +2948,7 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-address">Adresse</label>
-                                                            <input type="text" class="form-control" id="location-address" placeholder="Street address">
+                                                            <input type="text" class="form-control" id="location-address" placeholder="Adresse de rue">
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-city">Ville</label>
@@ -2962,7 +2962,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="location-postal-code">Code postal</label>
-                                                            <input type="text" class="form-control" id="location-postal-code" placeholder="Postal code">
+                                                            <input type="text" class="form-control" id="location-postal-code" placeholder="Code postal">
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-country">Pays</label>
@@ -2975,11 +2975,11 @@
                                                                 <option value="820AX">820AX</option>
                                                                 <option value="835AX">835AX</option>
                                                             </select>
-                                                            <small id="router-model-help" class="form-text text-muted">Choose the router model installed at this location.</small>
+                                                            <small id="router-model-help" class="form-text text-muted">Choisissez le modèle de routeur installé à cet emplacement.</small>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-manager">Nom du gestionnaire</label>
-                                                            <input type="text" class="form-control" id="location-manager" placeholder="Manager name">
+                                                            <input type="text" class="form-control" id="location-manager" placeholder="Nom du gestionnaire">
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="location-contact-email">Email de contact</label>
@@ -3003,12 +3003,12 @@
                                                             </select>
                                                         </div>
                                                         <div class="form-group" id="location-owner-group" data-admin-only="true">
-                                                            <label for="location-owner">Location Owner</label>
+                                                            <label for="location-owner">Propriétaire de l'emplacement</label>
                                                             <select class="form-control" id="location-owner">
-                                                                <option value="">Select Owner</option>
+                                                                <option value="">Sélectionner le propriétaire</option>
                                                                 <!-- Options will be populated via JavaScript -->
                                                             </select>
-                                                            <small class="form-text text-muted">Only administrators can assign location owners</small>
+                                                            <small class="form-text text-muted">Seuls les administrateurs peuvent assigner les propriétaires d'emplacements</small>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
@@ -3336,14 +3336,14 @@
                                                 </div>
                                                 
                                                 <button class="btn btn-success btn-block btn-sm" id="save-channels-btn" disabled>
-                                                    <i data-feather="check" class="mr-1"></i>Apply Optimal
+                                                    <i data-feather="check" class="mr-1"></i>Appliquer les valeurs optimales
                                                 </button>
                                             </div>
                                         </div>
                                         
                                         <div class="text-center mt-3">
                                             <button class="btn custom-btn" id="save-radio-settings">
-                                                <i data-feather="save" class="mr-2"></i>Save All Radio Settings
+                                                <i data-feather="save" class="mr-2"></i>Enregistrer tous les paramètres radio
                                             </button>
                                         </div>
                                     </div>
@@ -3353,20 +3353,20 @@
                                         <div class="section-header d-flex justify-content-between align-items-center">
                                             <h5 class="section-title">Filtrage de contenu web</h5>
                                             <button class="btn custom-btn" id="save-web-filter-settings">
-                                                <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
+                                                <i data-feather="save" class="mr-2"></i>Enregistrer les paramètres de filtrage web
                                             </button>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <label class="mb-0">Enable Content Filtering</label>
+                                                        <label class="mb-0">Activer le filtrage de contenu</label>
                                                         <div class="custom-control custom-switch custom-control-primary">
                                                             <input type="checkbox" class="custom-control-input" id="global-web-filter">
                                                             <label class="custom-control-label" for="global-web-filter"></label>
                                                         </div>
                                                     </div>
-                                                    <small class="text-muted">Apply content filtering to all WiFi networks.</small>
+                                                    <small class="text-muted">Appliquer le filtrage de contenu à tous les réseaux WiFi.</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -3375,7 +3375,7 @@
                                                     <select class="select2 form-control" id="global-filter-categories" multiple="multiple">
                                                         <!-- Categories will be loaded dynamically from API -->
                                                     </select>
-                                                    <small class="text-muted">Select content categories to block across all networks.</small>
+                                                    <small class="text-muted">Sélectionnez les catégories de contenu à bloquer sur tous les réseaux.</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -3388,7 +3388,7 @@
                                                 <div class="card-header d-flex justify-content-between align-items-center">
                                                     <h4 class="card-title mb-0">Captive Portal WiFi</h4>
                                                     <button class="btn custom-btn save-captive-portal" id="save-captive-portal-1">
-                                                        <i data-feather="save" class="mr-1"></i> Save Settings
+                                                        <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                                                     </button>
 
                                                     <!-- <button class="btn custom-btn" id="save-web-filter-settings">
@@ -3409,7 +3409,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="portal-visibility">Network Visibility</label>
+                                                                <label for="portal-visibility">Visibilité du réseau</label>
                                                                 <select class="form-control" id="captive-portal-visible">
                                                                     <option value="1" selected>Visible (Diffuser SSID)</option>
                                                                     <option value="0">Caché (Ne pas diffuser SSID)</option>
@@ -3548,7 +3548,7 @@
 
                                                     <!-- Social Login Options -->
                                                     <div id="social-auth-options" class="auth-options-section" style="display: none;">
-                                                        <label>Enable Social Login Options</label>
+                                                        <label>Activer les options de connexion sociale</label>
                                                         <div class="d-flex flex-wrap">
                                                             <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
                                                                 <input type="checkbox" class="custom-control-input" id="social-facebook" checked>
@@ -3781,7 +3781,7 @@
                                         <div class="card-header d-flex justify-content-between align-items-center">
                                             <h4 class="card-title mb-0">Password WiFi</h4>
                                             <button class="btn custom-btn save-password-network" id="save-secured-wifi">
-                                                <i data-feather="save" class="mr-1"></i> Save Settings
+                                                <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                                             </button>
                                             </div>
                                         
@@ -3809,7 +3809,7 @@
                                                     </div>
                                                     <div class="col-md-2">
                                                         <div class="form-group">
-                                                            <label for="password-wifi-visible">WiFi visible</label>
+                                                            <label for="password-wifi-visible">Visibilité WiFi</label>
                                                             <div class="input-group">
                                                                 <select class="form-control" id="password-wifi-visible">
                                                                     <option value="1">Visible</option>
@@ -4255,7 +4255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn custom-btn">Save Changes</button>
+                    <button type="button" class="btn custom-btn">Enregistrer les modifications</button>
                     </div>
                 </div>
             </div>
@@ -4266,7 +4266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="captive-network-modal-title">Edit Captive Portal Network Settings</h5>
+                    <h5 class="modal-title" id="captive-network-modal-title">Modifier les paramètres du réseau du portail captif</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -4275,28 +4275,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="alert alert-info mb-2">
                         <div class="alert-body">
                             <i data-feather="info" class="mr-50"></i>
-                            <span>Captive Portal requires Static IP configuration.</span>
+                            <span>Le portail captif nécessite une configuration IP statique.</span>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label>IP Address</label>
+                        <label>Adresse IP</label>
                         <input type="text" class="form-control" placeholder="192.168.10.1" id="captive-portal-ip-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Netmask</label>
+                        <label>Masque de sous-réseau</label>
                         <input type="text" class="form-control" placeholder="255.255.255.0" id="captive-portal-netmask-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Gateway</label>
+                        <label>Passerelle</label>
                         <input type="text" class="form-control" placeholder="192.168.10.1" id="captive-portal-gateway-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Primary DNS</label>
+                        <label>DNS primaire</label>
                         <input type="text" class="form-control" placeholder="8.8.8.8" id="captive-portal-dns1-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Secondary DNS</label>
+                        <label>DNS secondaire</label>
                         <input type="text" class="form-control" placeholder="1.1.1.1" id="captive-portal-dns2-modal" value="">
                     </div>
                     
@@ -4318,7 +4318,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn custom-btn save-captive-portal">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-captive-portal">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -4329,41 +4329,41 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="password-network-modal-title">Edit Password WiFi Network</h5>
+                    <h5 class="modal-title" id="password-network-modal-title">Modifier le réseau WiFi sécurisé</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>IP Assignment</label>
+                        <label>Attribution IP</label>
                         <select class="form-control" id="password-ip-assignment">
-                            <option value="STATIC" selected>Static IP</option>
-                            <option value="DHCP">DHCP Client</option>
+                            <option value="STATIC" selected>IP statique</option>
+                            <option value="DHCP">Client DHCP</option>
                         </select>
-                        <small class="text-muted">When using DHCP Client, DHCP Server will be automatically disabled.</small>
+                        <small class="text-muted">Lors de l'utilisation du client DHCP, le serveur DHCP sera automatiquement désactivé.</small>
                     </div>
                     
                     <div id="password-static-fields" class="hidden">
                         <div class="form-group">
-                            <label>IP Address</label>
+                            <label>Adresse IP</label>
                             <input type="text" class="form-control" placeholder="192.168.1.1" id="password-ip" value="">
                         </div>
                         <div class="form-group">
-                            <label>Netmask</label>
+                            <label>Masque de sous-réseau</label>
                             <input type="text" class="form-control" placeholder="255.255.255.0" id="password-netmask" value="">
                         </div>
                         <div class="form-group">
-                            <label>Gateway</label>
+                            <label>Passerelle</label>
                             <input type="text" class="form-control" placeholder="192.168.1.1" id="password-gateway" value="" readonly>
-                            <small class="text-muted">Gateway is automatically set to the same as IP address.</small>
+                            <small class="text-muted">La passerelle est automatiquement définie comme l'adresse IP.</small>
                         </div>
                         <div class="form-group">
-                            <label>Primary DNS</label>
+                            <label>DNS primaire</label>
                             <input type="text" class="form-control" placeholder="8.8.8.8" id="password-primary-dns" value="">
                         </div>
                         <div class="form-group">
-                            <label>Secondary DNS</label>
+                            <label>DNS secondaire</label>
                             <input type="text" class="form-control" placeholder="1.1.1.1" id="password-secondary-dns" value="">
                         </div>
                         
@@ -4380,28 +4380,28 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <option value="tagged">Tagged</option>
                                 <option value="untagged">Untagged</option>
                             </select>
-                            <small class="text-muted">Configure VLAN tagging mode for password WiFi network. Enable VLAN support in Router Settings to use this feature.</small>
+                            <small class="text-muted">Configurez le mode de marquage VLAN pour le réseau WiFi sécurisé. Activez le support VLAN dans les Paramètres du routeur pour utiliser cette fonctionnalité.</small>
                         </div>
 
                         <div class="form-group mt-3 pt-2 border-top">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="password-dhcp-server-toggle" checked>
-                                <label class="custom-control-label" for="password-dhcp-server-toggle">Enable DHCP Server</label>
+                                <label class="custom-control-label" for="password-dhcp-server-toggle">Activer le serveur DHCP</label>
                             </div>
-                            <small class="text-muted">Provides automatic IP addressing for connected clients.</small>
+                            <small class="text-muted">Fournit l'adressage IP automatique pour les clients connectés.</small>
                         </div>
                         
                         <div id="password-dhcp-server-fields" class="hidden">
                             <div class="form-group">
-                                <label>DHCP Range Start</label>
+                                <label>Début de plage DHCP</label>
                                 <input type="text" class="form-control" placeholder="192.168.1.100" id="password-dhcp-start" value="192.168.1.100">
                             </div>
                             <div class="form-group">
-                                <label>DHCP Range End</label>
+                                <label>Fin de plage DHCP</label>
                                 <input type="text" class="form-control" placeholder="192.168.1.200" id="password-dhcp-end" value="192.168.1.200">
                             </div>
                             <div class="form-group">
-                                <label>Lease Time (hours)</label>
+                                <label>Durée de bail (heures)</label>
                                 <input type="number" class="form-control" placeholder="24" id="password-lease-time" value="24">
                             </div>
                         </div>
@@ -4409,7 +4409,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn custom-btn save-password-network">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-password-network">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -4420,62 +4420,62 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wan-settings-modal-title">Edit WAN Interface Settings</h5>
+                    <h5 class="modal-title" id="wan-settings-modal-title">Modifier les paramètres de l'interface WAN</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Connection Type</label>
+                        <label>Type de connexion</label>
                         <select class="form-control" id="wan-connection-type">
                             <option value="DHCP">DHCP</option>
-                            <option value="STATIC">Static IP</option>
+                            <option value="STATIC">IP statique</option>
                             <option value="PPPOE">PPPoE</option>
                         </select>
                     </div>
                     
                     <div id="wan-static-fields" class="hidden">
                         <div class="form-group">
-                            <label>IP Address</label>
+                            <label>Adresse IP</label>
                             <input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10" value="203.0.113.10">
                         </div>
                         <div class="form-group">
-                            <label>Netmask</label>
+                            <label>Masque de sous-réseau</label>
                             <input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0" value="255.255.255.0">
                         </div>
                         <div class="form-group">
-                            <label>Gateway</label>
+                            <label>Passerelle</label>
                             <input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1" value="203.0.113.1">
                         </div>
                         <div class="form-group">
-                            <label>Primary DNS</label>
+                            <label>DNS primaire</label>
                             <input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8" value="8.8.8.8">
                         </div>
                         <div class="form-group">
-                            <label>Secondary DNS</label>
+                            <label>DNS secondaire</label>
                             <input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1" value="1.1.1.1">
                         </div>
                     </div>
                     
                     <div id="wan-pppoe-fields" style="display: none;">
                         <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" class="form-control" id="wan-pppoe-username" placeholder="Username">
+                            <label>Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="wan-pppoe-username" placeholder="Nom d'utilisateur">
                         </div>
                         <div class="form-group">
-                            <label>Password</label>
+                            <label>Mot de passe</label>
                             <input type="password" class="form-control" id="wan-pppoe-password" placeholder="Mot de passe">
                         </div>
                         <div class="form-group">
-                            <label>Service Name (Optional)</label>
-                            <input type="text" class="form-control" id="wan-pppoe-service-name" placeholder="Service Name">
+                            <label>Nom du service (Optionnel)</label>
+                            <input type="text" class="form-control" id="wan-pppoe-service-name" placeholder="Nom du service">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn custom-btn save-wan-settings">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-wan-settings">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -4486,46 +4486,46 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="lan-settings-modal-title">Edit LAN Settings</h5>
+                    <h5 class="modal-title" id="lan-settings-modal-title">Modifier les paramètres LAN</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>IP Address</label>
+                        <label>Adresse IP</label>
                         <input type="text" class="form-control" placeholder="192.168.1.1" value="192.168.1.1">
                     </div>
                     <div class="form-group">
-                        <label>Netmask</label>
+                        <label>Masque de sous-réseau</label>
                         <input type="text" class="form-control" placeholder="255.255.255.0" value="255.255.255.0">
                     </div>
                     
                     <div class="form-group">
                         <div class="custom-control custom-switch mb-1">
                             <input type="checkbox" class="custom-control-input" id="dhcp-server-toggle" checked>
-                            <label class="custom-control-label" for="dhcp-server-toggle">Enable DHCP Server</label>
+                            <label class="custom-control-label" for="dhcp-server-toggle">Activer le serveur DHCP</label>
                         </div>
                     </div>
                     
                     <div id="dhcp-server-fields">
                         <div class="form-group">
-                            <label>DHCP Start Address</label>
+                            <label>Adresse de début DHCP</label>
                             <input type="text" class="form-control" placeholder="192.168.1.100" value="192.168.1.100">
                         </div>
                         <div class="form-group">
-                            <label>DHCP End Address</label>
+                            <label>Adresse de fin DHCP</label>
                             <input type="text" class="form-control" placeholder="192.168.1.200" value="192.168.1.200">
                         </div>
                         <div class="form-group">
-                            <label>Lease Time (hours)</label>
+                            <label>Durée de bail (heures)</label>
                             <input type="number" class="form-control" placeholder="24" value="24">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn custom-btn save-lan-settings">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-lan-settings">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -4853,7 +4853,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
     <!-- END: Page JS-->
     <script src="/assets/js/config.js?v=1"></script>
-    <script src="/assets/js/location-details.js?v=1"></script>
+    <script src="/assets/js/location-details-fr.js?v=1"></script>
     <script>
         // ==============================================
         // FORM VALIDATION UTILITIES
@@ -9472,9 +9472,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (scanData.completed_at) {
                         const scanDate = new Date(scanData.completed_at);
                         const timeAgo = getTimeAgo(scanDate);
-                        $('#last-scan-timestamp').text(`Last scan: ${timeAgo}`);
+                        $('#last-scan-timestamp').text(`Dernier scan: ${timeAgo}`);
                     } else {
-                        $('#last-scan-timestamp').text('Scan completed recently');
+                        $('#last-scan-timestamp').text('Scan terminé récemment');
                     }
                     
                     // Update status alert
@@ -9499,7 +9499,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Scan failed
                     $('#last-optimal-2g').text('--');
                     $('#last-optimal-5g').text('--');
-                    $('#last-scan-timestamp').text('Last scan failed');
+                    $('#last-scan-timestamp').text('Échec du dernier scan');
                     $('#scan-status-alert').removeClass('alert-info alert-success').addClass('alert-warning');
                     $('#scan-status-text').html('<i data-feather="alert-triangle" class="mr-2"></i>Le scan précédent a échoué. Essayez de scanner à nouveau.');
                     $('#save-channels-btn').prop('disabled', true);
@@ -9508,9 +9508,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // No scan data available
                     $('#last-optimal-2g').text('--');
                     $('#last-optimal-5g').text('--');
-                    $('#last-scan-timestamp').text('No scan performed yet');
+                    $('#last-scan-timestamp').text('Aucun scan effectué pour le moment');
                     $('#scan-status-alert').removeClass('alert-success alert-warning').addClass('alert-info');
-                    $('#scan-status-text').html('<i data-feather="info" class="mr-2"></i>Click Scan to analyze optimal channels.');
+                    $('#scan-status-text').html('<i data-feather="info" class="mr-2"></i>Cliquez sur Scanner pour analyser les canaux optimaux.');
                     $('#save-channels-btn').prop('disabled', true);
                 }
                 

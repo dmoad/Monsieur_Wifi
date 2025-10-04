@@ -650,8 +650,8 @@
             $('#login-password').attr('placeholder', t.passwordPlaceholder);
             $('.custom-control-label[for="remember-me"]').text(t.rememberMe);
             $('#login-text').text(t.signIn);
-            $('a[href="forgot-password.html"] span').first().text(t.forgotPassword);
-            $('a[href="forgot-password.html"] span').last().text(t.resetPassword);
+            $('p.text-center.mt-2 > span').first().text(t.forgotPassword);
+            $('a[href="forgot-password.html"] span').text(t.resetPassword);
             
             // Update language dropdown button
             $('#current-lang').text(t.langCode);
