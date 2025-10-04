@@ -587,7 +587,15 @@
                     paginate: {
                         previous: '&nbsp;',
                         next: '&nbsp;'
-                    }
+                    },
+                    info: "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                    infoEmpty: "Affichage de 0 à 0 sur 0 entrées",
+                    infoFiltered: "(filtré à partir de _MAX_ entrées totales)",
+                    lengthMenu: "Afficher _MENU_ entrées",
+                    search: "Rechercher:",
+                    zeroRecords: "Aucun enregistrement correspondant trouvé",
+                    emptyTable: "Aucune donnée disponible dans le tableau",
+                    loadingRecords: "Chargement..."
                 },
                 drawCallback: function(settings) {
                     // Re-initialize feather icons after each draw/pagination
@@ -596,8 +604,7 @@
                             width: 14,
                             height: 14
                         });
-                    }
-                    
+                    }   
                     // Re-initialize any dropdowns or tooltips if needed
                     $('[data-toggle="dropdown"]').dropdown();
                 }
@@ -636,7 +643,7 @@
             // Custom file input label
             $('.custom-file-input').on('change', function() {
                 let fileName = $(this).val().split('\\').pop();
-                $(this).next('.custom-file-label').html(fileName || 'Choose file');
+                $(this).next('.custom-file-label').html(fileName || 'Choisir un fichier');
             });
 
             // Load firmware data
@@ -654,14 +661,14 @@
             // Initialize Select2 for all dropdowns
             $('#status, #edit-status').select2({
                 minimumResultsForSearch: Infinity,
-                placeholder: 'Select status',
+                placeholder: 'Sélectionner le statut',
                 allowClear: false,
                 width: '100%'
             });
             
             $('#model, #edit-model').select2({
                 minimumResultsForSearch: Infinity,
-                placeholder: 'Select device model',
+                placeholder: 'Sélectionner le modèle d\'appareil',
                 allowClear: false,
                 width: '100%'
             });

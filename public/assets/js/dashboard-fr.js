@@ -464,7 +464,7 @@ function renderLocationCards() {
                                 <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
                                 <small>Routeur ${statusText}</small>
                             </div>
-                            <a href="/location-details-v2/${location.id}" class="btn btn-sm btn-primary">Voir les détails</a>
+                            <a href="/fr/locations/${location.id}" class="btn btn-sm btn-primary">Voir les détails</a>
                         </div>
                     </div>
                 </div>

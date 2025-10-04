@@ -723,7 +723,7 @@
     <script src="/assets/js/config.js?v=1?v=2"></script>
     
     <!-- Include dashboard.js for dynamic data loading -->
-    <script src="/assets/js/dashboard.js?v=10"></script>
+    <script src="/assets/js/dashboard.js?v=11"></script>
 
     <script>
         $(window).on('load', function() {

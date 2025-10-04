@@ -610,7 +610,15 @@
                         paginate: {
                             previous: '&nbsp;',
                             next: '&nbsp;'
-                        }
+                        },
+                        info: "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                        infoEmpty: "Affichage de 0 à 0 sur 0 entrées",
+                        infoFiltered: "(filtré à partir de _MAX_ entrées totales)",
+                        lengthMenu: "Afficher _MENU_ entrées",
+                        search: "Rechercher:",
+                        zeroRecords: "Aucun enregistrement correspondant trouvé",
+                        emptyTable: "Aucune donnée disponible dans le tableau",
+                        loadingRecords: "Chargement..."
                     }
                 });
             }
