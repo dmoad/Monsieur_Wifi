@@ -2673,11 +2673,11 @@
                             </div>
                             <div class="col-6">
                                 <div class="interface-detail">
-                                    <span class="interface-label">Daily Usage</span>
+                                    <span class="interface-label">Utilisation quotidienne</span>
                                     <span class="interface-value daily_usage"></span>
                                 </div>
                                 <div class="interface-detail">
-                                    <span class="interface-label">Uptime</span>
+                                    <span class="interface-label">Temps de disponibilité</span>
                                     <span class="interface-value uptime"></span>
                                 </div>
                                 <!-- <div class="interface-detail">
@@ -2917,12 +2917,12 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="captive-portal-tab" data-toggle="tab" href="#captive-portal" aria-controls="captive-portal" role="tab" aria-selected="false">
-                                        <i data-feather="layout" class="mr-50"></i>Captive Portal WiFi
+                                        <i data-feather="layout" class="mr-50"></i>Réseau WiFi du portail captif
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="secured-wifi-tab" data-toggle="tab" href="#secured-wifi" aria-controls="secured-wifi" role="tab" aria-selected="false">
-                                        <i data-feather="lock" class="mr-50"></i>Password WiFi
+                                        <i data-feather="lock" class="mr-50"></i>Réseau WiFi sécurisé
                                     </a>
                                 </li>
 
@@ -3063,19 +3063,19 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Subnet Mask</span>
+                                                            <span class="interface-label">Masque de sous-réseau</span>
                                                             <span class="interface-value" id="wan-subnet-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Gateway</span>
+                                                            <span class="interface-label">Passerelle</span>
                                                             <span class="interface-value" id="wan-gateway-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Primary DNS</span>
+                                                            <span class="interface-label">DNS primaire</span>
                                                             <span class="interface-value" id="wan-dns1-display">-</span>
                                                         </div>
                                                     </div>
@@ -3085,7 +3085,7 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Username</span>
+                                                            <span class="interface-label">Nom d'utilisateur</span>
                                                             <span class="interface-value" id="wan-pppoe-username">-</span>
                                                         </div>
                                                     </div>
@@ -3122,7 +3122,7 @@
                                             <div class="col-md-6">
                                                 <div class="card">
                                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h6 class="mb-0">Captive Portal Network</h6>
+                                                        <h6 class="mb-0">Réseau du portail captif</h6>
                                                         <button class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#captive-portal-modal">
                                                             <i data-feather="edit" class="mr-1"></i>Modifier
                                                         </button>
@@ -3133,11 +3133,11 @@
                                                             <span class="interface-value" id="captive-ip-display">-</span>
                                                         </div>
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Subnet Mask</span>
+                                                            <span class="interface-label">Masque de sous-réseau</span>
                                                             <span class="interface-value" id="captive-netmask-display">-</span>
                                                         </div>
                                                         <!-- <div class="interface-detail">
-                                                            <span class="interface-label">Gateway</span>
+                                                            <span class="interface-label">Passerelle</span>
                                                             <span class="interface-value" id="captive-gateway-display">-</span>
                                                         </div> -->
                                                     </div>
@@ -3147,7 +3147,7 @@
                                             <div class="col-md-6">
                                                 <div class="card">
                                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h6 class="mb-0">Password WiFi Network</h6>
+                                                        <h6 class="mb-0">Réseau WiFi sécurisé</h6>
                                                         <button class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#password-network-modal">
                                                             <i data-feather="edit" class="mr-1"></i>Modifier
                                                         </button>
@@ -3155,7 +3155,7 @@
                                                     <div class="card-body">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Type de connexion</span>
-                                                            <span class="interface-value" id="password-wifi-ip-type-display">Static IP</span>
+                                                            <span class="interface-value" id="password-wifi-ip-type-display">IP statique</span>
                                                         </div>
                                                         <div class="hidden password-ip-assignment-display_div">
                                                             <div class="interface-detail">
@@ -3163,15 +3163,15 @@
                                                                 <span class="interface-value" id="password-ip-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
-                                                                <span class="interface-label">Subnet Mask</span>
+                                                                <span class="interface-label">Masque de sous-réseau</span>
                                                                 <span class="interface-value" id="password-netmask-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
-                                                                <span class="interface-label">Gateway</span>
+                                                                <span class="interface-label">Passerelle</span>
                                                                 <span class="interface-value" id="password-gateway-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
-                                                                <span class="interface-label">DHCP Server</span>
+                                                                <span class="interface-label">Serveur DHCP</span>
                                                                 <span class="interface-value" id="password-dhcp-status-display">-</span>
                                                             </div>
                                                         </div>
@@ -3184,7 +3184,7 @@
                                     <!-- Configuration radio WiFi et canal -->
                                     <div class="content-section">
                                         <div class="section-header">
-                                            <h5 class="section-title">Configuration radio WiFi et canal</h5>
+                                            <h5 class="section-title">Configuration radio WiFi et canal (2.4 GHz et 5 GHz)</h5>
                                         </div>
                                         <div class="row">
                                             <!-- Paramètres radio et puissance -->
@@ -3307,7 +3307,7 @@
                                             <!-- Canal Optimization -->
                                             <div class="col-md-4">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <label class="mb-0">Canal Optimization</label>
+                                                    <label class="mb-0">Optimisation des canaux</label>
                                                     <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn">
                                                         <i data-feather="wifi" class="mr-1"></i>Scanner
                                                     </button>
@@ -3386,13 +3386,13 @@
                                     <div class="tab-pane fade" id="captive-portal" role="tabpanel" aria-labelledby="captive-portal-tab">
                                             <div class="card">
                                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                                    <h4 class="card-title mb-0">Captive Portal WiFi</h4>
+                                                    <h4 class="card-title mb-0">Réseau WiFi du portail captif</h4>
                                                     <button class="btn custom-btn save-captive-portal" id="save-captive-portal-1">
                                                         <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                                                     </button>
 
                                                     <!-- <button class="btn custom-btn" id="save-web-filter-settings">
-                                                        <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
+                                                        <i data-feather="save" class="mr-2"></i>Enregistrer les paramètres de filtrage web
                                                     </button> -->
                                                 </div>
 
@@ -3427,15 +3427,15 @@
                                                                 <label for="captive-auth-method">Méthode d'authentification</label>
                                                                 <select class="form-control" id="captive-auth-method">
                                                                     <option value="click-through" selected>Clic simple (Aucune authentification)</option>
-                                                                    <option value="password">Password-based</option>
-                                                                    <option value="sms">SMS Verification</option>
+                                                                    <option value="password">Authentification par mot de passe</option>
+                                                                    <option value="sms">Vérification par SMS</option>
                                                                     <option value="email">Vérification par email</option>
-                                                                    <option value="social">Social Media Login</option>
+                                                                    <option value="social">Connexion via les réseaux sociaux</option>
                                                                 </select>
                                                             </div>
 
                                                             <div class="form-group hidden" id="password-auth-options">
-                                                                <label for="captive_portal_password">Password</label>
+                                                                <label for="captive_portal_password">Mot de passe</label>
                                                                 <div class="input-group">
                                                                     <input type="password" class="form-control form-control-sm" id="captive_portal_password" value="">
                                                                     <div class="input-group-append">
@@ -3447,7 +3447,7 @@
                                                             </div>
 
                                                             <div class="form-group hidden" id="social-auth-options">
-                                                                <label for="captive-social-auth-method">Social Media Logins</label>
+                                                                <label for="captive-social-auth-method">Connexion via les réseaux sociaux</label>
                                                                 <select class="form-control" id="captive-social-auth-method">
                                                                     <option value="facebook">Facebook</option>
                                                                     <option value="google">Google</option>
@@ -3457,270 +3457,236 @@
                                                             <!-- Session Settings -->
                                                             <div class="row">
                                                                 <div class="col-6">
-                                                                <div class="form-group">
-                                                                        <label for="captive-session-timeout">Session (mins)</label>
+                                                                    <div class="form-group">
+                                                                        <label for="captive-session-timeout">Session</label>
                                                                         <select class="form-control" id="captive-session-timeout">
-                                                                            <option value="60">1 Hr</option>
-                                                                            <option value="120">2 Hrs</option>
-                                                                            <option value="180">3 Hrs</option>
-                                                                            <option value="240">4 Hrs</option>
-                                                                            <option value="300">5 Hrs</option>
-                                                                            <option value="360">6 Hrs</option>
-                                                                            <option value="720">12 Hrs</option>
-                                                                            <option value="1440">1 Day</option>
-                                                                            <option value="2880">2 Days</option>
-                                                                            <option value="4320">3 Days</option>
-                                                                            <option value="5760">4 Days</option>
-                                                                            <option value="7200">5 Days</option>
-                                                                            <option value="8640">6 Days</option>
-                                                                            <option value="10080">1 Week</option>
-                                                                            <option value="11520">2 Weeks</option>
-                                                                            <option value="12960">3 Weeks</option>
-                                                                            <option value="14400">1 Month</option>
-                                                                            <option value="28800">2 Months</option>
-                                                                            <option value="43200">3 Months</option>
-                                                                            <option value="57600">4 Months</option>
-                                                                            <option value="72000">5 Months</option>
-                                                                            <option value="86400">6 Months</option>
-                                                                            <option value="100800">7 Months</option>
-                                                                            <option value="115200">8 Months</option>
-                                                                            <option value="129600">9 Months</option>
-                                                                            <option value="144000">10 Months</option>
-                                                                            <option value="158400">11 Months</option>
-                                                                            <option value="172800">1 Year</option>
-                                                                            <option value="345600">2 Years</option>
-                                                                            <option value="604800">3 Years</option>
-                                                                            <option value="1209600">4 Years</option>
+                                                                        <option value="60">1 Heure</option>
+                                                                        <option value="120">2 Heures</option>
+                                                                        <option value="180">3 Heures</option>
+                                                                        <option value="240">4 Heures</option>
+                                                                        <option value="300">5 Heures</option>
+                                                                        <option value="360">6 Heures</option>
+                                                                        <option value="720">12 Heures</option>
+                                                                        <option value="1440">1 Jour</option>
+                                                                        <option value="2880">2 Jours</option>
+                                                                        <option value="4320">3 Jours</option>
+                                                                        <option value="5760">4 Jours</option>
+                                                                        <option value="7200">5 Jours</option>
+                                                                        <option value="8640">6 Jours</option>
+                                                                        <option value="10080">1 Semaine</option>
+                                                                        <option value="20160">2 Semaines</option>
+                                                                        <option value="30240">3 Semaines</option>
+                                                                        <option value="40320">4 Semaines</option>
+                                                                        <option value="43200">1 Mois</option>
+                                                                        <option value="86400">2 Mois</option>
+                                                                        <option value="129600">3 Mois</option>
+                                                                        <option value="172800">4 Mois</option>
+                                                                        <option value="216000">5 Mois</option>
+                                                                        <option value="259200">6 Mois</option>
+                                                                        <option value="302400">7 Mois</option>
+                                                                        <option value="345600">8 Mois</option>
+                                                                        <option value="388800">9 Mois</option>
+                                                                        <option value="432000">10 Mois</option>
+                                                                        <option value="475200">11 Mois</option>
+                                                                        <option value="518400">1 An</option>
+                                                                        <option value="1036800">2 Ans</option>
+                                                                        <option value="1555200">3 Ans</option>
+                                                                        <option value="2073600">4 Ans</option>
                                                                         </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <div class="form-group">
-                                                                <label for="captive-idle-timeout">Idle (mins)</label>
-                                                                <select class="form-control" id="captive-idle-timeout">
-                                                                    <option value="15">15 Mins</option>
-                                                                    <option value="30">30 Mins</option>
-                                                                    <option value="45">45 Mins</option>
-                                                                    <option value="60">1 Hr</option>
-                                                                    <option value="120">2 Hrs</option>
-                                                                    <option value="180">3 Hrs</option>
-                                                                    <option value="240">4 Hrs</option>
-                                                                    <option value="360">6 Hrs</option>
-                                                                    <option value="720">12 Hrs</option>
-                                                                    <option value="1440">1 Day</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <div class="form-group">
-                                                                <label for="captive-portal-redirect">Custom Redirect URL (Optional)</label>
-                                                                <input type="url" class="form-control" id="captive-portal-redirect" placeholder="https://example.com/welcome">
-                                                                <small class="text-muted">Redirect users to this URL after successful authentication. Leave empty for default behavior.</small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <!-- Password Auth Options -->
-                                                    <div id="password-auth-options" class="auth-options-section" style="display: none;">
-                                                        <div class="form-group">
-                                                            <label for="portal-shared-password">Shared Password</label>
-                                                            <div class="input-group">
-                                                                <input type="password" id="portal-shared-password" class="form-control" placeholder="Entrez le mot de passe">
-                                                                <div class="input-group-append">
-                                                                    <button class="btn btn-outline-secondary" type="button" id="toggle-portal-password">
-                                                                        <i data-feather="eye"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- SMS/Email Auth Options -->
-                                            <div id="sms-auth-options" class="auth-options-section" style="display: none;">
-                                                <div class="alert alert-info mb-0 p-2">SMS verification will be used to authenticate guests.</div>
-                                            </div>
-
-                                            <div id="email-auth-options" class="auth-options-section" style="display: none;">
-                                                <div class="alert alert-info mb-0 p-2">Email verification will be used to authenticate guests.</div>
-                                            </div>
-
-                                                    <!-- Social Login Options -->
-                                                    <div id="social-auth-options" class="auth-options-section" style="display: none;">
-                                                        <label>Activer les options de connexion sociale</label>
-                                                        <div class="d-flex flex-wrap">
-                                                            <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
-                                                                <input type="checkbox" class="custom-control-input" id="social-facebook" checked>
-                                                                <label class="custom-control-label" for="social-facebook">Facebook</label>
-                                                            </div>
-                                                            <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
-                                                                <input type="checkbox" class="custom-control-input" id="social-google" checked>
-                                                                <label class="custom-control-label" for="social-google">Google</label>
-                                                            </div>
-                                                            <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
-                                                                <input type="checkbox" class="custom-control-input" id="social-twitter">
-                                                                <label class="custom-control-label" for="social-twitter">Twitter</label>
-                                                            </div>
-                                                            <div class="custom-control custom-switch custom-control-primary mb-1">
-                                                                <input type="checkbox" class="custom-control-input" id="social-apple">
-                                                                <label class="custom-control-label" for="social-apple">Apple</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Network Settings Section -->
-                                            <!-- <h5 class="border-bottom pb-1 mt-3">Network Settings</h5>
-                                                    <div class="row">
-                                                <div class="col-md-3">
-                                                            <div class="form-group">
-                                                        <label for="captive-ip-address">IP Address</label>
-                                                        <input type="text" class="form-control" id="captive-ip-address" placeholder="192.168.2.1">
-                                                </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                            <div class="form-group">
-                                                        <label for="captive-netmask">Netmask</label>
-                                                        <input type="text" class="form-control" id="captive-netmask" placeholder="255.255.255.0">
-                                            </div>
-                                                </div>
-                                                <div class="col-md-6 d-flex align-items-end mb-1">
-                                                    <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-network-modal">
-                                                        <i data-feather="edit" class="mr-1"></i> Paramètres réseau avancés
-                                                    </button>
-                                                </div>
-                                            </div> -->
-                                            <!-- Section bande passante -->
-                                            <h5 class="border-bottom pb-1 mt-3">Bande passante et portail</h5>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">Limites de bande passante</label>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-6">
-                                                                 <label for="captive-download-limit">Téléchargement (Mbps)</label>
-                                                                <select class="form-control form-control-sm" id="captive-download-limit">
-                                                                    <option value="">Sélectionner la limite de téléchargement</option>
-                                                                    <option value="1">1 Mbps</option>
-                                                                    <option value="2">2 Mbps</option>
-                                                                    <option value="5">5 Mbps</option>
-                                                                    <option value="10">10 Mbps</option>
-                                                                    <option value="15">15 Mbps</option>
-                                                                    <option value="20">20 Mbps</option>
-                                                                    <option value="25">25 Mbps</option>
-                                                                    <option value="30">30 Mbps</option>
-                                                                    <option value="35">35 Mbps</option>
-                                                                    <option value="40">40 Mbps</option>
-                                                                    <option value="45">45 Mbps</option>
-                                                                    <option value="50">50 Mbps</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <label for="captive-upload-limit">Téléversement (Mbps)</label>
-                                                                <select class="form-control form-control-sm" id="captive-upload-limit">
-                                                                    <option value="0">Sélectionner la limite de téléversement</option>
-                                                                    <option value="1">1 Mbps</option>
-                                                                    <option value="2">2 Mbps</option>
-                                                                    <option value="5">5 Mbps</option>
-                                                                    <option value="10">10 Mbps</option>
-                                                                    <option value="15">15 Mbps</option>
-                                                                    <option value="20">20 Mbps</option>
-                                                                    <option value="25">25 Mbps</option>
-                                                                    <option value="30">30 Mbps</option>
-                                                                    <option value="35">35 Mbps</option>
-                                                                    <option value="40">40 Mbps</option>
-                                                                    <option value="45">45 Mbps</option>
-                                                                    <option value="50">50 Mbps</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="mb-2">Portal Configuration</label>
-                                                        <select class="form-control form-control-sm" id="captive-portal-design">
-                                                            <!-- Options will be populated dynamically -->
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                                                        <!-- Network Settings Section -->
-                            <h5 class="border-bottom pb-1 mt-3">Network Settings</h5>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
-                                            <i data-feather="settings" class="mr-1"></i> Configurer les paramètres IP et VLAN
-                                        </button>
-                                        <small class="text-muted d-block mt-1">Configurez l'adresse IP, la passerelle et les paramètres VLAN pour le réseau du portail captif.</small>
-                                    </div>
-                                </div>
-                            </div>
-                                            <!-- Contrôle d'accès Section -->
-                                            <h5 class="border-bottom pb-1 mt-3">Contrôle d'accès</h5>
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <!-- MAC Filtering -->
-                                                            <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                                            <label class="mb-0">Filtrage d'adresses MAC</label>
-                                                            <div class="d-flex align-items-center">
-                                                                <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
-                                                                <select class="form-control form-control-sm" id="captive-mac-view-filter" style="width: auto;">
-                                                                    <option value="all">Show All</option>
-                                                                    <option value="blacklisted">Afficher la liste noire</option>
-                                                                    <option value="whitelisted">Afficher la liste blanche</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- Add MAC Address Controls -->
-                                                        <div class="row mb-2">
-                                                            <div class="col-7">
-                                                                <input type="text" class="form-control form-control-sm" id="captive-mac-address" placeholder="00:11:22:33:44:55">
-                                                            </div>
-                                                            <div class="col-3">
-                                                                <select class="form-control form-control-sm" id="captive-mac-type">
-                                                                    <option value="blacklist">Liste noire</option>
-                                                                    <option value="whitelist">Liste blanche</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-2">
-                                                                <button class="btn btn-sm custom-btn w-100" id="captive-add-mac">Ajouter</button>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- MAC Address List -->
-                                                        <div class="mac-address-container">
-                                                            <div class="mac-filter-status text-muted mb-1" id="captive-mac-status">
-                                                                <small>Aucune adresse MAC ajoutée pour le moment</small>
-                                                            </div>
-                                                            <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
-                                                                <div class="text-center text-muted p-3" id="captive-mac-empty">
-                                                                    <i data-feather="shield" class="mb-2"></i>
-                                                                    <div><small>Aucune adresse MAC configurée</small></div>
-                                                                    <div><small class="text-muted">Ajoutez des adresses MAC ci-dessus pour contrôler l'accès</small></div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <div class="form-group">
+                                                                        <label for="captive-idle-timeout">Inactivité</label>
+                                                                        <select class="form-control" id="captive-idle-timeout">
+                                                                            <option value="15">15 minutes</option>
+                                                                            <option value="30">30 minutes</option>
+                                                                            <option value="45">45 minutes</option>
+                                                                            <option value="60">1 heure</option>
+                                                                            <option value="120">2 heures</option>
+                                                                            <option value="180">3 heures</option>
+                                                                            <option value="240">4 heures</option>
+                                                                            <option value="360">6 heures</option>
+                                                                            <option value="720">12 heures</option>
+                                                                            <option value="1440">1 jour</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <label for="captive-portal-redirect">URL de redirection personnalisée (optionnel)</label>
+                                                                        <input type="url" class="form-control" id="captive-portal-redirect" placeholder="https://exemple.com/bienvenue">
+                                                                        <small class="text-muted">Redirigez les utilisateurs vers cette URL après une authentification réussie. Laissez vide pour le comportement par défaut.</small>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
-                                                        <div class="mt-2">
-                                                            <button class="btn btn-sm btn-success" id="save-captive-mac-filter">
-                                                                <i data-feather="save" class="mr-1"></i> Save MAC Filter Settings
-                                                            </button>
+
+                                                        <div class="col-md-6">
+                                                            <!-- Options d'authentification SMS/Email -->
+                                                            <div id="sms-auth-options-section" class="auth-options-section" style="display: none;">
+                                                                <div class="alert alert-info mb-0 p-2">La vérification par SMS sera utilisée pour authentifier les invités.</div>
+                                                            </div>
+
+                                                            <div id="email-auth-options-section" class="auth-options-section" style="display: none;">
+                                                                <div class="alert alert-info mb-0 p-2">La vérification par e-mail sera utilisée pour authentifier les invités.</div>
+                                                            </div>
+
+                                                            <!-- Options de connexion sociale -->
+                                                            <div id="social-auth-options-section" class="auth-options-section" style="display: none;">
+                                                                <label>Activer les options de connexion sociale</label>
+                                                                <div class="d-flex flex-wrap">
+                                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-facebook-toggle" checked>
+                                                                        <label class="custom-control-label" for="social-facebook-toggle">Facebook</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-google-toggle" checked>
+                                                                        <label class="custom-control-label" for="social-google-toggle">Google</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-twitter-toggle">
+                                                                        <label class="custom-control-label" for="social-twitter-toggle">Twitter</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-switch custom-control-primary mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-apple-toggle">
+                                                                        <label class="custom-control-label" for="social-apple-toggle">Apple</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
+                                            
+                                                    <!-- Section bande passante -->
+                                                    <h5 class="border-bottom pb-1 mt-3">Bande passante et portail</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                    <label class="mb-0">Limites de bande passante</label>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-6">
+                                                                        <label for="captive-download-limit">Téléchargement (Mbps)</label>
+                                                                        <select class="form-control form-control-sm" id="captive-download-limit">
+                                                                            <option value="">Sélectionner la limite de téléchargement</option>
+                                                                            <option value="1">1 Mbps</option>
+                                                                            <option value="2">2 Mbps</option>
+                                                                            <option value="5">5 Mbps</option>
+                                                                            <option value="10">10 Mbps</option>
+                                                                            <option value="15">15 Mbps</option>
+                                                                            <option value="20">20 Mbps</option>
+                                                                            <option value="25">25 Mbps</option>
+                                                                            <option value="30">30 Mbps</option>
+                                                                            <option value="35">35 Mbps</option>
+                                                                            <option value="40">40 Mbps</option>
+                                                                            <option value="45">45 Mbps</option>
+                                                                            <option value="50">50 Mbps</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <label for="captive-upload-limit">Téléversement (Mbps)</label>
+                                                                        <select class="form-control form-control-sm" id="captive-upload-limit">
+                                                                            <option value="0">Sélectionner la limite de téléversement</option>
+                                                                            <option value="1">1 Mbps</option>
+                                                                            <option value="2">2 Mbps</option>
+                                                                            <option value="5">5 Mbps</option>
+                                                                            <option value="10">10 Mbps</option>
+                                                                            <option value="15">15 Mbps</option>
+                                                                            <option value="20">20 Mbps</option>
+                                                                            <option value="25">25 Mbps</option>
+                                                                            <option value="30">30 Mbps</option>
+                                                                            <option value="35">35 Mbps</option>
+                                                                            <option value="40">40 Mbps</option>
+                                                                            <option value="45">45 Mbps</option>
+                                                                            <option value="50">50 Mbps</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="mb-2">Configuration du portail</label>
+                                                                <select class="form-control form-control-sm" id="captive-portal-design">
+                                                                    <!-- Les options seront ajoutées dynamiquement -->
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <!-- Network Settings Section -->
+                                                    <h5 class="border-bottom pb-1 mt-3">Paramètres réseau</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
+                                                                    <i data-feather="settings" class="mr-1"></i> Configurer les paramètres IP et VLAN
+                                                                </button>
+                                                                <small class="text-muted d-block mt-1">Configurez l'adresse IP, la passerelle et les paramètres VLAN pour le réseau du portail captif.</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Contrôle d'accès Section -->
+                                                    <h5 class="border-bottom pb-1 mt-3">Contrôle d'accès</h5>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <!-- MAC Filtering -->
+                                                            <div class="form-group">
+                                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                    <label class="mb-0">Filtrage d'adresses MAC</label>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
+                                                                        <select class="form-control form-control-sm" id="captive-mac-view-filter" style="width: auto;">
+                                                                            <option value="all">Afficher tout</option>
+                                                                            <option value="blacklisted">Afficher la liste noire</option>
+                                                                            <option value="whitelisted">Afficher la liste blanche</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- Add MAC Address Controls -->
+                                                                <div class="row mb-2">
+                                                                    <div class="col-7">
+                                                                        <input type="text" class="form-control form-control-sm" id="captive-mac-address" placeholder="00:11:22:33:44:55">
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <select class="form-control form-control-sm" id="captive-mac-type">
+                                                                            <option value="blacklist">Liste noire</option>
+                                                                            <option value="whitelist">Liste blanche</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-2">
+                                                                        <button class="btn btn-sm custom-btn w-100" id="captive-add-mac">Ajouter</button>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- MAC Address List -->
+                                                                <div class="mac-address-container">
+                                                                    <div class="mac-filter-status text-muted mb-1" id="captive-mac-status">
+                                                                        <small>Aucune adresse MAC ajoutée pour le moment</small>
+                                                                    </div>
+                                                                    <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
+                                                                        <div class="text-center text-muted p-3" id="captive-mac-empty">
+                                                                            <i data-feather="shield" class="mb-2"></i>
+                                                                            <div><small>Aucune adresse MAC configurée</small></div>
+                                                                            <div><small class="text-muted">Ajoutez des adresses MAC ci-dessus pour contrôler l'accès</small></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div class="mt-2">
+                                                                    <button class="btn btn-sm btn-success" id="save-captive-mac-filter">
+                                                                        <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres de filtrage MAC
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                         
                                         <!-- Working Hours Section -->
-                                        <h5 class="border-bottom pb-1 mt-3">Working Hours</h5>
+                                        <h5 class="border-bottom pb-1 mt-3">Heures de travail</h5>
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="form-group">
@@ -3730,7 +3696,7 @@
                                                     </div>
                                                 </div>
                                         </div>
-                                        </div>
+                                        </div> 
 
                                         <!-- Hourly Schedule Section (Now integrated into Working Hours above) 
                                         <h5 class="border-bottom pb-1 mt-3">
@@ -3779,7 +3745,7 @@
                                 <div class="tab-pane fade" id="secured-wifi" role="tabpanel" aria-labelledby="secured-wifi-tab">
                                             <div class="card">
                                         <div class="card-header d-flex justify-content-between align-items-center">
-                                            <h4 class="card-title mb-0">Password WiFi</h4>
+                                            <h4 class="card-title mb-0">Réseau WiFi sécurisé</h4>
                                             <button class="btn custom-btn save-password-network" id="save-secured-wifi">
                                                 <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                                             </button>
@@ -3790,7 +3756,7 @@
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="wifi-ssid">Nom du réseau (SSID)</label>
+                                                            <label for="wifi-ssid">Nom du réseau WiFi (SSID)</label>
                                                             <input type="text" class="form-control" id="password-wifi-ssid" placeholder="WiFi domicile">
                                                         </div>
                                                     </div>
@@ -3852,7 +3818,7 @@
                                                             <div class="d-flex align-items-center">
                                                                 <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
                                                                 <select class="form-control form-control-sm" id="secured-mac-view-filter" style="width: auto;">
-                                                                    <option value="all">Show All</option>
+                                                                    <option value="all">Afficher tout</option>
                                                                     <option value="blacklisted">Afficher la liste noire</option>
                                                                 </select>
                                                             </div>
@@ -3889,7 +3855,7 @@
                                                         
                                                         <div class="mt-2">
                                                             <button class="btn btn-sm btn-success" id="save-secured-mac-filter">
-                                                                <i data-feather="save" class="mr-1"></i> Save MAC Filter Settings
+                                                                <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres de filtrage MAC
                                                             </button>
                                                         </div>
                                                     </div>
@@ -4160,7 +4126,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="portal-management-modal-title">Captive Portal Management</h5>
+                    <h5 class="modal-title" id="portal-management-modal-title">Gestion du portail captif</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -4531,60 +4497,60 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
     
-    <!-- Captive Portal Settings Modal -->
+    <!-- Paramètres du portail captif (Captive Portal Settings Modal) -->
     <div class="modal fade" id="captive-portal-modal" tabindex="-1" role="dialog" aria-labelledby="captive-portal-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="captive-portal-modal-title">Captive Portal IP Management</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="captive-portal-modal-title">Gestion IP du portail captif</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Static IP Settings -->
+                    <!-- Paramètres IP statique -->
                     <div class="form-group">
-                        <label>IP Assignment</label>
+                        <label>Affectation IP</label>
                         <select class="form-control" id="captive-ip-assignment" disabled>
-                            <option value="static" selected>Static IP</option>
+                            <option value="static" selected>IP statique</option>
                         </select>
-                        <small class="text-muted">Only Static IP configuration is available for Captive Portal</small>
+                        <small class="text-muted">Seule la configuration IP statique est disponible pour le portail captif</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="captive-portal-ip">IP Address</label>
+                        <label for="captive-portal-ip">Adresse IP</label>
                         <input type="text" class="form-control" id="captive-portal-ip" placeholder="192.168.2.1">
                     </div>
                     
                     <div class="form-group">
-                        <label for="captive-portal-netmask">Netmask</label>
+                        <label for="captive-portal-netmask">Masque de sous-réseau</label>
                         <input type="text" class="form-control" id="captive-portal-netmask" placeholder="255.255.255.0">
                     </div>
 <!--                     
                     <div class="form-group">
-                        <label for="captive-portal-gateway">Gateway</label>
+                        <label for="captive-portal-gateway">Passerelle</label>
                         <input type="text" class="form-control" id="captive-portal-gateway" placeholder="192.168.2.1">
                     </div> -->
                     
                     <div class="form-group vlan-setting">
-                        <label for="captive-portal-vlan-modal">VLAN ID (Optional)</label>
+                        <label for="captive-portal-vlan-modal">ID VLAN (optionnel)</label>
                         <input type="number" class="form-control" id="captive-portal-vlan-modal" placeholder="20" min="1" max="4094" disabled>
                         <small class="text-muted">Spécifiez l'ID VLAN pour la segmentation du réseau du portail captif (1-4094). Activez le support VLAN dans les paramètres du routeur pour utiliser cette fonctionnalité.</small>
                     </div>
                     
                     <div class="form-group vlan-setting">
-                        <label for="captive-portal-vlan-tagging-modal">VLAN Tagging</label>
+                        <label for="captive-portal-vlan-tagging-modal">Tagging VLAN</label>
                         <select class="form-control" id="captive-portal-vlan-tagging-modal" disabled>
                             <option value="disabled">Désactivé</option>
-                            <option value="tagged">Tagged</option>
-                            <option value="untagged">Untagged</option>
+                            <option value="tagged">Tagué</option>
+                            <option value="untagged">Non tagué</option>
                         </select>
                         <small class="text-muted">Configurez le mode de marquage VLAN pour le réseau du portail captif. Activez le support VLAN dans les paramètres du routeur pour utiliser cette fonctionnalité.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn custom-btn save-captive-portal" id="save-captive-portal-settings">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-captive-portal" id="save-captive-portal-settings">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -5487,18 +5453,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 ];
                 const hours = Array.from({ length: 24 }, (_, i) => i);
 
+                // Handle translations for French (or other languages)
+                const translations = {
+                    "working_hours": "Heures d'ouverture",
+                    "captive_portal_access_schedule": "Plage d'accès au portail captif",
+                    "quick_set": "Raccourci :",
+                    "business_hours": "Heures de bureau",
+                    "clear_all": "Tout effacer",
+                    "info_text": "Cliquez sur une case vide pour créer un créneau. Glissez pour déplacer, redimensionnez avec les poignées, survolez pour supprimer.",
+                    "save_schedule": "Enregistrer l'horaire",
+                    // French day names, capitalized
+                    "monday": "Lundi",
+                    "tuesday": "Mardi",
+                    "wednesday": "Mercredi",
+                    "thursday": "Jeudi",
+                    "friday": "Vendredi",
+                    "saturday": "Samedi",
+                    "sunday": "Dimanche"
+                };
+
+                // Helper to get translated day name
+                const getDayLabel = (day) => translations[day] || this.capitalize(day);
+
                 this.container.innerHTML = `
                     <div class="schedule-container">
                         <div class="schedule-header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h5 class="mb-1">Working Hours</h5>
-                                    <p class="mb-0 text-muted">Captive Portal Access Schedule</p>
+                                    <h5 class="mb-1">${translations["working_hours"]}</h5>
+                                    <p class="mb-0 text-muted">${translations["captive_portal_access_schedule"]}</p>
                                 </div>
                                 <div class="quick-actions">
-                                    <small class="text-muted me-2">Quick Set:</small>
-                                    <button class="btn btn-outline-primary btn-sm" data-action="business-hours">Business Hours</button>
-                                    <button class="btn btn-outline-secondary btn-sm" data-action="clear-all">Clear All</button>
+                                    <small class="text-muted me-2">${translations["quick_set"]}</small>
+                                    <button class="btn btn-outline-primary btn-sm" data-action="business-hours">${translations["business_hours"]}</button>
+                                    <button class="btn btn-outline-secondary btn-sm" data-action="clear-all">${translations["clear_all"]}</button>
                                 </div>
                             </div>
                         </div>
@@ -5522,9 +5510,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     .map(
                                         (day) => `
                                     <div class="day-row" data-day="${day}">
-                                        <div class="day-label">${this.capitalize(
-                                            day
-                                        )}</div>
+                                        <div class="day-label">${getDayLabel(day)}</div>
                                         ${hours
                                             .map(
                                                 (hour) =>
@@ -5543,10 +5529,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Click empty cells to create slots. Drag to move, resize with handles, hover for delete.
+                                    ${translations["info_text"]}
                                 </small>
                                 <button class="btn btn-success btn-sm" data-action="save">
-                                    <i class="bi bi-check-lg me-1"></i> Save Schedule
+                                    <i class="bi bi-check-lg me-1"></i> ${translations["save_schedule"]}
                                 </button>
                             </div>
                         </div>
@@ -7228,7 +7214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#online-users-list').html(`
                     <div class="empty-state">
                         <i data-feather="users"></i>
-                        <p>No users currently online</p>
+                        <p>Aucun utilisateur en ligne</p>
                     </div>
                 `);
                 $('#users-pagination').hide();
@@ -7597,8 +7583,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="d-flex align-items-center justify-content-center h-100">
                                     <div class="text-center text-muted">
                                         <i data-feather="map-pin" class="mb-2"></i>
-                                        <p class="mb-0">No coordinates available</p>
-                                        <small>Add address information to see location on map</small>
+                                        <p class="mb-0">Aucune coordonnée disponible</p>
+                                        <small>Ajoutez des informations d'adresse pour voir la localisation sur la carte</small>
                                     </div>
                                 </div>
                             `);
