@@ -549,6 +549,9 @@
                 // Set button text from full design data
                 if (design.button_text) {
                     $('#connect-button').text(button_text).attr('data-is-custom', 'true');
+                } else {
+                    // Ensure button is not marked as custom so translations work
+                    $('#connect-button').removeAttr('data-is-custom');
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
@@ -566,6 +569,10 @@
                 if (design.privacy_policy) {
                     $('#privacy-content').html(design.privacy_policy);
                 }
+                
+                // Re-apply translations after design settings to ensure proper language
+                const currentLang = getLanguage();
+                applyTranslations(currentLang);
             }
             
             // Helper function to create a darker color for hover states
