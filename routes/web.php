@@ -63,6 +63,10 @@ Route::prefix('en')->name('en.')->group(function () {
     Route::get('/location-analytics', function () {
         return view('location-analytics');
     })->name('location-analytics');
+
+    Route::get('/locations/{location}/guests', function ($location) {
+        return view('location-guests', compact('location'));
+    })->name('location-guests');
     
     Route::get('/firmware', function () {
         return view('firmware-en');
@@ -102,10 +106,18 @@ Route::prefix('fr')->name('fr.')->group(function () {
         return view('locations-fr');
     })->name('locations');
     
-    Route::get('/locations/{location}', function () {
-        return view('location-details-fr');
+    Route::get('/locations/{location}', function ($location) {
+        return view('location-details-fr', compact('location'));
     })->name('location-details');
     
+    // Route::get('/locations/{location}/', function () {
+    //     return view('location-details-fr');
+    // })->name('location-details');
+    
+    Route::get('/locations/{location}/guests', function ($location) {
+        return view('location-guests-fr', compact('location'));
+    })->name('location-guests');
+
     Route::get('/locations/analytics/{location_id}', function ($location_id) {
         return view('location-analytics', compact('location_id'));
     })->name('location-analytics');
@@ -247,7 +259,6 @@ Route::get('/social-login/google-callback', function () {
     return view('google-login-callback');
 })->name('google-login-callback');
 
-
 Route::get('/click-login/{location}/{mac_address}', function () {
     return view('click-login');
 })->name('click-login');
@@ -255,7 +266,6 @@ Route::get('/click-login/{location}/{mac_address}', function () {
 Route::get('/password-login/{location}/{mac_address}', function () {
     return view('password-login');
 })->name('password-login');
-
 
 
 // Captive Portal routes

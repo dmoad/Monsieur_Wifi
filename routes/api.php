@@ -181,7 +181,12 @@ Route::get('/captive-portal/{location_id}/info', [GuestNetworkUserController::cl
 Route::post('/captive-portal/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/captive-portal/twitter-login', [GuestNetworkUserController::class, 'twitterLogin']);
 
-Route::get('/locations/{location}/guest-users', [GuestNetworkUserController::class, 'index']);
+// Guest Network User routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () {
+    Route::get('/{location}/guest-users', [GuestNetworkUserController::class, 'index']);
+    Route::get('/{location}/guest-users/export', [GuestNetworkUserController::class, 'export']);
+});
+
 Route::resource('/guest-users', GuestNetworkUserController::class);
 
 // Guest Network User routes

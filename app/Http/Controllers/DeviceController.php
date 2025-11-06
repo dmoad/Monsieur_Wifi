@@ -281,7 +281,7 @@ class DeviceController extends Controller
     public function heartbeat($device_key, $device_secret, Request $request)
     {
         Log::info('Heartbeat request: '.$device_key.' '.$device_secret);
-        Log::info($request->all());
+        // Log::info($request->all());
 
         $firmware_version = $request->input('firmware_version');
         $firmware_id = $request->input('firmware_id');
@@ -294,6 +294,8 @@ class DeviceController extends Controller
         if (!$device) {
             return response()->json(['error' => 'Invalid device credentials'], 401);
         }
+        Log::info('Device: ');
+        Log::info($device);
 
         // Update the last_seen field
         $device->last_seen = now();

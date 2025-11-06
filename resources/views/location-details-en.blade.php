@@ -2625,10 +2625,14 @@
                     </div>
                 </div>
                 <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
-                    <div class="form-group breadcrumb-right">
-                        <a href="#network-configuration-tabs" class="btn custom-btn btn-analytics">
+                    <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end mb-0">
+                        <a href="#network-configuration-tabs" class="btn custom-btn btn-analytics mr-1">
                             <i data-feather="settings" class="mr-1"></i>
                             Settings
+                        </a>
+                        <a href="#" class="btn btn-outline-primary" id="guest-users-link">
+                            <i data-feather="user-check" class="mr-1"></i>
+                            Guest Users
                         </a>
                     </div>
                 </div>
@@ -10878,8 +10882,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Field clearing DISABLED for debugging');
             });
 
-
-
+            // Handle Guest Users link click
+            $('#guest-users-link').on('click', function(e) {
+                e.preventDefault();
+                const locationId = getLocationId();
+                if (locationId) {
+                    window.location.href = '/en/locations/' + locationId + '/guests';
+                } else {
+                    toastr.error('Location ID not found');
+                }
+            });
 
         });
     </script>

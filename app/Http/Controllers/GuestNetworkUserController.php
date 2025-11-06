@@ -17,9 +17,116 @@ class GuestNetworkUserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, $location)
     {
-        //
+        try {
+            $locationModel = Location::find($location);
+            
+            if (!$locationModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $query = GuestNetworkUser::where('location_id', $location)
+                ->orderBy('created_at', 'desc');
+            
+            // Optional search filtering
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('mac_address', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+            
+            $guests = $query->get();
+            
+            // Transform the data
+            $transformedGuests = $guests->map(function ($guest) {
+                return [
+                    'id' => $guest->id,
+                    'mac_address' => $guest->mac_address,
+                    'email' => $guest->email,
+                    'phone' => $guest->phone,
+                    'expiration_time' => $guest->expiration_time ? $guest->expiration_time->format('Y-m-d H:i:s') : null,
+                    'blocked' => $guest->blocked,
+                    'created_at' => $guest->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'data' => $transformedGuests,
+                'total' => $transformedGuests->count()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching guest users: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving guest users: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Export guest users to CSV.
+     */
+    public function export(Request $request, $location)
+    {
+        try {
+            $locationModel = Location::find($location);
+            
+            if (!$locationModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $query = GuestNetworkUser::where('location_id', $location)
+                ->orderBy('created_at', 'desc');
+            
+            // Optional search filtering
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('mac_address', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+            
+            $guests = $query->get();
+            
+            $timestamp = now()->format('Y-m-d_H-i-s');
+            $filename = "location_{$location}_guests_{$timestamp}.csv";
+            
+            // Create CSV content
+            $content = "MAC Address,Email,Phone Number\n";
+            foreach ($guests as $guest) {
+                $content .= sprintf(
+                    "%s,%s,%s\n",
+                    $guest->mac_address ?? '',
+                    $guest->email ?? '',
+                    $guest->phone ?? ''
+                );
+            }
+            
+            return response($content)
+                ->header('Content-Type', 'text/csv')
+                ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
+        } catch (\Exception $e) {
+            Log::error('Error exporting guest users: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Export failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function info(Request $request, $location_id)

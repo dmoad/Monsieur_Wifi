@@ -591,7 +591,10 @@
                 </div>
                 <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
                     <div class="form-group breadcrumb-right">
-                        <a href="location-analytics.html" class="btn btn-primary">Analytics</a>
+                        <a href="#" class="btn btn-primary mr-1">Analytics</a>
+                        <a href="#" class="btn btn-outline-primary" id="guest-users-link">
+                            <i data-feather="user-check" class="mr-50"></i>Guest Users
+                        </a>
                     </div>
                 </div>
             </div>
@@ -3312,6 +3315,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         responseText: xhr.responseText,
                         error: error
                     });
+                }
+            });
+
+            // Handle Guest Users link click
+            $('#guest-users-link').on('click', function(e) {
+                e.preventDefault();
+                const locationId = getLocationId();
+                if (locationId) {
+                    window.location.href = '/locations/' + locationId + '/guests';
+                } else {
+                    toastr.error('Location ID not found');
                 }
             });
         });
