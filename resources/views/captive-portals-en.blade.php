@@ -128,7 +128,13 @@
             bottom: 0;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 8px;
-            z-index: -1;
+            z-index: 0;
+        }
+        
+        /* Ensure content is above the overlay */
+        .portal-preview.has-background-image > * {
+            position: relative;
+            z-index: 1;
         }
         
         .portal-preview.has-gradient {
@@ -1110,57 +1116,76 @@
         
         // Function to update preview background with gradient or image (global scope)
         function updatePreviewBackground() {
-            const startColor = $('#gradient-start').val() || '';
-            const endColor = $('#gradient-end').val() || '';
+            const startColor = $('#gradient-start').val();
+            const endColor = $('#gradient-end').val();
             const backgroundImage = $('#background-preview').attr('src');
             
-            console.log('updatePreviewBackground called:', { startColor, endColor, backgroundImage });
-            console.log('Portal preview element found:', $('.portal-preview').length);
-            console.log('Start color length:', startColor.length, 'End color length:', endColor.length);
+            // Check if gradient is disabled (e.g., when background image is uploaded)
+            const gradientDisabled = $('#gradient-start').data('disabled') === true;
             
-            if (startColor && endColor) {
+            console.log('updatePreviewBackground called:', { startColor, endColor, backgroundImage, gradientDisabled });
+            console.log('Portal preview element found:', $('.portal-preview').length);
+            
+            // Check if gradient colors are actually set and not disabled
+            const hasStartColor = startColor && startColor.length > 0 && !gradientDisabled;
+            const hasEndColor = endColor && endColor.length > 0 && !gradientDisabled;
+            const hasBackgroundImage = backgroundImage && backgroundImage !== '';
+            
+            console.log('Has start color:', hasStartColor, 'Has end color:', hasEndColor, 'Has background image:', hasBackgroundImage);
+            
+            if (hasStartColor && hasEndColor) {
                 // Use gradient if both colors are set
                 console.log('Applying gradient:', `linear-gradient(135deg, ${startColor} 0%, ${endColor} 100%)`);
                 const $preview = $('.portal-preview');
                 $preview.removeClass('has-background-image');
                 
-                // Try multiple approaches to ensure the CSS is applied
+                // Clear any previous inline styles
+                $preview[0].style.cssText = '';
+                
+                // Apply gradient
                 const gradientCSS = `linear-gradient(135deg, ${startColor} 0%, ${endColor} 100%)`;
-                
-                // Method 1: Direct style property
-                $preview[0].style.setProperty('background', gradientCSS, 'important');
-                $preview[0].style.setProperty('background-image', 'none', 'important');
-                
-                // Method 2: jQuery CSS with !important
-                $preview.css('cssText', $preview.css('cssText') + `; background: ${gradientCSS} !important;`);
-                
-                // Method 3: Add a specific class and CSS custom property
                 $preview.addClass('has-gradient');
+                $preview[0].style.setProperty('background', gradientCSS, 'important');
                 $preview[0].style.setProperty('--gradient-bg', gradientCSS);
                 
                 console.log('Applied CSS background:', $preview.css('background'));
                 console.log('Element style attribute:', $preview[0].style.cssText);
                 console.log('Computed background:', window.getComputedStyle($preview[0]).background);
-            } else if (startColor || endColor) {
+            } else if (hasStartColor || hasEndColor) {
                 // If only one gradient color is set, use solid color
                 const color = startColor || endColor;
                 console.log('Applying solid color:', color);
                 const $preview = $('.portal-preview');
                 $preview.removeClass('has-background-image').addClass('has-gradient');
+                
+                // Clear any previous inline styles
+                $preview[0].style.cssText = '';
+                
                 $preview[0].style.setProperty('background', color, 'important');
-                $preview[0].style.setProperty('background-image', 'none', 'important');
                 $preview[0].style.setProperty('--gradient-bg', color);
-            } else if (backgroundImage && backgroundImage !== '') {
+            } else if (hasBackgroundImage) {
                 // Use background image if no gradient is set
-                $('.portal-preview').addClass('has-background-image').css({
-                    'background': '#fff',
-                    'background-image': `url(${backgroundImage})`,
-                    'background-size': 'cover',
-                    'background-position': 'center',
-                    'background-repeat': 'no-repeat'
-                });
+                console.log('Applying background image:', backgroundImage);
+                const $preview = $('.portal-preview');
+                $preview.removeClass('has-gradient').addClass('has-background-image');
+                
+                // Clear any previous inline styles that might interfere (especially !important ones)
+                $preview[0].style.cssText = '';
+                
+                // Apply background image directly to the element's style
+                $preview[0].style.backgroundImage = `url(${backgroundImage})`;
+                $preview[0].style.backgroundSize = 'cover';
+                $preview[0].style.backgroundPosition = 'center';
+                $preview[0].style.backgroundRepeat = 'no-repeat';
+                $preview[0].style.backgroundColor = '#fff';
+                
+                console.log('Background image applied.');
+                console.log('- backgroundImage:', $preview[0].style.backgroundImage);
+                console.log('- Computed backgroundImage:', window.getComputedStyle($preview[0]).backgroundImage);
+                console.log('- Element classes:', $preview[0].className);
             } else {
                 // Clear background
+                console.log('Clearing background');
                 $('.portal-preview').removeClass('has-background-image has-gradient').css({
                     'background': '#fff',
                     'background-image': 'none'
@@ -1291,6 +1316,9 @@
             // Gradient color handlers
             $('#gradient-start').on('change', function() {
                 const color = $(this).val();
+                // Re-enable gradient when user changes color
+                $('#gradient-start').data('disabled', false);
+                $('#gradient-end').data('disabled', false);
                 $('#gradient-start-preview').css('background-color', color);
                 $('#gradient-start-value').text(color);
                 updatePreviewBackground();
@@ -1298,6 +1326,9 @@
 
             $('#gradient-end').on('change', function() {
                 const color = $(this).val();
+                // Re-enable gradient when user changes color
+                $('#gradient-start').data('disabled', false);
+                $('#gradient-end').data('disabled', false);
                 $('#gradient-end-preview').css('background-color', color);
                 $('#gradient-end-value').text(color);
                 updatePreviewBackground();
@@ -1352,6 +1383,8 @@
 
             // Clear gradient button
             $('#clear-gradient').on('click', function() {
+                $('#gradient-start').data('disabled', true);
+                $('#gradient-end').data('disabled', true);
                 $('#gradient-start').val('');
                 $('#gradient-end').val('');
                 $('#gradient-start-preview').css('background-color', 'transparent');
@@ -1363,11 +1396,15 @@
 
             // Preset gradient buttons
             $('#preset-gradient-1').on('click', function() {
+                $('#gradient-start').data('disabled', false);
+                $('#gradient-end').data('disabled', false);
                 $('#gradient-start').val('#667eea').trigger('change');
                 $('#gradient-end').val('#764ba2').trigger('change');
             });
 
             $('#preset-gradient-2').on('click', function() {
+                $('#gradient-start').data('disabled', false);
+                $('#gradient-end').data('disabled', false);
                 $('#gradient-start').val('#f093fb').trigger('change');
                 $('#gradient-end').val('#f5576c').trigger('change');
             });
@@ -1392,16 +1429,31 @@
                     const reader = new FileReader();
                     
                     reader.onload = function(e) {
-                        console.log('File loaded');
+                        console.log('File loaded, data URL length:', e.target.result.length);
                         const preview = $(`#${previewId}`);
                         preview.attr('src', e.target.result);
                         preview.css('display', 'block');
                         
+                        console.log('Preview element src set:', preview.attr('src') ? 'Yes' : 'No');
+                        
                         if (previewId === 'location-logo-preview') {
                             $('#preview-logo').attr('src', e.target.result).show();
                         } else if (previewId === 'background-preview') {
-                            // Update the preview background using the unified function
-                            updatePreviewBackground();
+                            // When a background image is uploaded, disable gradient so the image takes priority
+                            console.log('Background image uploaded - disabling gradient to show image');
+                            $('#gradient-start').data('disabled', true);
+                            $('#gradient-end').data('disabled', true);
+                            $('#gradient-start-preview').css('background-color', 'transparent');
+                            $('#gradient-end-preview').css('background-color', 'transparent');
+                            $('#gradient-start-value').text('None (Image Active)');
+                            $('#gradient-end-value').text('None (Image Active)');
+                            
+                            // Use setTimeout to ensure the DOM is updated before applying background
+                            setTimeout(function() {
+                                console.log('Calling updatePreviewBackground after background image loaded');
+                                console.log('Background preview src:', $('#background-preview').attr('src') ? 'Set' : 'Not set');
+                                updatePreviewBackground();
+                            }, 50);
                         }
                     }
                     

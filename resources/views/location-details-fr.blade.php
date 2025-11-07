@@ -6374,7 +6374,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reset button state
                     if (saveBtn) {
                         saveBtn.disabled = false;
-                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Save Schedule';
+                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Enregistrer l\'horaire';
                     }
                 }
             });
@@ -6497,7 +6497,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reset button state
                     if (saveBtn) {
                         saveBtn.disabled = false;
-                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Save Schedule';
+                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Enregistrer l\'horaire';
                     }
                 }
             });
