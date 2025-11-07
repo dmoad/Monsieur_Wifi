@@ -1772,6 +1772,9 @@
                         $('#terms-of-service').val(design.terms_content || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
                         $('#privacy-policy').val(design.privacy_content || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
                         
+                        // Check if background image exists - if so, disable gradient by default
+                        const hasBackgroundImage = design.background_image_path || design.background_image_url;
+                        
                         // Load gradient colors if available
                         if (design.background_color_gradient_start) {
                             $('#gradient-start').val(design.background_color_gradient_start);
@@ -1793,8 +1796,18 @@
                             $('#gradient-end-value').text('None');
                         }
                         
-                        // Update preview with gradient
-                        updatePreviewBackground();
+                        // If background image exists, disable gradient so image shows
+                        if (hasBackgroundImage) {
+                            console.log('Design has background image - disabling gradient');
+                            $('#gradient-start').data('disabled', true);
+                            $('#gradient-end').data('disabled', true);
+                            $('#gradient-start-value').text('None (Image Active)');
+                            $('#gradient-end-value').text('None (Image Active)');
+                        } else {
+                            // No background image, enable gradient
+                            $('#gradient-start').data('disabled', false);
+                            $('#gradient-end').data('disabled', false);
+                        }
                         
                         // Update preview values
                         $('#preview-welcome').text(design.welcome_message || 'Welcome to our WiFi');
@@ -1825,15 +1838,10 @@
                         if (design.background_image_path) {
                             const bgUrl = `/storage/${design.background_image_path}`;
                             $('#background-preview').attr('src', bgUrl).show();
-                            
-                            // Apply background to preview container
-                            $('.portal-preview').css({
-                                'background-image': `url(${bgUrl})`,
-                                'background-size': 'cover',
-                                'background-position': 'center',
-                                'background-repeat': 'no-repeat'
-                            });
                         }
+                        
+                        // Update preview background (this will apply either gradient or background image based on priority)
+                        updatePreviewBackground();
                     } else {
                         console.error('Invalid response format or missing data');
                         toastr.error('Could not load design details. Invalid response format.');
