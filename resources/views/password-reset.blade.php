@@ -6,10 +6,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="monsieur-wifi - WiFi network management system for administrators and network owners" id="meta-description">
-    <meta name="keywords" content="wifi, network, dashboard, admin, monsieur-wifi, captive portal, radius, management">
+    <meta name="description" content="monsieur-wifi - Password Reset" id="meta-description">
+    <meta name="keywords" content="wifi, network, dashboard, admin, monsieur-wifi, password reset">
     <meta name="author" content="monsieur-wifi">
-    <title>Login - Monsieur WiFi</title>
+    <title>Password Reset - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -322,18 +322,6 @@
             }
         }
         
-        /* Blinking cursor animation */
-        .typed-cursor {
-            opacity: 1;
-            animation: typedjsBlink 0.7s infinite;
-        }
-        
-        @keyframes typedjsBlink {
-            50% {
-                opacity: 0.0;
-            }
-        }
-        
         /* Form input animations */
         .form-control {
             transition: all 0.3s ease;
@@ -452,7 +440,6 @@
         </div>
         
         <!-- Device Icons -->
-        <!-- <div class="device-icon" id="laptop-icon"></div> -->
         <div class="device-icon" id="smartphone-icon"></div>
         <div class="device-icon" id="tablet-icon"></div>
         <div class="device-icon" id="router-icon"></div>
@@ -469,11 +456,11 @@
             <div class="content-body">
                 <div class="auth-wrapper auth-v1 px-2">
                     <div class="auth-inner py-2">
-                        <!-- Login v1 -->
+                        <!-- Password Reset v1 -->
                         <div class="card mb-0">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <a href="javascript:void(0);" class="brand-logo">
+                                    <a href="/login" class="brand-logo">
                                         <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
                                         <h2 class="brand-text text-primary ml-1">monsieur-wifi</h2>
                                     </a>
@@ -497,55 +484,35 @@
                                     </div>
                                 </div>
 
-                                <h4 class="card-title mb-1">Welcome to monsieur-wifi! 👋</h4>
-                                <p class="card-text mb-2">Please sign-in to access your <span class="typing-text"></span></p>
+                                <h4 class="card-title mb-1">Reset Your Password 🔐</h4>
+                                <p class="card-text mb-2">Enter your email address and we'll send you a link to reset your password</p>
 
-                                <!-- Alert for showing login messages -->
-                                <div id="login-alert" class="alert alert-danger mt-1" style="display: none;"></div>
+                                <!-- Alert for showing messages -->
+                                <div id="reset-alert" class="alert alert-danger mt-1" style="display: none;"></div>
+                                <div id="reset-success" class="alert alert-success mt-1" style="display: none;"></div>
 
-                                <!-- Add this after the login-alert div -->
-                                <div id="login-success" class="alert bg-transparent mt-1" style="display: none;"></div>
-
-                                <!-- Modified form to use AJAX -->
-                                <div class="auth-login-form mt-2" id="login-form">
+                                <!-- Password Reset Form -->
+                                <div class="auth-reset-password-form mt-2" id="reset-form">
                                     <div class="form-group">
-                                        <label for="login-email" class="form-label">Email</label>
-                                        <input type="text" class="form-control" id="login-email" name="email" placeholder="admin@mrwifi.com" aria-describedby="login-email" tabindex="5" />
+                                        <label for="reset-email" class="form-label">Email</label>
+                                        <input type="text" class="form-control" id="reset-email" name="email" placeholder="admin@mrwifi.com" aria-describedby="reset-email" tabindex="1" autofocus />
                                     </div>
 
-                                    <div class="form-group">
-                                        <div class="d-flex justify-content-between">
-                                            <label for="login-password">Password</label>
-                                        </div>
-                                        <div class="input-group input-group-merge form-password-toggle">
-                                            <input type="password" class="form-control form-control-merge" id="login-password" name="password" tabindex="2" placeholder="············" aria-describedby="login-password" />
-                                            <div class="input-group-append">
-                                                <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" type="checkbox" id="remember-me" name="remember" tabindex="3" />
-                                            <label class="custom-control-label" for="remember-me"> Remember Me </label>
-                                        </div>
-                                    </div>
-                                    <!-- Changed to button type submit -->
-                                    <button type="submit" class="btn btn-primary btn-block" tabindex="4" id="login-btn">
-                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="login-spinner"></span>
-                                        <span id="login-text">Sign in</span>
+                                    <button type="submit" class="btn btn-primary btn-block" tabindex="2" id="reset-btn">
+                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="reset-spinner"></span>
+                                        <span id="reset-text">Send Reset Link</span>
                                     </button>
                                 </div>
 
                                 <p class="text-center mt-2">
-                                    <span>Forgot your password?</span>
-                                    <a href="/password-reset">
-                                        <span>Reset Password</span>
+                                    <span>Remember your password?</span>
+                                    <a href="/login">
+                                        <span>Sign in</span>
                                     </a>
                                 </p>
                             </div>
                         </div>
-                        <!-- /Login v1 -->
+                        <!-- /Password Reset v1 -->
                     </div>
                 </div>
 
@@ -560,7 +527,6 @@
 
     <!-- BEGIN: Page Vendor JS-->
     <script src="app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -568,53 +534,38 @@
     <script src="app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
-    <!-- BEGIN: Page JS-->
-    <script src="app-assets/js/scripts/pages/page-auth-login.js"></script>
-    <!-- END: Page JS-->
-
-    <!-- Add this right after the Page JS scripts -->
-    <script src="/assets/js/config.js?v=1"></script>
-
     <script>
         // Language support system
         const translations = {
             en: {
-                pageTitle: 'Login - Monsieur WiFi',
-                metaDescription: 'monsieur-wifi - WiFi network management system for administrators and network owners',
-                welcome: 'Welcome to monsieur-wifi! 👋',
-                signInPrompt: 'Please sign-in to access your',
-                typingStrings: ['network management dashboard', 'WiFi control center', 'analytics platform'],
+                pageTitle: 'Password Reset - Monsieur WiFi',
+                metaDescription: 'monsieur-wifi - Reset your password',
+                resetTitle: 'Reset Your Password 🔐',
+                resetPrompt: 'Enter your email address and we\'ll send you a link to reset your password',
                 emailLabel: 'Email',
                 emailPlaceholder: 'admin@mrwifi.com',
-                passwordLabel: 'Password',
-                passwordPlaceholder: '············',
-                rememberMe: 'Remember Me',
+                sendResetLink: 'Send Reset Link',
+                sending: 'Sending...',
+                rememberPassword: 'Remember your password?',
                 signIn: 'Sign in',
-                signingIn: 'Signing in...',
-                forgotPassword: 'Forgot your password?',
-                resetPassword: 'Reset Password',
-                loginSuccessful: 'Login successful!',
-                loginError: 'An error occurred during login.',
+                resetSuccess: 'Password reset link sent! Please check your email.',
+                resetError: 'An error occurred. Please try again.',
                 langCode: 'EN',
                 flag: '🇺🇸'
             },
             fr: {
-                pageTitle: 'Connexion - Monsieur WiFi',
-                metaDescription: 'monsieur-wifi - Système de gestion de réseaux WiFi pour administrateurs et propriétaires de réseaux',
-                welcome: 'Bienvenue sur monsieur-wifi! 👋',
-                signInPrompt: 'Veuillez vous connecter pour accéder à votre',
-                typingStrings: ['tableau de bord de gestion réseau', 'centre de contrôle WiFi', 'plateforme d\'analytique'],
+                pageTitle: 'Réinitialisation du mot de passe - Monsieur WiFi',
+                metaDescription: 'monsieur-wifi - Réinitialisez votre mot de passe',
+                resetTitle: 'Réinitialisez votre mot de passe 🔐',
+                resetPrompt: 'Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe',
                 emailLabel: 'Email',
                 emailPlaceholder: 'admin@mrwifi.com',
-                passwordLabel: 'Mot de passe',
-                passwordPlaceholder: '············',
-                rememberMe: 'Se souvenir de moi',
+                sendResetLink: 'Envoyer le lien',
+                sending: 'Envoi en cours...',
+                rememberPassword: 'Vous vous souvenez de votre mot de passe?',
                 signIn: 'Se connecter',
-                signingIn: 'Connexion en cours...',
-                forgotPassword: 'Mot de passe oublié?',
-                resetPassword: 'Réinitialiser le mot de passe',
-                loginSuccessful: 'Connexion réussie!',
-                loginError: 'Une erreur s\'est produite lors de la connexion.',
+                resetSuccess: 'Lien de réinitialisation envoyé! Veuillez vérifier votre e-mail.',
+                resetError: 'Une erreur s\'est produite. Veuillez réessayer.',
                 langCode: 'FR',
                 flag: '🇫🇷'
             }
@@ -642,16 +593,13 @@
             $('#meta-description').attr('content', t.metaDescription);
             
             // Update static text elements
-            $('.card-title').text(t.welcome);
-            $('.card-text').html(t.signInPrompt + ' <span class="typing-text"></span>');
-            $('label[for="login-email"]').text(t.emailLabel);
-            $('#login-email').attr('placeholder', t.emailPlaceholder);
-            $('label[for="login-password"]').text(t.passwordLabel);
-            $('#login-password').attr('placeholder', t.passwordPlaceholder);
-            $('.custom-control-label[for="remember-me"]').text(t.rememberMe);
-            $('#login-text').text(t.signIn);
-            $('p.text-center.mt-2 > span').first().text(t.forgotPassword);
-            $('a[href="forgot-password.html"] span').text(t.resetPassword);
+            $('.card-title').text(t.resetTitle);
+            $('.card-text').text(t.resetPrompt);
+            $('label[for="reset-email"]').text(t.emailLabel);
+            $('#reset-email').attr('placeholder', t.emailPlaceholder);
+            $('#reset-text').text(t.sendResetLink);
+            $('p.text-center.mt-2 > span').first().text(t.rememberPassword);
+            $('a[href="/login"] span').text(t.signIn);
             
             // Update language dropdown button
             $('#current-lang').text(t.langCode);
@@ -667,18 +615,6 @@
 
         function switchLanguage(newLang) {
             applyTranslations(newLang);
-            
-            // Reinitialize typing animation with new language strings
-            if (window.typed) {
-                window.typed.destroy();
-            }
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
         }
 
         // Initialize language on page load
@@ -694,20 +630,10 @@
                 });
                 
                 // Create device icons with Feather
-                // $('#laptop-icon').html(feather.icons['laptop'].toSvg({ width: 24, height: 24 }));
                 $('#smartphone-icon').html(feather.icons['smartphone'].toSvg({ width: 20, height: 20 }));
                 $('#tablet-icon').html(feather.icons['tablet'].toSvg({ width: 22, height: 22 }));
                 $('#router-icon').html(feather.icons['wifi'].toSvg({ width: 26, height: 26 }));
             }
-            
-            // Initialize typing animation with translated strings
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
             
             // Language dropdown event handlers
             $('.language-option').on('click', function(e) {
@@ -728,69 +654,51 @@
             });
             
             // Form validation and submission
-            $('#login-btn').on('click', function(e) {
+            $('#reset-btn').on('click', function(e) {
                 e.preventDefault();
-                console.log('Login button clicked');
+                console.log('Reset button clicked');
+                
                 // Show spinner, hide text
-                $('#login-spinner').removeClass('d-none');
-                $('#login-text').text(window.currentTranslations.signingIn);
-                $('#login-btn').attr('disabled', true);
-                $('#login-alert').hide();
-                $('#login-success').hide();
+                $('#reset-spinner').removeClass('d-none');
+                $('#reset-text').text(window.currentTranslations.sending);
+                $('#reset-btn').attr('disabled', true);
+                $('#reset-alert').hide();
+                $('#reset-success').hide();
                 
                 // Get form data
                 var formData = {
-                    email: $('#login-email').val(),
-                    password: $('#login-password').val(),
-                    remember: $('#remember-me').is(':checked')
+                    email: $('#reset-email').val()
                 };
                 
-                // Make AJAX request to login endpoint
+                // Make AJAX request to password reset endpoint
                 $.ajax({
-                    url: '/api/auth/login',
+                    url: '/api/auth/password-reset',
                     type: 'POST',
                     dataType: 'json',
                     data: formData,
                     success: function(response) {
-                        console.log('Login successful');
+                        console.log('Reset email sent successfully');
                         console.log(response);
-                        // Store user info and token using UserManager from config.js
-                        UserManager.setToken(response.access_token);
-                        
-                        if (response.user) {
-                            console.log("login user: ", response.user);
-                            UserManager.setUser(response.user);
-                        }
-
-                        localStorage.setItem('profile_picture', response.user.profile_picture);
                         
                         // Reset button
-                        $('#login-spinner').addClass('d-none');
-                        $('#login-text').text(window.currentTranslations.signIn);
-                        $('#login-btn').attr('disabled', false);
+                        $('#reset-spinner').addClass('d-none');
+                        $('#reset-text').text(window.currentTranslations.sendResetLink);
+                        $('#reset-btn').attr('disabled', false);
                         
-                        // Show success message with token and user information
-                        var token = response.access_token;
-                        var truncatedToken = token.substring(0, 20) + "..." + token.substring(token.length - 20);
-                    
-                        $('#login-success').html(
-                            '<span class="text-success text-bold">' + window.currentTranslations.loginSuccessful + '</span><br>'
-                        ).show();
-
-                        // Set a timeout to redirect to dashboard after showing the success message
-                        setTimeout(function() {
-                            const langPrefix = window.currentLang === 'fr' ? '/fr' : '/en';
-                            window.location.href = langPrefix + '/dashboard?status=login';
-                        }, 1500); // Redirect after 1.5 seconds
+                        // Show success message
+                        $('#reset-success').text(window.currentTranslations.resetSuccess).show();
+                        
+                        // Clear the email field
+                        $('#reset-email').val('');
                     },
                     error: function(xhr) {
                         // Reset button
-                        $('#login-spinner').addClass('d-none');
-                        $('#login-text').text(window.currentTranslations.signIn);
-                        $('#login-btn').attr('disabled', false);
+                        $('#reset-spinner').addClass('d-none');
+                        $('#reset-text').text(window.currentTranslations.sendResetLink);
+                        $('#reset-btn').attr('disabled', false);
                         
                         // Show error message
-                        var errorMessage = window.currentTranslations.loginError;
+                        var errorMessage = window.currentTranslations.resetError;
                         if (xhr.responseJSON) {
                             if (xhr.responseJSON.error) {
                                 errorMessage = xhr.responseJSON.error;
@@ -800,23 +708,16 @@
                                 errorMessage = xhr.responseJSON.email[0];
                             }
                         }
-                        $('#login-alert').text(errorMessage).show();
+                        $('#reset-alert').text(errorMessage).show();
                     }
                 });
             });
             
-            // Toggle password visibility
-            $('.form-password-toggle .input-group-text').on('click', function(e) {
-                e.preventDefault();
-                var $this = $(this),
-                    passwordInput = $this.closest('.form-password-toggle').find('input');
-                
-                if (passwordInput.attr('type') === 'text') {
-                    passwordInput.attr('type', 'password');
-                    $this.find('svg').replaceWith(feather.icons['eye'].toSvg());
-                } else if (passwordInput.attr('type') === 'password') {
-                    passwordInput.attr('type', 'text');
-                    $this.find('svg').replaceWith(feather.icons['eye-off'].toSvg());
+            // Allow form submission on Enter key
+            $('#reset-email').on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    $('#reset-btn').click();
                 }
             });
 
@@ -826,7 +727,6 @@
             });
 
             // Position and animate device icons
-            // animateDeviceIcon($('#laptop-icon'), 15, 25, 8000);
             animateDeviceIcon($('#smartphone-icon'), 65, 75, 10000);
             animateDeviceIcon($('#tablet-icon'), 40, 90, 12000);
             animateDeviceIcon($('#router-icon'), 80, 30, 9000);
@@ -834,23 +734,11 @@
             // Animate signal bars
             animateSignalBars();
             
-            // Add login button click animation
+            // Add reset button click animation
             $('.btn-primary').on('mousedown', function() {
                 $(this).addClass('scale-down');
             }).on('mouseup mouseleave', function() {
                 $(this).removeClass('scale-down');
-            });
-            
-            // Add event delegation for the show full token button
-            $(document).on('click', '#show-full-token', function(e) {
-                e.preventDefault();
-                var fullToken = UserManager.getToken();
-                
-                $('.token-display').html(
-                    '<div style="max-height: 100px; overflow-y: auto;">' + fullToken + '</div>'
-                );
-                
-                $(this).text('Token Revealed').addClass('btn-secondary').removeClass('btn-outline-success').attr('disabled', true);
             });
             
             // Animation functions
@@ -905,16 +793,6 @@
                         });
                     });
                 });
-            }
-            
-            // Check if user is already logged in
-            const user = UserManager.getUser();
-            const token = UserManager.getToken();
-            
-            if (token && user) {
-                // User is already logged in, redirect to dashboard
-                // Uncomment the line below to enable auto-redirection
-                // window.location.href = '/dashboard';
             }
         });
     </script>

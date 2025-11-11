@@ -18,6 +18,8 @@ use App\Http\Controllers\DomainBlockingController;
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('auth/register', [AuthController::class, 'register']);
+Route::post('auth/password-reset', [AuthController::class, 'sendPasswordResetLink']);
+Route::post('auth/reset-password', [AuthController::class, 'resetPassword']);
 
 // Protected routes (auth required)
 Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {

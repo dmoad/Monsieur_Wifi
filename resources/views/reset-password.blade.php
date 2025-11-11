@@ -6,10 +6,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="monsieur-wifi - WiFi network management system for administrators and network owners" id="meta-description">
-    <meta name="keywords" content="wifi, network, dashboard, admin, monsieur-wifi, captive portal, radius, management">
+    <meta name="description" content="monsieur-wifi - Set New Password" id="meta-description">
+    <meta name="keywords" content="wifi, network, dashboard, admin, monsieur-wifi, password reset">
     <meta name="author" content="monsieur-wifi">
-    <title>Login - Monsieur WiFi</title>
+    <title>Set New Password - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -322,18 +322,6 @@
             }
         }
         
-        /* Blinking cursor animation */
-        .typed-cursor {
-            opacity: 1;
-            animation: typedjsBlink 0.7s infinite;
-        }
-        
-        @keyframes typedjsBlink {
-            50% {
-                opacity: 0.0;
-            }
-        }
-        
         /* Form input animations */
         .form-control {
             transition: all 0.3s ease;
@@ -399,6 +387,31 @@
             margin-right: 4px;
             font-size: 14px;
         }
+        
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .password-requirements {
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .requirement {
+            color: #888;
+            margin: 3px 0;
+        }
+        
+        .requirement.met {
+            color: #28a745;
+        }
+        
+        .requirement.met i {
+            color: #28a745;
+        }
     </style>
 
 </head>
@@ -452,7 +465,6 @@
         </div>
         
         <!-- Device Icons -->
-        <!-- <div class="device-icon" id="laptop-icon"></div> -->
         <div class="device-icon" id="smartphone-icon"></div>
         <div class="device-icon" id="tablet-icon"></div>
         <div class="device-icon" id="router-icon"></div>
@@ -469,11 +481,11 @@
             <div class="content-body">
                 <div class="auth-wrapper auth-v1 px-2">
                     <div class="auth-inner py-2">
-                        <!-- Login v1 -->
+                        <!-- Set New Password v1 -->
                         <div class="card mb-0">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <a href="javascript:void(0);" class="brand-logo">
+                                    <a href="/login" class="brand-logo">
                                         <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
                                         <h2 class="brand-text text-primary ml-1">monsieur-wifi</h2>
                                     </a>
@@ -497,55 +509,57 @@
                                     </div>
                                 </div>
 
-                                <h4 class="card-title mb-1">Welcome to monsieur-wifi! 👋</h4>
-                                <p class="card-text mb-2">Please sign-in to access your <span class="typing-text"></span></p>
+                                <h4 class="card-title mb-1">Set New Password 🔒</h4>
+                                <p class="card-text mb-2">Your new password must be different from previously used passwords</p>
 
-                                <!-- Alert for showing login messages -->
-                                <div id="login-alert" class="alert alert-danger mt-1" style="display: none;"></div>
+                                <!-- Alert for showing messages -->
+                                <div id="new-password-alert" class="alert alert-danger mt-1" style="display: none;"></div>
+                                <div id="new-password-success" class="alert alert-success mt-1" style="display: none;"></div>
 
-                                <!-- Add this after the login-alert div -->
-                                <div id="login-success" class="alert bg-transparent mt-1" style="display: none;"></div>
-
-                                <!-- Modified form to use AJAX -->
-                                <div class="auth-login-form mt-2" id="login-form">
+                                <!-- New Password Form -->
+                                <div class="auth-new-password-form mt-2" id="new-password-form">
                                     <div class="form-group">
-                                        <label for="login-email" class="form-label">Email</label>
-                                        <input type="text" class="form-control" id="login-email" name="email" placeholder="admin@mrwifi.com" aria-describedby="login-email" tabindex="5" />
+                                        <label for="new-password" class="form-label">New Password</label>
+                                        <div class="input-group input-group-merge form-password-toggle">
+                                            <input type="password" class="form-control form-control-merge" id="new-password" name="password" tabindex="1" placeholder="············" aria-describedby="new-password" autofocus />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="password-strength" id="password-strength"></div>
+                                        <div class="password-requirements" id="password-requirements">
+                                            <div class="requirement" id="req-length">
+                                                <i data-feather="circle" style="width: 12px; height: 12px;"></i>
+                                                <span>At least 8 characters</span>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <div class="d-flex justify-content-between">
-                                            <label for="login-password">Password</label>
-                                        </div>
+                                        <label for="confirm-password" class="form-label">Confirm Password</label>
                                         <div class="input-group input-group-merge form-password-toggle">
-                                            <input type="password" class="form-control form-control-merge" id="login-password" name="password" tabindex="2" placeholder="············" aria-describedby="login-password" />
+                                            <input type="password" class="form-control form-control-merge" id="confirm-password" name="password_confirmation" tabindex="2" placeholder="············" aria-describedby="confirm-password" />
                                             <div class="input-group-append">
                                                 <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" type="checkbox" id="remember-me" name="remember" tabindex="3" />
-                                            <label class="custom-control-label" for="remember-me"> Remember Me </label>
-                                        </div>
-                                    </div>
-                                    <!-- Changed to button type submit -->
-                                    <button type="submit" class="btn btn-primary btn-block" tabindex="4" id="login-btn">
-                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="login-spinner"></span>
-                                        <span id="login-text">Sign in</span>
+
+                                    <button type="submit" class="btn btn-primary btn-block" tabindex="3" id="new-password-btn">
+                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="new-password-spinner"></span>
+                                        <span id="new-password-text">Reset Password</span>
                                     </button>
                                 </div>
 
                                 <p class="text-center mt-2">
-                                    <span>Forgot your password?</span>
-                                    <a href="/password-reset">
-                                        <span>Reset Password</span>
+                                    <a href="/login">
+                                        <i data-feather="chevron-left"></i>
+                                        <span>Back to login</span>
                                     </a>
                                 </p>
                             </div>
                         </div>
-                        <!-- /Login v1 -->
+                        <!-- /Set New Password v1 -->
                     </div>
                 </div>
 
@@ -560,7 +574,6 @@
 
     <!-- BEGIN: Page Vendor JS-->
     <script src="app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -568,53 +581,42 @@
     <script src="app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
-    <!-- BEGIN: Page JS-->
-    <script src="app-assets/js/scripts/pages/page-auth-login.js"></script>
-    <!-- END: Page JS-->
-
-    <!-- Add this right after the Page JS scripts -->
-    <script src="/assets/js/config.js?v=1"></script>
-
     <script>
         // Language support system
         const translations = {
             en: {
-                pageTitle: 'Login - Monsieur WiFi',
-                metaDescription: 'monsieur-wifi - WiFi network management system for administrators and network owners',
-                welcome: 'Welcome to monsieur-wifi! 👋',
-                signInPrompt: 'Please sign-in to access your',
-                typingStrings: ['network management dashboard', 'WiFi control center', 'analytics platform'],
-                emailLabel: 'Email',
-                emailPlaceholder: 'admin@mrwifi.com',
-                passwordLabel: 'Password',
+                pageTitle: 'Set New Password - Monsieur WiFi',
+                metaDescription: 'monsieur-wifi - Set a new password for your account',
+                title: 'Set New Password 🔒',
+                prompt: 'Your new password must be different from previously used passwords',
+                newPasswordLabel: 'New Password',
+                confirmPasswordLabel: 'Confirm Password',
                 passwordPlaceholder: '············',
-                rememberMe: 'Remember Me',
-                signIn: 'Sign in',
-                signingIn: 'Signing in...',
-                forgotPassword: 'Forgot your password?',
                 resetPassword: 'Reset Password',
-                loginSuccessful: 'Login successful!',
-                loginError: 'An error occurred during login.',
+                resetting: 'Resetting...',
+                backToLogin: 'Back to login',
+                resetSuccess: 'Password reset successfully! Redirecting to login...',
+                resetError: 'An error occurred. Please try again.',
+                passwordMismatch: 'Passwords do not match',
+                reqLength: 'At least 8 characters',
                 langCode: 'EN',
                 flag: '🇺🇸'
             },
             fr: {
-                pageTitle: 'Connexion - Monsieur WiFi',
-                metaDescription: 'monsieur-wifi - Système de gestion de réseaux WiFi pour administrateurs et propriétaires de réseaux',
-                welcome: 'Bienvenue sur monsieur-wifi! 👋',
-                signInPrompt: 'Veuillez vous connecter pour accéder à votre',
-                typingStrings: ['tableau de bord de gestion réseau', 'centre de contrôle WiFi', 'plateforme d\'analytique'],
-                emailLabel: 'Email',
-                emailPlaceholder: 'admin@mrwifi.com',
-                passwordLabel: 'Mot de passe',
+                pageTitle: 'Définir un nouveau mot de passe - Monsieur WiFi',
+                metaDescription: 'monsieur-wifi - Définir un nouveau mot de passe pour votre compte',
+                title: 'Définir un nouveau mot de passe 🔒',
+                prompt: 'Votre nouveau mot de passe doit être différent des mots de passe précédemment utilisés',
+                newPasswordLabel: 'Nouveau mot de passe',
+                confirmPasswordLabel: 'Confirmer le mot de passe',
                 passwordPlaceholder: '············',
-                rememberMe: 'Se souvenir de moi',
-                signIn: 'Se connecter',
-                signingIn: 'Connexion en cours...',
-                forgotPassword: 'Mot de passe oublié?',
                 resetPassword: 'Réinitialiser le mot de passe',
-                loginSuccessful: 'Connexion réussie!',
-                loginError: 'Une erreur s\'est produite lors de la connexion.',
+                resetting: 'Réinitialisation...',
+                backToLogin: 'Retour à la connexion',
+                resetSuccess: 'Mot de passe réinitialisé avec succès! Redirection vers la connexion...',
+                resetError: 'Une erreur s\'est produite. Veuillez réessayer.',
+                passwordMismatch: 'Les mots de passe ne correspondent pas',
+                reqLength: 'Au moins 8 caractères',
                 langCode: 'FR',
                 flag: '🇫🇷'
             }
@@ -622,185 +624,200 @@
 
         // Language detection and management
         function detectLanguage() {
-            // Check for saved language preference first
             const savedLang = localStorage.getItem('preferred_language');
             if (savedLang && (savedLang === 'en' || savedLang === 'fr')) {
                 return savedLang;
             }
             
-            // Fallback to browser language detection
             const browserLang = navigator.language || navigator.userLanguage;
             const langCode = browserLang.substring(0, 2).toLowerCase();
-            return langCode === 'fr' ? 'fr' : 'en'; // Default to English
+            return langCode === 'fr' ? 'fr' : 'en';
         }
 
         function applyTranslations(lang) {
             const t = translations[lang];
             
-            // Update page title and meta description
             document.title = t.pageTitle;
             $('#meta-description').attr('content', t.metaDescription);
             
-            // Update static text elements
-            $('.card-title').text(t.welcome);
-            $('.card-text').html(t.signInPrompt + ' <span class="typing-text"></span>');
-            $('label[for="login-email"]').text(t.emailLabel);
-            $('#login-email').attr('placeholder', t.emailPlaceholder);
-            $('label[for="login-password"]').text(t.passwordLabel);
-            $('#login-password').attr('placeholder', t.passwordPlaceholder);
-            $('.custom-control-label[for="remember-me"]').text(t.rememberMe);
-            $('#login-text').text(t.signIn);
-            $('p.text-center.mt-2 > span').first().text(t.forgotPassword);
-            $('a[href="forgot-password.html"] span').text(t.resetPassword);
+            $('.card-title').text(t.title);
+            $('.card-text').text(t.prompt);
+            $('label[for="new-password"]').text(t.newPasswordLabel);
+            $('label[for="confirm-password"]').text(t.confirmPasswordLabel);
+            $('#new-password').attr('placeholder', t.passwordPlaceholder);
+            $('#confirm-password').attr('placeholder', t.passwordPlaceholder);
+            $('#new-password-text').text(t.resetPassword);
+            $('p.text-center.mt-2 a span').text(t.backToLogin);
+            $('#req-length span').text(t.reqLength);
             
-            // Update language dropdown button
             $('#current-lang').text(t.langCode);
             $('#current-lang-flag').text(t.flag);
             
-            // Store current language for use in other functions
             window.currentLang = lang;
             window.currentTranslations = t;
             
-            // Save language preference to localStorage
             localStorage.setItem('preferred_language', lang);
         }
 
         function switchLanguage(newLang) {
             applyTranslations(newLang);
-            
-            // Reinitialize typing animation with new language strings
-            if (window.typed) {
-                window.typed.destroy();
-            }
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
         }
 
-        // Initialize language on page load
+        // Get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
         const currentLanguage = detectLanguage();
         
         $(window).on('load', function() {
-            // Apply translations before other initializations
             applyTranslations(currentLanguage);
+            
             if (feather) {
                 feather.replace({
                     width: 14,
                     height: 14
                 });
                 
-                // Create device icons with Feather
-                // $('#laptop-icon').html(feather.icons['laptop'].toSvg({ width: 24, height: 24 }));
                 $('#smartphone-icon').html(feather.icons['smartphone'].toSvg({ width: 20, height: 20 }));
                 $('#tablet-icon').html(feather.icons['tablet'].toSvg({ width: 22, height: 22 }));
                 $('#router-icon').html(feather.icons['wifi'].toSvg({ width: 26, height: 26 }));
             }
             
-            // Initialize typing animation with translated strings
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
-            
-            // Language dropdown event handlers
             $('.language-option').on('click', function(e) {
                 e.preventDefault();
                 const selectedLang = $(this).data('lang');
                 if (selectedLang !== window.currentLang) {
                     switchLanguage(selectedLang);
                 }
-                // Close dropdown
                 $('#languageDropdown').dropdown('hide');
             });
             
-            // Set up CSRF token for all AJAX requests
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
             
-            // Form validation and submission
-            $('#login-btn').on('click', function(e) {
+            // Password strength checker
+            $('#new-password').on('input', function() {
+                const password = $(this).val();
+                const strength = calculatePasswordStrength(password);
+                updatePasswordStrength(strength);
+                checkPasswordRequirements(password);
+            });
+            
+            function calculatePasswordStrength(password) {
+                let strength = 0;
+                if (password.length >= 8) strength += 25;
+                if (password.length >= 12) strength += 25;
+                if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25;
+                if (password.match(/[0-9]/)) strength += 15;
+                if (password.match(/[^a-zA-Z0-9]/)) strength += 10;
+                return Math.min(strength, 100);
+            }
+            
+            function updatePasswordStrength(strength) {
+                const strengthBar = $('#password-strength');
+                strengthBar.css('width', strength + '%');
+                
+                if (strength < 40) {
+                    strengthBar.css('background-color', '#dc3545');
+                } else if (strength < 70) {
+                    strengthBar.css('background-color', '#ffc107');
+                } else {
+                    strengthBar.css('background-color', '#28a745');
+                }
+            }
+            
+            function checkPasswordRequirements(password) {
+                const lengthReq = $('#req-length');
+                
+                if (password.length >= 8) {
+                    lengthReq.addClass('met');
+                    lengthReq.find('i').replaceWith(feather.icons['check-circle'].toSvg({ width: 12, height: 12 }));
+                } else {
+                    lengthReq.removeClass('met');
+                    lengthReq.find('svg').replaceWith(feather.icons['circle'].toSvg({ width: 12, height: 12 }));
+                }
+            }
+            
+            // Form submission
+            $('#new-password-btn').on('click', function(e) {
                 e.preventDefault();
-                console.log('Login button clicked');
-                // Show spinner, hide text
-                $('#login-spinner').removeClass('d-none');
-                $('#login-text').text(window.currentTranslations.signingIn);
-                $('#login-btn').attr('disabled', true);
-                $('#login-alert').hide();
-                $('#login-success').hide();
                 
-                // Get form data
-                var formData = {
-                    email: $('#login-email').val(),
-                    password: $('#login-password').val(),
-                    remember: $('#remember-me').is(':checked')
-                };
+                const password = $('#new-password').val();
+                const confirmPassword = $('#confirm-password').val();
+                const token = getUrlParameter('token');
+                const email = getUrlParameter('email');
                 
-                // Make AJAX request to login endpoint
+                // Basic validation
+                if (!password || !confirmPassword) {
+                    $('#new-password-alert').text('Please fill in all fields').show();
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    $('#new-password-alert').text(window.currentTranslations.passwordMismatch).show();
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    $('#new-password-alert').text('Password must be at least 8 characters').show();
+                    return;
+                }
+                
+                // Show spinner
+                $('#new-password-spinner').removeClass('d-none');
+                $('#new-password-text').text(window.currentTranslations.resetting);
+                $('#new-password-btn').attr('disabled', true);
+                $('#new-password-alert').hide();
+                $('#new-password-success').hide();
+                
+                // Make AJAX request
                 $.ajax({
-                    url: '/api/auth/login',
+                    url: '/api/auth/reset-password',
                     type: 'POST',
                     dataType: 'json',
-                    data: formData,
+                    data: {
+                        token: token,
+                        email: email,
+                        password: password,
+                        password_confirmation: confirmPassword
+                    },
                     success: function(response) {
-                        console.log('Login successful');
-                        console.log(response);
-                        // Store user info and token using UserManager from config.js
-                        UserManager.setToken(response.access_token);
+                        console.log('Password reset successful');
                         
-                        if (response.user) {
-                            console.log("login user: ", response.user);
-                            UserManager.setUser(response.user);
-                        }
-
-                        localStorage.setItem('profile_picture', response.user.profile_picture);
+                        $('#new-password-spinner').addClass('d-none');
+                        $('#new-password-text').text(window.currentTranslations.resetPassword);
+                        $('#new-password-btn').attr('disabled', false);
                         
-                        // Reset button
-                        $('#login-spinner').addClass('d-none');
-                        $('#login-text').text(window.currentTranslations.signIn);
-                        $('#login-btn').attr('disabled', false);
+                        $('#new-password-success').text(window.currentTranslations.resetSuccess).show();
                         
-                        // Show success message with token and user information
-                        var token = response.access_token;
-                        var truncatedToken = token.substring(0, 20) + "..." + token.substring(token.length - 20);
-                    
-                        $('#login-success').html(
-                            '<span class="text-success text-bold">' + window.currentTranslations.loginSuccessful + '</span><br>'
-                        ).show();
-
-                        // Set a timeout to redirect to dashboard after showing the success message
+                        // Redirect to login after 2 seconds
                         setTimeout(function() {
-                            const langPrefix = window.currentLang === 'fr' ? '/fr' : '/en';
-                            window.location.href = langPrefix + '/dashboard?status=login';
-                        }, 1500); // Redirect after 1.5 seconds
+                            window.location.href = '/login';
+                        }, 2000);
                     },
                     error: function(xhr) {
-                        // Reset button
-                        $('#login-spinner').addClass('d-none');
-                        $('#login-text').text(window.currentTranslations.signIn);
-                        $('#login-btn').attr('disabled', false);
+                        $('#new-password-spinner').addClass('d-none');
+                        $('#new-password-text').text(window.currentTranslations.resetPassword);
+                        $('#new-password-btn').attr('disabled', false);
                         
-                        // Show error message
-                        var errorMessage = window.currentTranslations.loginError;
+                        var errorMessage = window.currentTranslations.resetError;
                         if (xhr.responseJSON) {
                             if (xhr.responseJSON.error) {
                                 errorMessage = xhr.responseJSON.error;
                             } else if (xhr.responseJSON.message) {
                                 errorMessage = xhr.responseJSON.message;
-                            } else if (xhr.responseJSON.email) {
-                                errorMessage = xhr.responseJSON.email[0];
+                            } else if (xhr.responseJSON.password) {
+                                errorMessage = xhr.responseJSON.password[0];
                             }
                         }
-                        $('#login-alert').text(errorMessage).show();
+                        $('#new-password-alert').text(errorMessage).show();
                     }
                 });
             });
@@ -820,50 +837,27 @@
                 }
             });
 
-            // Create random position animations for dots
+            // Animation functions
             $('.animated-bg .dot').each(function() {
                 animateDot($(this));
             });
 
-            // Position and animate device icons
-            // animateDeviceIcon($('#laptop-icon'), 15, 25, 8000);
             animateDeviceIcon($('#smartphone-icon'), 65, 75, 10000);
             animateDeviceIcon($('#tablet-icon'), 40, 90, 12000);
             animateDeviceIcon($('#router-icon'), 80, 30, 9000);
             
-            // Animate signal bars
             animateSignalBars();
             
-            // Add login button click animation
-            $('.btn-primary').on('mousedown', function() {
-                $(this).addClass('scale-down');
-            }).on('mouseup mouseleave', function() {
-                $(this).removeClass('scale-down');
-            });
-            
-            // Add event delegation for the show full token button
-            $(document).on('click', '#show-full-token', function(e) {
-                e.preventDefault();
-                var fullToken = UserManager.getToken();
-                
-                $('.token-display').html(
-                    '<div style="max-height: 100px; overflow-y: auto;">' + fullToken + '</div>'
-                );
-                
-                $(this).text('Token Revealed').addClass('btn-secondary').removeClass('btn-outline-success').attr('disabled', true);
-            });
-            
-            // Animation functions
             function animateDot(dot) {
                 const xPos = Math.random() * 100;
                 const yPos = Math.random() * 100;
-                const duration = Math.random() * 15000 + 10000; // 10-25 seconds
+                const duration = Math.random() * 15000 + 10000;
                 
                 dot.animate({
                     top: yPos + '%',
                     left: xPos + '%'
                 }, duration, 'linear', function() {
-                    animateDot(dot); // Continuous animation
+                    animateDot(dot);
                 });
             }
             
@@ -892,8 +886,8 @@
                     
                     container.find('.signal-bar').each(function(barIndex) {
                         const bar = $(this);
-                        const height = 6 + (barIndex * 4); // Increasing heights
-                        const delay = barIndex * 150; // Staggered animation
+                        const height = 6 + (barIndex * 4);
+                        const delay = barIndex * 150;
                         
                         bar.css({
                             height: height + 'px',
@@ -906,19 +900,10 @@
                     });
                 });
             }
-            
-            // Check if user is already logged in
-            const user = UserManager.getUser();
-            const token = UserManager.getToken();
-            
-            if (token && user) {
-                // User is already logged in, redirect to dashboard
-                // Uncomment the line below to enable auto-redirection
-                // window.location.href = '/dashboard';
-            }
         });
     </script>
 </body>
 <!-- END: Body-->
 
 </html>
+
