@@ -917,6 +917,16 @@
                 // window.location.href = '/dashboard';
             }
         });
+
+        $(".input-group-append").on("click", function() {
+            var $this = $(this);
+            var passwordInput = $this.closest(".form-password-toggle").find("input");
+            if (passwordInput.attr("type") === "text") {
+                passwordInput.attr("type", "password");
+            } else {
+                passwordInput.attr("type", "text");
+            }
+        });
     </script>
 </body>
 <!-- END: Body-->
