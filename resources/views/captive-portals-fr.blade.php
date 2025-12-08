@@ -51,7 +51,7 @@
             transition: all 0.3s;
             margin-bottom: 1rem;
         }
-        
+
         .upload-area:hover {
             border-color: #7367f0;
             background-color: rgba(115, 103, 240, 0.05);
@@ -143,17 +143,18 @@
 
         .preview-main {
             width: 100%;
-            max-width: 320px;
+            max-width: 420px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
+            min-height: 100%;
         }
         
         .logo-container {
-            margin-bottom: 20px;
+            height: 80px;
             display: flex;
+            align-items: center;
             justify-content: center;
+            margin-bottom: 2rem;
         }
         
         .preview-logo {
@@ -167,12 +168,17 @@
             font-weight: 600;
             color: #333;
             margin-bottom: 15px;
+            text-align: center;
+            width: 100%;
         }
         
         #preview-instructions {
             font-size: 16px;
             color: #666;
             margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.6;
+            width: 100%;
         }
         
         .input-container {
@@ -180,7 +186,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
         
         .preview-input {
@@ -264,32 +270,62 @@
             flex-grow: 1;
         }
         
-        .footer {
+        .portal-preview .footer,
+        .preview-main .footer {
             margin-top: auto;
-            /*text-align: center;
-            border-top: 1px solid #eee;*/
-            padding-top: 24px;
-            margin-left: 0px;
-            margin-right: 0px;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            border-top: 1px solid #eee;
+            padding-top: 1.5rem;
+            padding-left: 0;
+            padding-right: 0;
+            text-align: center;
+            width: 100%;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         .brand-logo {
-            height: 32px;
-            width: auto;
-            margin: 0 auto 16px;
-            background: #f0f0f0;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #666;
-            padding: 0 12px;
+            margin-bottom: 1rem;
+            margin-left: 0;
+            margin-right: 0;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .brand-logo img {
+            max-height: 32px;
+            max-width: 150px;
+            object-fit: contain;
+            display: inline-block;
+            margin: 0;
         }
         
         .terms {
             font-size: 0.8rem;
             color: #666;
+            width: 100%;
+            text-align: center;
+            display: block;
+            margin-left: 0;
+            margin-right: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        
+        #preview-terms-container {
+            margin-bottom: 0.5rem !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        #preview-powered-by {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
         }
         
         .terms a {
@@ -982,17 +1018,32 @@
                                 <div class="card-body">
                                     <div class="portal-preview">
                                         <div class="preview-main">
+                                            <!-- Header with Location Logo -->
                                             <div class="logo-container">
                                                 <img src="/img/wifi-placeholder.png" alt="Location Logo" id="preview-logo" class="preview-logo">
                                             </div>
+                                            
+                                            <!-- Welcome Text -->
                                             <h2 id="preview-welcome">Bienvenue sur notre WiFi</h2>
                                             <p id="preview-instructions">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</p>
+                                            
+                                            <!-- Login Form -->
                                             <div class="input-container">
                                                 <input type="text" class="preview-input" placeholder="Adresse e-mail">
                                                 <button id="preview-button" class="preview-button">Se connecter au WiFi</button>
                                             </div>
-                                            <div id="preview-terms-container" class="preview-terms">
-                                                <small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>
+                                            
+                                            <!-- Footer with Brand Logo and Terms -->
+                                            <div class="footer">
+                                                <div class="brand-logo">
+                                                    <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
+                                                </div>
+                                                <div class="terms" id="preview-terms-container" style="display: none; margin-bottom: 0.5rem;">
+                                                    <!-- Terms links will be inserted here when show_terms is enabled -->
+                                                </div>
+                                                <div class="terms" id="preview-powered-by">
+                                                    Propulsé par Monsieur WiFi
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1302,7 +1353,11 @@
             });
 
             $('#show-terms').on('change', function() {
-                $('#preview-terms-container').toggle(this.checked);
+                if (this.checked) {
+                    $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
+                } else {
+                    $('#preview-terms-container').hide();
+                }
             });
             
             $('#terms-of-service').on('input', function() {
@@ -1691,7 +1746,13 @@
                 'background-color': themeColor,
                 'border-color': themeColor
             });
-            $('#preview-terms-container').toggle(showTerms);
+            
+            // Update terms display
+            if (showTerms) {
+                $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
+            } else {
+                $('#preview-terms-container').hide();
+            }
             
             // Check if we have a logo in preview
             const logoPreview = $('#location-logo-preview');
@@ -1810,14 +1871,21 @@
                         }
                         
                         // Update preview values
-                        $('#preview-welcome').text(design.welcome_message || 'Welcome to our WiFi');
-                        $('#preview-instructions').text(design.login_instructions || 'Enter your email to connect to our WiFi network');
-                        $('#preview-button').text(design.button_text || 'Connect to WiFi');
+                        $('#preview-welcome').text(design.welcome_message || 'Bienvenue sur notre WiFi');
+                        $('#preview-instructions').text(design.login_instructions || 'Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi');
+                        $('#preview-button').text(design.button_text || 'Se connecter au WiFi');
                         $('#preview-button').css({
                             'background-color': design.theme_color || '#7367f0',
                             'border-color': design.theme_color || '#7367f0'
                         });
-                        $('#preview-terms-container').toggle(design.show_terms === undefined ? true : !!design.show_terms);
+                        
+                        // Update terms display
+                        const showTermsPreview = design.show_terms === undefined ? true : !!design.show_terms;
+                        if (showTermsPreview) {
+                            $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
+                        } else {
+                            $('#preview-terms-container').hide();
+                        }
                         
                         // Update modal content for terms and privacy policy
                         $('#preview-terms-content').text(design.terms_content || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
@@ -2141,14 +2209,14 @@
             });
             
             // Update preview with default values
-            $('#preview-welcome').text('Welcome to our WiFi');
-            $('#preview-instructions').text('Enter your email to connect to our WiFi network');
-            $('#preview-button').text('Connect to WiFi');
+            $('#preview-welcome').text('Bienvenue sur notre WiFi');
+            $('#preview-instructions').text('Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi');
+            $('#preview-button').text('Se connecter au WiFi');
             $('#preview-button').css({
                 'background-color': '#7367f0',
                 'border-color': '#7367f0'
             });
-            $('#preview-terms-container').show();
+            $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
             $('#preview-logo').attr('src', '').hide();
             
             // Update preview background to clear any gradients
