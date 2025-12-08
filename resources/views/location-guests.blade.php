@@ -229,6 +229,7 @@
                                                 <th>MAC Address</th>
                                                 <th>Email</th>
                                                 <th>Phone Number</th>
+                                                <th>First Login</th>
                                             </tr>
                                         </thead>
                                         <tbody id="guests-table-body">
@@ -319,7 +320,7 @@
                 processing: true,
                 serverSide: false,
                 searching: true,
-                order: [[1, 'asc']],
+                order: [[4, 'desc']], // Order by Last Login (updated_at) descending
                 columns: [
                     { 
                         data: null,
@@ -331,7 +332,47 @@
                     },
                     { data: 'mac_address', name: 'mac_address', defaultContent: '-' },
                     { data: 'email', name: 'email', defaultContent: '-' },
-                    { data: 'phone', name: 'phone', defaultContent: '-' }
+                    { data: 'phone', name: 'phone', defaultContent: '-' },
+                    { 
+                        data: 'updated_at', 
+                        name: 'updated_at', 
+                        defaultContent: '-',
+                        render: function(data, type, row) {
+                            if (!data || data === '-') {
+                                return '-';
+                            }
+                            
+                            // For sorting, return the raw date
+                            if (type === 'sort') {
+                                return data;
+                            }
+                            
+                            // Format the date for display
+                            const date = new Date(data);
+                            const now = new Date();
+                            const diffMs = now - date;
+                            const diffMins = Math.floor(diffMs / 60000);
+                            const diffHours = Math.floor(diffMs / 3600000);
+                            const diffDays = Math.floor(diffMs / 86400000);
+                            
+                            // Show relative time for recent logins
+                            if (diffMins < 1) {
+                                return '<span class="badge badge-light-success">Just now</span>';
+                            } else if (diffMins < 60) {
+                                return '<span class="badge badge-light-success">' + diffMins + ' min' + (diffMins > 1 ? 's' : '') + ' ago</span>';
+                            } else if (diffHours < 24) {
+                                return '<span class="badge badge-light-info">' + diffHours + ' hour' + (diffHours > 1 ? 's' : '') + ' ago</span>';
+                            } else if (diffDays < 7) {
+                                return '<span class="badge badge-light-warning">' + diffDays + ' day' + (diffDays > 1 ? 's' : '') + ' ago</span>';
+                            } else {
+                                // Show formatted date for older entries
+                                return '<span class="badge badge-light-secondary">' + 
+                                       date.toLocaleDateString() + ' ' + 
+                                       date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + 
+                                       '</span>';
+                            }
+                        }
+                    }
                 ],
                 language: {
                     emptyTable: 'No guests found',
@@ -368,6 +409,7 @@
                 },
                 success: function(response) {
                     let location = null;
+                    console.log('Location data response:', response);
                     if (response.data) {
                         location = response.data;
                     } else if (response.location) {
@@ -413,7 +455,8 @@
                                 guestsTable.row.add({
                                     mac_address: guest.mac_address || '-',
                                     email: guest.email || '-',
-                                    phone: guest.phone || '-'
+                                    phone: guest.phone || '-',
+                                    updated_at: guest.created_at || '-'
                                 });
                             });
                         }

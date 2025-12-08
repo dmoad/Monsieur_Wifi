@@ -229,6 +229,7 @@
                                                 <th>Adresse MAC</th>
                                                 <th>Email</th>
                                                 <th>Numéro de téléphone</th>
+                                                <th>Première connexion</th>
                                             </tr>
                                         </thead>
                                         <tbody id="guests-table-body">
@@ -319,7 +320,7 @@
                 processing: true,
                 serverSide: false,
                 searching: true,
-                order: [[1, 'asc']],
+                order: [[4, 'desc']], // Trier par Première connexion (created_at) décroissant
                 columns: [
                     { 
                         data: null,
@@ -331,7 +332,47 @@
                     },
                     { data: 'mac_address', name: 'mac_address', defaultContent: '-' },
                     { data: 'email', name: 'email', defaultContent: '-' },
-                    { data: 'phone', name: 'phone', defaultContent: '-' }
+                    { data: 'phone', name: 'phone', defaultContent: '-' },
+                    { 
+                        data: 'created_at', 
+                        name: 'created_at', 
+                        defaultContent: '-',
+                        render: function(data, type, row) {
+                            if (!data || data === '-') {
+                                return '-';
+                            }
+                            
+                            // Pour le tri, retourner la date brute
+                            if (type === 'sort') {
+                                return data;
+                            }
+                            
+                            // Formater la date pour l'affichage
+                            const date = new Date(data);
+                            const now = new Date();
+                            const diffMs = now - date;
+                            const diffMins = Math.floor(diffMs / 60000);
+                            const diffHours = Math.floor(diffMs / 3600000);
+                            const diffDays = Math.floor(diffMs / 86400000);
+                            
+                            // Afficher le temps relatif pour les connexions récentes
+                            if (diffMins < 1) {
+                                return '<span class="badge badge-light-success">À l\'instant</span>';
+                            } else if (diffMins < 60) {
+                                return '<span class="badge badge-light-success">Il y a ' + diffMins + ' min</span>';
+                            } else if (diffHours < 24) {
+                                return '<span class="badge badge-light-info">Il y a ' + diffHours + ' heure' + (diffHours > 1 ? 's' : '') + '</span>';
+                            } else if (diffDays < 7) {
+                                return '<span class="badge badge-light-warning">Il y a ' + diffDays + ' jour' + (diffDays > 1 ? 's' : '') + '</span>';
+                            } else {
+                                // Afficher la date formatée pour les entrées plus anciennes
+                                return '<span class="badge badge-light-secondary">' + 
+                                       date.toLocaleDateString('fr-FR') + ' ' + 
+                                       date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}) + 
+                                       '</span>';
+                            }
+                        }
+                    }
                 ],
                 language: {
                     emptyTable: 'Aucun invité trouvé',
@@ -413,7 +454,8 @@
                                 guestsTable.row.add({
                                     mac_address: guest.mac_address || '-',
                                     email: guest.email || '-',
-                                    phone: guest.phone || '-'
+                                    phone: guest.phone || '-',
+                                    created_at: guest.created_at || '-'
                                 });
                             });
                         }
