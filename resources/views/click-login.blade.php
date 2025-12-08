@@ -282,7 +282,7 @@
     <script src="/app-assets/vendors/js/vendors.min.js"></script>
     <script src="/app-assets/js/core/app-menu.js"></script>
     <script src="/app-assets/js/core/app.js"></script>
-    
+
     <script>
         // Language system - Initialize before DOM ready for faster rendering
         const translations = {
@@ -338,7 +338,7 @@
                     element.textContent = translations[lang][key];
                 }
             });
-            
+
             // Update elements with data-i18n-default (only if no custom content)
             document.querySelectorAll('[data-i18n-default]').forEach(element => {
                 const key = element.getAttribute('data-i18n-default');
@@ -351,7 +351,7 @@
                     }
                 }
             });
-            
+
             // Update terms links if they are visible
             const termsLinks = document.getElementById('terms-links');
             if (termsLinks && termsLinks.style.display !== 'none') {
