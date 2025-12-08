@@ -352,6 +352,12 @@
                 }
             });
             
+            // Update terms links if they are visible
+            const termsLinks = document.getElementById('terms-links');
+            if (termsLinks && termsLinks.style.display !== 'none') {
+                termsLinks.innerHTML = translations[lang].termsText;
+            }
+            
             // Update active button
             document.querySelectorAll('.language-btn').forEach(btn => {
                 btn.classList.remove('active');

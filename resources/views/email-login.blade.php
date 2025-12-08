@@ -375,6 +375,12 @@
                 }
             });
             
+            // Update terms links if they are visible
+            const termsLinks = document.getElementById('terms-links');
+            if (termsLinks && termsLinks.style.display !== 'none') {
+                termsLinks.innerHTML = translations[lang].termsText;
+            }
+            
             // Update active button
             document.querySelectorAll('.language-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -586,8 +592,8 @@
                     
                     // Add login instructions if available
                     const loginInstructions = design.login_instructions;
-                    if (loginInstructions) {
-                        $('#welcome-text').append(`<p class="">${loginInstructions}</p>`);
+                    if (loginInstructions && loginInstructions.length > 1) {
+                        $('#welcome-text').append(`<p class="mt-2">${loginInstructions}</p>`);
                     }
                 }
                 
