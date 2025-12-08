@@ -58,8 +58,10 @@
 
         .welcome-text {
             text-align: center;
+            font-size: 0.95rem;
             color: #333;
             line-height: 1.6;
+            margin-bottom: 2rem;
         }
 
         .login-button {

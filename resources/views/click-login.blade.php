@@ -59,9 +59,10 @@
 
         .welcome-text {
             text-align: center;
-            margin-bottom: 3rem;
+            font-size: 0.95rem;
             color: #333;
             line-height: 1.6;
+            margin-bottom: 2rem;
         }
 
         .login-button {

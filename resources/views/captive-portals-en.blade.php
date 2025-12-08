@@ -242,7 +242,7 @@
         
         .welcome-text {
             color: #333;
-            font-size: 0.95rem;
+            font-size: 0.65rem;
             line-height: 1.5;
             margin: 24px 0 32px;
             text-align: center;
