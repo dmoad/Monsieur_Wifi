@@ -224,6 +224,9 @@
             <div class="brand-logo">
                 <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
+            <div class="terms" id="terms-links" style="display: none; margin-bottom: 0.5rem;">
+                <!-- Terms links will be inserted here when show_terms is enabled -->
+            </div>
             <div class="terms" id="terms-text" data-i18n-default="footer">
                 Powered by Mr WiFi
             </div>
@@ -541,7 +544,7 @@
                     
                     // Add login instructions if available
                     const loginInstructions = design.login_instructions;
-                    if (loginInstructions) {
+                    if (loginInstructions && loginInstructions.length > 1) {
                         $('#welcome-text').append(`<p class="mt-2">${loginInstructions}</p>`);
                     }
                 }
@@ -558,7 +561,9 @@
                 const showTerms = design.show_terms === true || settings.terms_enabled === true;
                 if (showTerms) {
                     const lang = getLanguage();
-                    $('#terms-text').html(translations[lang].termsText);
+                    $('#terms-links').html(translations[lang].termsText).show();
+                } else {
+                    $('#terms-links').hide();
                 }
                 
                 // Set custom terms and privacy content if available
@@ -623,6 +628,16 @@
                         // Store the challenge and location data
                         localStorage.setItem('location_data', JSON.stringify(locationInfo.location));
                         localStorage.setItem('challenge', locationInfo.location.challenge);
+                        
+                        // Update terms and privacy modal content with fresh data
+                        if (locationInfo.location.design) {
+                            if (locationInfo.location.design.terms_content) {
+                                $('#terms-content').html(locationInfo.location.design.terms_content);
+                            }
+                            if (locationInfo.location.design.privacy_content) {
+                                $('#privacy-content').html(locationInfo.location.design.privacy_content);
+                            }
+                        }
                         
                         // Apply design settings again with fresh data
                         applyDesignSettings(
