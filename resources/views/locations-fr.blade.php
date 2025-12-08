@@ -440,8 +440,8 @@
                                         <div class="form-group mb-0 mr-1">
                                             <select class="form-control" id="status-filter" disabled>
                                                 <option value="">Tous les statuts</option>
-                                                <option value="Online">En ligne</option>
-                                                <option value="Offline">Hors ligne</option>
+                                                <option value="En ligne">En ligne</option>
+                                                <option value="Hors ligne">Hors ligne</option>
                                             </select>
                                         </div>
                                         <div class="form-group mb-0">
