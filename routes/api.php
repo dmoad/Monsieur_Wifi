@@ -14,12 +14,14 @@ use App\Http\Controllers\CaptivePortalWorkingHourController;
 use App\Http\Controllers\CaptivePortalHourlyScheduleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DomainBlockingController;
+use App\Http\Controllers\TempCaptivePortalDesignController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('auth/register', [AuthController::class, 'register']);
 Route::post('auth/password-reset', [AuthController::class, 'sendPasswordResetLink']);
 Route::post('auth/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('temp-captive-portal-designs', [TempCaptivePortalDesignController::class, 'store']);
 
 // Protected routes (auth required)
 Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {

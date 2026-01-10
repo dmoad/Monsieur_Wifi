@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\TempCaptivePortalDesign;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Mail;
@@ -39,6 +40,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string|in:admin,user',
+            'design_id' => 'nullable|exists:temp_captive_portal_designs,id',
         ]);
 
         if ($validator->fails()) {
@@ -51,6 +53,27 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
+
+        // Transfer temporary design to user if design_id is provided
+        if ($request->has('design_id') && $request->design_id) {
+            try {
+                $tempDesign = TempCaptivePortalDesign::find($request->design_id);
+                if ($tempDesign) {
+                    $tempDesign->transferToUser($user->id);
+                    Log::info('Temporary design transferred to user', [
+                        'user_id' => $user->id,
+                        'design_id' => $request->design_id
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Failed to transfer temporary design', [
+                    'user_id' => $user->id,
+                    'design_id' => $request->design_id,
+                    'error' => $e->getMessage()
+                ]);
+                // Continue with registration even if design transfer fails
+            }
+        }
 
         $token = Auth::guard('api')->login($user);
         

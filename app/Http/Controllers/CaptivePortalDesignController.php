@@ -369,4 +369,9 @@ class CaptivePortalDesignController extends Controller
             ]
         ]);
     }
+
+    function registerWithCaptivePortal()
+    {
+        return view('register-with-captive-portal');
+    }
 }

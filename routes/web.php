@@ -11,6 +11,10 @@ Route::get('/', function () {
     return view('login');
 })->name('login.show');
 
+Route::get('/register', function () {
+    return view('register');
+})->name('register');
+
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -280,3 +284,7 @@ Route::get('/password-login/{location}/{mac_address}', function () {
 // Captive Portal routes
 Route::get('/captive-portal/{location_id}', [CaptivePortalController::class, 'showLoginPage']);
 Route::post('/captive-portal/login', [CaptivePortalController::class, 'login']);
+
+Route::get('/register-with-captive-portal', function () {
+    return view('register-with-captive-portal');
+})->name('register-with-captive-portal');
