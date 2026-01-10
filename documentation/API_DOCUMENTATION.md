@@ -20,8 +20,8 @@ When using the design-first flow, the process works as follows:
 2. **API Call**: The design form submits to `POST /api/temp-captive-portal-designs` which creates a temporary design record
 3. **Response**: The API returns a `design_id` in the response
 4. **Redirection**: The application automatically redirects to `/register?design_id={design_id}` with the design ID as a URL parameter
-5. **Registration**: User fills out the registration form (name, email, password, role)
-6. **Account Creation**: The registration form submits to `POST /api/auth/register` with the `design_id` included in the request
+5. **Registration**: User fills out the registration form (name, email, password)
+6. **Account Creation**: The registration form submits to `POST /api/auth/register` with the `design_id` included in the request. The user role is automatically set to `"user"` on the backend.
 7. **Design Transfer**: Upon successful user creation, the system automatically:
    - Retrieves the temporary design using the `design_id`
    - Creates a permanent `CaptivePortalDesign` record linked to the new user
@@ -261,8 +261,9 @@ X-CSRF-TOKEN: {csrf_token}  (Required for web requests)
 | `email` | string | Yes | User's email address (must be unique, max 255 characters) |
 | `password` | string | Yes | User's password (minimum 8 characters) |
 | `password_confirmation` | string | Yes | Password confirmation (must match password) |
-| `role` | string | Yes | User role: `admin` or `user` |
 | `design_id` | integer | No | ID of temporary design to transfer (must exist in `temp_captive_portal_designs` table) |
+
+**Note**: The `role` field is **not** required and is automatically set to `"user"` on the backend. All users created through this endpoint will have the role `"user"`. Admin users must be created through other means (e.g., by existing admins via the admin panel).
 
 ### Example Request (cURL)
 
@@ -275,10 +276,11 @@ curl -X POST https://portal.monsieur-wifi.com/api/auth/register \
     "email": "john.doe@example.com",
     "password": "SecurePassword123!",
     "password_confirmation": "SecurePassword123!",
-    "role": "user",
     "design_id": 123
   }'
 ```
+
+**Note**: The `role` field is not included in the request. All users created through this endpoint are automatically assigned the role `"user"`.
 
 ### Example Request (JavaScript/Fetch)
 
@@ -288,8 +290,8 @@ const registerData = {
     email: 'john.doe@example.com',
     password: 'SecurePassword123!',
     password_confirmation: 'SecurePassword123!',
-    role: 'user',
     design_id: 123  // Optional: from previous design creation
+    // Note: role is automatically set to "user" on the backend
 };
 
 fetch('/api/auth/register', {
@@ -346,9 +348,6 @@ fetch('/api/auth/register', {
     "password": [
         "The password confirmation does not match."
     ],
-    "role": [
-        "The selected role is invalid."
-    ],
     "design_id": [
         "The selected design id is invalid."
     ]
@@ -365,10 +364,15 @@ fetch('/api/auth/register', {
 
 ### Notes
 
-- If `design_id` is provided and valid, the temporary design will be automatically transferred to the new user account
-- The temporary design will be deleted after successful transfer
-- If design transfer fails, registration will still succeed (error is logged but not returned to client)
-- The `access_token` should be included in subsequent authenticated requests as: `Authorization: Bearer {access_token}`
+- **Role Assignment**: All users created through this endpoint are automatically assigned the role `"user"`. The role cannot be specified in the registration request and is hardcoded on the backend for security reasons.
+
+- **Design Transfer**: If `design_id` is provided and valid, the temporary design will be automatically transferred to the new user account
+
+- **Cleanup**: The temporary design will be deleted after successful transfer
+
+- **Error Handling**: If design transfer fails, registration will still succeed (error is logged but not returned to client)
+
+- **Authentication**: The `access_token` should be included in subsequent authenticated requests as: `Authorization: Bearer {access_token}`
 
 ---
 
@@ -411,8 +415,8 @@ const registerData = {
     email: 'john@example.com',
     password: 'SecurePassword123!',
     password_confirmation: 'SecurePassword123!',
-    role: 'user',
     design_id: designId  // Include design_id from URL
+    // Note: role is automatically set to "user" on the backend
 };
 
 fetch('/api/auth/register', {
@@ -438,9 +442,9 @@ const registerData = {
     name: 'Jane Smith',
     email: 'jane@example.com',
     password: 'SecurePassword123!',
-    password_confirmation: 'SecurePassword123!',
-    role: 'user'
+    password_confirmation: 'SecurePassword123!'
     // No design_id provided
+    // Note: role is automatically set to "user" on the backend
 };
 
 fetch('/api/auth/register', {

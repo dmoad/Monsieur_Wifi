@@ -497,8 +497,8 @@
                                     </div>
                                 </div>
 
-                                <h4 class="card-title mb-1">Create Your Account 👋</h4>
-                                <p class="card-text mb-2">Sign up to get started with monsieur-wifi</p>
+                                <h4 class="card-title mb-1" data-translate="welcome">Create Your Account 👋</h4>
+                                <p class="card-text mb-2" data-translate="signInPrompt">Sign up to get started with monsieur-wifi</p>
 
                                 <!-- Alert for showing messages -->
                                 <div id="login-alert" class="alert alert-danger mt-1" style="display: none;"></div>
@@ -510,19 +510,19 @@
                                     <input type="hidden" id="design_id" name="design_id" value="">
                                     
                                     <div class="form-group">
-                                        <label for="register-name" class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" id="register-name" name="name" placeholder="John Doe" required autofocus />
+                                        <label for="register-name" class="form-label" data-translate="fullName">Full Name</label>
+                                        <input type="text" class="form-control" id="register-name" name="name" data-placeholder="fullNamePlaceholder" placeholder="John Doe" required autofocus />
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="register-email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="register-email" name="email" placeholder="john@example.com" required />
+                                        <label for="register-email" class="form-label" data-translate="registerEmail">Email</label>
+                                        <input type="email" class="form-control" id="register-email" name="email" data-placeholder="registerEmailPlaceholder" placeholder="john@example.com" required />
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="register-password" class="form-label">Password</label>
+                                        <label for="register-password" class="form-label" data-translate="registerPassword">Password</label>
                                         <div class="input-group input-group-merge form-password-toggle">
-                                            <input type="password" class="form-control form-control-merge" id="register-password" name="password" placeholder="············" required />
+                                            <input type="password" class="form-control form-control-merge" id="register-password" name="password" data-placeholder="registerPasswordPlaceholder" placeholder="············" required />
                                             <div class="input-group-append">
                                                 <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                             </div>
@@ -530,34 +530,25 @@
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="register-password-confirm" class="form-label">Confirm Password</label>
+                                        <label for="register-password-confirm" class="form-label" data-translate="confirmPassword">Confirm Password</label>
                                         <div class="input-group input-group-merge form-password-toggle">
-                                            <input type="password" class="form-control form-control-merge" id="register-password-confirm" name="password_confirmation" placeholder="············" required />
+                                            <input type="password" class="form-control form-control-merge" id="register-password-confirm" name="password_confirmation" data-placeholder="confirmPasswordPlaceholder" placeholder="············" required />
                                             <div class="input-group-append">
                                                 <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="register-role" class="form-label">Role</label>
-                                        <select class="form-control" id="register-role" name="role" required>
-                                            <option value="">Select Role</option>
-                                            <option value="user">User</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
                                     </div>
                                     
                                     <button type="submit" class="btn btn-primary btn-block" tabindex="4" id="register-btn">
                                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="register-spinner"></span>
-                                        <span id="register-text">Register</span>
+                                        <span id="register-text" data-translate="registerButton">Register</span>
                                     </button>
                                 </form>
 
                                 <p class="text-center mt-2">
-                                    <span>Already have an account?</span>
+                                    <span data-translate="alreadyHaveAccount">Already have an account?</span>
                                     <a href="/login">
-                                        <span>Login</span>
+                                        <span data-translate="login">Login</span>
                                     </a>
                                 </p>
                             </div>
@@ -596,42 +587,66 @@
         // Language support system
         const translations = {
             en: {
-                pageTitle: 'Login - Monsieur WiFi',
+                pageTitle: 'Register - Monsieur WiFi',
                 metaDescription: 'monsieur-wifi - WiFi network management system for administrators and network owners',
-                welcome: 'Welcome to monsieur-wifi! 👋',
-                signInPrompt: 'Please sign-in to access your',
+                welcome: 'Create Your Account 👋',
+                signInPrompt: 'Sign up to get started with monsieur-wifi',
                 typingStrings: ['network management dashboard', 'WiFi control center', 'analytics platform'],
                 emailLabel: 'Email',
                 emailPlaceholder: 'admin@mrwifi.com',
                 passwordLabel: 'Password',
                 passwordPlaceholder: '············',
                 rememberMe: 'Remember Me',
-                signIn: 'Sign in',
-                signingIn: 'Signing in...',
+                signIn: 'Register',
+                signingIn: 'Registering...',
                 forgotPassword: 'Forgot your password?',
                 resetPassword: 'Reset Password',
-                loginSuccessful: 'Login successful!',
-                loginError: 'An error occurred during login.',
+                loginSuccessful: 'Registration successful!',
+                loginError: 'An error occurred during registration.',
+                fullName: 'Full Name',
+                fullNamePlaceholder: 'John Doe',
+                registerEmail: 'Email',
+                registerEmailPlaceholder: 'john@example.com',
+                registerPassword: 'Password',
+                registerPasswordPlaceholder: '············',
+                confirmPassword: 'Confirm Password',
+                confirmPasswordPlaceholder: '············',
+                registerButton: 'Register',
+                registering: 'Registering...',
+                alreadyHaveAccount: 'Already have an account?',
+                login: 'Login',
                 langCode: 'EN',
                 flag: '🇺🇸'
             },
             fr: {
-                pageTitle: 'Connexion - Monsieur WiFi',
+                pageTitle: 'Inscription - Monsieur WiFi',
                 metaDescription: 'monsieur-wifi - Système de gestion de réseaux WiFi pour administrateurs et propriétaires de réseaux',
-                welcome: 'Bienvenue sur monsieur-wifi! 👋',
-                signInPrompt: 'Veuillez vous connecter pour accéder à votre',
+                welcome: 'Créez Votre Compte 👋',
+                signInPrompt: 'Inscrivez-vous pour commencer avec monsieur-wifi',
                 typingStrings: ['tableau de bord de gestion réseau', 'centre de contrôle WiFi', 'plateforme d\'analytique'],
                 emailLabel: 'Email',
                 emailPlaceholder: 'admin@mrwifi.com',
                 passwordLabel: 'Mot de passe',
                 passwordPlaceholder: '············',
                 rememberMe: 'Se souvenir de moi',
-                signIn: 'Se connecter',
-                signingIn: 'Connexion en cours...',
+                signIn: 'S\'inscrire',
+                signingIn: 'Inscription en cours...',
                 forgotPassword: 'Mot de passe oublié?',
                 resetPassword: 'Réinitialiser le mot de passe',
-                loginSuccessful: 'Connexion réussie!',
-                loginError: 'Une erreur s\'est produite lors de la connexion.',
+                loginSuccessful: 'Inscription réussie! Redirection vers le tableau de bord...',
+                loginError: 'Une erreur s\'est produite lors de l\'inscription.',
+                fullName: 'Nom Complet',
+                fullNamePlaceholder: 'Jean Dupont',
+                registerEmail: 'Email',
+                registerEmailPlaceholder: 'jean@exemple.com',
+                registerPassword: 'Mot de passe',
+                registerPasswordPlaceholder: '············',
+                confirmPassword: 'Confirmer le Mot de passe',
+                confirmPasswordPlaceholder: '············',
+                registerButton: 'S\'inscrire',
+                registering: 'Inscription en cours...',
+                alreadyHaveAccount: 'Vous avez déjà un compte?',
+                login: 'Connexion',
                 langCode: 'FR',
                 flag: '🇫🇷'
             }
@@ -660,15 +675,33 @@
             
             // Update static text elements
             $('.card-title').text(t.welcome);
-            $('.card-text').html(t.signInPrompt + ' <span class="typing-text"></span>');
-            $('label[for="login-email"]').text(t.emailLabel);
-            $('#login-email').attr('placeholder', t.emailPlaceholder);
-            $('label[for="login-password"]').text(t.passwordLabel);
-            $('#login-password').attr('placeholder', t.passwordPlaceholder);
-            $('.custom-control-label[for="remember-me"]').text(t.rememberMe);
-            $('#login-text').text(t.signIn);
-            $('p.text-center.mt-2 > span').first().text(t.forgotPassword);
-            $('a[href="forgot-password.html"] span').text(t.resetPassword);
+            $('.card-text').text(t.signInPrompt);
+            
+            // Update all elements with data-translate attribute
+            $('[data-translate]').each(function() {
+                const key = $(this).attr('data-translate');
+                if (t[key]) {
+                    if ($(this).is('label')) {
+                        // For labels, preserve the required asterisk if present
+                        const html = $(this).html();
+                        if (html.includes('<span class="text-danger">*</span>')) {
+                            $(this).html(t[key] + ' <span class="text-danger">*</span>');
+                        } else {
+                            $(this).text(t[key]);
+                        }
+                    } else {
+                        $(this).text(t[key]);
+                    }
+                }
+            });
+            
+            // Update placeholders
+            $('[data-placeholder]').each(function() {
+                const key = $(this).attr('data-placeholder');
+                if (t[key]) {
+                    $(this).attr('placeholder', t[key]);
+                }
+            });
             
             // Update language dropdown button
             $('#current-lang').text(t.langCode);
@@ -685,17 +718,22 @@
         function switchLanguage(newLang) {
             applyTranslations(newLang);
             
-            // Reinitialize typing animation with new language strings
-            if (window.typed) {
-                window.typed.destroy();
+            // Reinitialize Feather icons after language change
+            if (feather) {
+                feather.replace();
             }
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
+            
+            // Reinitialize typing animation with new language strings (if exists)
+            if (window.typed && $('.typing-text').length) {
+                window.typed.destroy();
+                window.typed = new Typed('.typing-text', {
+                    strings: window.currentTranslations.typingStrings,
+                    typeSpeed: 50,
+                    backSpeed: 30,
+                    backDelay: 2000,
+                    loop: true
+                });
+            }
         }
 
         // Initialize language on page load
@@ -732,6 +770,10 @@
                 const selectedLang = $(this).data('lang');
                 if (selectedLang !== window.currentLang) {
                     switchLanguage(selectedLang);
+                    // Reinitialize Feather icons after language change
+                    if (feather) {
+                        feather.replace();
+                    }
                 }
                 // Close dropdown
                 $('#languageDropdown').dropdown('hide');
@@ -760,13 +802,14 @@
                 const password = $('#register-password').val();
                 const passwordConfirm = $('#register-password-confirm').val();
                 if (password !== passwordConfirm) {
-                    $('#login-alert').text('Passwords do not match').show();
+                    const passwordMismatchMsg = window.currentLang === 'fr' ? 'Les mots de passe ne correspondent pas' : 'Passwords do not match';
+                    $('#login-alert').text(passwordMismatchMsg).show();
                     return;
                 }
                 
                 // Show spinner, hide text
                 $('#register-spinner').removeClass('d-none');
-                $('#register-text').text('Registering...');
+                $('#register-text').text(window.currentTranslations.registering);
                 $('#register-btn').attr('disabled', true);
                 $('#login-alert').hide();
                 $('#login-success').hide();
@@ -777,7 +820,6 @@
                     email: $('#register-email').val(),
                     password: password,
                     password_confirmation: passwordConfirm,
-                    role: $('#register-role').val(),
                     design_id: $('#design_id').val() || null
                 };
                 
@@ -804,12 +846,12 @@
                         
                         // Reset button
                         $('#register-spinner').addClass('d-none');
-                        $('#register-text').text('Register');
+                        $('#register-text').text(window.currentTranslations.registerButton);
                         $('#register-btn').attr('disabled', false);
                         
                         // Show success message
                         $('#login-success').html(
-                            '<span class="text-success text-bold">Registration successful! Redirecting...</span>'
+                            '<span class="text-success text-bold">' + window.currentTranslations.loginSuccessful + '</span>'
                         ).show();
 
                         // Set a timeout to redirect to dashboard after showing the success message
@@ -821,7 +863,7 @@
                     error: function(xhr) {
                         // Reset button
                         $('#register-spinner').addClass('d-none');
-                        $('#register-text').text('Register');
+                        $('#register-text').text(window.currentTranslations.registerButton);
                         $('#register-btn').attr('disabled', false);
                         
                         // Show error message
