@@ -4,6 +4,49 @@
 
 This document describes the API endpoints for creating a temporary captive portal design and registering a new user account.
 
+### Overview
+
+The registration system supports two flows:
+
+1. **Design-First Flow**: Users first configure their captive portal design, then register their account. The design is stored temporarily and automatically transferred to their account upon successful registration.
+
+2. **Direct Registration Flow**: Users register directly without pre-configuring a design. They can create designs later from their dashboard.
+
+### Design-First Registration Flow
+
+When using the design-first flow, the process works as follows:
+
+1. **Design Creation**: User visits `/register-with-captive-portal` and configures their captive portal design (colors, messages, logos, etc.)
+2. **API Call**: The design form submits to `POST /api/temp-captive-portal-designs` which creates a temporary design record
+3. **Response**: The API returns a `design_id` in the response
+4. **Redirection**: The application automatically redirects to `/register?design_id={design_id}` with the design ID as a URL parameter
+5. **Registration**: User fills out the registration form (name, email, password, role)
+6. **Account Creation**: The registration form submits to `POST /api/auth/register` with the `design_id` included in the request
+7. **Design Transfer**: Upon successful user creation, the system automatically:
+   - Retrieves the temporary design using the `design_id`
+   - Creates a permanent `CaptivePortalDesign` record linked to the new user
+   - Sets both `user_id` and `owner_id` to the new user's ID
+   - Deletes the temporary design record
+8. **Completion**: User receives authentication token and is redirected to the dashboard
+
+### Key Features
+
+- **No Authentication Required**: Both endpoints are public, allowing users to create designs and register without being logged in
+- **Automatic Design Transfer**: Temporary designs are seamlessly transferred to permanent designs upon registration
+- **Error Handling**: If design transfer fails, registration still succeeds (error is logged but not returned to client)
+- **Cleanup**: Temporary designs are automatically deleted after successful transfer
+- **Flexibility**: Users can register with or without a pre-configured design
+
+### URL Parameters
+
+When redirecting to the registration page after design creation, the `design_id` is passed as a URL query parameter:
+
+```
+/register?design_id=123
+```
+
+The registration page automatically captures this parameter and includes it in the registration API request. If no `design_id` is provided, registration proceeds normally without design transfer.
+
 ---
 
 ## Table of Contents
@@ -136,6 +179,18 @@ fetch('/api/temp-captive-portal-designs', {
 }
 ```
 
+**Important**: After receiving a successful response, you should redirect the user to the registration page with the `design_id` as a URL parameter:
+
+```javascript
+// After successful design creation
+if (response.success && response.data.design_id) {
+    // Redirect to registration page with design_id
+    window.location.href = `/register?design_id=${response.data.design_id}`;
+}
+```
+
+The registration page will automatically capture the `design_id` from the URL and include it in the registration request. This ensures the temporary design is transferred to the user's account upon successful registration.
+
 ### Error Response (422 Validation Error)
 
 ```json
@@ -165,9 +220,15 @@ fetch('/api/temp-captive-portal-designs', {
 
 ### Notes
 
-- The temporary design will be automatically deleted after successful user registration
-- File uploads are stored in `storage/app/public/captive-portals/logos/` and `storage/app/public/captive-portals/backgrounds/`
-- The `design_id` returned should be used in the registration endpoint to link the design to the user account
+- **Redirection Flow**: After successful design creation, redirect the user to `/register?design_id={design_id}`. The registration page will automatically capture the `design_id` from the URL parameter and include it in the registration request.
+
+- **Design Transfer**: The temporary design will be automatically transferred to the user's account upon successful registration and then deleted from the temporary table.
+
+- **File Storage**: File uploads are stored in `storage/app/public/captive-portals/logos/` and `storage/app/public/captive-portals/backgrounds/`. These files are preserved when the design is transferred to the permanent table.
+
+- **Design ID Usage**: The `design_id` returned in the response should be passed to the registration endpoint (`POST /api/auth/register`) as a parameter. If omitted, registration will proceed normally without design transfer.
+
+- **Temporary Design Lifecycle**: Temporary designs are only deleted after successful transfer to a user account. If a user abandons the registration process, the temporary design will remain in the database (consider implementing cleanup for abandoned designs).
 
 ---
 
