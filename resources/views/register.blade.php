@@ -581,7 +581,7 @@
     <!-- END: Page JS-->
 
     <!-- Add this right after the Page JS scripts -->
-    <script src="/assets/js/config.js?v=1"></script>
+    <script src="/assets/js/config.js?v=2"></script>
 
     <script>
         // Language support system
@@ -741,6 +741,17 @@
         
         $(document).ready(function() {
             console.log('Document ready - initializing register page');
+            
+            // Check if user session exists and clear it
+            const existingToken = UserManager.getToken();
+            const existingUser = UserManager.getUser();
+            
+            if (existingToken || existingUser) {
+                console.log('Existing user session detected - clearing before registration');
+                // Clear all authentication data using UserManager
+                UserManager.clearAuth();
+                console.log('Session cleared successfully - ready for new registration');
+            }
             
             // Initialize language immediately
             applyTranslations(currentLanguage);
@@ -1027,14 +1038,14 @@
                 });
             }
             
-            // Check if user is already logged in
+            // Double-check and clear any remaining session data
             const user = UserManager.getUser();
             const token = UserManager.getToken();
             
-            if (token && user) {
-                // User is already logged in, redirect to dashboard
-                // Uncomment the line below to enable auto-redirection
-                window.location.href = '/dashboard';
+            if (token || user) {
+                console.log('Session data still present in window.load - clearing again');
+                UserManager.clearAuth();
+                console.log('Final session clear completed');
             }
         });
 

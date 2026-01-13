@@ -140,6 +140,35 @@ const UserManager = {
         if (token) {
             localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, token);
         }
+    },
+    
+    /**
+     * Clears all authentication data without redirecting
+     * Useful for registration and login pages
+     * Preserves user preferences like language
+     */
+    clearAuth: function() {
+        console.log('Clearing all authentication data');
+        
+        // Preserve language preference before clearing
+        const savedLang = localStorage.getItem('preferred_language');
+        
+        // Clear all authentication related data
+        localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
+        localStorage.removeItem(APP_CONFIG.AUTH.USER_KEY);
+        localStorage.removeItem('profile_picture');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('access_token');
+        sessionStorage.clear();
+        
+        // Restore language preference
+        if (savedLang) {
+            localStorage.setItem('preferred_language', savedLang);
+            console.log('Language preference preserved:', savedLang);
+        }
+        
+        console.log('Authentication data cleared');
     }
 };
 
