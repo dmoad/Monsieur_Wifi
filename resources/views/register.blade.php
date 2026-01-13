@@ -483,12 +483,12 @@
                                                 <span id="current-lang-flag">🇺🇸</span>
                                                 <span id="current-lang">EN</span>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageDropdown">
-                                                <a class="dropdown-item language-option" href="#" data-lang="en">
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageDropdown" id="languageDropdownMenu">
+                                                <a class="dropdown-item language-option" href="javascript:void(0);" data-lang="en">
                                                     <span class="flag-icon">🇺🇸</span>
                                                     <span class="lang-text">English</span>
                                                 </a>
-                                                <a class="dropdown-item language-option" href="#" data-lang="fr">
+                                                <a class="dropdown-item language-option" href="javascript:void(0);" data-lang="fr">
                                                     <span class="flag-icon">🇫🇷</span>
                                                     <span class="lang-text">Français</span>
                                                 </a>
@@ -505,7 +505,7 @@
                                 <div id="login-success" class="alert bg-transparent mt-1" style="display: none;"></div>
 
                                 <!-- Registration form -->
-                                <form class="auth-login-form mt-2" id="register-form">
+                                <form class="auth-login-form mt-2" id="register-form" action="javascript:void(0);" method="post">
                                     <!-- Hidden field for design_id -->
                                     <input type="hidden" id="design_id" name="design_id" value="">
                                     
@@ -739,77 +739,66 @@
         // Initialize language on page load
         const currentLanguage = detectLanguage();
         
-        $(window).on('load', function() {
-            // Apply translations before other initializations
+        $(document).ready(function() {
+            console.log('Document ready - initializing register page');
+            
+            // Initialize language immediately
             applyTranslations(currentLanguage);
-            if (feather) {
-                feather.replace({
-                    width: 14,
-                    height: 14
-                });
-                
-                // Create device icons with Feather
-                // $('#laptop-icon').html(feather.icons['laptop'].toSvg({ width: 24, height: 24 }));
-                $('#smartphone-icon').html(feather.icons['smartphone'].toSvg({ width: 20, height: 20 }));
-                $('#tablet-icon').html(feather.icons['tablet'].toSvg({ width: 22, height: 22 }));
-                $('#router-icon').html(feather.icons['wifi'].toSvg({ width: 26, height: 26 }));
-            }
             
-            // Initialize typing animation with translated strings
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
-            
-            // Language dropdown event handlers
-            $('.language-option').on('click', function(e) {
+            // Language switcher - attach early with event delegation
+            $(document).on('click', '.language-option', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('Language option clicked!');
+                
                 const selectedLang = $(this).data('lang');
-                if (selectedLang !== window.currentLang) {
+                console.log('Selected language:', selectedLang);
+                console.log('Current language:', window.currentLang);
+                
+                if (selectedLang && selectedLang !== window.currentLang) {
+                    console.log('Switching language to:', selectedLang);
                     switchLanguage(selectedLang);
+                    
                     // Reinitialize Feather icons after language change
-                    if (feather) {
+                    if (typeof feather !== 'undefined') {
                         feather.replace();
                     }
+                } else {
+                    console.log('Same language selected or invalid language');
                 }
-                // Close dropdown
-                $('#languageDropdown').dropdown('hide');
+                
+                // Close dropdown manually
+                $('#languageDropdownMenu').removeClass('show');
+                $('#languageDropdown').attr('aria-expanded', 'false');
+                
+                return false;
             });
             
-            // Set up CSRF token for all AJAX requests
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
+            console.log('Language switcher initialized');
             
-            // Get design_id from URL parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            const designId = urlParams.get('design_id');
-            if (designId) {
-                $('#design_id').val(designId);
-            }
-            
-            // Form validation and submission
+            // Attach form handler immediately
             $('#register-form').on('submit', function(e) {
                 e.preventDefault();
-                console.log('Register form submitted');
+                e.stopPropagation();
+                console.log('Register form submitted - handler called');
                 
                 // Validate passwords match
                 const password = $('#register-password').val();
                 const passwordConfirm = $('#register-password-confirm').val();
+                console.log('Password validation:', { password: password.length, confirm: passwordConfirm.length });
+                
                 if (password !== passwordConfirm) {
                     const passwordMismatchMsg = window.currentLang === 'fr' ? 'Les mots de passe ne correspondent pas' : 'Passwords do not match';
                     $('#login-alert').text(passwordMismatchMsg).show();
+                    console.log('Password mismatch');
                     return;
                 }
                 
+                console.log('Password match - proceeding with registration');
+                
                 // Show spinner, hide text
                 $('#register-spinner').removeClass('d-none');
-                $('#register-text').text(window.currentTranslations.registering);
+                $('#register-text').text(window.currentTranslations ? window.currentTranslations.registering : 'Registering...');
                 $('#register-btn').attr('disabled', true);
                 $('#login-alert').hide();
                 $('#login-success').hide();
@@ -822,8 +811,10 @@
                     password_confirmation: passwordConfirm,
                     design_id: $('#design_id').val() || null
                 };
+                console.log('Form data prepared: ', formData);
                 
                 // Make AJAX request to register endpoint
+                console.log('Making AJAX request to /api/auth/register');
                 $.ajax({
                     url: '/api/auth/register',
                     type: 'POST',
@@ -846,12 +837,12 @@
                         
                         // Reset button
                         $('#register-spinner').addClass('d-none');
-                        $('#register-text').text(window.currentTranslations.registerButton);
+                        $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
                         $('#register-btn').attr('disabled', false);
                         
                         // Show success message
                         $('#login-success').html(
-                            '<span class="text-success text-bold">' + window.currentTranslations.loginSuccessful + '</span>'
+                            '<span class="text-success text-bold">' + (window.currentTranslations ? window.currentTranslations.loginSuccessful : 'Registration successful!') + '</span>'
                         ).show();
 
                         // Set a timeout to redirect to dashboard after showing the success message
@@ -860,10 +851,14 @@
                             window.location.href = langPrefix + '/dashboard?status=registered';
                         }, 1500); // Redirect after 1.5 seconds
                     },
-                    error: function(xhr) {
+                    error: function(xhr, status, error) {
+                        console.error('Registration failed:', status, error);
+                        console.error('Response:', xhr);
+                        alert('Registration failed: ' + error);
+                        
                         // Reset button
                         $('#register-spinner').addClass('d-none');
-                        $('#register-text').text(window.currentTranslations.registerButton);
+                        $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
                         $('#register-btn').attr('disabled', false);
                         
                         // Show error message
@@ -882,7 +877,53 @@
                         $('#login-alert').html(errorMessage).show();
                     }
                 });
+                
+                return false;
             });
+            
+            console.log('Form handler attached');
+        });
+        
+        $(window).on('load', function() {
+            console.log('Window loaded - initializing animations and translations');
+            
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+                
+                // Create device icons with Feather
+                // $('#laptop-icon').html(feather.icons['laptop'].toSvg({ width: 24, height: 24 }));
+                $('#smartphone-icon').html(feather.icons['smartphone'].toSvg({ width: 20, height: 20 }));
+                $('#tablet-icon').html(feather.icons['tablet'].toSvg({ width: 22, height: 22 }));
+                $('#router-icon').html(feather.icons['wifi'].toSvg({ width: 26, height: 26 }));
+            }
+            
+            // Initialize typing animation with translated strings
+            if (window.currentTranslations && window.currentTranslations.typingStrings) {
+                window.typed = new Typed('.typing-text', {
+                    strings: window.currentTranslations.typingStrings,
+                    typeSpeed: 50,
+                    backSpeed: 30,
+                    backDelay: 2000,
+                    loop: true
+                });
+            }
+            
+            // Set up CSRF token for all AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            
+            // Get design_id from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const designId = urlParams.get('design_id');
+            if (designId) {
+                $('#design_id').val(designId);
+            }
             
             // Toggle password visibility
             $('.form-password-toggle .input-group-text').on('click', function(e) {
@@ -993,7 +1034,7 @@
             if (token && user) {
                 // User is already logged in, redirect to dashboard
                 // Uncomment the line below to enable auto-redirection
-                // window.location.href = '/dashboard';
+                window.location.href = '/dashboard';
             }
         });
 

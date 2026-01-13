@@ -280,7 +280,6 @@ Route::get('/password-login/{location}/{mac_address}', function () {
     return view('password-login');
 })->name('password-login');
 
-
 // Captive Portal routes
 Route::get('/captive-portal/{location_id}', [CaptivePortalController::class, 'showLoginPage']);
 Route::post('/captive-portal/login', [CaptivePortalController::class, 'login']);
