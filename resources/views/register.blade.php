@@ -581,7 +581,7 @@
     <!-- END: Page JS-->
 
     <!-- Add this right after the Page JS scripts -->
-    <script src="/assets/js/config.js?v=2"></script>
+    <script src="/assets/js/config.js?v=3"></script>
 
     <script>
         // Language support system
@@ -814,80 +814,141 @@
                 $('#login-alert').hide();
                 $('#login-success').hide();
                 
-                // Get form data
+                // Prepare form data
                 var formData = {
                     name: $('#register-name').val(),
                     email: $('#register-email').val(),
                     password: password,
                     password_confirmation: passwordConfirm,
-                    design_id: $('#design_id').val() || null
                 };
-                console.log('Form data prepared: ', formData);
                 
-                // Make AJAX request to register endpoint
-                console.log('Making AJAX request to /api/auth/register');
-                $.ajax({
-                    url: '/api/auth/register',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: formData,
-                    success: function(response) {
-                        console.log('Registration successful');
-                        console.log(response);
-                        // Store user info and token using UserManager from config.js
-                        UserManager.setToken(response.access_token);
-                        
-                        if (response.user) {
-                            console.log("registered user: ", response.user);
-                            UserManager.setUser(response.user);
-                        }
-
-                        if (response.user && response.user.profile_picture) {
-                            localStorage.setItem('profile_picture', response.user.profile_picture);
-                        }
-                        
-                        // Reset button
-                        $('#register-spinner').addClass('d-none');
-                        $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
-                        $('#register-btn').attr('disabled', false);
-                        
-                        // Show success message
-                        $('#login-success').html(
-                            '<span class="text-success text-bold">' + (window.currentTranslations ? window.currentTranslations.loginSuccessful : 'Registration successful!') + '</span>'
-                        ).show();
-
-                        // Set a timeout to redirect to dashboard after showing the success message
-                        setTimeout(function() {
-                            const langPrefix = window.currentLang === 'fr' ? '/fr' : '/en';
-                            window.location.href = langPrefix + '/dashboard?status=registered';
-                        }, 1500); // Redirect after 1.5 seconds
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Registration failed:', status, error);
-                        console.error('Response:', xhr);
-                        alert('Registration failed: ' + error);
-                        
-                        // Reset button
-                        $('#register-spinner').addClass('d-none');
-                        $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
-                        $('#register-btn').attr('disabled', false);
-                        
-                        // Show error message
-                        var errorMessage = 'An error occurred during registration.';
-                        if (xhr.responseJSON) {
-                            if (xhr.responseJSON.error) {
-                                errorMessage = xhr.responseJSON.error;
-                            } else if (xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            } else if (xhr.responseJSON.errors) {
-                                // Handle validation errors
-                                const errors = Object.values(xhr.responseJSON.errors).flat();
-                                errorMessage = errors.join('<br>');
-                            }
-                        }
-                        $('#login-alert').html(errorMessage).show();
+                // Get design_id if present
+                const designId = $('#design_id').val();
+                
+                // Function to proceed with registration
+                function proceedWithRegistration(finalFormData) {
+                    console.log('Form data prepared: ', finalFormData);
+                    
+                    // Determine which endpoint to use
+                    var register_endpoint = '/api/auth/register';
+                    if (finalFormData.design_id) {
+                        register_endpoint = '/api/auth/register-with-design';
                     }
-                });
+                    console.log('Making AJAX request to:', register_endpoint);
+                    
+                    $.ajax({
+                        url: register_endpoint,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: finalFormData,
+                        success: function(response) {
+                            console.log('Registration successful');
+                            console.log(response);
+                            // Store user info and token using UserManager from config.js
+                            UserManager.setToken(response.access_token);
+                            
+                            if (response.user) {
+                                console.log("registered user: ", response.user);
+                                UserManager.setUser(response.user);
+                            }
+
+                            if (response.user && response.user.profile_picture) {
+                                localStorage.setItem('profile_picture', response.user.profile_picture);
+                            }
+                            
+                            // Reset button
+                            $('#register-spinner').addClass('d-none');
+                            $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
+                            $('#register-btn').attr('disabled', false);
+                            
+                            // Show success message
+                            $('#login-success').html(
+                                '<span class="text-success text-bold">' + (window.currentTranslations ? window.currentTranslations.loginSuccessful : 'Registration successful!') + '</span>'
+                            ).show();
+
+                            // Set a timeout to redirect to dashboard after showing the success message
+                            setTimeout(function() {
+                                const langPrefix = window.currentLang === 'fr' ? '/fr' : '/en';
+                                // If there's a redirect URL from the response, use it
+                                var redirectUrl = "";
+                                if (response.url) {
+                                    redirectUrl = langPrefix + response.url;
+                                } else {
+                                    redirectUrl = langPrefix + '/dashboard?status=registered';
+                                }
+                                // alert(redirectUrl);
+                                window.location.href = redirectUrl;
+                            }, 1500); // Redirect after 1.5 seconds
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Registration failed:', status, error);
+                            console.error('Response:', xhr);
+                            
+                            // Reset button
+                            $('#register-spinner').addClass('d-none');
+                            $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
+                            $('#register-btn').attr('disabled', false);
+                            
+                            // Show error message
+                            var errorMessage = 'An error occurred during registration.';
+                            if (xhr.responseJSON) {
+                                if (xhr.responseJSON.error) {
+                                    errorMessage = xhr.responseJSON.error;
+                                } else if (xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                } else if (xhr.responseJSON.errors) {
+                                    // Handle validation errors
+                                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                                    errorMessage = errors.join('<br>');
+                                }
+                            }
+                            $('#login-alert').html(errorMessage).show();
+                        }
+                    });
+                }
+                
+                // Check if design_id exists and verify it, otherwise proceed directly
+                if (designId && designId.trim() !== '') {
+                    console.log('Design ID found, verifying:', designId);
+                    $.ajax({
+                        url: '/api/temp-captive-portal-designs/' + designId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(response) {
+                            console.log('Design ID verification response:', response);
+                            if (response.success) {
+                                console.log('Design ID is valid, adding to form data');
+                                formData.design_id = designId;
+                                proceedWithRegistration(formData);
+                            } else {
+                                // Reset button
+                                $('#register-spinner').addClass('d-none');
+                                $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
+                                $('#register-btn').attr('disabled', false);
+                                
+                                const errorMsg = response.message || 'Invalid design ID';
+                                $('#login-alert').html(errorMsg).show();
+                                console.error('Design ID validation failed:', errorMsg);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Failed to verify design ID:', status, error);
+                            console.error('Response:', xhr);
+                            
+                            // Reset button
+                            $('#register-spinner').addClass('d-none');
+                            $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
+                            $('#register-btn').attr('disabled', false);
+                            
+                            // Proceed without design_id if verification fails
+                            console.log('Design verification failed, proceeding without design_id');
+                            proceedWithRegistration(formData);
+                        }
+                    });
+                } else {
+                    console.log('No design ID provided, proceeding with normal registration');
+                    proceedWithRegistration(formData);
+                }
                 
                 return false;
             });

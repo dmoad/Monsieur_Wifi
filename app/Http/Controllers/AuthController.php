@@ -33,6 +33,63 @@ class AuthController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    public function register_with_design(Request $request)
+    {
+        Log::info('Register request received', ['request' => $request->all()]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'design_id' => 'required|exists:temp_captive_portal_designs,id',
+        ]);
+
+        if ($validator->fails()) {
+            Log::error('Validation failed', ['errors' => $validator->errors()]);
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'user',
+        ]);
+
+        // Transfer temporary design to user if design_id is provided
+        if ($request->has('design_id') && $request->design_id) {
+            try {
+                $tempDesign = TempCaptivePortalDesign::find($request->design_id);
+                if ($tempDesign) {
+                    $delete_status = $tempDesign->transferToUser($user->id);
+                    if($delete_status) {
+                        Log::info('Temporary design transferred to user', [
+                            'user_id' => $user->id,
+                            'design_id' => $request->design_id
+                        ]);
+                    } else {
+                        Log::error('Failed to transfer temporary design', [
+                            'user_id' => $user->id,
+                            'design_id' => $request->design_id,
+                            'error' => 'Failed to transfer temporary design'
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Failed to transfer temporary design', [
+                    'user_id' => $user->id,
+                    'design_id' => $request->design_id,
+                    'error' => $e->getMessage()
+                ]);
+                // Continue with registration even if design transfer fails
+            }
+        }
+
+        $token = Auth::guard('api')->login($user);
+        $url = "/captive-portals?from=registration";
+        
+        return $this->respondWithToken_and_design_url($token, $url);
+    }
+
     public function register(Request $request)
     {
         Log::info('Register request received', ['request' => $request->all()]);
@@ -555,6 +612,17 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,
             'user' => Auth::guard('api')->user()
+        ]);
+    }
+
+    protected function respondWithToken_and_design_url($token, $url)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,
+            'user' => Auth::guard('api')->user(),
+            'url' => $url
         ]);
     }
 }

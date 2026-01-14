@@ -1278,9 +1278,14 @@
             
             var profile_picture = localStorage.getItem('profile_picture');
             $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
+            
+            // Check if coming from registration
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromRegistration = urlParams.get('from') === 'registration';
+            
             // Initial page load - fetch all designs
             console.log("Fetching designs on page load...");
-            fetchDesigns();
+            fetchDesigns(fromRegistration);
 
             // Check if user object exists before trying to access it
             if (typeof user !== 'undefined') {
@@ -1937,8 +1942,8 @@
         }
         
         // Function to fetch all designs and populate the list
-        function fetchDesigns() {
-            console.log("fetchDesigns called");
+        function fetchDesigns(openFirstDesign = false) {
+            console.log("fetchDesigns called", { openFirstDesign });
             
             // Show loading state
             $('#portal-designs-container').html(
@@ -1964,6 +1969,20 @@
                     if (response.data && response.data.length > 0) {
                         // Check if user is admin to show admin features
                         const isAdmin = response.is_admin || false;
+                        
+                        // If coming from registration, open the first design
+                        if (openFirstDesign) {
+                            console.log("Opening first design automatically:", response.data[0].id);
+                            const firstDesignId = response.data[0].id;
+                            
+                            // Remove the 'from' parameter from URL
+                            const newUrl = window.location.pathname + window.location.hash;
+                            window.history.replaceState({}, document.title, newUrl);
+                            
+                            // Open the first design
+                            fetchDesignDetails(firstDesignId);
+                            return; // Exit early, don't populate the list
+                        }
                         
                         // Populate designs
                         response.data.forEach(function(design) {

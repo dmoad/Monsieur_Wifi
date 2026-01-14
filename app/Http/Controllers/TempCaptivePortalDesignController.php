@@ -9,6 +9,23 @@ use Illuminate\Support\Facades\Log;
 
 class TempCaptivePortalDesignController extends Controller
 {
+    function index($id)
+    {
+        $design = TempCaptivePortalDesign::find($id);
+        if (!$design) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Design not found'
+            ], 200);
+        }
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $design->id,
+                'design_id' => $design->id, // Alias for convenience
+            ]
+        ], 200);
+    }
     /**
      * Store a newly created temporary captive portal design.
      * This endpoint is public (no auth required) to allow users to create designs before registration.
