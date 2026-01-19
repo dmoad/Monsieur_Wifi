@@ -3406,7 +3406,14 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="portal-ssid">Network Name (SSID)</label>
-                                                                <input type="text" class="form-control" id="captive-portal-ssid" placeholder="Guest WiFi">
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" id="captive-portal-ssid" placeholder="Guest WiFi">
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#ssid-qr-modal" title="Show QR Code">
+                                                                            <i data-feather="code"></i> QR Code
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -3791,7 +3798,14 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="wifi-ssid">Network Name (SSID)</label>
-                                                            <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                                            <div class="input-group">
+                                                                <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#password-ssid-qr-modal" title="Show QR Code">
+                                                                        <i data-feather="code"></i> QR Code
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
@@ -4644,6 +4658,97 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
     
+    <!-- SSID QR Code Modal -->
+    <div class="modal fade" id="ssid-qr-modal" tabindex="-1" role="dialog" aria-labelledby="ssid-qr-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ssid-qr-modal-title">
+                        <i data-feather="wifi" class="mr-2"></i>WiFi Network QR Code
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Scan this QR code</strong> to connect to the WiFi network automatically.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-2">Network Name (SSID):</h6>
+                        <h4 class="text-primary font-weight-bold" id="qr-ssid-display">Guest WiFi</h4>
+                    </div>
+                    
+                    <!-- QR Code Container -->
+                    <div class="d-flex justify-content-center mb-3">
+                        <div id="qr-code-container" class="p-3 bg-white border rounded"></div>
+                    </div>
+                    
+                    <p class="text-muted small">Point your device's camera at the QR code to connect</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="download-qr-btn">
+                        <i data-feather="download" class="mr-1"></i>
+                        Download QR Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Password WiFi SSID QR Code Modal -->
+    <div class="modal fade" id="password-ssid-qr-modal" tabindex="-1" role="dialog" aria-labelledby="password-ssid-qr-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="password-ssid-qr-modal-title">
+                        <i data-feather="wifi" class="mr-2"></i>WiFi Network QR Code
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Scan this QR code</strong> to connect to the WiFi network automatically.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-2">Network Name (SSID):</h6>
+                        <h4 class="text-primary font-weight-bold" id="password-qr-ssid-display">Home WiFi</h4>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-2">Security:</h6>
+                        <span class="badge badge-light-success">WPA/WPA2 Protected</span>
+                    </div>
+                    
+                    <!-- QR Code Container -->
+                    <div class="d-flex justify-content-center mb-3">
+                        <div id="password-qr-code-container" class="p-3 bg-white border rounded"></div>
+                    </div>
+                    
+                    <p class="text-muted small">Point your device's camera at the QR code to connect</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="download-password-qr-btn">
+                        <i data-feather="download" class="mr-1"></i>
+                        Download QR Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Firmware Update Modal -->
     <div class="modal fade" id="firmware-update-modal" tabindex="-1" role="dialog" aria-labelledby="firmware-update-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -4838,6 +4943,8 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/app-assets/vendors/js/maps/leaflet.min.js"></script>
     <!-- Interact.js for interactive schedule -->
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <!-- QRCode.js for QR code generation -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
@@ -10890,6 +10997,118 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.href = '/en/locations/' + locationId + '/guests';
                 } else {
                     toastr.error('Location ID not found');
+                }
+            });
+
+            // ==============================================
+            // QR CODE FUNCTIONALITY
+            // ==============================================
+            
+            let qrCode = null;
+            
+            // Generate QR code when modal is shown
+            $('#ssid-qr-modal').on('show.bs.modal', function() {
+                const ssid = $('#captive-portal-ssid').val() || 'Guest WiFi';
+                
+                // Update SSID display in modal
+                $('#qr-ssid-display').text(ssid);
+                
+                // Clear previous QR code
+                $('#qr-code-container').empty();
+                
+                // Generate WiFi QR code format: WIFI:T:WPA;S:SSID;P:password;H:false;;
+                // For open network: WIFI:T:nopass;S:SSID;;
+                const wifiString = `WIFI:T:nopass;S:${ssid};;`;
+                
+                // Create new QR code
+                qrCode = new QRCode(document.getElementById('qr-code-container'), {
+                    text: wifiString,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            });
+            
+            // Clean up QR code when modal is hidden
+            $('#ssid-qr-modal').on('hidden.bs.modal', function() {
+                $('#qr-code-container').empty();
+                qrCode = null;
+            });
+            
+            // Download QR code as image
+            $('#download-qr-btn').on('click', function() {
+                const canvas = $('#qr-code-container canvas')[0];
+                if (canvas) {
+                    const ssid = $('#captive-portal-ssid').val() || 'Guest WiFi';
+                    const url = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = `wifi-qr-${ssid.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+                    link.href = url;
+                    link.click();
+                    toastr.success('QR Code downloaded successfully');
+                } else {
+                    toastr.error('Failed to download QR code');
+                }
+            });
+
+            // ==============================================
+            // PASSWORD WIFI QR CODE FUNCTIONALITY
+            // ==============================================
+            
+            let passwordQrCode = null;
+            
+            // Generate QR code for password-protected WiFi when modal is shown
+            $('#password-ssid-qr-modal').on('show.bs.modal', function() {
+                const ssid = $('#password-wifi-ssid').val() || 'Home WiFi';
+                const password = $('#password-wifi-password').val() || '';
+                
+                // Update SSID display in modal
+                $('#password-qr-ssid-display').text(ssid);
+                
+                // Clear previous QR code
+                $('#password-qr-code-container').empty();
+                
+                // Generate WiFi QR code format with password
+                // WIFI:T:WPA;S:SSID;P:password;H:false;;
+                let wifiString;
+                if (password) {
+                    wifiString = `WIFI:T:WPA;S:${ssid};P:${password};;`;
+                } else {
+                    wifiString = `WIFI:T:nopass;S:${ssid};;`;
+                }
+                
+                // Create new QR code
+                passwordQrCode = new QRCode(document.getElementById('password-qr-code-container'), {
+                    text: wifiString,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            });
+            
+            // Clean up QR code when modal is hidden
+            $('#password-ssid-qr-modal').on('hidden.bs.modal', function() {
+                $('#password-qr-code-container').empty();
+                passwordQrCode = null;
+            });
+            
+            // Download password WiFi QR code as image
+            $('#download-password-qr-btn').on('click', function() {
+                const canvas = $('#password-qr-code-container canvas')[0];
+                if (canvas) {
+                    const ssid = $('#password-wifi-ssid').val() || 'Home WiFi';
+                    const url = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = `wifi-qr-${ssid.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+                    link.href = url;
+                    link.click();
+                    toastr.success('QR Code downloaded successfully');
+                } else {
+                    toastr.error('Failed to download QR code');
                 }
             });
 
