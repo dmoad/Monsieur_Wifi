@@ -129,6 +129,38 @@ sudo mysql_secure_installation
 
 While running `mysql_secure_installation`, set password validation policy as 2 (Most secure) and answer "Yes" to all other questions.
 
+### 6. Configure Firewall (UFW)
+
+Configure the Uncomplicated Firewall (UFW) to allow necessary ports before proceeding with installation:
+
+```bash
+# Enable UFW if not already enabled
+sudo ufw enable
+
+# Allow SSH (IMPORTANT: Do this first to avoid losing connection)
+sudo ufw allow 22/tcp
+
+# Allow HTTP and HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Check UFW status
+sudo ufw status
+```
+
+Expected output:
+```
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW       Anywhere
+80/tcp                     ALLOW       Anywhere
+443/tcp                    ALLOW       Anywhere
+```
+
+> **Warning**: If you're connected via SSH, make sure to allow port 22 before enabling UFW to avoid being locked out of your server.
+
 ---
 
 ## Installation Steps
@@ -232,13 +264,7 @@ This will create the following RADIUS tables:
 cp env.example .env
 ```
 
-### 2. Generate Application Key
-
-```bash
-php artisan key:generate
-```
-
-### 3. Configure Environment Variables
+### 2. Configure Environment Variables
 
 Edit `.env` file and configure the following **REQUIRED** variables:
 
@@ -279,7 +305,7 @@ SOLUTION_URL=https://your-redirect-url.com
 php artisan jwt:secret
 ```
 
-### 4. Configure Optional Settings
+### 3. Configure Optional Settings
 
 #### SMS Gateway Configuration (Required if using SMS OTP)
 
@@ -361,7 +387,17 @@ MAIL_FROM_NAME="${APP_NAME}"
 
 > **Note**: Ensure you have imported the RADIUS database schema (`database/radius_base_schema.sql`) as described in the [Database Setup](#database-setup) section before proceeding with migrations.
 
-### 1. Run Database Migrations
+### 1. Generate Application Key
+
+Generate the Laravel application encryption key. This **must** be done before running migrations:
+
+```bash
+php artisan key:generate
+```
+
+This creates a secure encryption key in your `.env` file (`APP_KEY`).
+
+### 2. Run Database Migrations
 
 ```bash
 php artisan migrate
@@ -369,7 +405,7 @@ php artisan migrate
 
 This will create all necessary tables in the main database.
 
-### 2. Seed Database
+### 3. Seed Database
 
 ```bash
 php artisan db:seed
@@ -388,7 +424,7 @@ This will:
 
 ⚠️ **IMPORTANT**: Change these passwords immediately after first login!
 
-### 3. Create Storage Link
+### 4. Create Storage Link
 
 ```bash
 php artisan storage:link
@@ -641,10 +677,9 @@ sudo certbot renew --dry-run
 #### Troubleshooting SSL Setup
 
 - **Domain not accessible**: Ensure your domain's DNS A record points to your server's IP address
-- **Port 80/443 blocked**: Open ports 80 and 443 in your firewall:
+- **Port 80/443 blocked**: Verify ports 80 and 443 are open in your firewall (should have been configured in Prerequisites step 6):
   ```bash
-  sudo ufw allow 80/tcp
-  sudo ufw allow 443/tcp
+  sudo ufw status
   ```
 - **Certificate renewal fails**: Check Certbot logs:
   ```bash

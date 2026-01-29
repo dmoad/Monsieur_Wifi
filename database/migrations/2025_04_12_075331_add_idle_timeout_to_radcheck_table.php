@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
-            $table->integer('idle_timeout')->default(0);
+            if (!Schema::connection('radius')->hasColumn('radcheck', 'idle_timeout')) {
+                $table->integer('idle_timeout')->default(0);
+            }
         });
     }
 

@@ -12,10 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
-            $table->integer('location_id')->nullable()->after('username');
-            $table->integer('download_bandwidth')->nullable()->after('location_id');
-            $table->integer('upload_bandwidth')->nullable()->after('download_bandwidth');
-            $table->timestamp('expiration_time')->nullable()->after('upload_bandwidth');
+            if (!Schema::connection('radius')->hasColumn('radcheck', 'location_id')) {
+                $table->integer('location_id')->nullable()->after('username');
+            }
+            if (!Schema::connection('radius')->hasColumn('radcheck', 'download_bandwidth')) {
+                $table->integer('download_bandwidth')->nullable()->after('location_id');
+            }
+            if (!Schema::connection('radius')->hasColumn('radcheck', 'upload_bandwidth')) {
+                $table->integer('upload_bandwidth')->nullable()->after('download_bandwidth');
+            }
+            if (!Schema::connection('radius')->hasColumn('radcheck', 'expiration_time')) {
+                $table->timestamp('expiration_time')->nullable()->after('upload_bandwidth');
+            }
         });
     }
 
