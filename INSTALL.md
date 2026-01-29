@@ -14,8 +14,10 @@ This document provides step-by-step instructions for installing and setting up t
 6. [Application Setup](#application-setup)
 7. [Apache2 Configuration](#apache2-configuration)
 8. [Storage & Permissions](#storage--permissions)
-9. [Verification](#verification)
-10. [Troubleshooting](#troubleshooting)
+9. [SSL Certificate Setup (Let's Encrypt)](#ssl-certificate-setup-lets-encrypt)
+10. [Verification](#verification)
+11. [Production Optimization](#production-optimization)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -118,6 +120,7 @@ sudo apt install apache2
 sudo a2enmod rewrite
 sudo systemctl enable apache2
 sudo systemctl start apache2
+suod 
 ```
 
 ### 5. Install MySQL/MariaDB
@@ -303,6 +306,7 @@ SOLUTION_URL=https://your-redirect-url.com
 **Generate JWT Secret:**
 ```bash
 php artisan jwt:secret
+php artisan key:generate
 ```
 
 ### 3. Configure Optional Settings
@@ -325,7 +329,7 @@ ENABLE_SMS_SENDING=true  # Set to false to disable SMS sending
 Customize the application branding:
 
 ```env
-# Branding Configuration
+# Branding Configuration for Facebook etc
 APP_BRAND_NAME=monsieur-wifi
 APP_BRAND_LOGO=/app-assets/mrwifi-assets/Mr-Wifi.PNG
 APP_BRAND_WELCOME_MESSAGE="Welcome to {{APP_NAME}}"
@@ -543,68 +547,18 @@ sudo systemctl start php8.2-fpm
 
 ---
 
-## Verification
+## SSL Certificate Setup (Let's Encrypt)
 
-### 1. Check Application Status
+> **Note**: This step is optional but highly recommended for production environments. You can skip this for local development or testing.
 
-```bash
-php artisan about
-```
-
-### 2. Test Database Connections
-
-```bash
-php artisan tinker
-```
-
-Then in tinker:
-```php
-DB::connection()->getPdo();
-DB::connection('radius')->getPdo();
-exit
-```
-
-### 3. Access the Application
-
-Open your browser and navigate to:
-```
-http://your-domain.com
-```
-
-### 4. Test Admin Login
-
-1. Navigate to the login page
-2. Use one of the default admin credentials:
-   - Email: `admin@monsieur-wifi.com` or `administrator@monsieur-wifi.com`
-   - Password: `abcd1234`
-3. **⚠️ IMPORTANT**: Change the password immediately after first login for security!
-
----
-
-## Post-Installation Tasks
-
-### 1. Set Up Scheduled Tasks (Cron)
-
-Add to crontab:
-```bash
-crontab -e
-```
-
-Add this line:
-```
-* * * * * cd /var/www/mrwifi && php artisan schedule:run >> /dev/null 2>&1
-```
-
-### 2. Configure SSL Certificate with Let's Encrypt
-
-#### Step 1: Install Certbot
+### 1. Install Certbot
 
 ```bash
 sudo apt update
 sudo apt install certbot python3-certbot-apache
 ```
 
-#### Step 2: Obtain SSL Certificate
+### 2. Obtain SSL Certificate
 
 Run Certbot to automatically obtain and configure SSL for your domain:
 
@@ -625,7 +579,7 @@ Follow the interactive prompts:
 - Agree to the terms of service
 - Choose whether to redirect HTTP to HTTPS (recommended: Yes)
 
-#### Step 3: Verify SSL Configuration
+### 3. Verify SSL Configuration
 
 After Certbot completes, your Apache configuration will be updated. The HTTPS virtual host will look similar to this:
 
@@ -654,7 +608,7 @@ After Certbot completes, your Apache configuration will be updated. The HTTPS vi
 
 > **Note**: Certbot will automatically replace `portal.monsieur-wifi.com` with your actual domain name in the configuration file and certificate paths.
 
-#### Step 4: Test Certificate Renewal
+### 4. Test Certificate Renewal
 
 Let's Encrypt certificates expire after 90 days. Certbot sets up automatic renewal, but you can test it:
 
@@ -662,7 +616,7 @@ Let's Encrypt certificates expire after 90 days. Certbot sets up automatic renew
 sudo certbot renew --dry-run
 ```
 
-#### Step 5: Verify SSL is Working
+### 5. Verify SSL is Working
 
 1. Restart Apache:
    ```bash
@@ -674,7 +628,7 @@ sudo certbot renew --dry-run
    - Verify the SSL certificate is valid (green padlock icon)
    - Check that HTTP redirects to HTTPS
 
-#### Troubleshooting SSL Setup
+### Troubleshooting SSL Setup
 
 - **Domain not accessible**: Ensure your domain's DNS A record points to your server's IP address
 - **Port 80/443 blocked**: Verify ports 80 and 443 are open in your firewall (should have been configured in Prerequisites step 6):
@@ -686,7 +640,68 @@ sudo certbot renew --dry-run
   sudo tail -f /var/log/letsencrypt/letsencrypt.log
   ```
 
-### 3. Optimize for Production
+---
+
+## Verification
+
+### 1. Check Application Status
+
+```bash
+php artisan about
+```
+
+### 2. Test Database Connections
+
+```bash
+php artisan tinker
+```
+
+Then in tinker:
+```php
+DB::connection()->getPdo();
+DB::connection('radius')->getPdo();
+exit
+```
+
+### 3. Access the Application
+
+Open your browser and navigate to:
+```
+http://your-domain.com
+```
+
+Or if testing locally:
+```
+http://your-server-ip
+```
+
+### 4. Test Admin Login
+
+This is the final verification step to confirm your setup is complete and working properly.
+
+1. Navigate to the login page in your browser
+2. Use one of the default admin credentials created by the seeder:
+   - **Email**: `admin@monsieur-wifi.com` or `administrator@monsieur-wifi.com`
+   - **Password**: `abcd1234`
+3. Click "Login"
+
+**If the login is successful and you can access the admin dashboard**, your setup is complete and ready to use! 🎉
+
+**Expected Result:**
+- You should be redirected to the admin dashboard
+- You can see the navigation menu and main interface
+- No error messages or warnings appear
+
+**⚠️ IMPORTANT SECURITY NOTE**: 
+- Change the default admin passwords immediately after first login!
+- Navigate to your profile/settings to update the password
+- Use a strong password with a mix of uppercase, lowercase, numbers, and special characters
+
+---
+
+## Production Optimization
+
+For production environments, optimize Laravel's performance:
 
 ```bash
 # Cache configuration
@@ -697,6 +712,13 @@ php artisan view:cache
 # Optimize autoloader
 composer install --optimize-autoloader --no-dev
 ```
+
+> **Note**: When you make changes to configuration files, routes, or environment variables, remember to clear the cache:
+> ```bash
+> php artisan config:clear
+> php artisan route:clear
+> php artisan view:clear
+> ```
 
 ---
 
