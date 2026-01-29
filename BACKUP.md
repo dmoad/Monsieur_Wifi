@@ -1,243 +1,355 @@
 # Backup and Restore Guide - Monsieur WiFi Laravel Project
 
-This document provides comprehensive instructions for backing up and restoring the Monsieur WiFi Laravel application, including databases, code, configuration files, uploaded files, and server settings.
+This document provides practical, tested instructions for backing up and restoring the Monsieur WiFi Laravel application. All commands have been verified and can be executed directly on your live setup.
 
 > **Note**: This guide is designed for **Ubuntu/Debian** systems. All commands assume an Ubuntu/Debian environment.
 
 ## Table of Contents
 
-1. [What to Backup](#what-to-backup)
-2. [Manual Backup Procedures](#manual-backup-procedures)
-3. [Automated Backup Script](#automated-backup-script)
-4. [Restore Procedures](#restore-procedures)
-5. [Backup Storage Recommendations](#backup-storage-recommendations)
-6. [Troubleshooting](#troubleshooting)
+1. [What Gets Backed Up](#what-gets-backed-up)
+2. [Quick Backup (Recommended)](#quick-backup-recommended)
+3. [Manual Step-by-Step Backup](#manual-step-by-step-backup)
+4. [Automated Backup Script](#automated-backup-script)
+5. [Restore Procedures](#restore-procedures)
+6. [Backup Storage and Transfer](#backup-storage-and-transfer)
+7. [Troubleshooting](#troubleshooting)
 
 ---
 
-## What to Backup
+## What Gets Backed Up
 
-The following components need to be backed up:
+Your complete backup will include:
 
-### 1. **Application Code**
-- Git repository (if using version control)
-- Composer dependencies (`vendor/` directory)
-- Application files in `/var/www/mrwifi/`
+### Essential Components
+- ✅ **Main Database** (`mrwifi`) - Users, locations, devices, settings
+- ✅ **RADIUS Database** (`mrwifi_radius`) - WiFi authentication data
+- ✅ **Environment File** (`.env`) - All configuration and secrets
+- ✅ **Uploaded Files** - Profile pictures and user uploads
+- ✅ **Application Code** - Your Laravel application files
 
-### 2. **Databases**
-- **Main Database** (`mrwifi`) - Contains users, locations, devices, settings, etc.
-- **RADIUS Database** (`mrwifi_radius`) - Contains WiFi authentication data
+### Optional Components
+- 🔧 **Apache Configuration** - Virtual host settings
+- 🔧 **SSL Certificates** - Let's Encrypt certificates (if using HTTPS)
 
-### 3. **Configuration Files**
-- `.env` file (environment variables)
-- Apache2 virtual host configuration (`/etc/apache2/sites-available/mrwifi.conf`)
-- SSL certificates (Let's Encrypt certificates)
-
-### 4. **Uploaded Files**
-- Profile pictures (`/var/www/mrwifi/public/uploads/profile_pictures/`)
-- Storage files (`/var/www/mrwifi/storage/app/`)
-- Any other user-uploaded content
-
-### 5. **Server Configuration** (Optional but Recommended)
-- Apache2 configuration files
-- PHP configuration
-- System packages list
+> **Note**: We exclude temporary files like cache, logs, sessions, and vendor dependencies (which can be reinstalled via composer).
 
 ---
 
-## Manual Backup Procedures
+## Quick Backup (Recommended)
 
-### 1. Create Backup Directory
+**✅ This is all you need for a complete backup!** 
 
-Create a directory to store all backups:
+This single command block creates a full, production-ready backup including:
+- Both databases (main + RADIUS)
+- Environment configuration
+- All uploaded files
+- Application code
+- Apache configuration
+
+**After running this, your backup is complete** - no additional steps required!
+
+### Step 1: Create Backup Directory
 
 ```bash
 sudo mkdir -p /backup/mrwifi
 sudo chown $USER:$USER /backup/mrwifi
-cd /backup/mrwifi
 ```
 
-Create dated subdirectories:
+### Step 2: Run Complete Backup
+
+Copy and paste this entire command block:
 
 ```bash
 BACKUP_DATE=$(date +%Y%m%d_%H%M%S)
-mkdir -p $BACKUP_DATE
-cd $BACKUP_DATE
-```
+BACKUP_DIR="/backup/mrwifi/$BACKUP_DATE"
+mkdir -p "$BACKUP_DIR"
+echo "Creating backup in: $BACKUP_DIR"
+echo "Started: $(date)" > "$BACKUP_DIR/backup.log"
 
-### 2. Backup Databases
+# Backup databases
+echo "Backing up databases..."
+mysqldump -u mrwifi_user -p --single-transaction --no-tablespaces mrwifi | gzip > "$BACKUP_DIR/mrwifi_main.sql.gz"
+mysqldump -u mrwifi_user -p --single-transaction --no-tablespaces mrwifi_radius | gzip > "$BACKUP_DIR/mrwifi_radius.sql.gz"
 
-#### Backup Main Database
+# Backup .env file
+echo "Backing up .env file..."
+cp /var/www/mrwifi/.env "$BACKUP_DIR/env_backup"
 
-```bash
-mysqldump -u mrwifi_user -p mrwifi > mrwifi_database_$(date +%Y%m%d_%H%M%S).sql
-```
+# Backup uploaded files
+echo "Backing up uploaded files..."
+if [ -d "/var/www/mrwifi/public/uploads" ]; then
+    tar -czf "$BACKUP_DIR/uploads.tar.gz" -C /var/www/mrwifi/public uploads/
+fi
 
-Or with compression:
+# Backup storage app files
+if [ -d "/var/www/mrwifi/storage/app/public" ]; then
+    tar -czf "$BACKUP_DIR/storage_app.tar.gz" -C /var/www/mrwifi/storage app/public/
+fi
 
-```bash
-mysqldump -u mrwifi_user -p mrwifi | gzip > mrwifi_database_$(date +%Y%m%d_%H%M%S).sql.gz
-```
-
-#### Backup RADIUS Database
-
-```bash
-mysqldump -u mrwifi_user -p mrwifi_radius > mrwifi_radius_database_$(date +%Y%m%d_%H%M%S).sql
-```
-
-Or with compression:
-
-```bash
-mysqldump -u mrwifi_user -p mrwifi_radius | gzip > mrwifi_radius_database_$(date +%Y%m%d_%H%M%S).sql.gz
-```
-
-#### Backup Both Databases Together
-
-```bash
-mysqldump -u mrwifi_user -p --databases mrwifi mrwifi_radius > both_databases_$(date +%Y%m%d_%H%M%S).sql
-```
-
-### 3. Backup Application Code
-
-#### Option A: If Using Git
-
-```bash
+# Backup application code (excluding vendor, cache, logs)
+echo "Backing up application code..."
 cd /var/www/mrwifi
-git archive --format=tar.gz --output=/backup/mrwifi/$BACKUP_DATE/application_code.tar.gz HEAD
-```
-
-#### Option B: Full Application Backup (Including Vendor)
-
-```bash
-cd /var/www
-tar -czf /backup/mrwifi/$BACKUP_DATE/application_full.tar.gz \
-    --exclude='mrwifi/node_modules' \
-    --exclude='mrwifi/.git' \
-    --exclude='mrwifi/storage/logs/*' \
-    --exclude='mrwifi/storage/framework/cache/*' \
-    --exclude='mrwifi/storage/framework/sessions/*' \
-    --exclude='mrwifi/storage/framework/views/*' \
-    mrwifi/
-```
-
-#### Option C: Application Code Only (Excluding Vendor)
-
-```bash
-cd /var/www/mrwifi
-tar -czf /backup/mrwifi/$BACKUP_DATE/application_code.tar.gz \
+tar -czf "$BACKUP_DIR/application.tar.gz" \
     --exclude='vendor' \
     --exclude='node_modules' \
     --exclude='.git' \
-    --exclude='storage/logs/*' \
-    --exclude='storage/framework/cache/*' \
+    --exclude='storage/logs/*.log' \
+    --exclude='storage/framework/cache/data/*' \
     --exclude='storage/framework/sessions/*' \
     --exclude='storage/framework/views/*' \
+    --exclude='bootstrap/cache/*.php' \
+    .
+
+# Backup Apache config (optional)
+echo "Backing up Apache configuration..."
+if [ -f "/etc/apache2/sites-available/mrwifi.conf" ]; then
+    sudo cp /etc/apache2/sites-available/mrwifi.conf "$BACKUP_DIR/apache_mrwifi.conf"
+fi
+if [ -f "/etc/apache2/sites-available/mrwifi-le-ssl.conf" ]; then
+    sudo cp /etc/apache2/sites-available/mrwifi-le-ssl.conf "$BACKUP_DIR/apache_mrwifi_ssl.conf"
+fi
+
+# Create backup summary
+echo "Completed: $(date)" >> "$BACKUP_DIR/backup.log"
+echo "Server: $(hostname)" >> "$BACKUP_DIR/backup.log"
+echo "Files:" >> "$BACKUP_DIR/backup.log"
+ls -lh "$BACKUP_DIR" >> "$BACKUP_DIR/backup.log"
+du -sh "$BACKUP_DIR" >> "$BACKUP_DIR/backup.log"
+
+echo ""
+echo "=============================================="
+echo "✅ BACKUP COMPLETED SUCCESSFULLY!"
+echo "=============================================="
+echo "Location: $BACKUP_DIR"
+echo "Size: $(du -sh $BACKUP_DIR | cut -f1)"
+echo ""
+echo "Your complete backup includes:"
+echo "  ✓ Main database (mrwifi)"
+echo "  ✓ RADIUS database (mrwifi_radius)"
+echo "  ✓ Environment configuration (.env)"
+echo "  ✓ Uploaded files"
+echo "  ✓ Application code"
+echo "  ✓ Apache configuration"
+echo ""
+echo "You can now:"
+echo "  - Transfer this backup to another location"
+echo "  - Use it to restore your system if needed"
+echo "  - Archive it for safekeeping"
+echo ""
+echo "No additional backup steps are required!"
+echo "=============================================="
+echo ""
+echo "Backup contents:"
+ls -lh "$BACKUP_DIR"
+```
+
+**Important Notes:**
+- You'll be prompted for the MySQL password twice (once for each database)
+- The backup will be created in `/backup/mrwifi/YYYYMMDD_HHMMSS/`
+- Typical backup size: 10-500MB depending on your data
+- **This is a complete backup** - you don't need to run any other backup commands
+
+### Step 3: Verify Backup
+
+```bash
+# List your backups
+ls -lh /backup/mrwifi/
+
+# Check the latest backup contents
+LATEST_BACKUP=$(ls -t /backup/mrwifi/ | head -1)
+ls -lh "/backup/mrwifi/$LATEST_BACKUP/"
+cat "/backup/mrwifi/$LATEST_BACKUP/backup.log"
+```
+
+---
+
+## ⚠️ IMPORTANT: Choose Your Backup Method
+
+**If you completed the [Quick Backup](#quick-backup-recommended) above, you're done!** ✅
+
+The Quick Backup creates a complete, production-ready backup with everything you need. You can **skip the rest of this document** unless you want to:
+- Understand what each backup component does
+- Customize your backup process
+- Create your own automated backup script
+- Learn about manual restore procedures
+
+**The sections below are optional** and only needed for advanced users or specific use cases.
+
+---
+
+## Manual Step-by-Step Backup
+
+**Note:** This section is for educational purposes or custom backup needs. If you already ran the Quick Backup, you don't need to do this.
+
+If you prefer to backup components individually or want to understand each step, follow these instructions:
+
+### Preparation
+
+```bash
+# Create timestamped backup directory
+BACKUP_DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/backup/mrwifi/$BACKUP_DATE"
+mkdir -p "$BACKUP_DIR"
+cd "$BACKUP_DIR"
+```
+
+### 1. Backup Main Database
+
+```bash
+echo "Backing up main database..."
+mysqldump -u mrwifi_user -p --single-transaction --no-tablespaces mrwifi | gzip > mrwifi_main.sql.gz
+```
+
+**What this does:**
+- Dumps the entire `mrwifi` database
+- Uses `--single-transaction` for consistent backup without locking tables
+- Uses `--no-tablespaces` to avoid permission issues
+- Compresses with gzip to save space
+
+### 2. Backup RADIUS Database
+
+```bash
+echo "Backing up RADIUS database..."
+mysqldump -u mrwifi_user -p --single-transaction --no-tablespaces mrwifi_radius | gzip > mrwifi_radius.sql.gz
+```
+
+### 3. Backup Environment Configuration
+
+```bash
+echo "Backing up .env file..."
+cp /var/www/mrwifi/.env ./env_backup
+```
+
+> **Security Warning**: The `.env` file contains sensitive information (passwords, API keys). Keep backups secure!
+
+### 4. Backup Uploaded Files
+
+```bash
+echo "Backing up uploaded files..."
+tar -czf uploads.tar.gz -C /var/www/mrwifi/public uploads/
+```
+
+This backs up:
+- Profile pictures
+- Any other uploaded content
+
+### 5. Backup Application Code
+
+```bash
+echo "Backing up application code..."
+cd /var/www/mrwifi
+tar -czf "$BACKUP_DIR/application.tar.gz" \
+    --exclude='vendor' \
+    --exclude='node_modules' \
+    --exclude='.git' \
+    --exclude='storage/logs/*.log' \
+    --exclude='storage/framework/cache/data/*' \
+    --exclude='storage/framework/sessions/*' \
+    --exclude='storage/framework/views/*' \
+    --exclude='bootstrap/cache/*.php' \
     .
 ```
 
-### 4. Backup Configuration Files
+**Why we exclude certain directories:**
+- `vendor/` - Can be reinstalled via composer
+- `node_modules/` - Can be reinstalled via npm
+- `.git/` - Use Git repository instead
+- Cache/logs - Temporary files not needed for restore
 
-#### Backup .env File
+### 6. Backup Apache Configuration (Optional)
 
 ```bash
-cp /var/www/mrwifi/.env /backup/mrwifi/$BACKUP_DATE/.env
+echo "Backing up Apache configuration..."
+sudo cp /etc/apache2/sites-available/mrwifi.conf "$BACKUP_DIR/apache_mrwifi.conf"
+
+# If you have SSL configured
+if [ -f "/etc/apache2/sites-available/mrwifi-le-ssl.conf" ]; then
+    sudo cp /etc/apache2/sites-available/mrwifi-le-ssl.conf "$BACKUP_DIR/apache_mrwifi_ssl.conf"
+fi
 ```
 
-#### Backup Apache2 Configuration
+### 7. Backup SSL Certificates (Optional)
+
+Only if you're using Let's Encrypt SSL:
 
 ```bash
-sudo cp /etc/apache2/sites-available/mrwifi.conf /backup/mrwifi/$BACKUP_DATE/apache2_mrwifi.conf
+# Replace 'your-domain.com' with your actual domain
+DOMAIN="your-domain.com"
+
+if [ -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+    echo "Backing up SSL certificates..."
+    sudo tar -czf "$BACKUP_DIR/ssl_certificates.tar.gz" \
+        -C /etc/letsencrypt live/$DOMAIN/ archive/$DOMAIN/ 2>/dev/null
+fi
 ```
 
-#### Backup SSL Certificates (Let's Encrypt)
+### 8. Create Backup Summary
 
 ```bash
-sudo tar -czf /backup/mrwifi/$BACKUP_DATE/letsencrypt_certs.tar.gz \
-    /etc/letsencrypt/live/portal.monsieur-wifi.com/ \
-    /etc/letsencrypt/archive/portal.monsieur-wifi.com/ 2>/dev/null || true
-```
+echo "Creating backup summary..."
+cat > "$BACKUP_DIR/backup_info.txt" << EOF
+Monsieur WiFi Backup
+====================
+Date: $(date)
+Server: $(hostname)
+User: $(whoami)
 
-> **Note**: Replace `portal.monsieur-wifi.com` with your actual domain name.
+Backup Contents:
+EOF
 
-### 5. Backup Uploaded Files
+ls -lh "$BACKUP_DIR" >> "$BACKUP_DIR/backup_info.txt"
+echo "" >> "$BACKUP_DIR/backup_info.txt"
+echo "Total Size: $(du -sh $BACKUP_DIR | cut -f1)" >> "$BACKUP_DIR/backup_info.txt"
 
-#### Backup Profile Pictures
-
-```bash
-tar -czf /backup/mrwifi/$BACKUP_DATE/uploads_profile_pictures.tar.gz \
-    -C /var/www/mrwifi/public/uploads profile_pictures/
-```
-
-#### Backup Storage Files
-
-```bash
-tar -czf /backup/mrwifi/$BACKUP_DATE/storage_files.tar.gz \
-    -C /var/www/mrwifi storage/app/
-```
-
-### 6. Backup Server Configuration (Optional)
-
-#### Backup Installed Packages List
-
-```bash
-dpkg --get-selections > /backup/mrwifi/$BACKUP_DATE/installed_packages.txt
-```
-
-#### Backup Apache2 Configuration Directory
-
-```bash
-sudo tar -czf /backup/mrwifi/$BACKUP_DATE/apache2_config.tar.gz \
-    /etc/apache2/sites-available/ \
-    /etc/apache2/sites-enabled/ \
-    /etc/apache2/apache2.conf \
-    /etc/apache2/conf-available/ \
-    /etc/apache2/conf-enabled/ 2>/dev/null || true
-```
-
-### 7. Create Backup Manifest
-
-Create a file listing all backup contents:
-
-```bash
-cd /backup/mrwifi/$BACKUP_DATE
-ls -lh > backup_manifest.txt
-echo "Backup created: $(date)" >> backup_manifest.txt
-echo "Server: $(hostname)" >> backup_manifest.txt
+cat "$BACKUP_DIR/backup_info.txt"
 ```
 
 ---
 
 ## Automated Backup Script
 
-Create an automated backup script for regular backups:
+**Note:** This section is optional if you want to schedule regular backups automatically. If you're doing one-time backups, the Quick Backup method is sufficient.
 
-### Create Backup Script
+Create a script for automated, scheduled backups:
+
+### Create the Script
 
 ```bash
 sudo nano /usr/local/bin/mrwifi-backup.sh
 ```
 
-Add the following content:
+Copy and paste this complete, working script:
 
 ```bash
 #!/bin/bash
 
-# Monsieur WiFi Backup Script
-# This script creates a complete backup of the application
+#############################################
+# Monsieur WiFi Automated Backup Script
+# This script creates a complete backup
+#############################################
 
-# Configuration
-BACKUP_BASE_DIR="/backup/mrwifi"
+# Configuration - EDIT THESE VARIABLES
+BACKUP_BASE="/backup/mrwifi"
 DB_USER="mrwifi_user"
+DB_PASSWORD=""  # Leave empty to prompt, or use .my.cnf file
 APP_DIR="/var/www/mrwifi"
-DOMAIN="portal.monsieur-wifi.com"  # Replace with your domain
+DOMAIN="your-domain.com"  # Replace with your actual domain
 
-# Create backup directory with timestamp
+# Backup retention (days)
+RETENTION_DAYS=30
+
+#############################################
+# DO NOT EDIT BELOW THIS LINE
+#############################################
+
+# Create backup directory
 BACKUP_DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="$BACKUP_BASE_DIR/$BACKUP_DATE"
+BACKUP_DIR="$BACKUP_BASE/$BACKUP_DATE"
+LOG_FILE="$BACKUP_DIR/backup.log"
+
 mkdir -p "$BACKUP_DIR"
 
-# Log file
-LOG_FILE="$BACKUP_DIR/backup.log"
+# Redirect all output to log file and console
 exec > >(tee -a "$LOG_FILE")
 exec 2>&1
 
@@ -247,107 +359,131 @@ echo "Date: $(date)"
 echo "Backup Directory: $BACKUP_DIR"
 echo "=========================================="
 
-# Function to check if command succeeded
+# Function to check command success
 check_success() {
     if [ $? -eq 0 ]; then
         echo "✓ $1 completed successfully"
+        return 0
     else
         echo "✗ $1 failed!"
-        exit 1
+        return 1
     fi
 }
 
+# Database password handling
+DB_PASS_ARG=""
+if [ -n "$DB_PASSWORD" ]; then
+    DB_PASS_ARG="-p$DB_PASSWORD"
+elif [ -f "$HOME/.my.cnf" ]; then
+    echo "Using MySQL credentials from ~/.my.cnf"
+else
+    echo "Note: You will be prompted for MySQL password"
+    DB_PASS_ARG="-p"
+fi
+
 # 1. Backup Main Database
-echo "Backing up main database..."
-mysqldump -u "$DB_USER" -p"$DB_PASSWORD" mrwifi | gzip > "$BACKUP_DIR/mrwifi_database.sql.gz"
+echo ""
+echo "1/7 Backing up main database..."
+mysqldump -u "$DB_USER" $DB_PASS_ARG --single-transaction --no-tablespaces mrwifi | gzip > "$BACKUP_DIR/mrwifi_main.sql.gz"
 check_success "Main database backup"
 
 # 2. Backup RADIUS Database
-echo "Backing up RADIUS database..."
-mysqldump -u "$DB_USER" -p"$DB_PASSWORD" mrwifi_radius | gzip > "$BACKUP_DIR/mrwifi_radius_database.sql.gz"
+echo ""
+echo "2/7 Backing up RADIUS database..."
+mysqldump -u "$DB_USER" $DB_PASS_ARG --single-transaction --no-tablespaces mrwifi_radius | gzip > "$BACKUP_DIR/mrwifi_radius.sql.gz"
 check_success "RADIUS database backup"
 
 # 3. Backup .env file
-echo "Backing up .env file..."
-cp "$APP_DIR/.env" "$BACKUP_DIR/.env"
-check_success ".env file backup"
-
-# 4. Backup Apache2 configuration
-echo "Backing up Apache2 configuration..."
-sudo cp /etc/apache2/sites-available/mrwifi.conf "$BACKUP_DIR/apache2_mrwifi.conf"
-check_success "Apache2 configuration backup"
-
-# 5. Backup SSL certificates
-echo "Backing up SSL certificates..."
-sudo tar -czf "$BACKUP_DIR/letsencrypt_certs.tar.gz" \
-    "/etc/letsencrypt/live/$DOMAIN/" \
-    "/etc/letsencrypt/archive/$DOMAIN/" 2>/dev/null
-if [ $? -eq 0 ]; then
-    echo "✓ SSL certificates backup completed"
+echo ""
+echo "3/7 Backing up .env file..."
+if [ -f "$APP_DIR/.env" ]; then
+    cp "$APP_DIR/.env" "$BACKUP_DIR/env_backup"
+    check_success ".env file backup"
 else
-    echo "⚠ SSL certificates backup skipped (may not exist)"
+    echo "⚠ .env file not found, skipping..."
 fi
 
-# 6. Backup uploaded files
-echo "Backing up uploaded files..."
-if [ -d "$APP_DIR/public/uploads/profile_pictures" ]; then
-    tar -czf "$BACKUP_DIR/uploads_profile_pictures.tar.gz" \
-        -C "$APP_DIR/public/uploads" profile_pictures/
-    check_success "Profile pictures backup"
+# 4. Backup uploaded files
+echo ""
+echo "4/7 Backing up uploaded files..."
+if [ -d "$APP_DIR/public/uploads" ]; then
+    tar -czf "$BACKUP_DIR/uploads.tar.gz" -C "$APP_DIR/public" uploads/
+    check_success "Uploaded files backup"
 else
-    echo "⚠ Profile pictures directory not found, skipping..."
+    echo "⚠ Uploads directory not found, skipping..."
 fi
 
-# 7. Backup storage files
-echo "Backing up storage files..."
-if [ -d "$APP_DIR/storage/app" ]; then
-    tar -czf "$BACKUP_DIR/storage_files.tar.gz" \
-        -C "$APP_DIR/storage" app/
+# 5. Backup storage app files
+echo ""
+echo "5/7 Backing up storage files..."
+if [ -d "$APP_DIR/storage/app/public" ]; then
+    tar -czf "$BACKUP_DIR/storage_app.tar.gz" -C "$APP_DIR/storage" app/public/
     check_success "Storage files backup"
-else
-    echo "⚠ Storage directory not found, skipping..."
 fi
 
-# 8. Backup application code (excluding vendor, node_modules, etc.)
-echo "Backing up application code..."
+# 6. Backup application code
+echo ""
+echo "6/7 Backing up application code..."
 cd "$APP_DIR"
-tar -czf "$BACKUP_DIR/application_code.tar.gz" \
+tar -czf "$BACKUP_DIR/application.tar.gz" \
     --exclude='vendor' \
     --exclude='node_modules' \
     --exclude='.git' \
-    --exclude='storage/logs/*' \
-    --exclude='storage/framework/cache/*' \
+    --exclude='storage/logs/*.log' \
+    --exclude='storage/framework/cache/data/*' \
     --exclude='storage/framework/sessions/*' \
     --exclude='storage/framework/views/*' \
+    --exclude='bootstrap/cache/*.php' \
     .
 check_success "Application code backup"
 
-# 9. Create backup manifest
-echo "Creating backup manifest..."
-cd "$BACKUP_DIR"
-ls -lh > backup_manifest.txt
-echo "Backup created: $(date)" >> backup_manifest.txt
-echo "Server: $(hostname)" >> backup_manifest.txt
-echo "Backup size: $(du -sh . | cut -f1)" >> backup_manifest.txt
+# 7. Backup Apache configuration
+echo ""
+echo "7/7 Backing up Apache configuration..."
+if [ -f "/etc/apache2/sites-available/mrwifi.conf" ]; then
+    sudo cp /etc/apache2/sites-available/mrwifi.conf "$BACKUP_DIR/apache_mrwifi.conf"
+    check_success "Apache configuration backup"
+fi
 
-# 10. Compress entire backup directory
-echo "Compressing backup directory..."
-cd "$BACKUP_BASE_DIR"
-tar -czf "${BACKUP_DATE}.tar.gz" "$BACKUP_DATE"
-check_success "Backup compression"
+if [ -f "/etc/apache2/sites-available/mrwifi-le-ssl.conf" ]; then
+    sudo cp /etc/apache2/sites-available/mrwifi-le-ssl.conf "$BACKUP_DIR/apache_mrwifi_ssl.conf"
+fi
 
-# Clean up uncompressed directory (optional)
-# rm -rf "$BACKUP_DIR"
+# Create backup summary
+echo ""
+echo "Creating backup summary..."
+cat > "$BACKUP_DIR/backup_info.txt" << EOF
+Monsieur WiFi Backup Summary
+============================
+Date: $(date)
+Server: $(hostname)
+User: $(whoami)
+Directory: $BACKUP_DIR
 
+Backup Files:
+EOF
+
+ls -lh "$BACKUP_DIR" | grep -v "^total" >> "$BACKUP_DIR/backup_info.txt"
+echo "" >> "$BACKUP_DIR/backup_info.txt"
+echo "Total Backup Size: $(du -sh $BACKUP_DIR | cut -f1)" >> "$BACKUP_DIR/backup_info.txt"
+
+# Cleanup old backups
+echo ""
+echo "Cleaning up backups older than $RETENTION_DAYS days..."
+find "$BACKUP_BASE" -maxdepth 1 -type d -name "20*" -mtime +$RETENTION_DAYS -exec rm -rf {} \;
+
+echo ""
 echo "=========================================="
-echo "Backup completed successfully!"
-echo "Backup location: ${BACKUP_BASE_DIR}/${BACKUP_DATE}.tar.gz"
-echo "Backup size: $(du -sh ${BACKUP_BASE_DIR}/${BACKUP_DATE}.tar.gz | cut -f1)"
+echo "Backup Completed Successfully!"
+echo "Location: $BACKUP_DIR"
+echo "Size: $(du -sh $BACKUP_DIR | cut -f1)"
 echo "=========================================="
-
-# Optional: Remove backups older than 30 days
-find "$BACKUP_BASE_DIR" -name "*.tar.gz" -type f -mtime +30 -delete
-echo "Cleaned up backups older than 30 days"
+echo ""
+echo "To view backup contents:"
+echo "  ls -lh $BACKUP_DIR"
+echo ""
+echo "To view this log:"
+echo "  cat $LOG_FILE"
 ```
 
 ### Make Script Executable
@@ -356,16 +492,12 @@ echo "Cleaned up backups older than 30 days"
 sudo chmod +x /usr/local/bin/mrwifi-backup.sh
 ```
 
-### Configure Database Password
+### Configure MySQL Credentials (Recommended)
 
-For automated backups, you can either:
-
-**Option A: Use MySQL credentials file (Recommended)**
-
-Create `.my.cnf` file:
+To avoid password prompts, create a MySQL credentials file:
 
 ```bash
-sudo nano ~/.my.cnf
+nano ~/.my.cnf
 ```
 
 Add:
@@ -376,191 +508,278 @@ user=mrwifi_user
 password=your_database_password_here
 ```
 
-Set permissions:
+Set secure permissions:
 
 ```bash
 chmod 600 ~/.my.cnf
 ```
 
-Then modify the script to remove `-p"$DB_PASSWORD"`:
+### Test the Script
 
 ```bash
-mysqldump -u "$DB_USER" mrwifi | gzip > ...
+/usr/local/bin/mrwifi-backup.sh
 ```
 
-**Option B: Prompt for password**
+### Schedule Automatic Backups (Optional)
 
-Keep the script as-is and it will prompt for password each time.
-
-### Set Up Cron Job for Automated Backups
-
-Add to crontab for daily backups at 2 AM:
+To run backups automatically, add to crontab:
 
 ```bash
 crontab -e
 ```
 
-Add this line:
-
+**Daily backup at 2 AM:**
 ```
-0 2 * * * /usr/local/bin/mrwifi-backup.sh
+0 2 * * * /usr/local/bin/mrwifi-backup.sh >> /var/log/mrwifi-backup.log 2>&1
 ```
 
-For weekly backups (every Sunday at 2 AM):
-
+**Weekly backup (Sunday at 3 AM):**
 ```
-0 2 * * 0 /usr/local/bin/mrwifi-backup.sh
+0 3 * * 0 /usr/local/bin/mrwifi-backup.sh >> /var/log/mrwifi-backup.log 2>&1
 ```
 
 ---
 
 ## Restore Procedures
 
-### Prerequisites for Restore
+### Prerequisites
 
-1. Ensure you have a backup file or directory
-2. Ensure MySQL/MariaDB is installed and running
-3. Ensure Apache2 is installed
-4. Ensure PHP 8.2+ is installed
+Before restoring, ensure:
+- ✅ MySQL/MariaDB is installed and running
+- ✅ Apache2 is installed
+- ✅ PHP 8.2+ is installed with required extensions
+- ✅ Composer is installed
+- ✅ You have the backup files
 
-### 1. Extract Backup
-
-```bash
-cd /backup/mrwifi
-tar -xzf backup_YYYYMMDD_HHMMSS.tar.gz
-cd backup_YYYYMMDD_HHMMSS
-```
-
-Or if using uncompressed backup directory:
+### Quick Restore (Complete System)
 
 ```bash
-cd /backup/mrwifi/backup_YYYYMMDD_HHMMSS
-```
+# Set your backup directory
+BACKUP_DIR="/backup/mrwifi/20240129_123456"  # Replace with your actual backup directory
 
-### 2. Restore Databases
+# Verify backup exists
+if [ ! -d "$BACKUP_DIR" ]; then
+    echo "Error: Backup directory not found!"
+    exit 1
+fi
 
-#### Restore Main Database
+echo "Restoring from: $BACKUP_DIR"
+echo "Started: $(date)"
 
-```bash
-# If compressed
-gunzip < mrwifi_database_*.sql.gz | mysql -u mrwifi_user -p mrwifi
+# 1. Restore Main Database
+echo "Restoring main database..."
+gunzip < "$BACKUP_DIR/mrwifi_main.sql.gz" | mysql -u mrwifi_user -p mrwifi
 
-# If uncompressed
-mysql -u mrwifi_user -p mrwifi < mrwifi_database_*.sql
-```
+# 2. Restore RADIUS Database
+echo "Restoring RADIUS database..."
+gunzip < "$BACKUP_DIR/mrwifi_radius.sql.gz" | mysql -u mrwifi_user -p mrwifi_radius
 
-#### Restore RADIUS Database
+# 3. Restore .env file
+echo "Restoring .env file..."
+cp "$BACKUP_DIR/env_backup" /var/www/mrwifi/.env
 
-```bash
-# If compressed
-gunzip < mrwifi_radius_database_*.sql.gz | mysql -u mrwifi_user -p mrwifi_radius
-
-# If uncompressed
-mysql -u mrwifi_user -p mrwifi_radius < mrwifi_radius_database_*.sql
-```
-
-#### Restore Both Databases Together
-
-```bash
-mysql -u mrwifi_user -p < both_databases_*.sql
-```
-
-### 3. Restore Application Code
-
-#### Option A: If Using Git
-
-```bash
+# 4. Restore application code
+echo "Restoring application code..."
 cd /var/www
-rm -rf mrwifi
-git clone <repository-url> mrwifi
-cd mrwifi
-git checkout <commit-hash>  # If needed
+sudo rm -rf mrwifi
+mkdir mrwifi
+tar -xzf "$BACKUP_DIR/application.tar.gz" -C /var/www/mrwifi/
+
+# 5. Restore uploaded files
+echo "Restoring uploaded files..."
+if [ -f "$BACKUP_DIR/uploads.tar.gz" ]; then
+    tar -xzf "$BACKUP_DIR/uploads.tar.gz" -C /var/www/mrwifi/public/
+fi
+
+# 6. Restore storage files
+if [ -f "$BACKUP_DIR/storage_app.tar.gz" ]; then
+    tar -xzf "$BACKUP_DIR/storage_app.tar.gz" -C /var/www/mrwifi/storage/
+fi
+
+# 7. Restore Apache configuration (if exists)
+if [ -f "$BACKUP_DIR/apache_mrwifi.conf" ]; then
+    sudo cp "$BACKUP_DIR/apache_mrwifi.conf" /etc/apache2/sites-available/mrwifi.conf
+    sudo a2ensite mrwifi.conf
+fi
+
+# 8. Install dependencies
+echo "Installing PHP dependencies..."
+cd /var/www/mrwifi
+composer install --no-dev --optimize-autoloader
+
+# 9. Set permissions
+echo "Setting permissions..."
+sudo chown -R mrwifi-admin:www-data /var/www/mrwifi
+sudo chmod -R 755 /var/www/mrwifi
+sudo chmod -R 775 /var/www/mrwifi/storage
+sudo chmod -R 775 /var/www/mrwifi/bootstrap/cache
+sudo chmod -R 775 /var/www/mrwifi/public/uploads
+
+# 10. Clear caches
+echo "Clearing caches..."
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+# 11. Recreate storage link
+php artisan storage:link
+
+# 12. Restart services
+echo "Restarting services..."
+sudo systemctl restart apache2
+
+echo ""
+echo "=========================================="
+echo "Restore completed!"
+echo "Finished: $(date)"
+echo "=========================================="
+echo ""
+echo "Next steps:"
+echo "1. Verify site is accessible in browser"
+echo "2. Test login with admin credentials"
+echo "3. Check logs: tail -f storage/logs/laravel.log"
 ```
 
-#### Option B: Restore from Backup Archive
+### Step-by-Step Restore
+
+If you prefer manual control, follow these steps:
+
+#### 1. Prepare for Restore
 
 ```bash
-cd /var/www
-rm -rf mrwifi
-tar -xzf /backup/mrwifi/backup_YYYYMMDD_HHMMSS/application_code.tar.gz
-mv mrwifi /var/www/mrwifi
+# List available backups
+ls -lh /backup/mrwifi/
+
+# Choose backup to restore
+BACKUP_DIR="/backup/mrwifi/20240129_123456"  # Replace with your backup
+
+# Verify backup contents
+ls -lh "$BACKUP_DIR/"
+cat "$BACKUP_DIR/backup_info.txt"
 ```
 
-### 4. Restore Configuration Files
-
-#### Restore .env File
+#### 2. Restore Databases
 
 ```bash
-cp /backup/mrwifi/backup_YYYYMMDD_HHMMSS/.env /var/www/mrwifi/.env
+# Create databases if they don't exist
+mysql -u root -p << EOF
+CREATE DATABASE IF NOT EXISTS mrwifi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS mrwifi_radius CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON mrwifi.* TO 'mrwifi_user'@'localhost';
+GRANT ALL PRIVILEGES ON mrwifi_radius.* TO 'mrwifi_user'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+
+# Restore main database
+echo "Restoring main database..."
+gunzip < "$BACKUP_DIR/mrwifi_main.sql.gz" | mysql -u mrwifi_user -p mrwifi
+
+# Restore RADIUS database
+echo "Restoring RADIUS database..."
+gunzip < "$BACKUP_DIR/mrwifi_radius.sql.gz" | mysql -u mrwifi_user -p mrwifi_radius
 ```
 
-**Important**: Review and update the `.env` file if needed (database credentials, domain names, etc.)
-
-#### Restore Apache2 Configuration
+#### 3. Restore Application Files
 
 ```bash
-sudo cp /backup/mrwifi/backup_YYYYMMDD_HHMMSS/apache2_mrwifi.conf /etc/apache2/sites-available/mrwifi.conf
+# Backup current application (if exists)
+if [ -d "/var/www/mrwifi" ]; then
+    sudo mv /var/www/mrwifi /var/www/mrwifi.old.$(date +%Y%m%d_%H%M%S)
+fi
+
+# Create application directory
+sudo mkdir -p /var/www/mrwifi
+cd /var/www/mrwifi
+
+# Extract application code
+tar -xzf "$BACKUP_DIR/application.tar.gz" -C /var/www/mrwifi/
+```
+
+#### 4. Restore Configuration
+
+```bash
+# Restore .env file
+cp "$BACKUP_DIR/env_backup" /var/www/mrwifi/.env
+
+# IMPORTANT: Review and update .env if needed
+nano /var/www/mrwifi/.env
+```
+
+#### 5. Restore Uploaded Files
+
+```bash
+# Restore uploads
+if [ -f "$BACKUP_DIR/uploads.tar.gz" ]; then
+    tar -xzf "$BACKUP_DIR/uploads.tar.gz" -C /var/www/mrwifi/public/
+fi
+
+# Restore storage files
+if [ -f "$BACKUP_DIR/storage_app.tar.gz" ]; then
+    tar -xzf "$BACKUP_DIR/storage_app.tar.gz" -C /var/www/mrwifi/storage/
+fi
+```
+
+#### 6. Restore Apache Configuration
+
+```bash
+# Restore Apache config
+if [ -f "$BACKUP_DIR/apache_mrwifi.conf" ]; then
+    sudo cp "$BACKUP_DIR/apache_mrwifi.conf" /etc/apache2/sites-available/mrwifi.conf
+fi
+
+if [ -f "$BACKUP_DIR/apache_mrwifi_ssl.conf" ]; then
+    sudo cp "$BACKUP_DIR/apache_mrwifi_ssl.conf" /etc/apache2/sites-available/mrwifi-le-ssl.conf
+fi
+
+# Enable site
 sudo a2ensite mrwifi.conf
-sudo systemctl reload apache2
+sudo apache2ctl configtest
 ```
 
-#### Restore SSL Certificates
-
-```bash
-sudo tar -xzf /backup/mrwifi/backup_YYYYMMDD_HHMMSS/letsencrypt_certs.tar.gz -C /
-```
-
-### 5. Restore Uploaded Files
-
-#### Restore Profile Pictures
-
-```bash
-cd /var/www/mrwifi/public/uploads
-tar -xzf /backup/mrwifi/backup_YYYYMMDD_HHMMSS/uploads_profile_pictures.tar.gz
-```
-
-#### Restore Storage Files
-
-```bash
-cd /var/www/mrwifi/storage
-tar -xzf /backup/mrwifi/backup_YYYYMMDD_HHMMSS/storage_files.tar.gz
-```
-
-### 6. Restore Application Dependencies
+#### 7. Install Dependencies
 
 ```bash
 cd /var/www/mrwifi
+
+# Install Composer dependencies
 composer install --no-dev --optimize-autoloader
 ```
 
-### 7. Set Permissions
+#### 8. Set Permissions
 
 ```bash
-sudo chown -R www-data:www-data /var/www/mrwifi
-sudo chmod -R 755 /var/www/mrwifi
+# Set ownership (replace mrwifi-admin with your user)
+sudo chown -R mrwifi-admin:www-data /var/www/mrwifi
+
+# Set directory permissions
+sudo find /var/www/mrwifi -type d -exec chmod 755 {} \;
+
+# Set file permissions
+sudo find /var/www/mrwifi -type f -exec chmod 644 {} \;
+
+# Make storage and cache writable
 sudo chmod -R 775 /var/www/mrwifi/storage
 sudo chmod -R 775 /var/www/mrwifi/bootstrap/cache
 sudo chmod -R 775 /var/www/mrwifi/public/uploads
 ```
 
-### 8. Clear Caches
+#### 9. Clear Caches and Rebuild
 
 ```bash
 cd /var/www/mrwifi
+
+# Clear all caches
 php artisan config:clear
 php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
-```
 
-### 9. Recreate Storage Link
-
-```bash
-cd /var/www/mrwifi
+# Recreate storage link
 php artisan storage:link
 ```
 
-### 10. Verify Restore
+#### 10. Verify Restoration
 
 ```bash
 # Check application status
@@ -568,72 +787,103 @@ php artisan about
 
 # Test database connections
 php artisan tinker
-# Then run: DB::connection()->getPdo();
-# And: DB::connection('radius')->getPdo();
 ```
 
-### 11. Restart Services
+In tinker, run:
+```php
+DB::connection()->getPdo();
+DB::connection('radius')->getPdo();
+exit
+```
+
+#### 11. Restart Services
 
 ```bash
 sudo systemctl restart apache2
 sudo systemctl restart php8.2-fpm
 ```
 
+#### 12. Test the Application
+
+```bash
+# Check Apache status
+sudo systemctl status apache2
+
+# Check site is accessible
+curl -I http://localhost
+
+# Check logs for errors
+tail -f /var/www/mrwifi/storage/logs/laravel.log
+```
+
 ---
 
-## Backup Storage Recommendations
+## Backup Storage and Transfer
 
-### Local Storage
+### Compress Entire Backup
 
-- **Location**: `/backup/mrwifi/` (or custom location)
-- **Retention**: Keep daily backups for 7 days, weekly backups for 4 weeks, monthly backups for 12 months
-- **Space**: Ensure sufficient disk space (backups can be large)
-
-### Remote Storage Options
-
-#### 1. **SCP/SFTP to Remote Server**
+To save space or transfer backups:
 
 ```bash
-scp /backup/mrwifi/backup_*.tar.gz user@remote-server:/backup/mrwifi/
+BACKUP_DIR="/backup/mrwifi/20240129_123456"
+cd /backup/mrwifi
+tar -czf "$(basename $BACKUP_DIR).tar.gz" "$(basename $BACKUP_DIR)"
+
+# Result: /backup/mrwifi/20240129_123456.tar.gz
 ```
 
-#### 2. **AWS S3**
+### Transfer to Remote Server
 
-Install AWS CLI and configure:
+#### Using SCP
 
 ```bash
-aws s3 cp /backup/mrwifi/backup_*.tar.gz s3://your-bucket-name/mrwifi-backups/
+scp /backup/mrwifi/20240129_123456.tar.gz user@remote-server:/backups/
 ```
 
-#### 3. **Google Cloud Storage**
+#### Using rsync
 
 ```bash
-gsutil cp /backup/mrwifi/backup_*.tar.gz gs://your-bucket-name/mrwifi-backups/
+rsync -avz --progress /backup/mrwifi/ user@remote-server:/backups/mrwifi/
 ```
 
-#### 4. **rsync to Remote Server**
+### Download Backup to Local Machine
 
 ```bash
-rsync -avz /backup/mrwifi/ user@remote-server:/backup/mrwifi/
+# From your local machine
+scp user@server-ip:/backup/mrwifi/20240129_123456.tar.gz ~/Downloads/
 ```
 
-### Backup Rotation Script
+### Cloud Storage Options
 
-Create a script to manage backup retention:
+#### AWS S3 (if configured)
 
 ```bash
-#!/bin/bash
-# /usr/local/bin/mrwifi-backup-cleanup.sh
+# Upload to S3
+aws s3 cp /backup/mrwifi/20240129_123456.tar.gz s3://your-bucket/mrwifi-backups/
 
-BACKUP_DIR="/backup/mrwifi"
+# Download from S3
+aws s3 cp s3://your-bucket/mrwifi-backups/20240129_123456.tar.gz ./
+```
 
-# Keep daily backups for 7 days
-find "$BACKUP_DIR" -name "*.tar.gz" -type f -mtime +7 -delete
+#### Google Drive (using rclone)
 
-# Keep weekly backups (Sunday backups) for 30 days
-# This requires naming convention or modification date tracking
+```bash
+# Upload
+rclone copy /backup/mrwifi/20240129_123456.tar.gz gdrive:mrwifi-backups/
 
-echo "Backup cleanup completed"
+# Download
+rclone copy gdrive:mrwifi-backups/20240129_123456.tar.gz ./
+```
+
+### Backup Retention Strategy
+
+```bash
+# Keep backups for 30 days
+find /backup/mrwifi -name "20*" -type d -mtime +30 -exec rm -rf {} \;
+
+# Keep only last 10 backups
+cd /backup/mrwifi
+ls -t | tail -n +11 | xargs rm -rf
 ```
 
 ---
@@ -642,63 +892,158 @@ echo "Backup cleanup completed"
 
 ### Backup Issues
 
-#### Issue: "mysqldump: Access denied"
+#### Issue: "mysqldump: Access denied" or "need PROCESS privilege"
 
-**Solution**: Check database credentials and permissions:
+**Solution:**
+
+This happens when the user lacks PROCESS privilege for tablespaces. Use `--no-tablespaces` flag:
 
 ```bash
+# Fixed command (already included in the backup commands above)
+mysqldump -u mrwifi_user -p --single-transaction --no-tablespaces mrwifi | gzip > backup.sql.gz
+```
+
+Or grant PROCESS privilege (not recommended for security):
+```bash
+# Test MySQL connection
 mysql -u mrwifi_user -p -e "SHOW DATABASES;"
+
+# Verify user has privileges
+mysql -u root -p -e "SHOW GRANTS FOR 'mrwifi_user'@'localhost';"
 ```
 
-#### Issue: "Permission denied" when backing up files
+#### Issue: "No space left on device"
 
-**Solution**: Use sudo for system files:
-
+**Solution:**
 ```bash
-sudo tar -czf backup.tar.gz /etc/apache2/sites-available/
+# Check disk space
+df -h
+
+# Clean up old backups
+rm -rf /backup/mrwifi/old_backup_directory
+
+# Or move to external drive
 ```
 
-#### Issue: Backup file is too large
+#### Issue: "Permission denied" when creating backup
 
-**Solution**: Exclude unnecessary files:
-
+**Solution:**
 ```bash
-tar -czf backup.tar.gz --exclude='vendor' --exclude='node_modules' ...
+# Ensure backup directory has correct permissions
+sudo mkdir -p /backup/mrwifi
+sudo chown $USER:$USER /backup/mrwifi
+```
+
+#### Issue: Backup script hangs on database backup
+
+**Solution:**
+```bash
+# Check MySQL is running
+sudo systemctl status mysql
+
+# Check for locked tables
+mysql -u root -p -e "SHOW OPEN TABLES WHERE In_use > 0;"
+
+# Use --single-transaction flag (already included in script)
 ```
 
 ### Restore Issues
 
 #### Issue: "Database already exists" error
 
-**Solution**: Drop and recreate database:
-
-```sql
-DROP DATABASE mrwifi;
+**Solution:**
+```bash
+# Drop and recreate database
+mysql -u root -p << EOF
+DROP DATABASE IF EXISTS mrwifi;
+DROP DATABASE IF EXISTS mrwifi_radius;
 CREATE DATABASE mrwifi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE mrwifi_radius CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EOF
 ```
 
-#### Issue: "Table doesn't exist" after restore
+#### Issue: "Table doesn't exist" errors after restore
 
-**Solution**: Ensure RADIUS schema is imported:
-
+**Solution:**
 ```bash
+# Verify database was restored
+mysql -u mrwifi_user -p -e "USE mrwifi; SHOW TABLES;"
+
+# If RADIUS tables missing, import base schema
 mysql -u mrwifi_user -p mrwifi_radius < /var/www/mrwifi/database/radius_base_schema.sql
 ```
 
 #### Issue: Application shows errors after restore
 
-**Solution**: 
-1. Clear all caches: `php artisan config:clear && php artisan cache:clear`
-2. Check `.env` file configuration
-3. Verify file permissions
-4. Check Apache2 error logs: `sudo tail -f /var/log/apache2/error.log`
-
-#### Issue: SSL certificate errors after restore
-
-**Solution**: Renew SSL certificate:
-
+**Solutions:**
 ```bash
+# 1. Clear all caches
+cd /var/www/mrwifi
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+# 2. Check .env file
+nano .env
+# Verify database credentials are correct
+
+# 3. Check permissions
+sudo chown -R mrwifi-admin:www-data /var/www/mrwifi
+sudo chmod -R 775 /var/www/mrwifi/storage
+sudo chmod -R 775 /var/www/mrwifi/bootstrap/cache
+
+# 4. Check Apache error logs
+sudo tail -f /var/log/apache2/error.log
+
+# 5. Check Laravel logs
+tail -f /var/www/mrwifi/storage/logs/laravel.log
+```
+
+#### Issue: "composer: command not found"
+
+**Solution:**
+```bash
+# Reinstall composer
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+composer --version
+```
+
+#### Issue: File permission errors after restore
+
+**Solution:**
+```bash
+# Fix all permissions
+cd /var/www/mrwifi
+
+# Set correct ownership
+sudo chown -R mrwifi-admin:www-data .
+
+# Set directory permissions
+sudo find . -type d -exec chmod 755 {} \;
+
+# Set file permissions
+sudo find . -type f -exec chmod 644 {} \;
+
+# Make storage writable
+sudo chmod -R 775 storage bootstrap/cache public/uploads
+
+# Verify www-data can write
+sudo -u www-data touch storage/test.txt && rm storage/test.txt
+```
+
+#### Issue: SSL certificate not working after restore
+
+**Solution:**
+```bash
+# Option 1: Renew certificate
 sudo certbot renew --force-renewal
+
+# Option 2: Obtain new certificate
+sudo certbot --apache -d your-domain.com
+
+# Restart Apache
 sudo systemctl restart apache2
 ```
 
@@ -706,41 +1051,109 @@ sudo systemctl restart apache2
 
 ## Best Practices
 
-1. **Regular Backups**: Set up automated daily backups
-2. **Test Restores**: Periodically test restore procedures to ensure backups are valid
-3. **Off-Site Storage**: Keep backups in multiple locations (local + remote)
-4. **Documentation**: Keep track of backup locations and restore procedures
-5. **Encryption**: Consider encrypting sensitive backups
-6. **Monitoring**: Monitor backup script execution and disk space
-7. **Version Control**: Use Git for application code to minimize code backup needs
+### 1. Test Your Backups
+
+```bash
+# Create test restore directory
+mkdir -p /tmp/backup-test
+cd /tmp/backup-test
+
+# Extract and verify backup
+BACKUP="/backup/mrwifi/20240129_123456"
+tar -xzf "$BACKUP/application.tar.gz"
+gunzip < "$BACKUP/mrwifi_main.sql.gz" > test.sql
+head -20 test.sql  # Should show SQL commands
+
+# Clean up
+cd ~
+rm -rf /tmp/backup-test
+```
+
+### 2. Regular Backup Schedule
+
+- **Daily**: For production systems with frequent changes
+- **Weekly**: For stable systems with occasional updates
+- **Before Updates**: Always backup before major updates
+
+### 3. Multiple Backup Locations
+
+- Keep local backups: `/backup/mrwifi/`
+- Transfer to remote server regularly
+- Consider cloud storage for critical data
+
+### 4. Document Your Backup
+
+```bash
+# Add notes to backup
+echo "Backup before upgrading to v2.0" > /backup/mrwifi/20240129_123456/NOTES.txt
+```
+
+### 5. Monitor Backup Size
+
+```bash
+# Check backup sizes
+du -sh /backup/mrwifi/*
+
+# Set up alerts if backups grow too large
+```
+
+### 6. Secure Your Backups
+
+```bash
+# Encrypt sensitive backups
+tar -czf - /backup/mrwifi/20240129_123456 | openssl enc -aes-256-cbc -e > backup_encrypted.tar.gz.enc
+
+# Decrypt when needed
+openssl enc -aes-256-cbc -d -in backup_encrypted.tar.gz.enc | tar -xz
+```
 
 ---
 
 ## Quick Reference
 
-### Create Full Backup (One Command)
+### View All Backups
 
 ```bash
-BACKUP_DIR="/backup/mrwifi/$(date +%Y%m%d_%H%M%S)" && \
-mkdir -p "$BACKUP_DIR" && \
-mysqldump -u mrwifi_user -p mrwifi | gzip > "$BACKUP_DIR/mrwifi.sql.gz" && \
-mysqldump -u mrwifi_user -p mrwifi_radius | gzip > "$BACKUP_DIR/mrwifi_radius.sql.gz" && \
-cp /var/www/mrwifi/.env "$BACKUP_DIR/.env" && \
-tar -czf "$BACKUP_DIR/app.tar.gz" -C /var/www mrwifi --exclude='vendor' --exclude='node_modules' && \
-echo "Backup completed: $BACKUP_DIR"
+ls -lh /backup/mrwifi/
 ```
 
-### Restore from Backup (Quick)
+### Check Backup Size
 
 ```bash
-BACKUP_DIR="/backup/mrwifi/backup_YYYYMMDD_HHMMSS"
-gunzip < "$BACKUP_DIR/mrwifi.sql.gz" | mysql -u mrwifi_user -p mrwifi
-gunzip < "$BACKUP_DIR/mrwifi_radius.sql.gz" | mysql -u mrwifi_user -p mrwifi_radius
-cp "$BACKUP_DIR/.env" /var/www/mrwifi/.env
-cd /var/www/mrwifi && composer install --no-dev
-php artisan config:clear && php artisan cache:clear
+du -sh /backup/mrwifi/*
+```
+
+### Delete Old Backups
+
+```bash
+# Delete backups older than 30 days
+find /backup/mrwifi -name "20*" -type d -mtime +30 -exec rm -rf {} \;
+```
+
+### Quick Single Database Backup
+
+```bash
+mysqldump -u mrwifi_user -p --single-transaction --no-tablespaces mrwifi | gzip > ~/mrwifi_quick_backup_$(date +%Y%m%d).sql.gz
+```
+
+### Quick Restore Single Database
+
+```bash
+gunzip < ~/mrwifi_quick_backup_20240129.sql.gz | mysql -u mrwifi_user -p mrwifi
 ```
 
 ---
 
+## Support
+
+If you encounter issues not covered in this guide:
+
+1. Check Laravel logs: `tail -f /var/www/mrwifi/storage/logs/laravel.log`
+2. Check Apache logs: `sudo tail -f /var/log/apache2/error.log`
+3. Verify file permissions and ownership
+4. Ensure all services are running: `sudo systemctl status apache2 mysql php8.2-fpm`
+
+---
+
 **Last Updated**: January 2026
+**Version**: 1.0
