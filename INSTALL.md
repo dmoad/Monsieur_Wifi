@@ -52,7 +52,46 @@ Required PHP extensions:
 
 ## Prerequisites
 
-### 1. Install PHP 8.2+ and Required Extensions
+### 1. Create a Sudo User (Recommended)
+
+For security and best practices, create a dedicated user with sudo privileges to manage the server and handle the installation. Avoid running commands as the root user when possible.
+
+#### Create a New User
+
+```bash
+sudo adduser mrwifi-admin
+```
+
+Follow the prompts to set a password and user information.
+
+#### Add User to Sudo Group
+
+```bash
+sudo usermod -aG sudo mrwifi-admin
+```
+
+#### Verify Sudo Access
+
+Switch to the new user and test sudo:
+
+```bash
+su - mrwifi-admin
+sudo whoami
+```
+
+You should see `root` as the output, confirming sudo access works.
+
+#### Switch to the New User
+
+For the remainder of this installation guide, use the sudo user:
+
+```bash
+su - mrwifi-admin
+```
+
+> **Note**: All commands in this guide assume you're using a user with sudo privileges. If you're logged in as root, you can omit `sudo` from commands, but it's recommended to use a sudo user for better security.
+
+### 2. Install PHP 8.2+ and Required Extensions
 
 ```bash
 sudo apt update
@@ -64,7 +103,7 @@ sudo apt install php8.2 php8.2-cli php8.2-fpm php8.2-mysql php8.2-mbstring \
     php8.2-fileinfo php8.2-intl libapache2-mod-php8.2
 ```
 
-### 2. Install Composer
+### 3. Install Composer
 
 ```bash
 curl -sS https://getcomposer.org/installer | php
@@ -72,7 +111,7 @@ sudo mv composer.phar /usr/local/bin/composer
 composer --version
 ```
 
-### 3. Install Apache2
+### 4. Install Apache2
 
 ```bash
 sudo apt install apache2
@@ -81,12 +120,14 @@ sudo systemctl enable apache2
 sudo systemctl start apache2
 ```
 
-### 4. Install MySQL/MariaDB
+### 5. Install MySQL/MariaDB
 
 ```bash
 sudo apt install mysql-server
 sudo mysql_secure_installation
 ```
+
+While running `mysql_secure_installation`, set password validation policy as 2 (Most secure) and answer "Yes" to all other questions.
 
 ---
 
@@ -96,9 +137,13 @@ sudo mysql_secure_installation
 
 ```bash
 cd /var/www
-git clone <repository-url> mrwifi
+sudo mkdir -p mrwifi
+sudo chown mrwifi-admin:mrwifi-admin mrwifi
+git clone https://github.com/kmrinal/mrwifi.git mrwifi
 cd mrwifi
 ```
+
+> **Note**: Replace `mrwifi-admin` with your actual sudo username if different.
 
 ### 2. Install PHP Dependencies
 
@@ -234,11 +279,6 @@ SOLUTION_URL=https://your-redirect-url.com
 php artisan jwt:secret
 ```
 
-Or manually generate a secure random string:
-```bash
-openssl rand -base64 64
-```
-
 ### 4. Configure Optional Settings
 
 #### SMS Gateway Configuration (Required if using SMS OTP)
@@ -287,15 +327,33 @@ GUEST_WHITELIST_SERVERS=127.0.0.1,your-server.com
 GUEST_WHITELIST_DOMAINS=.example.com,.test.com
 
 # Social Media Whitelists (for social login)
-TWITTER_WHITELIST_DOMAINS=.twitter.com,.x.com,.twimg.com
-TWITTER_WHITELIST_SERVERS=twitter.com,x.com,twimg.com
-FACEBOOK_WHITELIST_DOMAINS=.facebook.com,.fbcdn.net
-FACEBOOK_WHITELIST_SERVERS=facebook.com,fbcdn.net
-GOOGLE_WHITELIST_DOMAINS=.google.com,.googleapis.com
-GOOGLE_WHITELIST_SERVERS=google.com,googleapis.com
+TWITTER_WHITELIST_DOMAINS=.twitter.com,.x.com,.twimg.com,.google.com,.googleapis.com,.gstatic.com
+TWITTER_WHITELIST_SERVERS=twitter.com,x.com,twimg.com,google.com,googleapis.com,gstatic.com
+FACEBOOK_WHITELIST_DOMAINS=.facebook.com,.fbcdn.net,.graph.facebook.com
+FACEBOOK_WHITELIST_SERVERS=facebook.com,fbcdn.net,graph.facebook.com
+GOOGLE_WHITELIST_DOMAINS=.google.com,.googleapis.com,.gstatic.com
+GOOGLE_WHITELIST_SERVERS=google.com,googleapis.com,gstatic.com
 ```
 
 These whitelists allow specified domains and servers to be accessible during the captive portal authentication process.
+
+#### Mail Configuration (Optional)
+
+If you need to send emails from the application:
+
+```env
+# Mail Configuration
+MAIL_MAILER=smtp  # smtp, sendmail, mailgun, ses, postmark, log
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_ENCRYPTION=tls  # tls, ssl, or null
+MAIL_FROM_ADDRESS="noreply@your-domain.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+**Note**: For development, you can use `MAIL_MAILER=log` which saves emails to `storage/logs/laravel.log`.
 
 ---
 
@@ -344,9 +402,11 @@ This creates a symbolic link from `public/storage` to `storage/app/public`.
 
 ### 1. Set Directory Permissions
 
+After installation is complete, set proper ownership and permissions:
+
 ```bash
-# Set ownership (replace 'www-data' with your web server user)
-sudo chown -R www-data:www-data /var/www/mrwifi
+# First, ensure your user has ownership for running Composer and Artisan commands
+sudo chown -R mrwifi-admin:www-data /var/www/mrwifi
 
 # Set directory permissions
 sudo find /var/www/mrwifi -type d -exec chmod 755 {} \;
@@ -354,17 +414,25 @@ sudo find /var/www/mrwifi -type d -exec chmod 755 {} \;
 # Set file permissions
 sudo find /var/www/mrwifi -type f -exec chmod 644 {} \;
 
-# Make storage and cache writable
+# Make storage and cache writable for web server
 sudo chmod -R 775 /var/www/mrwifi/storage
 sudo chmod -R 775 /var/www/mrwifi/bootstrap/cache
 
-# Make public/uploads writable (for profile pictures)
+# Make public/uploads writable (for file uploads like profile pictures)
 sudo chmod -R 775 /var/www/mrwifi/public/uploads
+
+# Ensure www-data can write to these directories
+sudo chgrp -R www-data /var/www/mrwifi/storage /var/www/mrwifi/bootstrap/cache /var/www/mrwifi/public/uploads
 ```
+
+> **Note**: Replace `mrwifi-admin` with your actual sudo username and `www-data` with your web server user if different.
 
 ### 2. Create Required Directories
 
+Make sure you're in the project directory first:
+
 ```bash
+cd /var/www/mrwifi
 mkdir -p storage/framework/{sessions,views,cache}
 mkdir -p storage/logs
 mkdir -p public/uploads/profile_pictures
@@ -470,10 +538,10 @@ http://your-domain.com
 ### 4. Test Admin Login
 
 1. Navigate to the login page
-2. Use credentials:
-   - Email: `admin@example.com`
-   - Password: `password`
-3. Change password immediately after login
+2. Use one of the default admin credentials:
+   - Email: `admin@monsieur-wifi.com` or `administrator@monsieur-wifi.com`
+   - Password: `abcd1234`
+3. **⚠️ IMPORTANT**: Change the password immediately after first login for security!
 
 ---
 
