@@ -2098,22 +2098,28 @@ class LocationController extends Controller
             }
             
             // Handle Captive Portal MAC filter list (adds to radcheck, no config version increment)
+            // Handle Captive Portal MAC filter list (adds to radcheck, no config version increment)
             if (isset($settingsData['captive_mac_filter_list'])) {
                 $normalizedMacList = $this->normalizeMacFilterList($settingsData['captive_mac_filter_list']);
                 
                 // Check if MAC filter list changed
                 $currentMacList = $settings->captive_mac_filter_list ?: [];
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
+                    $increment_version = 1;
+                    $routerSettingsChanged = true;
                     Log::info('Captive portal MAC filter list updated (no config version increment)', [
                         'old_list' => $currentMacList,
-                        'new_list' => $normalizedMacList
+                        'new_list' => $normalizedMacList,
+                        'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
                     ]);
                     
                     // Update the captive portal MAC filter list first
+                    // This includes mac, type, and scope fields for each entry
                     $settings->captive_mac_filter_list = $normalizedMacList;
                     
                     // Handle radcheck records for captive portal MAC address filtering
-                    $this->updateRadcheckForMacFiltering($settings, $currentMacList, $normalizedMacList);
+                    // Note: scope is stored in LocationSettings JSON, not in radcheck table
+                    // $this->updateRadcheckForMacFiltering($settings, $currentMacList, $normalizedMacList);
                 }
                 
                 unset($settingsData['captive_mac_filter_list']);
@@ -2129,10 +2135,12 @@ class LocationController extends Controller
                     $increment_version = 1;
                     Log::info('Secured WiFi MAC filter list updated (config version increment)', [
                         'old_list' => $currentMacList,
-                        'new_list' => $normalizedMacList
+                        'new_list' => $normalizedMacList,
+                        'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
                     ]);
                     
                     // Update the secured WiFi MAC filter list (no radcheck records for secured WiFi)
+                    // This includes mac, type, and scope fields for each entry
                     $settings->secured_mac_filter_list = $normalizedMacList;
                 }
                 
@@ -2345,28 +2353,39 @@ class LocationController extends Controller
         ]);
 
         // Convert arrays to associative arrays for easier comparison
+        // Store both type and scope for comparison
         $oldMacMap = [];
         foreach ($oldMacList as $macItem) {
             if (is_string($macItem)) {
-                $oldMacMap[$macItem] = 'blacklist';
+                $oldMacMap[$macItem] = ['type' => 'blacklist', 'scope' => 'all'];
             } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
-                $oldMacMap[$macItem['mac']] = $macItem['type'];
+                $oldMacMap[$macItem['mac']] = [
+                    'type' => $macItem['type'],
+                    'scope' => $macItem['scope'] ?? 'all'
+                ];
             }
         }
 
         $newMacMap = [];
         foreach ($newMacList as $macItem) {
             if (is_string($macItem)) {
-                $newMacMap[$macItem] = 'blacklist';
+                $newMacMap[$macItem] = ['type' => 'blacklist', 'scope' => 'all'];
             } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
-                $newMacMap[$macItem['mac']] = $macItem['type'];
+                $newMacMap[$macItem['mac']] = [
+                    'type' => $macItem['type'],
+                    'scope' => $macItem['scope'] ?? 'all'
+                ];
             }
         }
 
         // Find MAC addresses that were removed
         $removedMacs = array_diff_key($oldMacMap, $newMacMap);
-        foreach ($removedMacs as $macAddress => $type) {
-            Log::info('Removing MAC address from radcheck: ' . $macAddress);
+        foreach ($removedMacs as $macAddress => $macData) {
+            Log::info('Removing MAC address from radcheck', [
+                'mac' => $macAddress,
+                'type' => $macData['type'],
+                'scope' => $macData['scope']
+            ]);
             
             // Normalize MAC address to dash format
             $normalizedMac = $this->normalizeMacAddress($macAddress);
@@ -2379,18 +2398,30 @@ class LocationController extends Controller
         }
 
         // Find MAC addresses that were added or changed
-        foreach ($newMacMap as $macAddress => $type) {
+        foreach ($newMacMap as $macAddress => $macData) {
             $normalizedMac = $this->normalizeMacAddress($macAddress);
             if (!$normalizedMac) {
                 Log::warning('Invalid MAC address format: ' . $macAddress);
                 continue;
             }
 
-            $accessControl = $type === 'whitelist' ? 'whitelisted' : 'blacklisted';
+            $accessControl = $macData['type'] === 'whitelist' ? 'whitelisted' : 'blacklisted';
+            $scope = $macData['scope'] ?? 'all';
             
-            // Check if this is a new MAC address or if the type changed
-            if (!isset($oldMacMap[$macAddress]) || $oldMacMap[$macAddress] !== $type) {
-                Log::info('Adding/updating MAC address in radcheck: ' . $normalizedMac . ' as ' . $accessControl);
+            // Check if this is a new MAC address or if the type/scope changed
+            $isNew = !isset($oldMacMap[$macAddress]);
+            $typeChanged = !$isNew && $oldMacMap[$macAddress]['type'] !== $macData['type'];
+            $scopeChanged = !$isNew && ($oldMacMap[$macAddress]['scope'] ?? 'all') !== $scope;
+            
+            if ($isNew || $typeChanged || $scopeChanged) {
+                Log::info('Adding/updating MAC address in radcheck', [
+                    'mac' => $normalizedMac,
+                    'access_control' => $accessControl,
+                    'scope' => $scope,
+                    'is_new' => $isNew,
+                    'type_changed' => $typeChanged,
+                    'scope_changed' => $scopeChanged
+                ]);
                 
                 \App\Models\Radcheck::updateOrCreateRecord(
                     $normalizedMac,
@@ -2400,6 +2431,8 @@ class LocationController extends Controller
                     [
                         'location_id' => $settings->location_id,
                         'access_control' => $accessControl
+                        // Note: scope is stored in LocationSettings JSON, not in radcheck table
+                        // The scope will be used when applying MAC filter rules on the device/router
                     ]
                 );
             }
@@ -2449,13 +2482,14 @@ class LocationController extends Controller
         $normalizedMacList = [];
         foreach ($macFilterList as $index => $macItem) {
             if (is_string($macItem)) {
-                // Old format - treat as blacklist for backward compatibility
+                // Old format - treat as blacklist for backward compatibility, default scope to 'all'
                 if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem)) {
                     throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem);
                 }
                 $normalizedMacList[] = [
                     'mac' => strtoupper($macItem),
-                    'type' => 'blacklist'
+                    'type' => 'blacklist',
+                    'scope' => 'all'
                 ];
             } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
                 // New format - validate MAC address and type
@@ -2465,9 +2499,17 @@ class LocationController extends Controller
                 if (!in_array($macItem['type'], ['whitelist', 'blacklist'])) {
                     throw new \Exception('Invalid MAC address type at index ' . $index . ': ' . $macItem['type'] . '. Must be "whitelist" or "blacklist"');
                 }
+                
+                // Validate and set scope field
+                $scope = $macItem['scope'] ?? 'all';
+                if (!in_array($scope, ['block_24', 'block_5', 'all'])) {
+                    throw new \Exception('Invalid scope value at index ' . $index . ': ' . $scope . '. Must be "block_24", "block_5", or "all"');
+                }
+                
                 $normalizedMacList[] = [
                     'mac' => strtoupper($macItem['mac']),
-                    'type' => $macItem['type']
+                    'type' => $macItem['type'],
+                    'scope' => $scope
                 ];
             } else {
                 throw new \Exception('Invalid MAC filter item format at index ' . $index . '. Must be string or object with mac and type properties.');
