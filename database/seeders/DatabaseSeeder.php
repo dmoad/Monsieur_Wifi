@@ -20,8 +20,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Seed domain blocking data
+        // Seed users and domain blocking data
         $this->call([
+            UserSeeder::class,
             CategorySeeder::class,
             BlockedDomainSeeder::class,
         ]);
