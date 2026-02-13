@@ -22,6 +22,8 @@ Route::post('auth/register', [AuthController::class, 'register']);
 Route::post('auth/register-with-design', [AuthController::class, 'register_with_design']);
 Route::post('auth/password-reset', [AuthController::class, 'sendPasswordResetLink']);
 Route::post('auth/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('auth/verify-email', [AuthController::class, 'verifyEmail']);
+Route::post('auth/resend-verification', [AuthController::class, 'resendVerificationEmail']);
 Route::post('temp-captive-portal-designs', [TempCaptivePortalDesignController::class, 'store']);
 Route::get('temp-captive-portal-designs/{id}', [TempCaptivePortalDesignController::class, 'index']);
 
