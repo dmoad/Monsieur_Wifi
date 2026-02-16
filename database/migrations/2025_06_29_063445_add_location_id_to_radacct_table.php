@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::connection('radius')->table('radacct', function (Blueprint $table) {
-            $table->integer('location_id')->nullable()->after('username')->index();
+            if (!Schema::connection('radius')->hasColumn('radacct', 'location_id')) {
+                $table->integer('location_id')->nullable()->after('username')->index();
+            }
         });
     }
 

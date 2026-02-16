@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
-            $table->enum('access_control', ['none', 'whitelisted', 'blacklisted'])
-                  ->default('none')
-                  ->after('idle_timeout');
+            if (!Schema::connection('radius')->hasColumn('radcheck', 'access_control')) {
+                $table->enum('access_control', ['none', 'whitelisted', 'blacklisted'])
+                      ->default('none')
+                      ->after('idle_timeout');
+            }
         });
     }
 

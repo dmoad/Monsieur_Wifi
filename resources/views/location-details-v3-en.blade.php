@@ -2624,16 +2624,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
+                <div class="content-header-right text-md-right col-md-3 col-12 mb-1">
                     <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end mb-0">
-                        <a href="#network-configuration-tabs" class="btn custom-btn btn-analytics mr-1">
-                            <i data-feather="settings" class="mr-1"></i>
-                            Settings
-                        </a>
-                        <a href="#" class="btn btn-outline-primary" id="guest-users-link">
-                            <i data-feather="user-check" class="mr-1"></i>
-                            Guest Users
-                        </a>
+                        <div class="btn-group" role="group">
+                            <a href="#network-configuration-tabs" class="btn custom-btn btn-analytics">
+                                <i data-feather="settings" class="mr-50"></i>
+                                <span class="d-none d-sm-inline">Settings</span>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary" id="guest-users-link">
+                                <i data-feather="user-check" class="mr-50"></i>
+                                <span class="d-none d-sm-inline">Guest Users</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3708,12 +3710,19 @@
                                                 <div class="mac-address-container">
                                                     <div class="mac-filter-status text-muted mb-1" id="captive-mac-status">
                                                         <small>No MAC addresses added yet</small>                                                            </div>
-                                                        <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
+                                                        <div class="filtered-mac-list border rounded" style="min-height: 60px;">
                                                             <div class="text-center text-muted p-3" id="captive-mac-empty">
                                                                 <i data-feather="shield" class="mb-2"></i>
                                                                 <div><small>No MAC addresses configured</small></div>
                                                                 <div><small class="text-muted">Add MAC addresses above to control access</small></div>
                                                             </div>
+                                                        </div>
+                                                        <!-- Pagination Controls -->
+                                                        <div class="mac-pagination-container mt-2" id="captive-mac-pagination" style="display: none;">
+                                                            <nav aria-label="MAC address pagination">
+                                                                <ul class="pagination pagination-sm justify-content-center mb-0" id="captive-mac-pagination-list">
+                                                                </ul>
+                                                            </nav>
                                                         </div>
                                                     </div>
                                                         
@@ -3892,12 +3901,19 @@
                                                             <div class="mac-filter-status text-muted mb-1" id="secured-mac-status">
                                                                 <small>No MAC addresses added yet</small>
                                                             </div>
-                                                            <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
+                                                            <div class="filtered-mac-list border rounded" style="min-height: 60px;">
                                                                 <div class="text-center text-muted p-3" id="secured-mac-empty">
                                                                     <i data-feather="shield" class="mb-2"></i>
                                                                     <div><small>No MAC addresses configured</small></div>
                                                                     <div><small class="text-muted">Add MAC addresses above to control access</small></div>
                                                                 </div>
+                                                            </div>
+                                                            <!-- Pagination Controls -->
+                                                            <div class="mac-pagination-container mt-2" id="secured-mac-pagination" style="display: none;">
+                                                                <nav aria-label="MAC address pagination">
+                                                                    <ul class="pagination pagination-sm justify-content-center mb-0" id="secured-mac-pagination-list">
+                                                                    </ul>
+                                                                </nav>
                                                             </div>
                                                         </div>
                                                         
@@ -4314,8 +4330,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="form-group vlan-setting">
                         <label>VLAN ID (Optional)</label>
-                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan-modal" value="" min="1" max="4094" disabled>
-                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
+                        <input type="number" class="form-control captive_portal_vlan_id" placeholder="20" id="captive-portal-vlan-modal_alt" value="" min="1" max="4094" disabled>
+                        <small class="text-muted">Specify2 VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                     
                     <div class="form-group vlan-setting">
@@ -4330,7 +4346,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-btn save-captive-portal">Save Changes</button>
+                    <button type="button" class="btn custom-btn save-captive-portal">Save Changes1</button>
                 </div>
             </div>
         </div>
@@ -4387,7 +4403,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         <div class="form-group vlan-setting">
                             <label for="password-wifi-vlan-tagging-modal">VLAN Tagging</label>
-                            <select class="form-control" id="password-wifi-vlan-tagging-modal" disabled>
+                            <select class="form-control" id="password-wifi-vlan-tagging-modal" >
                                 <option value="disabled">Disabled</option>
                                 <option value="tagged">Tagged</option>
                                 <option value="untagged">Untagged</option>
@@ -4581,12 +4597,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="form-group vlan-setting">
                         <label for="captive-portal-vlan-modal">VLAN ID (Optional)</label>
                         <input type="number" class="form-control" id="captive-portal-vlan-modal" placeholder="20" min="1" max="4094" disabled>
-                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
+                        <small class="text-muted">Specify1 VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                     
                     <div class="form-group vlan-setting">
-                        <label for="captive-portal-vlan-tagging-modal">VLAN Tagging</label>
-                        <select class="form-control" id="captive-portal-vlan-tagging-modal" disabled>
+                        <label for="captive-portal-vlan-tagging-modal_alt">VLAN Tagging</label>
+                        <select class="form-control" id="captive-portal-vlan-tagging-modal_alt" >
                             <option value="disabled">Disabled</option>
                             <option value="tagged">Tagged</option>
                             <option value="untagged">Untagged</option>
@@ -4929,6 +4945,110 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
     
+    <!-- MAC Address Radio Selection Modal for Captive Portal -->
+    <div class="modal fade" id="captive-mac-radio-modal" tabindex="-1" role="dialog" aria-labelledby="captive-mac-radio-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="captive-mac-radio-modal-title">Select Radio Frequency</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Select which radio frequency to block this MAC address on:</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>MAC Address</label>
+                        <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="captive-mac-radio-display">
+                            -
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Radio Frequency</label>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="captive-radio-24" name="captive-radio-selection" class="custom-control-input" value="2.4GHz">
+                            <label class="custom-control-label" for="captive-radio-24">2.4GHz Radio</label>
+                        </div>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="captive-radio-5" name="captive-radio-selection" class="custom-control-input" value="5GHz">
+                            <label class="custom-control-label" for="captive-radio-5">5GHz Radio</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="captive-radio-both" name="captive-radio-selection" class="custom-control-input" value="both" checked>
+                            <label class="custom-control-label" for="captive-radio-both">All</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn custom-btn" id="captive-confirm-add-mac">
+                        <i data-feather="check" class="mr-1"></i>
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAC Address Radio Selection Modal for Secured WiFi -->
+    <div class="modal fade" id="secured-mac-radio-modal" tabindex="-1" role="dialog" aria-labelledby="secured-mac-radio-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="secured-mac-radio-modal-title">Select Radio Frequency</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Select which radio frequency to block this MAC address on:</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>MAC Address</label>
+                        <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="secured-mac-radio-display">
+                            -
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Radio Frequency</label>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="secured-radio-24" name="secured-radio-selection" class="custom-control-input" value="2.4GHz">
+                            <label class="custom-control-label" for="secured-radio-24">2.4GHz Radio</label>
+                        </div>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="secured-radio-5" name="secured-radio-selection" class="custom-control-input" value="5GHz">
+                            <label class="custom-control-label" for="secured-radio-5">5GHz Radio</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="secured-radio-both" name="secured-radio-selection" class="custom-control-input" value="both" checked>
+                            <label class="custom-control-label" for="secured-radio-both">All</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn custom-btn" id="secured-confirm-add-mac">
+                        <i data-feather="check" class="mr-1"></i>
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- END: Modals -->
 
     <!-- BEGIN: Vendor JS-->
@@ -4958,7 +5078,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
     <!-- END: Page JS-->
     <script src="/assets/js/config.js?v=1"></script>
-    <script src="/assets/js/location-details.js?v=1"></script>
+    <script src="/assets/js/location-details.js?v=7"></script>
     <script>
         // ==============================================
         // FORM VALIDATION UTILITIES
@@ -5020,6 +5140,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const token = UserManager.getToken();
         console.log("user: ", user);
         console.log("token: ", token);
+        // alert("v2 page");
         
         if (!token || !user) {
             // No token or user found, redirect to login page
@@ -10083,6 +10204,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 secured: []
             };
             
+            // Pagination state for MAC addresses
+            window.macPagination = {
+                captive: {
+                    currentPage: 1,
+                    itemsPerPage: 5
+                },
+                secured: {
+                    currentPage: 1,
+                    itemsPerPage: 5
+                }
+            };
+            
             // MAC address validation
             function validateMacAddress(macAddress) {
                 const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
@@ -10094,8 +10227,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 return window.macAddresses[context].some(item => item.mac === macAddress);
             }
             
+            // Map radio selection to API scope value
+            function mapRadioToScope(radio) {
+                switch(radio) {
+                    case '2.4GHz':
+                        return 'block_24';
+                    case '5GHz':
+                        return 'block_5';
+                    case 'both':
+                    default:
+                        return 'all';
+                }
+            }
+            
+            // Map API scope value to display text
+            function mapScopeToDisplay(scope) {
+                switch(scope) {
+                    case 'block_24':
+                        return '2.4GHz';
+                    case 'block_5':
+                        return '5GHz';
+                    case 'all':
+                    default:
+                        return 'All';
+                }
+            }
+            
             // Add MAC address to the list
-            function addMacAddress(macAddress, type, context) {
+            function addMacAddress(macAddress, type, context, radio = 'both') {
                 // Normalize MAC address
                 macAddress = macAddress.toUpperCase();
                 
@@ -10105,10 +10264,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     return false;
                 }
                 
-                // Add to global storage
+                // Map radio selection to API scope value
+                const scope = mapRadioToScope(radio);
+                
+                // Add to global storage with scope information
                 window.macAddresses[context].push({
                     mac: macAddress,
-                    type: type
+                    type: type,
+                    scope: scope,
+                    radio: radio // Keep for display purposes
                 });
                 
                 // Refresh display
@@ -10117,7 +10281,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Auto-save
                 saveMacFilterSettings(context);
                 
-                toastr.success(`MAC address ${macAddress} added to ${type}`);
+                const radioText = radio === 'both' ? 'All' : `${radio} radio`;
+                toastr.success(`MAC address ${macAddress} added to ${type} on ${radioText}`);
                 return true;
             }
             
@@ -10132,12 +10297,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Refresh the MAC address display based on current filter
+            // Refresh the MAC address display based on current filter with pagination
             function refreshMacDisplay(context) {
                 const container = context === 'captive' ? 
                     $('#captive-portal .filtered-mac-list') : 
                     $('#secured-wifi .filtered-mac-list');
                 const emptyElement = context === 'captive' ? $('#captive-mac-empty') : $('#secured-mac-empty');
+                const paginationContainer = context === 'captive' ? $('#captive-mac-pagination') : $('#secured-mac-pagination');
+                const paginationList = context === 'captive' ? $('#captive-mac-pagination-list') : $('#secured-mac-pagination-list');
                 const viewFilter = context === 'captive' ? $('#captive-mac-view-filter').val() : $('#secured-mac-view-filter').val();
                 
                 // Clear current display
@@ -10154,28 +10321,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show/hide empty message
                 if (filteredMacs.length === 0) {
                     emptyElement.show();
+                    paginationContainer.hide();
                 } else {
                     emptyElement.hide();
-                }
-                
-                // Add MAC addresses to display
-                filteredMacs.forEach(item => {
-                    const badgeClass = item.type === 'whitelist' ? 'badge-success' : 'badge-danger';
-                    const iconClass = item.type === 'whitelist' ? 'check-circle' : 'x-circle';
-                    const macItem = `
-                        <div class="d-flex justify-content-between align-items-center p-2 border-bottom mac-address-item" data-mac="${item.mac}" data-type="${item.type}">
-                            <div class="d-flex align-items-center">
-                                <i data-feather="${iconClass}" class="mr-2" style="width: 16px; height: 16px;"></i>
-                                <span class="mac-address-text font-weight-medium mr-2">${item.mac}</span>
-                                <span class="badge ${badgeClass}">${item.type}</span>
+                    
+                    // Pagination logic
+                    const pagination = window.macPagination[context];
+                    const totalPages = Math.ceil(filteredMacs.length / pagination.itemsPerPage);
+                    
+                    // Reset to page 1 if current page is out of bounds
+                    if (pagination.currentPage > totalPages && totalPages > 0) {
+                        pagination.currentPage = 1;
+                    }
+                    
+                    // Calculate pagination slice
+                    const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+                    const endIndex = startIndex + pagination.itemsPerPage;
+                    const paginatedMacs = filteredMacs.slice(startIndex, endIndex);
+                    
+                    // Add MAC addresses to display (only current page)
+                    paginatedMacs.forEach(item => {
+                        const badgeClass = item.type === 'whitelist' ? 'badge-success' : 'badge-danger';
+                        const iconClass = item.type === 'whitelist' ? 'check-circle' : 'x-circle';
+                        
+                        // Use scope if available, otherwise fall back to radio, then default to 'all'
+                        const scope = item.scope || (item.radio ? mapRadioToScope(item.radio) : 'all');
+                        const radioText = mapScopeToDisplay(scope);
+                        
+                        // Format display text based on type and scope
+                        let displayText;
+                        if (item.type === 'blacklist') {
+                            displayText = `Blacklisted on ${radioText}`;
+                        } else {
+                            displayText = `Whitelisted on ${radioText}`;
+                        }
+                        
+                        const macItem = `
+                            <div class="d-flex justify-content-between align-items-center p-2 border-bottom mac-address-item" data-mac="${item.mac}" data-type="${item.type}" data-scope="${scope}">
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <i data-feather="${iconClass}" class="mr-2" style="width: 16px; height: 16px;"></i>
+                                    <span class="mac-address-text font-weight-medium mr-2">${item.mac}</span>
+                                    <span class="badge ${badgeClass}" title="${displayText}">${displayText}</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-mac" title="Remove MAC address">
+                                    <i data-feather="x" style="width: 12px; height: 12px;"></i>
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-danger remove-mac" title="Remove MAC address">
-                                <i data-feather="x" style="width: 12px; height: 12px;"></i>
-                            </button>
-                        </div>
-                    `;
-                    container.append(macItem);
-                });
+                        `;
+                        container.append(macItem);
+                    });
+                    
+                    // Render pagination controls
+                    if (totalPages > 1) {
+                        renderMacPagination(context, pagination.currentPage, totalPages, paginationList);
+                        paginationContainer.show();
+                    } else {
+                        paginationContainer.hide();
+                    }
+                }
                 
                 // Update status
                 updateMacStatus(context);
@@ -10183,6 +10386,93 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Re-initialize feather icons
                 feather.replace();
             }
+            
+            // Render pagination controls
+            function renderMacPagination(context, currentPage, totalPages, paginationList) {
+                paginationList.empty();
+                
+                // Previous button
+                const prevDisabled = currentPage === 1 ? 'disabled' : '';
+                const prevPage = currentPage > 1 ? currentPage - 1 : 1;
+                paginationList.append(`
+                    <li class="page-item ${prevDisabled}">
+                        <a class="page-link mac-pagination-link" href="#" data-page="${prevPage}" data-context="${context}">Previous</a>
+                    </li>
+                `);
+                
+                // Page numbers
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                // Adjust start page if we're near the end
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                // First page and ellipsis
+                if (startPage > 1) {
+                    paginationList.append(`
+                        <li class="page-item">
+                            <a class="page-link mac-pagination-link" href="#" data-page="1" data-context="${context}">1</a>
+                        </li>
+                    `);
+                    if (startPage > 2) {
+                        paginationList.append(`
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        `);
+                    }
+                }
+                
+                // Page number buttons
+                for (let i = startPage; i <= endPage; i++) {
+                    const activeClass = i === currentPage ? 'active' : '';
+                    paginationList.append(`
+                        <li class="page-item ${activeClass}">
+                            <a class="page-link mac-pagination-link" href="#" data-page="${i}" data-context="${context}">${i}</a>
+                        </li>
+                    `);
+                }
+                
+                // Last page and ellipsis
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        paginationList.append(`
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        `);
+                    }
+                    paginationList.append(`
+                        <li class="page-item">
+                            <a class="page-link mac-pagination-link" href="#" data-page="${totalPages}" data-context="${context}">${totalPages}</a>
+                        </li>
+                    `);
+                }
+                
+                // Next button
+                const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+                const nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
+                paginationList.append(`
+                    <li class="page-item ${nextDisabled}">
+                        <a class="page-link mac-pagination-link" href="#" data-page="${nextPage}" data-context="${context}">Next</a>
+                    </li>
+                `);
+            }
+            
+            // Handle pagination clicks
+            $(document).on('click', '.mac-pagination-link', function(e) {
+                e.preventDefault();
+                const page = parseInt($(this).data('page'));
+                const context = $(this).data('context');
+                
+                if (page && context && !$(this).closest('.page-item').hasClass('disabled')) {
+                    window.macPagination[context].currentPage = page;
+                    refreshMacDisplay(context);
+                }
+            });
             
             // Update status display
             function updateMacStatus(context) {
@@ -10200,14 +10490,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Handle view filter changes
             $('#captive-mac-view-filter').on('change', function() {
+                // Reset to page 1 when filter changes
+                window.macPagination.captive.currentPage = 1;
                 refreshMacDisplay('captive');
             });
             
             $('#secured-mac-view-filter').on('change', function() {
+                // Reset to page 1 when filter changes
+                window.macPagination.secured.currentPage = 1;
                 refreshMacDisplay('secured');
             });
             
-            // Handle adding MAC addresses for captive portal
+            // Handle adding MAC addresses for captive portal - show modal first
             $('#captive-add-mac').on('click', function() {
                 const macAddress = $('#captive-mac-address').val().trim().toUpperCase();
                 const macType = $('#captive-mac-type').val();
@@ -10222,12 +10516,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                if (addMacAddress(macAddress, macType, 'captive')) {
+                // Store MAC address and type for later use
+                $('#captive-mac-radio-display').text(macAddress);
+                $('#captive-mac-radio-modal').data('mac-address', macAddress);
+                $('#captive-mac-radio-modal').data('mac-type', macType);
+                
+                // Reset radio selection to default (both)
+                $('#captive-radio-both').prop('checked', true);
+                
+                // Show modal
+                $('#captive-mac-radio-modal').modal('show');
+            });
+            
+            // Handle confirm button in captive MAC radio modal
+            $('#captive-confirm-add-mac').on('click', function() {
+                const macAddress = $('#captive-mac-radio-modal').data('mac-address');
+                const macType = $('#captive-mac-radio-modal').data('mac-type');
+                const radioSelection = $('input[name="captive-radio-selection"]:checked').val();
+                
+                if (addMacAddress(macAddress, macType, 'captive', radioSelection)) {
                     $('#captive-mac-address').val('');
+                    $('#captive-mac-radio-modal').modal('hide');
                 }
             });
             
-            // Handle adding MAC addresses for secured WiFi
+            // Handle adding MAC addresses for secured WiFi - show modal first
             $('#secured-add-mac').on('click', function() {
                 const macAddress = $('#secured-mac-address').val().trim().toUpperCase();
                 const macType = $('#secured-mac-type').val();
@@ -10242,9 +10555,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                if (addMacAddress(macAddress, macType, 'secured')) {
+                // Store MAC address and type for later use
+                $('#secured-mac-radio-display').text(macAddress);
+                $('#secured-mac-radio-modal').data('mac-address', macAddress);
+                $('#secured-mac-radio-modal').data('mac-type', macType);
+                
+                // Reset radio selection to default (both)
+                $('#secured-radio-both').prop('checked', true);
+                
+                // Show modal
+                $('#secured-mac-radio-modal').modal('show');
+            });
+            
+            // Handle confirm button in secured MAC radio modal
+            $('#secured-confirm-add-mac').on('click', function() {
+                const macAddress = $('#secured-mac-radio-modal').data('mac-address');
+                const macType = $('#secured-mac-radio-modal').data('mac-type');
+                const radioSelection = $('input[name="secured-radio-selection"]:checked').val();
+                
+                if (addMacAddress(macAddress, macType, 'secured', radioSelection)) {
                     $('#secured-mac-address').val('');
+                    $('#secured-mac-radio-modal').modal('hide');
                 }
+            });
+            
+            // Initialize feather icons when radio selection modals are shown
+            $('#captive-mac-radio-modal, #secured-mac-radio-modal').on('shown.bs.modal', function() {
+                feather.replace();
             });
             
             // Handle removing MAC addresses
@@ -10279,17 +10616,35 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
+                // Transform MAC addresses to include scope field for API
+                const macAddressesForApi = window.macAddresses[context].map(item => {
+                    // Ensure scope is set - use existing scope or map from radio, default to 'all'
+                    const scope = item.scope || (item.radio ? mapRadioToScope(item.radio) : 'all');
+                    
+                    return {
+                        mac: item.mac,
+                        type: item.type,
+                        scope: scope
+                    };
+                });
+                
                 // Prepare the new data structure with context-specific field names
                 const macFilterData = {};
                 if (context === 'captive') {
                     // For captive portal - adds to radcheck, no config version increment
-                    macFilterData.captive_mac_filter_list = window.macAddresses[context];
+                    macFilterData.captive_mac_filter_list = macAddressesForApi;
                 } else if (context === 'secured') {
                     // For password WiFi - adds to list, increments config version
-                    macFilterData.secured_mac_filter_list = window.macAddresses[context];
+                    macFilterData.secured_mac_filter_list = macAddressesForApi;
                 }
                 
-                console.log('Saving MAC filter settings:', macFilterData);
+                // Print the JSON being submitted to API
+                const jsonString = JSON.stringify(macFilterData, null, 2);
+                console.log('=== MAC Filter JSON Being Submitted to API ===');
+                console.log('Context:', context);
+                console.log('URL:', `/api/locations/${locationId}/settings`);
+                console.log('JSON:', jsonString);
+                console.log('=============================================');
                 
                 // Save to API
                 $.ajax({
@@ -10300,7 +10655,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    data: JSON.stringify(macFilterData),
+                    data: jsonString,
                     success: function(response) {
                         console.log('MAC filter settings saved successfully:', response);
                         // Don't show success toast for auto-save to avoid spam
@@ -10322,11 +10677,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Handle both old format (array of strings) and new format (array of objects)
                 const normalizedList = macFilterList.map(item => {
                     if (typeof item === 'string') {
-                        // Old format - default to blacklist for backward compatibility
-                        return { mac: item, type: 'blacklist' };
+                        // Old format - default to blacklist and all radios for backward compatibility
+                        return { 
+                            mac: item, 
+                            type: 'blacklist', 
+                            scope: 'all',
+                            radio: 'both' // For display purposes
+                        };
                     } else if (item && item.mac && item.type) {
-                        // New format
-                        return item;
+                        // New format - ensure scope property exists
+                        const scope = item.scope || 'all';
+                        return {
+                            mac: item.mac,
+                            type: item.type,
+                            scope: scope,
+                            radio: item.radio || mapScopeToDisplay(scope) // For display purposes
+                        };
                     }
                     return null;
                 }).filter(item => item !== null);

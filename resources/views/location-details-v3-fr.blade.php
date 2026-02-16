@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="fr" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="monsieur-wifi cloud controller dashboard for managing and monitoring WiFi networks.">
-    <meta name="keywords" content="wifi, cloud controller, network management, monsieur-wifi">
+    <meta name="description" content="Tableau de bord du contrôleur cloud monsieur-wifi pour gérer et surveiller les réseaux WiFi.">
+    <meta name="keywords" content="wifi, contrôleur cloud, gestion réseau, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
-    <title>Location Details - monsieur-wifi Controller</title>
+    <title>Détails de l'emplacement - Contrôleur monsieur-wifi</title>
     <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
 
@@ -1809,7 +1809,7 @@
 
     <!-- Add this CSS right after the existing styles and before closing the head tag -->
     <style>
-        /* Enhanced Channel Scanning Modal Styles */
+        /* Enhanced Canal Scanning Modal Styles */
         .scan-pulse-container {
             position: relative;
             width: 80px;
@@ -1899,7 +1899,7 @@
             background-color: #28c76f !important;
         }
         
-        /* Channel recommendation cards */
+        /* Canal recommendation cards */
         .channel-recommendation {
             padding: 1rem;
             background-color: #f8f8f8;
@@ -2456,8 +2456,8 @@
                 <!-- Language dropdown -->
                 <li class="nav-item dropdown dropdown-language">
                     <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-us"></i>
-                        <span class="selected-language">English</span>
+                        <i class="flag-icon flag-icon-fr"></i>
+                        <span class="selected-language">Français</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
                         <a class="dropdown-item" href="/en/locations" data-language="en">
@@ -2489,9 +2489,9 @@
                         <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div><span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/en/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -2526,65 +2526,65 @@
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
                 <li class="navigation-header">
-                    <span>Management</span>
+                    <span>Gestion</span>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/en/dashboard">
+                    <a class="d-flex align-items-center" href="/fr/dashboard">
                         <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
+                        <span class="menu-title text-truncate">Tableau de bord</span>
                     </a>
                 </li>
                 <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/en/locations">
+                    <a class="d-flex align-items-center" href="/fr/locations">
                         <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
+                        <span class="menu-title text-truncate">Emplacements</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
                     <a class="d-flex align-items-center" href="/analytics">
                         <i data-feather="bar-chart-2"></i>
-                        <span class="menu-title text-truncate">Usage Analytics</span>
+                        <span class="menu-title text-truncate">Analyses d'utilisation</span>
                     </a>
                 </li> -->
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/en/captive-portals">
+                    <a class="d-flex align-items-center" href="/fr/captive-portals">
                         <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
+                        <span class="menu-title text-truncate">Portails captifs</span>
                     </a>
                 </li>
 
                 <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/accounts">
+                    <a class="d-flex align-items-center" href="/fr/accounts">
                         <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
+                        <span class="menu-title text-truncate">Comptes</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/domain-blocking">
+                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
                         <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
+                        <span class="menu-title text-truncate">Blocage de domaines</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/firmware">
+                    <a class="d-flex align-items-center" href="/fr/firmware">
                         <i data-feather="download"></i>
                         <span class="menu-title text-truncate">Firmware</span>
                     </a>
                 </li>
                 <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/system-settings">
+                    <a class="d-flex align-items-center" href="/fr/system-settings">
                         <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
+                        <span class="menu-title text-truncate">Paramètres système</span>
                     </a>
                 </li>
                 <!-- Account Section -->
-                <li class="navigation-header"><span>Account</span></li>
+                <li class="navigation-header"><span>Compte</span></li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/en/profile">
+                     <a class="d-flex align-items-center" href="/fr/profile">
                          <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profile</span>
+                         <span class="menu-title text-truncate">Profil</span>
                      </a>
                 </li>
                 <li class="nav-item">
@@ -2607,38 +2607,40 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Location Details</h2>
+                            <h2 class="content-header-title float-left mb-0">Détails de l'emplacement</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item">
-                                        <a href="/en/dashboard">Home</a>
+                                        <a href="/fr/dashboard">Accueil</a>
                                     </li>
                                     <li class="breadcrumb-item">
-                                        <a href="/en/locations">Locations</a>
+                                        <a href="/fr/locations">Emplacements</a>
                                     </li>
                                     <li class="breadcrumb-item active">
-                                        <span class="location_name">Loading...</span>
+                                        <span class="location_name">Chargement...</span>
                                     </li>
                                 </ol>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
+                <div class="content-header-right text-md-right col-md-3 col-12 mb-1">
                     <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end mb-0">
-                        <a href="#network-configuration-tabs" class="btn custom-btn btn-analytics mr-1">
-                            <i data-feather="settings" class="mr-1"></i>
-                            Settings
-                        </a>
-                        <a href="#" class="btn btn-outline-primary" id="guest-users-link">
-                            <i data-feather="user-check" class="mr-1"></i>
-                            Guest Users
-                        </a>
+                        <div class="btn-group" role="group">
+                            <a href="#network-configuration-tabs" class="btn custom-btn btn-analytics">
+                                <i data-feather="settings" class="mr-50"></i>
+                                <span class="d-none d-sm-inline">Paramètres</span>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary" id="guest-users-link">
+                                <i data-feather="user-check" class="mr-50"></i>
+                                <span class="d-none d-sm-inline">Utilisateurs Invités</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="content-body">
-                <!-- Location Overview -->
+                <!-- Aperçu de l'emplacement -->
                 <div class="stats-grid">
                     <!-- Location Info Card -->
                     <div class="stat-card">
@@ -2647,23 +2649,23 @@
                                 <h4 class="text-gradient mb-1"><span class="location_name"></span></h4>
                                 <p class="text-muted mb-0"><span class="location_address"></span></p>
                                 <div class="d-flex align-items-center mt-1">
-                                    <small class="text-muted mr-2">MAC: <span class="router_mac_address_header font-weight-bold">Loading...</span></small>
+                                    <small class="text-muted mr-2">MAC: <span class="router_mac_address_header font-weight-bold">Chargement...</span></small>
                                     <button class="btn btn-sm btn-outline-secondary p-1" id="edit-mac-btn" style="font-size: 0.7rem; line-height: 1;">
-                                        <i data-feather="edit" class="mr-1" style="width: 12px; height: 12px;"></i>Edit
+                                        <i data-feather="edit" class="mr-1" style="width: 12px; height: 12px;"></i>Modifier
                                     </button>
                                 </div>
                             </div>
-                            <span class="status-badge status-offline">Offline</span>
+                            <span class="status-badge status-offline">Hors ligne</span>
                         </div>
 
                         <div class="row">
                             <div class="col-6">
                                 <div class="interface-detail">
-                                    <span class="interface-label">Router Model</span>
+                                    <span class="interface-label">Modèle de routeur</span>
                                     <span class="interface-value router_model_updated"></span>
                                 </div>
                                 <div class="interface-detail">
-                                    <span class="interface-label">MAC Address</span>
+                                    <span class="interface-label">Adresse MAC</span>
                                     <span class="interface-value router_mac_address"></span>
                                 </div>
                                 <div class="interface-detail">
@@ -2671,17 +2673,17 @@
                                     <span class="interface-value router_firmware"></span>
                                 </div>
                                 <div class="interface-detail">
-                                    <span class="interface-label">Total Users</span>
+                                    <span class="interface-label">Total utilisateurs</span>
                                     <span class="interface-value connected_users"></span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="interface-detail">
-                                    <span class="interface-label">Daily Usage</span>
+                                    <span class="interface-label">Utilisation quotidienne</span>
                                     <span class="interface-value daily_usage"></span>
                                 </div>
                                 <div class="interface-detail">
-                                    <span class="interface-label">Uptime</span>
+                                    <span class="interface-label">Temps de disponibilité</span>
                                     <span class="interface-value uptime"></span>
                                 </div>
                                 <!-- <div class="interface-detail">
@@ -2694,7 +2696,7 @@
                         <div class="d-flex gap-2 mt-3">
                             <button class="btn custom-btn btn-sm flex-fill" id="device-restart-btn">
                                 <i data-feather="refresh-cw" class="mr-1"></i>
-                                Restart
+                                Redémarrer
                             </button>
                             <button class="btn btn-outline-primary btn-sm flex-fill" id="update-firmware-btn">
                                 <i data-feather="download" class="mr-1"></i>
@@ -2706,7 +2708,7 @@
                     <!-- Usage Stats Grid -->
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title mb-0">Current Usage</h5>
+                            <h5 class="card-title mb-0">Utilisation actuelle</h5>
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" id="usage-period-btn">
                                     Today
@@ -2722,7 +2724,7 @@
                         <!-- Loading Indicator -->
                         <div id="usage-loading" class="text-center py-3" style="display: none;">
                             <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                <span class="sr-only">Loading...</span>
+                                <span class="sr-only">Chargement...</span>
                             </div>
                             <small class="d-block mt-2 text-muted">Loading usage data...</small>
                         </div>
@@ -2734,13 +2736,13 @@
                                     <div class="stat-value text-primary" id="download-usage">
                                         <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
                                     </div>
-                                    <div class="stat-label">Download</div>
+                                    <div class="stat-label">Téléchargement</div>
                                 </div>
                                 <div>
                                     <div class="stat-value text-info" id="users-sessions-count">
                                         <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
                                     </div>
-                                    <div class="stat-label">Users / Sessions</div>
+                                    <div class="stat-label">Utilisateurs / Sessions</div>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -2748,7 +2750,7 @@
                                     <div class="stat-value text-success" id="upload-usage">
                                         <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
                                     </div>
-                                    <div class="stat-label">Upload</div>
+                                    <div class="stat-label">Téléversement</div>
                                 </div>
                                 <div>
                                     <div class="stat-value text-warning" id="avg-session-time">
@@ -2780,7 +2782,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="card-title">Analytics</h4>
+                                <h4 class="card-title">Analyses</h4>
                             </div>
                             <div class="card-body p-4">
                                 <div class="row g-4">
@@ -2794,8 +2796,8 @@
                                                             <i data-feather="bar-chart-2"></i>
                                                         </div>
                                                         <div>
-                                                            <h5 class="chart-title">Daily Usage Analytics</h5>
-                                                            <p class="chart-subtitle">Captive Portal User Activity</p>
+                                                            <h5 class="chart-title">Analyses d'utilisation quotidienne</h5>
+                                                            <p class="chart-subtitle">Activité des utilisateurs du portail captif</p>
                                                         </div>
                                                     </div>
                                                     <div class="chart-controls">
@@ -2814,7 +2816,7 @@
                                                     </div>
                                                     <div class="stat-content">
                                                         <span class="stat-value" id="total-users">-</span>
-                                                        <span class="stat-label">Total Users</span>
+                                                        <span class="stat-label">Total utilisateurs</span>
                                                     </div>
                                                 </div>
                                                 <div class="stat-item">
@@ -2852,8 +2854,8 @@
                                                              <i data-feather="wifi"></i>
                                                          </div>
                                                         <div>
-                                                            <h5 class="users-title">Live Users</h5>
-                                                            <p class="users-subtitle">Currently Connected</p>
+                                                            <h5 class="users-title">Utilisateurs en direct</h5>
+                                                            <p class="users-subtitle">Actuellement connectés</p>
                                                         </div>
                                                     </div>
                                                     <button class="refresh-btn" id="refresh-online-users">
@@ -2862,7 +2864,7 @@
                                                 </div>
                                                 <div class="users-count">
                                                     <span class="count-number" id="online-count">0</span>
-                                                    <span class="count-label">Online</span>
+                                                    <span class="count-label">En ligne</span>
                                                     <span class="count-range" id="count-range" style="display: none;"></span>
                                                 </div>
                                             </div>
@@ -2900,33 +2902,33 @@
                                         
 
 
-            <!-- Network Configuration Tabs -->
+            <!-- Onglets de configuration réseau -->
             <div class="row" id="network-configuration-tabs">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Network Configuration</h4>
+                            <h4 class="card-title">Configuration réseau</h4>
                         </div>
                         <div class="card-body">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" id="location-settings-tab" data-toggle="tab" href="#location-settings" role="tab" aria-controls="location-settings" aria-selected="false">
-                                        <i class="fas fa-building mr-2"></i>Location Details
+                                        <i class="fas fa-building mr-2"></i>Détails de l'emplacement
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link " id="router-tab" data-toggle="tab" href="#router" aria-controls="router" role="tab" aria-selected="true">
-                                        <i data-feather="hard-drive" class="mr-50"></i>Router Settings
+                                        <i data-feather="hard-drive" class="mr-50"></i>Paramètres du routeur
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="captive-portal-tab" data-toggle="tab" href="#captive-portal" aria-controls="captive-portal" role="tab" aria-selected="false">
-                                        <i data-feather="layout" class="mr-50"></i>Captive Portal WiFi
+                                        <i data-feather="layout" class="mr-50"></i>Réseau WiFi du portail captif
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="secured-wifi-tab" data-toggle="tab" href="#secured-wifi" aria-controls="secured-wifi" role="tab" aria-selected="false">
-                                        <i data-feather="lock" class="mr-50"></i>Password WiFi
+                                        <i data-feather="lock" class="mr-50"></i>Réseau WiFi sécurisé
                                     </a>
                                 </li>
 
@@ -2935,59 +2937,59 @@
                                
                             </ul>
                             <div class="tab-content">
-                                <!-- Location Details Tab -->
+                                <!-- Onglet Détails de l'emplacement -->
                                 <div class="tab-pane active show" id="location-settings" role="tabpanel" aria-labelledby="location-settings-tab">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h4 class="card-title">Location Information</h4>
+                                            <h4 class="card-title">Informations sur l'emplacement</h4>
                                         </div>
                                         <div class="card-body">
                                             <form id="location-info-form" novalidate>
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="location-name" class="required">Location Name</label>
-                                                            <input type="text" class="form-control" id="location-name" placeholder="Enter location name" required aria-describedby="location-name-help">
+                                                            <label for="location-name" class="required">Nom de l'emplacement</label>
+                                                            <input type="text" class="form-control" id="location-name" placeholder="Entrez le nom de l'emplacement" required aria-describedby="location-name-help">
                                                             <div class="invalid-feedback"></div>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-address">Address</label>
-                                                            <input type="text" class="form-control" id="location-address" placeholder="Street address">
+                                                            <label for="location-address">Adresse</label>
+                                                            <input type="text" class="form-control" id="location-address" placeholder="Adresse de rue">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-city">City</label>
-                                                            <input type="text" class="form-control" id="location-city" placeholder="City">
+                                                            <label for="location-city">Ville</label>
+                                                            <input type="text" class="form-control" id="location-city" placeholder="Ville">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-state">State/Province</label>
-                                                            <input type="text" class="form-control" id="location-state" placeholder="State/Province">
+                                                            <label for="location-state">État/Province</label>
+                                                            <input type="text" class="form-control" id="location-state" placeholder="État/Province">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="location-postal-code">Postal Code</label>
-                                                            <input type="text" class="form-control" id="location-postal-code" placeholder="Postal code">
+                                                            <label for="location-postal-code">Code postal</label>
+                                                            <input type="text" class="form-control" id="location-postal-code" placeholder="Code postal">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-country">Country</label>
-                                                            <input type="text" class="form-control" id="location-country" placeholder="Country">
+                                                            <label for="location-country">Pays</label>
+                                                            <input type="text" class="form-control" id="location-country" placeholder="Pays">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="router-model-select">Router Model</label>
+                                                            <label for="router-model-select">Modèle de routeur</label>
                                                             <select class="form-control" id="router-model-select" aria-describedby="router-model-help">
-                                                                <option value="">Select Router Model</option>
+                                                                <option value="">Sélectionner le modèle de routeur</option>
                                                                 <option value="820AX">820AX</option>
                                                                 <option value="835AX">835AX</option>
                                                             </select>
-                                                            <small id="router-model-help" class="form-text text-muted">Choose the router model installed at this location.</small>
+                                                            <small id="router-model-help" class="form-text text-muted">Choisissez le modèle de routeur installé à cet emplacement.</small>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-manager">Manager Name</label>
-                                                            <input type="text" class="form-control" id="location-manager" placeholder="Manager name">
+                                                            <label for="location-manager">Nom du gestionnaire</label>
+                                                            <input type="text" class="form-control" id="location-manager" placeholder="Nom du gestionnaire">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-contact-email">Contact Email</label>
-                                                            <input type="email" class="form-control" id="location-contact-email" placeholder="Contact email">
+                                                            <label for="location-contact-email">Email de contact</label>
+                                                            <input type="email" class="form-control" id="location-contact-email" placeholder="Email de contact">
                                                             <div class="invalid-feedback"></div>
                                                         </div>
                                                     </div>
@@ -2995,30 +2997,30 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="location-contact-phone">Contact Phone</label>
-                                                            <input type="tel" class="form-control" id="location-contact-phone" placeholder="Contact phone">
+                                                            <label for="location-contact-phone">Téléphone de contact</label>
+                                                            <input type="tel" class="form-control" id="location-contact-phone" placeholder="Téléphone de contact">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="location-status">Status</label>
+                                                            <label for="location-status">Statut</label>
                                                             <select class="form-control" id="location-status">
-                                                                <option value="active">Active</option>
-                                                                <option value="inactive">Inactive</option>
+                                                                <option value="active">Actif</option>
+                                                                <option value="inactive">Inactif</option>
                                                                 <option value="maintenance">Maintenance</option>
                                                             </select>
                                                         </div>
                                                         <div class="form-group" id="location-owner-group" data-admin-only="true">
-                                                            <label for="location-owner">Location Owner</label>
+                                                            <label for="location-owner">Propriétaire de l'emplacement</label>
                                                             <select class="form-control" id="location-owner">
-                                                                <option value="">Select Owner</option>
+                                                                <option value="">Sélectionner le propriétaire</option>
                                                                 <!-- Options will be populated via JavaScript -->
                                                             </select>
-                                                            <small class="form-text text-muted">Only administrators can assign location owners</small>
+                                                            <small class="form-text text-muted">Seuls les administrateurs peuvent assigner les propriétaires d'emplacements</small>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="location-description">Description</label>
-                                                            <textarea class="form-control" id="location-description" rows="3" placeholder="Location description" maxlength="500"></textarea>
+                                                            <textarea class="form-control" id="location-description" rows="3" placeholder="Description de l'emplacement" maxlength="500"></textarea>
                                                             <small class="form-text text-muted">
                                                                 <span id="description-counter">0</span>/500 characters
                                                             </small>
@@ -3028,32 +3030,32 @@
                                                 <div class="form-actions">
                                                     <button type="button" id="save-location-info" class="btn custom-btn">
                                                         <i data-feather="save" class="mr-1"></i>
-                                                        Save Location Information
+                                                        Enregistrer les informations sur l'emplacement
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-secondary ml-2" onclick="resetLocationForm()">
+                                                    <!-- <button type="button" class="btn btn-outline-secondary ml-2" onclick="resetLocationForm()">
                                                         <i data-feather="refresh-ccw" class="mr-1"></i>
                                                         Reset
-                                                    </button>
+                                                    </button> -->
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Router Settings Tab -->
+                                <!-- Onglet Paramètres du routeur -->
                                 <div class="tab-pane fade" id="router" aria-labelledby="router-tab" role="tabpanel">
-                                    <!-- WAN Configuration Section -->
+                                    <!-- Section de configuration WAN -->
                                     <div class="content-section">
                                         <div class="section-header d-flex justify-content-between align-items-center">
-                                            <h5 class="section-title">WAN Connection</h5>
+                                            <h5 class="section-title">Connexion WAN</h5>
                                             <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#wan-settings-modal">
-                                                <i data-feather="edit" class="mr-1"></i>Edit WAN Settings
+                                                <i data-feather="edit" class="mr-1"></i>Modifier les paramètres WAN
                                             </button>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
                                                 <div class="interface-detail">
-                                                    <span class="interface-label">Connection Type</span>
+                                                    <span class="interface-label">Type de connexion</span>
                                                     <span class="interface-value" id="wan-type-display">DHCP</span>
                                                 </div>
                                             </div>
@@ -3061,25 +3063,25 @@
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">IP Address</span>
+                                                            <span class="interface-label">Adresse IP</span>
                                                             <span class="interface-value" id="wan-ip-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Subnet Mask</span>
+                                                            <span class="interface-label">Masque de sous-réseau</span>
                                                             <span class="interface-value" id="wan-subnet-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Gateway</span>
+                                                            <span class="interface-label">Passerelle</span>
                                                             <span class="interface-value" id="wan-gateway-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Primary DNS</span>
+                                                            <span class="interface-label">DNS primaire</span>
                                                             <span class="interface-value" id="wan-dns1-display">-</span>
                                                         </div>
                                                     </div>
@@ -3089,13 +3091,13 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Username</span>
+                                                            <span class="interface-label">Nom d'utilisateur</span>
                                                             <span class="interface-value" id="wan-pppoe-username">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Service Name</span>
+                                                            <span class="interface-label">Nom du service</span>
                                                             <span class="interface-value" id="wan-pppoe-service-name">-</span>
                                                         </div>
                                                     </div>
@@ -3104,21 +3106,21 @@
                                         </div>
                                     </div>
 
-                                                        <!-- Network Interfaces Section -->
+                                                        <!-- Section interfaces réseau -->
                     <div class="content-section">
                         <div class="section-header">
-                            <h5 class="section-title">Local Network Interfaces</h5>
+                            <h5 class="section-title">Interfaces réseau locales</h5>
                         </div>
                         
-                        <!-- VLAN Global Settings -->
+                        <!-- Paramètres globaux VLAN -->
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <div class="custom-control custom-switch">
                                         <input type="checkbox" class="custom-control-input" id="vlan-enabled">
-                                        <label class="custom-control-label" for="vlan-enabled">Enable VLAN Support</label>
+                                        <label class="custom-control-label" for="vlan-enabled">Activer le support VLAN</label>
                                     </div>
-                                    <small class="text-muted">Master switch to enable/disable VLAN functionality for this location.</small>
+                                    <small class="text-muted">Commutateur principal pour activer/désactiver la fonctionnalité VLAN pour cet emplacement.</small>
                                 </div>
                             </div>
                         </div>
@@ -3126,22 +3128,22 @@
                                             <div class="col-md-6">
                                                 <div class="card">
                                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h6 class="mb-0">Captive Portal Network</h6>
+                                                        <h6 class="mb-0">Réseau du portail captif</h6>
                                                         <button class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#captive-portal-modal">
-                                                            <i data-feather="edit" class="mr-1"></i>Edit
+                                                            <i data-feather="edit" class="mr-1"></i>Modifier
                                                         </button>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">IP Address</span>
+                                                            <span class="interface-label">Adresse IP</span>
                                                             <span class="interface-value" id="captive-ip-display">-</span>
                                                         </div>
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Subnet Mask</span>
+                                                            <span class="interface-label">Masque de sous-réseau</span>
                                                             <span class="interface-value" id="captive-netmask-display">-</span>
                                                         </div>
                                                         <!-- <div class="interface-detail">
-                                                            <span class="interface-label">Gateway</span>
+                                                            <span class="interface-label">Passerelle</span>
                                                             <span class="interface-value" id="captive-gateway-display">-</span>
                                                         </div> -->
                                                     </div>
@@ -3151,31 +3153,31 @@
                                             <div class="col-md-6">
                                                 <div class="card">
                                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h6 class="mb-0">Password WiFi Network</h6>
+                                                        <h6 class="mb-0">Réseau WiFi sécurisé</h6>
                                                         <button class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#password-network-modal">
-                                                            <i data-feather="edit" class="mr-1"></i>Edit
+                                                            <i data-feather="edit" class="mr-1"></i>Modifier
                                                         </button>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="interface-detail">
-                                                            <span class="interface-label">Connection Type</span>
-                                                            <span class="interface-value" id="password-wifi-ip-type-display">Static IP</span>
+                                                            <span class="interface-label">Type de connexion</span>
+                                                            <span class="interface-value" id="password-wifi-ip-type-display">IP statique</span>
                                                         </div>
                                                         <div class="hidden password-ip-assignment-display_div">
                                                             <div class="interface-detail">
-                                                                <span class="interface-label">IP Address</span>
+                                                                <span class="interface-label">Adresse IP</span>
                                                                 <span class="interface-value" id="password-ip-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
-                                                                <span class="interface-label">Subnet Mask</span>
+                                                                <span class="interface-label">Masque de sous-réseau</span>
                                                                 <span class="interface-value" id="password-netmask-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
-                                                                <span class="interface-label">Gateway</span>
+                                                                <span class="interface-label">Passerelle</span>
                                                                 <span class="interface-value" id="password-gateway-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
-                                                                <span class="interface-label">DHCP Server</span>
+                                                                <span class="interface-label">Serveur DHCP</span>
                                                                 <span class="interface-value" id="password-dhcp-status-display">-</span>
                                                             </div>
                                                         </div>
@@ -3185,18 +3187,18 @@
                                         </div>
                                     </div>
 
-                                    <!-- WiFi Radio & Channel Configuration -->
+                                    <!-- Configuration radio WiFi et canal -->
                                     <div class="content-section">
                                         <div class="section-header">
-                                            <h5 class="section-title">WiFi Radio & Channel Configuration</h5>
+                                            <h5 class="section-title">Configuration radio WiFi et canal (2.4 GHz et 5 GHz)</h5>
                                         </div>
                                         <div class="row">
-                                            <!-- Radio & Power Settings -->
+                                            <!-- Paramètres radio et puissance -->
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="wifi-country">Country/Region</label>
+                                                    <label for="wifi-country">Pays/Région</label>
                                                     <select class="form-control" id="wifi-country">
-                                                        <option value="US" selected>United States (US)</option>
+                                                        <option value="US" selected>États-Unis (US)</option>
                                                         <option value="CA">Canada (CA)</option>
                                                         <option value="GB">United Kingdom (GB)</option>
                                                         <option value="FR">France (FR)</option>
@@ -3215,7 +3217,7 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="power-level-2g">2.4 GHz Power</label>
+                                                    <label for="power-level-2g">Puissance 2.4 GHz</label>
                                                     <select class="form-control" id="power-level-2g">
                                                         <option value="20">Maximum (20 dBm)</option>
                                                         <option value="17">High (17 dBm)</option>
@@ -3226,7 +3228,7 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="power-level-5g">5 GHz Power</label>
+                                                    <label for="power-level-5g">Puissance 5 GHz</label>
                                                     <select class="form-control" id="power-level-5g">
                                                         <option value="23">Maximum (23 dBm)</option>
                                                         <option value="20">High (20 dBm)</option>
@@ -3237,10 +3239,10 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Channel Settings -->
+                                            <!-- Paramètres de canal -->
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="channel-width-2g">2.4 GHz Channel Width</label>
+                                                    <label for="channel-width-2g">Largeur de canal 2.4 GHz</label>
                                                     <select class="form-control" id="channel-width-2g">
                                                         <option value="20">20 MHz</option>
                                                         <option value="40" selected>40 MHz</option>
@@ -3248,7 +3250,7 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="channel-width-5g">5 GHz Channel Width</label>
+                                                    <label for="channel-width-5g">Largeur de canal 5 GHz</label>
                                                     <select class="form-control" id="channel-width-5g">
                                                         <option value="20">20 MHz</option>
                                                         <option value="40">40 MHz</option>
@@ -3258,96 +3260,96 @@
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="channel-2g">2.4 GHz Channel</label>
+                                                    <label for="channel-2g">Canal 2.4 GHz</label>
                                                     <select class="form-control" id="channel-2g">
-                                                        <option value="1">Channel 1 (2412 MHz)</option>
-                                                        <option value="2">Channel 2 (2417 MHz)</option>
-                                                        <option value="3">Channel 3 (2422 MHz)</option>
-                                                        <option value="4">Channel 4 (2427 MHz)</option>
-                                                        <option value="5">Channel 5 (2432 MHz)</option>
-                                                        <option value="6" selected>Channel 6 (2437 MHz)</option>
-                                                        <option value="7">Channel 7 (2442 MHz)</option>
-                                                        <option value="8">Channel 8 (2447 MHz)</option>
-                                                        <option value="9">Channel 9 (2452 MHz)</option>
-                                                        <option value="10">Channel 10 (2457 MHz)</option>
-                                                        <option value="11">Channel 11 (2462 MHz)</option>
-                                                        <option value="12">Channel 12 (2467 MHz)</option>
-                                                        <option value="13">Channel 13 (2472 MHz)</option>
-                                                        <option value="14">Channel 14 (2484 MHz)</option>
+                                                        <option value="1">Canal 1 (2412 MHz)</option>
+                                                        <option value="2">Canal 2 (2417 MHz)</option>
+                                                        <option value="3">Canal 3 (2422 MHz)</option>
+                                                        <option value="4">Canal 4 (2427 MHz)</option>
+                                                        <option value="5">Canal 5 (2432 MHz)</option>
+                                                        <option value="6" selected>Canal 6 (2437 MHz)</option>
+                                                        <option value="7">Canal 7 (2442 MHz)</option>
+                                                        <option value="8">Canal 8 (2447 MHz)</option>
+                                                        <option value="9">Canal 9 (2452 MHz)</option>
+                                                        <option value="10">Canal 10 (2457 MHz)</option>
+                                                        <option value="11">Canal 11 (2462 MHz)</option>
+                                                        <option value="12">Canal 12 (2467 MHz)</option>
+                                                        <option value="13">Canal 13 (2472 MHz)</option>
+                                                        <option value="14">Canal 14 (2484 MHz)</option>
                                                     </select>
                                                 </div>
                                                 
                                                 <div class="form-group">
-                                                    <label for="channel-5g">5 GHz Channel</label>
+                                                    <label for="channel-5g">5 GHz Canal</label>
                                                     <select class="form-control" id="channel-5g">
-                                                        <option value="36" selected>Channel 36 (5180 MHz)</option>
-                                                        <option value="40">Channel 40 (5200 MHz)</option>
-                                                        <option value="44">Channel 44 (5220 MHz)</option>
-                                                        <option value="48">Channel 48 (5240 MHz)</option>
-                                                        <option value="52">Channel 52 (5260 MHz)</option>
-                                                        <option value="56">Channel 56 (5280 MHz)</option>
-                                                        <option value="60">Channel 60 (5300 MHz)</option>
-                                                        <option value="64">Channel 64 (5320 MHz)</option>
-                                                        <option value="100">Channel 100 (5500 MHz)</option>
-                                                        <option value="104">Channel 104 (5520 MHz)</option>
-                                                        <option value="108">Channel 108 (5540 MHz)</option>
-                                                        <option value="112">Channel 112 (5560 MHz)</option>
-                                                        <option value="116">Channel 116 (5580 MHz)</option>
-                                                        <option value="120">Channel 120 (5600 MHz)</option>
-                                                        <option value="124">Channel 124 (5620 MHz)</option>
-                                                        <option value="128">Channel 128 (5640 MHz)</option>
-                                                        <option value="132">Channel 132 (5660 MHz)</option>
-                                                        <option value="136">Channel 136 (5680 MHz)</option>
-                                                        <option value="140">Channel 140 (5700 MHz)</option>
-                                                        <option value="149">Channel 149 (5745 MHz)</option>
-                                                        <option value="153">Channel 153 (5765 MHz)</option>
-                                                        <option value="157">Channel 157 (5785 MHz)</option>
-                                                        <option value="161">Channel 161 (5805 MHz)</option>
-                                                        <option value="165">Channel 165 (5825 MHz)</option>
+                                                        <option value="36" selected>Canal 36 (5180 MHz)</option>
+                                                        <option value="40">Canal 40 (5200 MHz)</option>
+                                                        <option value="44">Canal 44 (5220 MHz)</option>
+                                                        <option value="48">Canal 48 (5240 MHz)</option>
+                                                        <option value="52">Canal 52 (5260 MHz)</option>
+                                                        <option value="56">Canal 56 (5280 MHz)</option>
+                                                        <option value="60">Canal 60 (5300 MHz)</option>
+                                                        <option value="64">Canal 64 (5320 MHz)</option>
+                                                        <option value="100">Canal 100 (5500 MHz)</option>
+                                                        <option value="104">Canal 104 (5520 MHz)</option>
+                                                        <option value="108">Canal 108 (5540 MHz)</option>
+                                                        <option value="112">Canal 112 (5560 MHz)</option>
+                                                        <option value="116">Canal 116 (5580 MHz)</option>
+                                                        <option value="120">Canal 120 (5600 MHz)</option>
+                                                        <option value="124">Canal 124 (5620 MHz)</option>
+                                                        <option value="128">Canal 128 (5640 MHz)</option>
+                                                        <option value="132">Canal 132 (5660 MHz)</option>
+                                                        <option value="136">Canal 136 (5680 MHz)</option>
+                                                        <option value="140">Canal 140 (5700 MHz)</option>
+                                                        <option value="149">Canal 149 (5745 MHz)</option>
+                                                        <option value="153">Canal 153 (5765 MHz)</option>
+                                                        <option value="157">Canal 157 (5785 MHz)</option>
+                                                        <option value="161">Canal 161 (5805 MHz)</option>
+                                                        <option value="165">Canal 165 (5825 MHz)</option>
                                                     </select>
                                                 </div>
                                             </div>
 
-                                            <!-- Channel Optimization -->
+                                            <!-- Canal Optimization -->
                                             <div class="col-md-4">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <label class="mb-0">Channel Optimization</label>
+                                                    <label class="mb-0">Optimisation des canaux</label>
                                                     <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn">
-                                                        <i data-feather="wifi" class="mr-1"></i>Scan
+                                                        <i data-feather="wifi" class="mr-1"></i>Scanner
                                                     </button>
                                                 </div>
                                                 
                                                 <div class="alert alert-info mb-3" id="scan-status-alert">
                                                     <div class="alert-body">
                                                         <i data-feather="info" class="mr-2"></i>
-                                                        <span id="scan-status-text">Click Scan to analyze optimal channels.</span>
+                                                        <span id="scan-status-text">Cliquez sur Scanner pour analyser les canaux optimaux.</span>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="row text-center mb-3">
                                                     <div class="col-6">
                                                         <div class="stat-value text-primary" id="last-optimal-2g">--</div>
-                                                        <div class="stat-label">Best 2.4G</div>
+                                                        <div class="stat-label">Meilleur 2.4G</div>
                                                     </div>
                                                     <div class="col-6">
                                                         <div class="stat-value text-success" id="last-optimal-5g">--</div>
-                                                        <div class="stat-label">Best 5G</div>
+                                                        <div class="stat-label">Meilleur 5G</div>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="text-center mb-2">
-                                                    <small class="text-muted" id="last-scan-timestamp">No scan performed yet</small>
+                                                    <small class="text-muted" id="last-scan-timestamp">Aucun scan effectué pour le moment</small>
                                                 </div>
                                                 
                                                 <button class="btn btn-success btn-block btn-sm" id="save-channels-btn" disabled>
-                                                    <i data-feather="check" class="mr-1"></i>Apply Optimal
+                                                    <i data-feather="check" class="mr-1"></i>Appliquer les valeurs optimales
                                                 </button>
                                             </div>
                                         </div>
                                         
                                         <div class="text-center mt-3">
                                             <button class="btn custom-btn" id="save-radio-settings">
-                                                <i data-feather="save" class="mr-2"></i>Save All Radio Settings
+                                                <i data-feather="save" class="mr-2"></i>Enregistrer tous les paramètres radio
                                             </button>
                                         </div>
                                     </div>
@@ -3355,22 +3357,22 @@
                                     <!-- Content Filtering Section -->
                                     <div class="content-section">
                                         <div class="section-header d-flex justify-content-between align-items-center">
-                                            <h5 class="section-title">Web Content Filtering</h5>
+                                            <h5 class="section-title">Filtrage de contenu web</h5>
                                             <button class="btn custom-btn" id="save-web-filter-settings">
-                                                <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
+                                                <i data-feather="save" class="mr-2"></i>Enregistrer les paramètres de filtrage web
                                             </button>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <label class="mb-0">Enable Content Filtering</label>
+                                                        <label class="mb-0">Activer le filtrage de contenu</label>
                                                         <div class="custom-control custom-switch custom-control-primary">
                                                             <input type="checkbox" class="custom-control-input" id="global-web-filter">
                                                             <label class="custom-control-label" for="global-web-filter"></label>
                                                         </div>
                                                     </div>
-                                                    <small class="text-muted">Apply content filtering to all WiFi networks.</small>
+                                                    <small class="text-muted">Appliquer le filtrage de contenu à tous les réseaux WiFi.</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -3379,7 +3381,7 @@
                                                     <select class="select2 form-control" id="global-filter-categories" multiple="multiple">
                                                         <!-- Categories will be loaded dynamically from API -->
                                                     </select>
-                                                    <small class="text-muted">Select content categories to block across all networks.</small>
+                                                    <small class="text-muted">Sélectionnez les catégories de contenu à bloquer sur tous les réseaux.</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -3390,27 +3392,29 @@
                                     <div class="tab-pane fade" id="captive-portal" role="tabpanel" aria-labelledby="captive-portal-tab">
                                             <div class="card">
                                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                                    <h4 class="card-title mb-0">Captive Portal WiFi</h4>
+                                                    <h4 class="card-title mb-0">Réseau WiFi du portail captif</h4>
                                                     <button class="btn custom-btn save-captive-portal" id="save-captive-portal-1">
-                                                        <i data-feather="save" class="mr-1"></i> Save Settings
+                                                        <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                                                     </button>
 
                                                     <!-- <button class="btn custom-btn" id="save-web-filter-settings">
-                                                        <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
+                                                        <i data-feather="save" class="mr-2"></i>Enregistrer les paramètres de filtrage web
                                                     </button> -->
                                                 </div>
 
+                                                
+                                    
                                                 <div class="card-body">
-                                                    <!-- Basic Settings Section -->
+                                                    <!-- Section paramètres de base -->
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="portal-ssid">Network Name (SSID)</label>
+                                                                <label for="portal-ssid">Nom du réseau (SSID)</label>
                                                                 <div class="input-group">
-                                                                    <input type="text" class="form-control" id="captive-portal-ssid" placeholder="Guest WiFi">
+                                                                    <input type="text" class="form-control" id="captive-portal-ssid" placeholder="WiFi invité">
                                                                     <div class="input-group-append">
-                                                                        <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#ssid-qr-modal" title="Show QR Code">
-                                                                            <i data-feather="code"></i> QR Code
+                                                                        <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#ssid-qr-modal" title="Afficher le code QR">
+                                                                            <i data-feather="code"></i> Code QR
                                                                         </button>
                                                                     </div>
                                                                 </div>
@@ -3418,32 +3422,33 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="portal-visibility">Network Visibility</label>
+                                                                <label for="portal-visibility">Visibilité du réseau</label>
                                                                 <select class="form-control" id="captive-portal-visible">
-                                                                    <option value="1" selected>Visible (Broadcast SSID)</option>
-                                                                    <option value="0">Hidden (Don't Broadcast SSID)</option>
+                                                                    <option value="1" selected>Visible (Diffuser SSID)</option>
+                                                                    <option value="0">Caché (Ne pas diffuser SSID)</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    
 
-                                                    <!-- Authentication Section -->
-                                                    <h5 class="border-bottom pb-1">Authentication</h5>
+                                                    <!-- Section d'authentification -->
+                                                    <h5 class="border-bottom pb-1">Authentification</h5>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="captive-auth-method">Authentication Method</label>
+                                                                <label for="captive-auth-method">Méthode d'authentification</label>
                                                                 <select class="form-control" id="captive-auth-method">
-                                                                    <option value="click-through" selected>Click-through (No Authentication)</option>
-                                                                    <option value="password">Password-based</option>
-                                                                    <option value="sms">SMS Verification</option>
-                                                                    <option value="email">Email Verification</option>
-                                                                    <option value="social">Social Media Login</option>
+                                                                    <option value="click-through" selected>Clic simple (Aucune authentification)</option>
+                                                                    <option value="password">Authentification par mot de passe</option>
+                                                                    <option value="sms">Vérification par SMS</option>
+                                                                    <option value="email">Vérification par email</option>
+                                                                    <option value="social">Connexion via les réseaux sociaux</option>
                                                                 </select>
                                                             </div>
 
                                                             <div class="form-group hidden" id="password-auth-options">
-                                                                <label for="captive_portal_password">Password</label>
+                                                                <label for="captive_portal_password">Mot de passe</label>
                                                                 <div class="input-group">
                                                                     <input type="password" class="form-control form-control-sm" id="captive_portal_password" value="">
                                                                     <div class="input-group-append">
@@ -3455,7 +3460,7 @@
                                                             </div>
 
                                                             <div class="form-group hidden" id="social-auth-options">
-                                                                <label for="captive-social-auth-method">Social Media Logins</label>
+                                                                <label for="captive-social-auth-method">Connexion via les réseaux sociaux</label>
                                                                 <select class="form-control" id="captive-social-auth-method">
                                                                     <option value="facebook">Facebook</option>
                                                                     <option value="google">Google</option>
@@ -3465,269 +3470,243 @@
                                                             <!-- Session Settings -->
                                                             <div class="row">
                                                                 <div class="col-6">
-                                                                <div class="form-group">
-                                                                        <label for="captive-session-timeout">Session (mins)</label>
+                                                                    <div class="form-group">
+                                                                        <label for="captive-session-timeout">Session</label>
                                                                         <select class="form-control" id="captive-session-timeout">
-                                                                            <option value="60">1 Hr</option>
-                                                                            <option value="120">2 Hrs</option>
-                                                                            <option value="180">3 Hrs</option>
-                                                                            <option value="240">4 Hrs</option>
-                                                                            <option value="300">5 Hrs</option>
-                                                                            <option value="360">6 Hrs</option>
-                                                                            <option value="720">12 Hrs</option>
-                                                                            <option value="1440">1 Day</option>
-                                                                            <option value="2880">2 Days</option>
-                                                                            <option value="4320">3 Days</option>
-                                                                            <option value="5760">4 Days</option>
-                                                                            <option value="7200">5 Days</option>
-                                                                            <option value="8640">6 Days</option>
-                                                                            <option value="10080">1 Week</option>
-                                                                            <option value="11520">2 Weeks</option>
-                                                                            <option value="12960">3 Weeks</option>
-                                                                            <option value="14400">1 Month</option>
-                                                                            <option value="28800">2 Months</option>
-                                                                            <option value="43200">3 Months</option>
-                                                                            <option value="57600">4 Months</option>
-                                                                            <option value="72000">5 Months</option>
-                                                                            <option value="86400">6 Months</option>
-                                                                            <option value="100800">7 Months</option>
-                                                                            <option value="115200">8 Months</option>
-                                                                            <option value="129600">9 Months</option>
-                                                                            <option value="144000">10 Months</option>
-                                                                            <option value="158400">11 Months</option>
-                                                                            <option value="172800">1 Year</option>
-                                                                            <option value="345600">2 Years</option>
-                                                                            <option value="604800">3 Years</option>
-                                                                            <option value="1209600">4 Years</option>
+                                                                        <option value="60">1 Heure</option>
+                                                                        <option value="120">2 Heures</option>
+                                                                        <option value="180">3 Heures</option>
+                                                                        <option value="240">4 Heures</option>
+                                                                        <option value="300">5 Heures</option>
+                                                                        <option value="360">6 Heures</option>
+                                                                        <option value="720">12 Heures</option>
+                                                                        <option value="1440">1 Jour</option>
+                                                                        <option value="2880">2 Jours</option>
+                                                                        <option value="4320">3 Jours</option>
+                                                                        <option value="5760">4 Jours</option>
+                                                                        <option value="7200">5 Jours</option>
+                                                                        <option value="8640">6 Jours</option>
+                                                                        <option value="10080">1 Semaine</option>
+                                                                        <option value="20160">2 Semaines</option>
+                                                                        <option value="30240">3 Semaines</option>
+                                                                        <option value="40320">4 Semaines</option>
+                                                                        <option value="43200">1 Mois</option>
+                                                                        <option value="86400">2 Mois</option>
+                                                                        <option value="129600">3 Mois</option>
+                                                                        <option value="172800">4 Mois</option>
+                                                                        <option value="216000">5 Mois</option>
+                                                                        <option value="259200">6 Mois</option>
+                                                                        <option value="302400">7 Mois</option>
+                                                                        <option value="345600">8 Mois</option>
+                                                                        <option value="388800">9 Mois</option>
+                                                                        <option value="432000">10 Mois</option>
+                                                                        <option value="475200">11 Mois</option>
+                                                                        <option value="518400">1 An</option>
+                                                                        <option value="1036800">2 Ans</option>
+                                                                        <option value="1555200">3 Ans</option>
+                                                                        <option value="2073600">4 Ans</option>
                                                                         </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <div class="form-group">
+                                                                        <label for="captive-idle-timeout">Inactivité</label>
+                                                                        <select class="form-control" id="captive-idle-timeout">
+                                                                            <option value="15">15 minutes</option>
+                                                                            <option value="30">30 minutes</option>
+                                                                            <option value="45">45 minutes</option>
+                                                                            <option value="60">1 heure</option>
+                                                                            <option value="120">2 heures</option>
+                                                                            <option value="180">3 heures</option>
+                                                                            <option value="240">4 heures</option>
+                                                                            <option value="360">6 heures</option>
+                                                                            <option value="720">12 heures</option>
+                                                                            <option value="1440">1 jour</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <label for="captive-portal-redirect">URL de redirection personnalisée (optionnel)</label>
+                                                                        <input type="url" class="form-control" id="captive-portal-redirect" placeholder="https://exemple.com/bienvenue">
+                                                                        <small class="text-muted">Redirigez les utilisateurs vers cette URL après une authentification réussie. Laissez vide pour le comportement par défaut.</small>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-6">
+
+                                                        <div class="col-md-6">
+                                                            <!-- Options d'authentification SMS/Email -->
+                                                            <div id="sms-auth-options-section" class="auth-options-section" style="display: none;">
+                                                                <div class="alert alert-info mb-0 p-2">La vérification par SMS sera utilisée pour authentifier les invités.</div>
+                                                            </div>
+
+                                                            <div id="email-auth-options-section" class="auth-options-section" style="display: none;">
+                                                                <div class="alert alert-info mb-0 p-2">La vérification par e-mail sera utilisée pour authentifier les invités.</div>
+                                                            </div>
+
+                                                            <!-- Options de connexion sociale -->
+                                                            <div id="social-auth-options-section" class="auth-options-section" style="display: none;">
+                                                                <label>Activer les options de connexion sociale</label>
+                                                                <div class="d-flex flex-wrap">
+                                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-facebook-toggle" checked>
+                                                                        <label class="custom-control-label" for="social-facebook-toggle">Facebook</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-google-toggle" checked>
+                                                                        <label class="custom-control-label" for="social-google-toggle">Google</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-twitter-toggle">
+                                                                        <label class="custom-control-label" for="social-twitter-toggle">Twitter</label>
+                                                                    </div>
+                                                                    <div class="custom-control custom-switch custom-control-primary mb-1">
+                                                                        <input type="checkbox" class="custom-control-input" id="social-apple-toggle">
+                                                                        <label class="custom-control-label" for="social-apple-toggle">Apple</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <!-- Section bande passante -->
+                                                    <h5 class="border-bottom pb-1 mt-3">Bande passante et portail</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="captive-idle-timeout">Idle (mins)</label>
-                                                                <select class="form-control" id="captive-idle-timeout">
-                                                                    <option value="15">15 Mins</option>
-                                                                    <option value="30">30 Mins</option>
-                                                                    <option value="45">45 Mins</option>
-                                                                    <option value="60">1 Hr</option>
-                                                                    <option value="120">2 Hrs</option>
-                                                                    <option value="180">3 Hrs</option>
-                                                                    <option value="240">4 Hrs</option>
-                                                                    <option value="360">6 Hrs</option>
-                                                                    <option value="720">12 Hrs</option>
-                                                                    <option value="1440">1 Day</option>
+                                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                    <label class="mb-0">Limites de bande passante</label>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-6">
+                                                                        <label for="captive-download-limit">Téléchargement (Mbps)</label>
+                                                                        <select class="form-control form-control-sm" id="captive-download-limit">
+                                                                            <option value="">Sélectionner la limite de téléchargement</option>
+                                                                            <option value="1">1 Mbps</option>
+                                                                            <option value="2">2 Mbps</option>
+                                                                            <option value="5">5 Mbps</option>
+                                                                            <option value="10">10 Mbps</option>
+                                                                            <option value="15">15 Mbps</option>
+                                                                            <option value="20">20 Mbps</option>
+                                                                            <option value="25">25 Mbps</option>
+                                                                            <option value="30">30 Mbps</option>
+                                                                            <option value="35">35 Mbps</option>
+                                                                            <option value="40">40 Mbps</option>
+                                                                            <option value="45">45 Mbps</option>
+                                                                            <option value="50">50 Mbps</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <label for="captive-upload-limit">Téléversement (Mbps)</label>
+                                                                        <select class="form-control form-control-sm" id="captive-upload-limit">
+                                                                            <option value="0">Sélectionner la limite de téléversement</option>
+                                                                            <option value="1">1 Mbps</option>
+                                                                            <option value="2">2 Mbps</option>
+                                                                            <option value="5">5 Mbps</option>
+                                                                            <option value="10">10 Mbps</option>
+                                                                            <option value="15">15 Mbps</option>
+                                                                            <option value="20">20 Mbps</option>
+                                                                            <option value="25">25 Mbps</option>
+                                                                            <option value="30">30 Mbps</option>
+                                                                            <option value="35">35 Mbps</option>
+                                                                            <option value="40">40 Mbps</option>
+                                                                            <option value="45">45 Mbps</option>
+                                                                            <option value="50">50 Mbps</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="mb-2">Configuration du portail</label>
+                                                                <select class="form-control form-control-sm" id="captive-portal-design">
+                                                                    <!-- Les options seront ajoutées dynamiquement -->
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                            
+                                                    <!-- Network Settings Section -->
+                                                    <h5 class="border-bottom pb-1 mt-3">Paramètres réseau</h5>
+                                                    <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="form-group">
-                                                                <label for="captive-portal-redirect">Custom Redirect URL (Optional)</label>
-                                                                <input type="url" class="form-control" id="captive-portal-redirect" placeholder="https://example.com/welcome">
-                                                                <small class="text-muted">Redirect users to this URL after successful authentication. Leave empty for default behavior.</small>
+                                                                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
+                                                                    <i data-feather="settings" class="mr-1"></i> Configurer les paramètres IP et VLAN
+                                                                </button>
+                                                                <small class="text-muted d-block mt-1">Configurez l'adresse IP, la passerelle et les paramètres VLAN pour le réseau du portail captif.</small>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <div class="col-md-6">
-                                                    <!-- Password Auth Options -->
-                                                    <div id="password-auth-options" class="auth-options-section" style="display: none;">
-                                                        <div class="form-group">
-                                                            <label for="portal-shared-password">Shared Password</label>
-                                                            <div class="input-group">
-                                                                <input type="password" id="portal-shared-password" class="form-control" placeholder="Enter password">
-                                                                <div class="input-group-append">
-                                                                    <button class="btn btn-outline-secondary" type="button" id="toggle-portal-password">
-                                                                        <i data-feather="eye"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- SMS/Email Auth Options -->
-                                            <div id="sms-auth-options" class="auth-options-section" style="display: none;">
-                                                <div class="alert alert-info mb-0 p-2">SMS verification will be used to authenticate guests.</div>
-                                            </div>
-
-                                            <div id="email-auth-options" class="auth-options-section" style="display: none;">
-                                                <div class="alert alert-info mb-0 p-2">Email verification will be used to authenticate guests.</div>
-                                            </div>
-
-                                            <!-- Social Login Options -->
-                                            <div id="social-auth-options" class="auth-options-section" style="display: none;">
-                                                <label>Enable Social Login Options</label>
-                                                <div class="d-flex flex-wrap">
-                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
-                                                        <input type="checkbox" class="custom-control-input" id="social-facebook" checked>
-                                                        <label class="custom-control-label" for="social-facebook">Facebook</label>
-                                                    </div>
-                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
-                                                        <input type="checkbox" class="custom-control-input" id="social-google" checked>
-                                                         <label class="custom-control-label" for="social-google">Google</label>
-                                                    </div>
-                                                    <div class="custom-control custom-switch custom-control-primary mr-2 mb-1">
-                                                        <input type="checkbox" class="custom-control-input" id="social-twitter">
-                                                        <label class="custom-control-label" for="social-twitter">Twitter</label>
-                                                     </div>
-                                                    <div class="custom-control custom-switch custom-control-primary mb-1">
-                                                        <input type="checkbox" class="custom-control-input" id="social-apple">
-                                                        <label class="custom-control-label" for="social-apple">Apple</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                            
-                                            <!-- Network Settings Section -->
-                                            <!-- <h5 class="border-bottom pb-1 mt-3">Network Settings</h5>
+                                                    <!-- Contrôle d'accès Section -->
+                                                    <h5 class="border-bottom pb-1 mt-3">Contrôle d'accès</h5>
                                                     <div class="row">
-                                                <div class="col-md-3">
+                                                        <div class="col-lg-6">
+                                                            <!-- MAC Filtering -->
                                                             <div class="form-group">
-                                                        <label for="captive-ip-address">IP Address</label>
-                                                        <input type="text" class="form-control" id="captive-ip-address" placeholder="192.168.2.1">
-                                                </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                            <div class="form-group">
-                                                        <label for="captive-netmask">Netmask</label>
-                                                        <input type="text" class="form-control" id="captive-netmask" placeholder="255.255.255.0">
-                                            </div>
-                                                </div>
-                                                <div class="col-md-6 d-flex align-items-end mb-1">
-                                                    <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-network-modal">
-                                                        <i data-feather="edit" class="mr-1"></i> Advanced Network Settings
-                                                    </button>
-                                                </div>
-                                            </div> -->
-                                        <!-- Bandwidth Section -->
-                                        <h5 class="border-bottom pb-1 mt-3">Bandwidth & Portal</h5>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <label class="mb-0">Bandwidth Limits</label>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                             <label for="captive-download-limit">Download (Mbps)</label>
-                                                            <select class="form-control form-control-sm" id="captive-download-limit">
-                                                                <option value="">Select Download Limit</option>
-                                                                <option value="1">1 Mbps</option>
-                                                                <option value="2">2 Mbps</option>
-                                                                <option value="5">5 Mbps</option>
-                                                                <option value="10">10 Mbps</option>
-                                                                <option value="15">15 Mbps</option>
-                                                                <option value="20">20 Mbps</option>
-                                                                <option value="25">25 Mbps</option>
-                                                                <option value="30">30 Mbps</option>
-                                                                <option value="35">35 Mbps</option>
-                                                                <option value="40">40 Mbps</option>
-                                                                <option value="45">45 Mbps</option>
-                                                                <option value="50">50 Mbps</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <label for="captive-upload-limit">Upload (Mbps)</label>
-                                                            <select class="form-control form-control-sm" id="captive-upload-limit">
-                                                                <option value="0">Select Upload Limit</option>
-                                                                <option value="1">1 Mbps</option>
-                                                                <option value="2">2 Mbps</option>
-                                                                <option value="5">5 Mbps</option>
-                                                                <option value="10">10 Mbps</option>
-                                                                <option value="15">15 Mbps</option>
-                                                                <option value="20">20 Mbps</option>
-                                                                <option value="25">25 Mbps</option>
-                                                                <option value="30">30 Mbps</option>
-                                                                <option value="35">35 Mbps</option>
-                                                                <option value="40">40 Mbps</option>
-                                                                <option value="45">45 Mbps</option>
-                                                                <option value="50">50 Mbps</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="mb-2">Portal Configuration</label>
-                                                    <select class="form-control form-control-sm" id="captive-portal-design">
-                                                        <!-- Options will be populated dynamically -->
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                            
-                                        <!-- Network Settings Section -->
-                                        <h5 class="border-bottom pb-1 mt-3">Network Settings</h5>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
-                                                        <i data-feather="settings" class="mr-1"></i> Configure IP & VLAN Settings
-                                                    </button>
-                                                    <small class="text-muted d-block mt-1">Configure IP address, gateway, and VLAN settings for the captive portal network.</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                            <!-- Access Control Section -->
-                                        <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                    <!-- MAC Filtering -->
-                                                 <div class="form-group">
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <label class="mb-0">MAC Address Filtering</label>
-                                                        <div class="d-flex align-items-center">
-                                                            <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
-                                                            <select class="form-control form-control-sm" id="captive-mac-view-filter" style="width: auto;">
-                                                                <option value="all">Show All</option>
-                                                                <option value="blacklisted">Show Blacklisted</option>
-                                                                <option value="whitelisted">Show Whitelisted</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                        
-                                                        <!-- Add MAC Address Controls -->
-                                                    <div class="row mb-2">
-                                                        <div class="col-7">
-                                                            <input type="text" class="form-control form-control-sm" id="captive-mac-address" placeholder="00:11:22:33:44:55">
-                                                        </div>
-                                                        <div class="col-3">
-                                                            <select class="form-control form-control-sm" id="captive-mac-type">
-                                                                <option value="blacklist">Blacklist</option>
-                                                                <option value="whitelist">Whitelist</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-2">
-                                                            <button class="btn btn-sm custom-btn w-100" id="captive-add-mac">Add</button>
-                                                        </div>
-                                                </div>
-                                                        
-                                                <!-- MAC Address List -->
-                                                <div class="mac-address-container">
-                                                    <div class="mac-filter-status text-muted mb-1" id="captive-mac-status">
-                                                        <small>No MAC addresses added yet</small>                                                            </div>
-                                                        <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
-                                                            <div class="text-center text-muted p-3" id="captive-mac-empty">
-                                                                <i data-feather="shield" class="mb-2"></i>
-                                                                <div><small>No MAC addresses configured</small></div>
-                                                                <div><small class="text-muted">Add MAC addresses above to control access</small></div>
+                                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                    <label class="mb-0">Filtrage d'adresses MAC</label>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
+                                                                        <select class="form-control form-control-sm" id="captive-mac-view-filter" style="width: auto;">
+                                                                            <option value="all">Afficher tout</option>
+                                                                            <option value="blacklisted">Afficher la liste noire</option>
+                                                                            <option value="whitelisted">Afficher la liste blanche</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- Add MAC Address Controls -->
+                                                                <div class="row mb-2">
+                                                                    <div class="col-7">
+                                                                        <input type="text" class="form-control form-control-sm" id="captive-mac-address" placeholder="00:11:22:33:44:55">
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <select class="form-control form-control-sm" id="captive-mac-type">
+                                                                            <option value="blacklist">Liste noire</option>
+                                                                            <option value="whitelist">Liste blanche</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-2">
+                                                                        <button class="btn btn-sm custom-btn w-100" id="captive-add-mac">Ajouter</button>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- MAC Address List -->
+                                                                <div class="mac-address-container">
+                                                                    <div class="mac-filter-status text-muted mb-1" id="captive-mac-status">
+                                                                        <small>Aucune adresse MAC ajoutée pour le moment</small>
+                                                                    </div>
+                                                                    <div class="filtered-mac-list border rounded" style="min-height: 60px;">
+                                                                        <div class="text-center text-muted p-3" id="captive-mac-empty">
+                                                                            <i data-feather="shield" class="mb-2"></i>
+                                                                            <div><small>Aucune adresse MAC configurée</small></div>
+                                                                            <div><small class="text-muted">Ajoutez des adresses MAC ci-dessus pour contrôler l'accès</small></div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- Pagination Controls -->
+                                                                    <div class="mac-pagination-container mt-2" id="captive-mac-pagination" style="display: none;">
+                                                                        <nav aria-label="MAC address pagination">
+                                                                            <ul class="pagination pagination-sm justify-content-center mb-0" id="captive-mac-pagination-list">
+                                                                            </ul>
+                                                                        </nav>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div class="mt-2">
+                                                                    <button class="btn btn-sm btn-success" id="save-captive-mac-filter">
+                                                                        <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres de filtrage MAC
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                        
-                                                    <div class="mt-2">
-                                                        <button class="btn btn-sm btn-success" id="save-captive-mac-filter">
-                                                            <i data-feather="save" class="mr-1"></i> Save MAC Filter Settings
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         
                                         <!-- Working Hours Section -->
-                                        <h5 class="border-bottom pb-1 mt-3">Working Hours</h5>
+                                        <h5 class="border-bottom pb-1 mt-3">Heures de travail</h5>
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="form-group">
@@ -3736,13 +3715,13 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
                                         </div>
+                                        </div> 
 
                                         <!-- Hourly Schedule Section (Now integrated into Working Hours above) 
                                         <h5 class="border-bottom pb-1 mt-3">
                                             Hourly Schedule 
-                                            <small class="text-muted">(Advanced hour-by-hour control)</small>
+                                            <small class="text-muted">(Contrôle avancé heure par heure)</small>
                                         </h5>
                                         <div class="row">
                                             <div class="col-12">
@@ -3768,8 +3747,8 @@
                                                     </div>
                                                     <div>
                                                         <div class="legend d-flex align-items-center">
-                                                            <span class="badge badge-success mr-2">Enabled</span>
-                                                            <span class="badge badge-secondary">Disabled</span>
+                                                            <span class="badge badge-success mr-2">Activé</span>
+                                                            <span class="badge badge-secondary">Désactivé</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -3784,11 +3763,11 @@
 
                                 <!-- Simplified Password WiFi Tab Content -->
                                 <div class="tab-pane fade" id="secured-wifi" role="tabpanel" aria-labelledby="secured-wifi-tab">
-                                    <div class="card">
+                                            <div class="card">
                                         <div class="card-header d-flex justify-content-between align-items-center">
-                                            <h4 class="card-title mb-0">Password WiFi</h4>
+                                            <h4 class="card-title mb-0">Réseau WiFi sécurisé</h4>
                                             <button class="btn custom-btn save-password-network" id="save-secured-wifi">
-                                                <i data-feather="save" class="mr-1"></i> Save Settings
+                                                <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                                             </button>
                                             </div>
                                         
@@ -3797,12 +3776,12 @@
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="wifi-ssid">Network Name (SSID)</label>
+                                                            <label for="wifi-ssid">Nom du réseau WiFi (SSID)</label>
                                                             <div class="input-group">
-                                                                <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                                                <input type="text" class="form-control" id="password-wifi-ssid" placeholder="WiFi domicile">
                                                                 <div class="input-group-append">
-                                                                    <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#password-ssid-qr-modal" title="Show QR Code">
-                                                                        <i data-feather="code"></i> QR Code
+                                                                    <button class="btn btn-outline-primary" type="button" data-toggle="modal" data-target="#password-ssid-qr-modal" title="Afficher le code QR">
+                                                                        <i data-feather="code"></i> Code QR
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -3810,9 +3789,9 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="password-wifi-password">WiFi Password</label>
+                                                            <label for="password-wifi-password">Mot de passe WiFi</label>
                                                             <div class="input-group">
-                                                                <input type="password" class="form-control" id="password-wifi-password" placeholder="Password">
+                                                                <input type="password" class="form-control" id="password-wifi-password" placeholder="Mot de passe">
                                                                 <div class="input-group-append">
                                                                     <button class="btn btn-outline-secondary" type="button" id="toggle-password">
                                                                         <i data-feather="eye"></i>
@@ -3823,18 +3802,18 @@
                                                     </div>
                                                     <div class="col-md-2">
                                                         <div class="form-group">
-                                                            <label for="password-wifi-visible">WiFi Visible</label>
+                                                            <label for="password-wifi-visible">Visibilité WiFi</label>
                                                             <div class="input-group">
                                                                 <select class="form-control" id="password-wifi-visible">
                                                                     <option value="1">Visible</option>
-                                                                    <option value="0">Hidden</option>
+                                                                    <option value="0">Caché</option>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-2">
                                                         <div class="form-group">
-                                                            <label for="wifi-security">Security Type</label>
+                                                            <label for="wifi-security">Type de sécurité</label>
                                                             <select class="form-control" id="password-wifi-security">
                                                                 <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
                                                                 <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
@@ -3855,19 +3834,19 @@
                                                     </div>
                                                 </div>
                                             
-                                            <!-- Access Control Section -->
-                                            <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
+                                            <!-- Contrôle d'accès Section -->
+                                            <h5 class="border-bottom pb-1 mt-3">Contrôle d'accès</h5>
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <!-- MAC Filtering -->
                                                     <div class="form-group">
                                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                                            <label class="mb-0">MAC Address Filtering</label>
+                                                            <label class="mb-0">Filtrage d'adresses MAC</label>
                                                             <div class="d-flex align-items-center">
                                                                 <label class="mr-2 mb-0 text-muted" style="font-size: 0.8rem;">Filter View:</label>
                                                                 <select class="form-control form-control-sm" id="secured-mac-view-filter" style="width: auto;">
-                                                                    <option value="all">Show All</option>
-                                                                    <option value="blacklisted">Show Blacklisted</option>
+                                                                    <option value="all">Afficher tout</option>
+                                                                    <option value="blacklisted">Afficher la liste noire</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -3879,45 +3858,54 @@
                                                             </div>
                                                             <div class="col-3">
                                                                 <select class="form-control form-control-sm" id="secured-mac-type">
-                                                                    <option value="blacklist">Blacklist</option>
+                                                                    <option value="blacklist">Liste noire</option>
                                                                 </select>
                                                             </div>
                                                             <div class="col-2">
-                                                                <button class="btn btn-sm custom-btn w-100" id="secured-add-mac">Add</button>
+                                                                <button class="btn btn-sm custom-btn w-100" id="secured-add-mac">Ajouter</button>
                                                             </div>
                                                         </div>
                                                         
                                                         <!-- MAC Address List -->
                                                         <div class="mac-address-container">
                                                             <div class="mac-filter-status text-muted mb-1" id="secured-mac-status">
-                                                                <small>No MAC addresses added yet</small>
+                                                                <small>Aucune adresse MAC ajoutée pour le moment</small>
                                                             </div>
                                                             <div class="filtered-mac-list border rounded" style="max-height: 200px; overflow-y: auto; min-height: 60px;">
                                                                 <div class="text-center text-muted p-3" id="secured-mac-empty">
                                                                     <i data-feather="shield" class="mb-2"></i>
-                                                                    <div><small>No MAC addresses configured</small></div>
-                                                                    <div><small class="text-muted">Add MAC addresses above to control access</small></div>
+                                                                    <div><small>Aucune adresse MAC configurée</small></div>
+                                                                    <div><small class="text-muted">Ajoutez des adresses MAC ci-dessus pour contrôler l'accès</small></div>
                                                                 </div>
+                                                            </div>
+                                                            <!-- Pagination Controls -->
+                                                            <div class="mac-pagination-container mt-2" id="secured-mac-pagination" style="display: none;">
+                                                                <nav aria-label="MAC address pagination">
+                                                                    <ul class="pagination pagination-sm justify-content-center mb-0" id="secured-mac-pagination-list">
+                                                                    </ul>
+                                                                </nav>
                                                             </div>
                                                         </div>
                                                         
                                                         <div class="mt-2">
                                                             <button class="btn btn-sm btn-success" id="save-secured-mac-filter">
-                                                                <i data-feather="save" class="mr-1"></i> Save MAC Filter Settings
+                                                                <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres de filtrage MAC
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-lg-6">
-                                                    <!-- Network Security Settings -->
+                                                    <!-- Paramètres de sécurité réseau -->
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                </div><!-- End .tab-content -->
+
+
+                            </div><!-- End .tab-content -->
                             </div><!-- End .card-body -->
                         </div><!-- End .card -->
                     </div><!-- End .col-12 -->
@@ -3928,12 +3916,12 @@
     <!-- END: Content -->
 
     <!-- BEGIN: Modals -->
-    <!-- Enhanced Channel Scan Modal with Results View -->
+    <!-- Modal de scan de canaux amélioré avec vue des résultats -->
     <div class="modal fade" id="channel-scan-modal" tabindex="-1" role="dialog" aria-labelledby="channel-scan-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="channel-scan-modal-title">Channel Scan</h5>
+                    <h5 class="modal-title" id="channel-scan-modal-title">Canal Scan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -3946,7 +3934,7 @@
                                 <div class="alert alert-info">
                                     <div class="alert-body">
                                         <i data-feather="info" class="mr-1 align-middle"></i>
-                                        <span>Scanning will analyze nearby WiFi networks and interference to determine optimal channel settings.</span>
+                                        <span>Le scan analysera les réseaux WiFi à proximité et les interférences pour déterminer les paramètres de canal optimaux.</span>
                                     </div>
                                 </div>
                                 
@@ -3973,12 +3961,12 @@
                                         <h6>Last Scan Results:</h6>
                                         <ul class="list-group mb-2">
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>2.4 GHz Best Channel</span>
-                                                <span class="badge badge-primary" id="last-best-channel-2g">Channel 6</span>
+                                                <span>2.4 GHz Best Canal</span>
+                                                <span class="badge badge-primary" id="last-best-channel-2g">Canal 6</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>5 GHz Best Channel</span>
-                                                <span class="badge badge-primary" id="last-best-channel-5g">Channel 36</span>
+                                                <span>5 GHz Best Canal</span>
+                                                <span class="badge badge-primary" id="last-best-channel-5g">Canal 36</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 <span>Scan Time</span>
@@ -4004,7 +3992,7 @@
                                 
                                 <div class="d-flex justify-content-center mt-2">
                                     <button class="btn custom-btn hidden" id="start-scan-btn">
-                                        <i data-feather="refresh-cw" class="mr-1"></i> Start New Channel Scan
+                                        <i data-feather="refresh-cw" class="mr-1"></i> Start New Canal Scan
                                     </button>
                                 </div>
                                 <p class="text-muted text-center" id="scan-info-text">
@@ -4020,7 +4008,7 @@
                                 <div class="alert alert-warning">
                                     <div class="alert-body">
                                         <i data-feather="clock" class="mr-1 align-middle"></i>
-                                        <span>Scanning for available WiFi channels and detecting interference. This may take a minute...</span>
+                                        <span>Scan des canaux WiFi disponibles et détection des interférences. Cela peut prendre une minute...</span>
                                     </div>
                                 </div>
                                 
@@ -4051,7 +4039,7 @@
                                                 <h6>Scan Initiated</h6>
                                                 <span class="text-muted">Step 1/4</span>
                                             </div>
-                                            <p>Preparing device for channel scanning</p>
+                                            <p>Préparation de l'appareil pour le scan des canaux</p>
                                         </div>
                                     </div>
                                     <div class="timeline-item">
@@ -4068,7 +4056,7 @@
                                         <div class="timeline-point-indicator" id="step-2g-indicator"></div>
                                         <div class="timeline-event">
                                             <div class="d-flex justify-content-between">
-                                                <h6>Scanning 2.4 GHz Band</h6>
+                                                <h6>Scan de la bande 2.4 GHz</h6>
                                                 <span class="text-muted">Step 3/4</span>
                                             </div>
                                             <p>Checking channels 1-11 for signal strength and interference</p>
@@ -4078,7 +4066,7 @@
                                         <div class="timeline-point-indicator" id="step-5g-indicator"></div>
                                         <div class="timeline-event">
                                             <div class="d-flex justify-content-between">
-                                                <h6>Scanning 5 GHz Band</h6>
+                                                <h6>Scan de la bande 5 GHz</h6>
                                                 <span class="text-muted">Step 4/4</span>
                                             </div>
                                             <p>Checking channels 36-165 for signal strength and interference</p>
@@ -4102,7 +4090,7 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">2.4 GHz Results</h5>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span>Recommended Channel:</span>
+                                                    <span>Recommended Canal:</span>
                                                     <h3 class="mb-0" id="result-channel-2g">6</h3>
                                                 </div>
                                             </div>
@@ -4114,7 +4102,7 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">5 GHz Results</h5>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span>Recommended Channel:</span>
+                                                    <span>Recommended Canal:</span>
                                                     <h3 class="mb-0" id="result-channel-5g">36</h3>
                                                 </div>
                                             </div>
@@ -4132,12 +4120,12 @@
                                 <table class="table table-hover" id="nearby-networks-table">
                                     <thead>
                                         <tr>
-                                            <th>Band</th>
-                                            <th>Channel</th>
-                                            <th>Networks</th>
-                                            <th>Signal Strength</th>
-                                            <th>Interference</th>
-                                            <th>Status</th>
+                                            <th>Bande</th>
+                                            <th>Canal</th>
+                                            <th>Réseaux</th>
+                                            <th>Force du signal</th>
+                                            <th>Interférence</th>
+                                            <th>Statut</th>
                                         </tr>
                                     </thead>
                                     <tbody id="nearby-networks-tbody">
@@ -4172,7 +4160,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="portal-management-modal-title">Captive Portal Management</h5>
+                    <h5 class="modal-title" id="portal-management-modal-title">Gestion du portail captif</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -4266,8 +4254,8 @@ document.addEventListener('DOMContentLoaded', function() {
                           </div>
                  </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-btn">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn">Enregistrer les modifications</button>
                     </div>
                 </div>
             </div>
@@ -4278,7 +4266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="captive-network-modal-title">Edit Captive Portal Network Settings</h5>
+                    <h5 class="modal-title" id="captive-network-modal-title">Modifier les paramètres du réseau du portail captif</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -4287,50 +4275,50 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="alert alert-info mb-2">
                         <div class="alert-body">
                             <i data-feather="info" class="mr-50"></i>
-                            <span>Captive Portal requires Static IP configuration.</span>
+                            <span>Le portail captif nécessite une configuration IP statique.</span>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label>IP Address</label>
+                        <label>Adresse IP</label>
                         <input type="text" class="form-control" placeholder="192.168.10.1" id="captive-portal-ip-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Netmask</label>
+                        <label>Masque de sous-réseau</label>
                         <input type="text" class="form-control" placeholder="255.255.255.0" id="captive-portal-netmask-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Gateway</label>
+                        <label>Passerelle</label>
                         <input type="text" class="form-control" placeholder="192.168.10.1" id="captive-portal-gateway-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Primary DNS</label>
+                        <label>DNS primaire</label>
                         <input type="text" class="form-control" placeholder="8.8.8.8" id="captive-portal-dns1-modal" value="">
                     </div>
                     <div class="form-group">
-                        <label>Secondary DNS</label>
+                        <label>DNS secondaire</label>
                         <input type="text" class="form-control" placeholder="1.1.1.1" id="captive-portal-dns2-modal" value="">
                     </div>
                     
                     <div class="form-group vlan-setting">
                         <label>VLAN ID (Optional)</label>
-                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan-modal" value="" min="1" max="4094" disabled>
-                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
+                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan-modal_old" value="" min="1" max="4094" disabled>
+                        <small class="text-muted">Spécifiez l'ID VLAN pour la segmentation du réseau du portail captif (1-4094). Activez le support VLAN dans les paramètres du routeur pour utiliser cette fonctionnalité.</small>
                     </div>
                     
                     <div class="form-group vlan-setting">
                         <label>VLAN Tagging</label>
-                        <select class="form-control" id="captive-portal-vlan-tagging-modal" disabled>
-                            <option value="disabled">Disabled</option>
+                        <select class="form-control" id="captive-portal-vlan-tagging-modal_old" disabled>
+                            <option value="disabled">Désactivé</option>
                             <option value="tagged">Tagged</option>
                             <option value="untagged">Untagged</option>
                         </select>
-                        <small class="text-muted">Configure VLAN tagging mode for captive portal network. Enable VLAN support in Router Settings to use this feature.</small>
+                        <small class="text-muted">Configurez le mode de marquage VLAN pour le réseau du portail captif. Activez le support VLAN dans les paramètres du routeur pour utiliser cette fonctionnalité.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-btn save-captive-portal">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn save-captive-portal">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -4341,87 +4329,87 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="password-network-modal-title">Edit Password WiFi Network</h5>
+                    <h5 class="modal-title" id="password-network-modal-title">Modifier le réseau WiFi sécurisé</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>IP Assignment</label>
+                        <label>Attribution IP</label>
                         <select class="form-control" id="password-ip-assignment">
-                            <option value="STATIC" selected>Static IP</option>
-                            <option value="DHCP">DHCP Client</option>
+                            <option value="STATIC" selected>IP statique</option>
+                            <option value="DHCP">Client DHCP</option>
                         </select>
-                        <small class="text-muted">When using DHCP Client, DHCP Server will be automatically disabled.</small>
+                        <small class="text-muted">Lors de l'utilisation du client DHCP, le serveur DHCP sera automatiquement désactivé.</small>
                     </div>
                     
                     <div id="password-static-fields" class="hidden">
                         <div class="form-group">
-                            <label>IP Address</label>
+                            <label>Adresse IP</label>
                             <input type="text" class="form-control" placeholder="192.168.1.1" id="password-ip" value="">
                         </div>
                         <div class="form-group">
-                            <label>Netmask</label>
+                            <label>Masque de sous-réseau</label>
                             <input type="text" class="form-control" placeholder="255.255.255.0" id="password-netmask" value="">
                         </div>
                         <div class="form-group">
-                            <label>Gateway</label>
+                            <label>Passerelle</label>
                             <input type="text" class="form-control" placeholder="192.168.1.1" id="password-gateway" value="" readonly>
-                            <small class="text-muted">Gateway is automatically set to the same as IP address.</small>
+                            <small class="text-muted">La passerelle est automatiquement définie comme l'adresse IP.</small>
                         </div>
                         <div class="form-group">
-                            <label>Primary DNS</label>
+                            <label>DNS primaire</label>
                             <input type="text" class="form-control" placeholder="8.8.8.8" id="password-primary-dns" value="">
                         </div>
                         <div class="form-group">
-                            <label>Secondary DNS</label>
+                            <label>DNS secondaire</label>
                             <input type="text" class="form-control" placeholder="1.1.1.1" id="password-secondary-dns" value="">
                         </div>
                         
                         <div class="form-group vlan-setting">
                             <label>VLAN ID (Optional)</label>
                             <input type="number" class="form-control" placeholder="10" id="password-wifi-vlan" value="" min="1" max="4094" disabled>
-                            <small class="text-muted">Specify VLAN ID for network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
+                            <small class="text-muted">Spécifiez l'ID VLAN pour la segmentation réseau (1-4094). Activez le support VLAN dans les paramètres du routeur pour utiliser cette fonctionnalité.</small>
                         </div>
                         
                         <div class="form-group vlan-setting">
                             <label for="password-wifi-vlan-tagging-modal">VLAN Tagging</label>
                             <select class="form-control" id="password-wifi-vlan-tagging-modal" disabled>
-                                <option value="disabled">Disabled</option>
+                                <option value="disabled">Désactivé</option>
                                 <option value="tagged">Tagged</option>
                                 <option value="untagged">Untagged</option>
                             </select>
-                            <small class="text-muted">Configure VLAN tagging mode for password WiFi network. Enable VLAN support in Router Settings to use this feature.</small>
+                            <small class="text-muted">Configurez le mode de marquage VLAN pour le réseau WiFi sécurisé. Activez le support VLAN dans les Paramètres du routeur pour utiliser cette fonctionnalité.</small>
                         </div>
 
                         <div class="form-group mt-3 pt-2 border-top">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="password-dhcp-server-toggle" checked>
-                                <label class="custom-control-label" for="password-dhcp-server-toggle">Enable DHCP Server</label>
+                                <label class="custom-control-label" for="password-dhcp-server-toggle">Activer le serveur DHCP</label>
                             </div>
-                            <small class="text-muted">Provides automatic IP addressing for connected clients.</small>
+                            <small class="text-muted">Fournit l'adressage IP automatique pour les clients connectés.</small>
                         </div>
                         
                         <div id="password-dhcp-server-fields" class="hidden">
                             <div class="form-group">
-                                <label>DHCP Range Start</label>
+                                <label>Début de plage DHCP</label>
                                 <input type="text" class="form-control" placeholder="192.168.1.100" id="password-dhcp-start" value="192.168.1.100">
                             </div>
                             <div class="form-group">
-                                <label>DHCP Range End</label>
+                                <label>Fin de plage DHCP</label>
                                 <input type="text" class="form-control" placeholder="192.168.1.200" id="password-dhcp-end" value="192.168.1.200">
                             </div>
                             <div class="form-group">
-                                <label>Lease Time (hours)</label>
+                                <label>Durée de bail (heures)</label>
                                 <input type="number" class="form-control" placeholder="24" id="password-lease-time" value="24">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-btn save-password-network">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn save-password-network">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -4432,62 +4420,62 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wan-settings-modal-title">Edit WAN Interface Settings</h5>
+                    <h5 class="modal-title" id="wan-settings-modal-title">Modifier les paramètres de l'interface WAN</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Connection Type</label>
+                        <label>Type de connexion</label>
                         <select class="form-control" id="wan-connection-type">
                             <option value="DHCP">DHCP</option>
-                            <option value="STATIC">Static IP</option>
+                            <option value="STATIC">IP statique</option>
                             <option value="PPPOE">PPPoE</option>
                         </select>
                     </div>
                     
                     <div id="wan-static-fields" class="hidden">
                         <div class="form-group">
-                            <label>IP Address</label>
+                            <label>Adresse IP</label>
                             <input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10" value="203.0.113.10">
                         </div>
                         <div class="form-group">
-                            <label>Netmask</label>
+                            <label>Masque de sous-réseau</label>
                             <input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0" value="255.255.255.0">
                         </div>
                         <div class="form-group">
-                            <label>Gateway</label>
+                            <label>Passerelle</label>
                             <input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1" value="203.0.113.1">
                         </div>
                         <div class="form-group">
-                            <label>Primary DNS</label>
+                            <label>DNS primaire</label>
                             <input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8" value="8.8.8.8">
                         </div>
                         <div class="form-group">
-                            <label>Secondary DNS</label>
+                            <label>DNS secondaire</label>
                             <input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1" value="1.1.1.1">
                         </div>
                     </div>
                     
                     <div id="wan-pppoe-fields" style="display: none;">
                         <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" class="form-control" id="wan-pppoe-username" placeholder="Username">
+                            <label>Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="wan-pppoe-username" placeholder="Nom d'utilisateur">
                         </div>
                         <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" class="form-control" id="wan-pppoe-password" placeholder="Password">
+                            <label>Mot de passe</label>
+                            <input type="password" class="form-control" id="wan-pppoe-password" placeholder="Mot de passe">
                         </div>
                         <div class="form-group">
-                            <label>Service Name (Optional)</label>
-                            <input type="text" class="form-control" id="wan-pppoe-service-name" placeholder="Service Name">
+                            <label>Nom du service (Optionnel)</label>
+                            <input type="text" class="form-control" id="wan-pppoe-service-name" placeholder="Nom du service">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-btn save-wan-settings">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn save-wan-settings">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
@@ -4498,117 +4486,117 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="lan-settings-modal-title">Edit LAN Settings</h5>
+                    <h5 class="modal-title" id="lan-settings-modal-title">Modifier les paramètres LAN</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>IP Address</label>
+                        <label>Adresse IP</label>
                         <input type="text" class="form-control" placeholder="192.168.1.1" value="192.168.1.1">
                     </div>
                     <div class="form-group">
-                        <label>Netmask</label>
+                        <label>Masque de sous-réseau</label>
                         <input type="text" class="form-control" placeholder="255.255.255.0" value="255.255.255.0">
                     </div>
                     
                     <div class="form-group">
                         <div class="custom-control custom-switch mb-1">
                             <input type="checkbox" class="custom-control-input" id="dhcp-server-toggle" checked>
-                            <label class="custom-control-label" for="dhcp-server-toggle">Enable DHCP Server</label>
+                            <label class="custom-control-label" for="dhcp-server-toggle">Activer le serveur DHCP</label>
                         </div>
                     </div>
                     
                     <div id="dhcp-server-fields">
                         <div class="form-group">
-                            <label>DHCP Start Address</label>
+                            <label>Adresse de début DHCP</label>
                             <input type="text" class="form-control" placeholder="192.168.1.100" value="192.168.1.100">
                         </div>
                         <div class="form-group">
-                            <label>DHCP End Address</label>
+                            <label>Adresse de fin DHCP</label>
                             <input type="text" class="form-control" placeholder="192.168.1.200" value="192.168.1.200">
                         </div>
                         <div class="form-group">
-                            <label>Lease Time (hours)</label>
+                            <label>Durée de bail (heures)</label>
                             <input type="number" class="form-control" placeholder="24" value="24">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-btn save-lan-settings">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn save-lan-settings">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Captive Portal Settings Modal -->
+    <!-- Paramètres du portail captif (Captive Portal Settings Modal) -->
     <div class="modal fade" id="captive-portal-modal" tabindex="-1" role="dialog" aria-labelledby="captive-portal-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="captive-portal-modal-title">Captive Portal IP Management</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="captive-portal-modal-title">Gestion IP du portail captif</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Static IP Settings -->
+                    <!-- Paramètres IP statique -->
                     <div class="form-group">
-                        <label>IP Assignment</label>
+                        <label>Affectation IP</label>
                         <select class="form-control" id="captive-ip-assignment" disabled>
-                            <option value="static" selected>Static IP</option>
+                            <option value="static" selected>IP statique</option>
                         </select>
-                        <small class="text-muted">Only Static IP configuration is available for Captive Portal</small>
+                        <small class="text-muted">Seule la configuration IP statique est disponible pour le portail captif</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="captive-portal-ip">IP Address</label>
+                        <label for="captive-portal-ip">Adresse IP</label>
                         <input type="text" class="form-control" id="captive-portal-ip" placeholder="192.168.2.1">
                     </div>
                     
                     <div class="form-group">
-                        <label for="captive-portal-netmask">Netmask</label>
+                        <label for="captive-portal-netmask">Masque de sous-réseau</label>
                         <input type="text" class="form-control" id="captive-portal-netmask" placeholder="255.255.255.0">
                     </div>
 <!--                     
                     <div class="form-group">
-                        <label for="captive-portal-gateway">Gateway</label>
+                        <label for="captive-portal-gateway">Passerelle</label>
                         <input type="text" class="form-control" id="captive-portal-gateway" placeholder="192.168.2.1">
                     </div> -->
                     
                     <div class="form-group vlan-setting">
-                        <label for="captive-portal-vlan-modal">VLAN ID (Optional)</label>
+                        <label for="captive-portal-vlan-modal">ID VLAN (optionnel)</label>
                         <input type="number" class="form-control" id="captive-portal-vlan-modal" placeholder="20" min="1" max="4094" disabled>
-                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
+                        <small class="text-muted">Spécifiez 2 l'ID VLAN pour la segmentation du réseau du portail captif (1-4094). Activez le support VLAN dans les paramètres du routeur pour utiliser cette fonctionnalité.</small>
                     </div>
                     
                     <div class="form-group vlan-setting">
-                        <label for="captive-portal-vlan-tagging-modal">VLAN Tagging</label>
-                        <select class="form-control" id="captive-portal-vlan-tagging-modal" disabled>
-                            <option value="disabled">Disabled</option>
-                            <option value="tagged">Tagged</option>
-                            <option value="untagged">Untagged</option>
+                        <label for="captive-portal-vlan-tagging-modal">Tagging VLAN</label>
+                        <select class="form-control" id="captive-portal-vlan-tagging-modal">
+                            <option value="disabled">Désactivé</option>
+                            <option value="tagged">Tagué</option>
+                            <option value="untagged">Non tagué</option>
                         </select>
-                        <small class="text-muted">Configure VLAN tagging mode for captive portal network. Enable VLAN support in Router Settings to use this feature.</small>
+                        <small class="text-muted">Configurez le mode de marquage VLAN pour le réseau du portail captif. Activez le support VLAN dans les paramètres du routeur pour utiliser cette fonctionnalité.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-btn save-captive-portal" id="save-captive-portal-settings">Save Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn save-captive-portal" id="save-captive-portal-settings">Enregistrer les modifications</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Device Restart Confirmation Modal -->
+    <!-- Modal de confirmation de redémarrage de l'appareil -->
     <div class="modal fade" id="restart-confirmation-modal" tabindex="-1" role="dialog" aria-labelledby="restart-confirmation-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="restart-confirmation-modal-title">
-                        <i data-feather="refresh-cw" class="mr-2"></i>Restart Device
+                        <i data-feather="refresh-cw" class="mr-2"></i>Redémarrer l'appareil
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -4629,7 +4617,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                         <div>
-                            <h6 class="mb-0">Device Information</h6>
+                            <h6 class="mb-0">Informations sur l'appareil</h6>
                             <p class="card-text text-muted mb-0">Location: <span class="location_name font-weight-bold"></span></p>
                             <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
                             <p class="card-text text-muted mb-0">MAC Address: <span class="router_mac_address font-weight-bold"></span></p>
@@ -4637,21 +4625,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     
                     <div class="bg-light-secondary p-2 rounded mb-3">
-                        <h6 class="mb-2">What happens during restart:</h6>
+                        <h6 class="mb-2">Ce qui se passe pendant le redémarrage :</h6>
                         <ul class="mb-0 pl-3">
-                            <li>WiFi networks will be temporarily unavailable (2-3 minutes)</li>
-                            <li>Connected users will be disconnected</li>
+                            <li>Les réseaux WiFi seront temporairement indisponibles (2-3 minutes)</li>
+                            <li>Les utilisateurs connectés seront déconnectés</li>
     
                         </ul>
                     </div>
                     
-                    <p class="text-muted">Are you sure you want to restart this device?</p>
+                    <p class="text-muted">Êtes-vous sûr de vouloir redémarrer cet appareil ?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-danger" id="confirm-restart-btn">
                         <i data-feather="refresh-cw" class="mr-1"></i>
-                        <span>Restart Device</span>
+                        <span>Redémarrer l'appareil</span>
                     </button>
                 </div>
             </div>
@@ -4664,7 +4652,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="ssid-qr-modal-title">
-                        <i data-feather="wifi" class="mr-2"></i>WiFi Network QR Code
+                        <i data-feather="wifi" class="mr-2"></i>Code QR du réseau WiFi
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -4674,13 +4662,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="alert alert-info mb-3">
                         <div class="alert-body">
                             <i data-feather="info" class="mr-2"></i>
-                            <strong>Scan this QR code</strong> to connect to the WiFi network automatically.
+                            <strong>Scannez ce code QR</strong> pour vous connecter automatiquement au réseau WiFi.
                         </div>
                     </div>
                     
                     <div class="mb-3">
-                        <h6 class="mb-2">Network Name (SSID):</h6>
-                        <h4 class="text-primary font-weight-bold" id="qr-ssid-display">Guest WiFi</h4>
+                        <h6 class="mb-2">Nom du réseau (SSID) :</h6>
+                        <h4 class="text-primary font-weight-bold" id="qr-ssid-display">WiFi invité</h4>
                     </div>
                     
                     <!-- QR Code Container -->
@@ -4688,13 +4676,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div id="qr-code-container" class="p-3 bg-white border rounded"></div>
                     </div>
                     
-                    <p class="text-muted small">Point your device's camera at the QR code to connect</p>
+                    <p class="text-muted small">Pointez la caméra de votre appareil vers le code QR pour vous connecter</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fermer</button>
                     <button type="button" class="btn btn-primary" id="download-qr-btn">
                         <i data-feather="download" class="mr-1"></i>
-                        Download QR Code
+                        Télécharger le code QR
                     </button>
                 </div>
             </div>
@@ -4707,7 +4695,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="password-ssid-qr-modal-title">
-                        <i data-feather="wifi" class="mr-2"></i>WiFi Network QR Code
+                        <i data-feather="wifi" class="mr-2"></i>Code QR du réseau WiFi
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -4717,18 +4705,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="alert alert-info mb-3">
                         <div class="alert-body">
                             <i data-feather="info" class="mr-2"></i>
-                            <strong>Scan this QR code</strong> to connect to the WiFi network automatically.
+                            <strong>Scannez ce code QR</strong> pour vous connecter automatiquement au réseau WiFi.
                         </div>
                     </div>
                     
                     <div class="mb-3">
-                        <h6 class="mb-2">Network Name (SSID):</h6>
-                        <h4 class="text-primary font-weight-bold" id="password-qr-ssid-display">Home WiFi</h4>
+                        <h6 class="mb-2">Nom du réseau (SSID) :</h6>
+                        <h4 class="text-primary font-weight-bold" id="password-qr-ssid-display">WiFi domicile</h4>
                     </div>
                     
                     <div class="mb-3">
-                        <h6 class="mb-2">Security:</h6>
-                        <span class="badge badge-light-success">WPA/WPA2 Protected</span>
+                        <h6 class="mb-2">Sécurité :</h6>
+                        <span class="badge badge-light-success">Protégé WPA/WPA2</span>
                     </div>
                     
                     <!-- QR Code Container -->
@@ -4736,13 +4724,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div id="password-qr-code-container" class="p-3 bg-white border rounded"></div>
                     </div>
                     
-                    <p class="text-muted small">Point your device's camera at the QR code to connect</p>
+                    <p class="text-muted small">Pointez la caméra de votre appareil vers le code QR pour vous connecter</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fermer</button>
                     <button type="button" class="btn btn-primary" id="download-password-qr-btn">
                         <i data-feather="download" class="mr-1"></i>
-                        Download QR Code
+                        Télécharger le code QR
                     </button>
                 </div>
             </div>
@@ -4776,7 +4764,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                         <div>
-                            <h6 class="mb-0">Current Device Information</h6>
+                            <h6 class="mb-0">Informations actuelles sur l'appareil</h6>
                             <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
                             <p class="card-text text-muted mb-0">Current Firmware: <span class="router_firmware font-weight-bold"></span></p>
                             <p class="card-text text-muted mb-0">MAC Address: <span class="router_mac_address font-weight-bold"></span></p>
@@ -4806,7 +4794,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h6 class="mb-2">During firmware update:</h6>
                         <ul class="mb-0 pl-3">
                             <li>Device will reboot automatically</li>
-                            <li>WiFi networks will be unavailable for 5-10 minutes</li>
+                            <li>Les réseaux WiFi seront indisponibles pendant 5-10 minutes</li>
                             <li>All connected users will be disconnected</li>
                             <li>Do not power off the device during update</li>
                         </ul>
@@ -4815,7 +4803,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn custom-btn" id="start-firmware-update-btn" disabled>
                         <i data-feather="download" class="mr-1"></i>
                         <span>Update Firmware</span>
@@ -4844,7 +4832,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="text-center mb-3">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
+                            <span class="sr-only">Chargement...</span>
                         </div>
                     </div>
                     
@@ -4861,7 +4849,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="timeline-item">
                             <div class="timeline-point-indicator timeline-point-primary" id="step-1-indicator"></div>
                             <div class="timeline-event">
-                                <h6>Uploading Firmware</h6>
+                                <h6>Téléversement du firmware</h6>
                                 <p class="text-muted mb-0">Transferring firmware to device</p>
                             </div>
                         </div>
@@ -4919,10 +4907,114 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn custom-btn" id="save-mac-address-btn">
                         <i data-feather="save" class="mr-1"></i>
                         <span>Save Changes</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAC Address Radio Selection Modal for Captive Portal -->
+    <div class="modal fade" id="captive-mac-radio-modal" tabindex="-1" role="dialog" aria-labelledby="captive-mac-radio-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="captive-mac-radio-modal-title">Sélectionner la fréquence radio</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Sélectionnez sur quelle fréquence radio bloquer cette adresse MAC :</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Adresse MAC</label>
+                        <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="captive-mac-radio-display">
+                            -
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Fréquence radio</label>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="captive-radio-24" name="captive-radio-selection" class="custom-control-input" value="2.4GHz">
+                            <label class="custom-control-label" for="captive-radio-24">Radio 2.4GHz</label>
+                        </div>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="captive-radio-5" name="captive-radio-selection" class="custom-control-input" value="5GHz">
+                            <label class="custom-control-label" for="captive-radio-5">Radio 5GHz</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="captive-radio-both" name="captive-radio-selection" class="custom-control-input" value="both" checked>
+                            <label class="custom-control-label" for="captive-radio-both">Tout</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn" id="captive-confirm-add-mac">
+                        <i data-feather="check" class="mr-1"></i>
+                        Confirmer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAC Address Radio Selection Modal for Secured WiFi -->
+    <div class="modal fade" id="secured-mac-radio-modal" tabindex="-1" role="dialog" aria-labelledby="secured-mac-radio-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="secured-mac-radio-modal-title">Sélectionner la fréquence radio</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Sélectionnez sur quelle fréquence radio bloquer cette adresse MAC :</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Adresse MAC</label>
+                        <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="secured-mac-radio-display">
+                            -
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Fréquence radio</label>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="secured-radio-24" name="secured-radio-selection" class="custom-control-input" value="2.4GHz">
+                            <label class="custom-control-label" for="secured-radio-24">Radio 2.4GHz</label>
+                        </div>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" id="secured-radio-5" name="secured-radio-selection" class="custom-control-input" value="5GHz">
+                            <label class="custom-control-label" for="secured-radio-5">Radio 5GHz</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="secured-radio-both" name="secured-radio-selection" class="custom-control-input" value="both" checked>
+                            <label class="custom-control-label" for="secured-radio-both">Tout</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn custom-btn" id="secured-confirm-add-mac">
+                        <i data-feather="check" class="mr-1"></i>
+                        Confirmer
                     </button>
                 </div>
             </div>
@@ -4958,7 +5050,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
     <!-- END: Page JS-->
     <script src="/assets/js/config.js?v=1"></script>
-    <script src="/assets/js/location-details.js?v=1"></script>
+    <script src="/assets/js/location-details-fr.js?v=3"></script>
     <script>
         // ==============================================
         // FORM VALIDATION UTILITIES
@@ -5104,7 +5196,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Check if router model is set
                 const routerModel = $('.router_model_updated').text().trim();
                 if (!routerModel) {
-                    toastr.error('Please set the router model first in Location Details before updating firmware.');
+                    toastr.error('Veuillez d\'abord définir le modèle de routeur dans les détails de l\'emplacement avant de mettre à jour le firmware.');
                     return;
                 }
                 
@@ -5592,18 +5684,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 ];
                 const hours = Array.from({ length: 24 }, (_, i) => i);
 
+                // Handle translations for French (or other languages)
+                const translations = {
+                    "working_hours": "Heures d'ouverture",
+                    "captive_portal_access_schedule": "Plage d'accès au portail captif",
+                    "quick_set": "Raccourci :",
+                    "business_hours": "Heures de bureau",
+                    "clear_all": "Tout effacer",
+                    "info_text": "Cliquez sur une case vide pour créer un créneau. Glissez pour déplacer, redimensionnez avec les poignées, survolez pour supprimer.",
+                    "save_schedule": "Enregistrer l'horaire",
+                    // French day names, capitalized
+                    "monday": "Lundi",
+                    "tuesday": "Mardi",
+                    "wednesday": "Mercredi",
+                    "thursday": "Jeudi",
+                    "friday": "Vendredi",
+                    "saturday": "Samedi",
+                    "sunday": "Dimanche"
+                };
+
+                // Helper to get translated day name
+                const getDayLabel = (day) => translations[day] || this.capitalize(day);
+
                 this.container.innerHTML = `
                     <div class="schedule-container">
                         <div class="schedule-header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h5 class="mb-1">Working Hours</h5>
-                                    <p class="mb-0 text-muted">Captive Portal Access Schedule</p>
+                                    <h5 class="mb-1">${translations["working_hours"]}</h5>
+                                    <p class="mb-0 text-muted">${translations["captive_portal_access_schedule"]}</p>
                                 </div>
                                 <div class="quick-actions">
-                                    <small class="text-muted me-2">Quick Set:</small>
-                                    <button class="btn btn-outline-primary btn-sm" data-action="business-hours">Business Hours</button>
-                                    <button class="btn btn-outline-secondary btn-sm" data-action="clear-all">Clear All</button>
+                                    <small class="text-muted me-2">${translations["quick_set"]}</small>
+                                    <button class="btn btn-outline-primary btn-sm" data-action="business-hours">${translations["business_hours"]}</button>
+                                    <button class="btn btn-outline-secondary btn-sm" data-action="clear-all">${translations["clear_all"]}</button>
                                 </div>
                             </div>
                         </div>
@@ -5627,9 +5741,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     .map(
                                         (day) => `
                                     <div class="day-row" data-day="${day}">
-                                        <div class="day-label">${this.capitalize(
-                                            day
-                                        )}</div>
+                                        <div class="day-label">${getDayLabel(day)}</div>
                                         ${hours
                                             .map(
                                                 (hour) =>
@@ -5648,10 +5760,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Click empty cells to create slots. Drag to move, resize with handles, hover for delete.
+                                    ${translations["info_text"]}
                                 </small>
                                 <button class="btn btn-success btn-sm" data-action="save">
-                                    <i class="bi bi-check-lg me-1"></i> Save Schedule
+                                    <i class="bi bi-check-lg me-1"></i> ${translations["save_schedule"]}
                                 </button>
                             </div>
                         </div>
@@ -6489,7 +6601,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reset button state
                     if (saveBtn) {
                         saveBtn.disabled = false;
-                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Save Schedule';
+                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Enregistrer l\'horaire';
                     }
                 }
             });
@@ -6612,7 +6724,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Reset button state
                     if (saveBtn) {
                         saveBtn.disabled = false;
-                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Save Schedule';
+                        saveBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Enregistrer l\'horaire';
                     }
                 }
             });
@@ -7333,7 +7445,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#online-users-list').html(`
                     <div class="empty-state">
                         <i data-feather="users"></i>
-                        <p>No users currently online</p>
+                        <p>Aucun utilisateur en ligne</p>
                     </div>
                 `);
                 $('#users-pagination').hide();
@@ -7702,8 +7814,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="d-flex align-items-center justify-content-center h-100">
                                     <div class="text-center text-muted">
                                         <i data-feather="map-pin" class="mb-2"></i>
-                                        <p class="mb-0">No coordinates available</p>
-                                        <small>Add address information to see location on map</small>
+                                        <p class="mb-0">Aucune coordonnée disponible</p>
+                                        <small>Ajoutez des informations d'adresse pour voir la localisation sur la carte</small>
                                     </div>
                                 </div>
                             `);
@@ -8516,10 +8628,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Set captive portal gateway to:', settings.captive_portal_gateway);
                 }
                 if (settings.captive_portal_vlan) {
+
                     $('#captive-portal-vlan').val(settings.captive_portal_vlan);
                     $('#captive-portal-vlan-modal').val(settings.captive_portal_vlan);
                 }
                 if (settings.captive_portal_vlan_tagging) {
+                    // alert("captive_portal_vlan_tagging: " + settings.captive_portal_vlan_tagging);
                     $('#captive-portal-vlan-tagging').val(settings.captive_portal_vlan_tagging);
                     $('#captive-portal-vlan-tagging-modal').val(settings.captive_portal_vlan_tagging);
                 }
@@ -8532,12 +8646,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#password-wifi-password').val(settings.password_wifi_password || settings.wifi_password);
                 }
                 if (settings.wifi_visible) {
-                    console.log('Password WiFi visible:', settings.wifi_visible);
+                    console.log('WiFi visible du mot de passe:', settings.wifi_visible);
                     if (settings.wifi_visible) {
                         $('#password-wifi-visible').val(1);
                     } 
                 }else{
-                    console.log('Password WiFi visible:', settings.wifi_visible);
+                    console.log('WiFi visible du mot de passe:', settings.wifi_visible);
                     $('#password-wifi-visible').val(0);
                 }
                 if (settings.password_wifi_security || settings.wifi_security_type) {
@@ -8702,20 +8816,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
                 
                 // Get current channel settings to check if they changed
-                getCurrentChannelSettings(locationId)
+                getCurrentCanalSettings(locationId)
                     .then(function(currentSettings) {
                         console.log('Current settings for radio save:', currentSettings);
                         
-                        const currentChannel2g = currentSettings.channel_2g || null;
-                        const currentChannel5g = currentSettings.channel_5g || null;
+                        const currentCanal2g = currentSettings.channel_2g || null;
+                        const currentCanal5g = currentSettings.channel_5g || null;
                         
                         // Check if channels have changed
-                        const channelsChanged = (currentChannel2g != radioSettings.channel_2g) || (currentChannel5g != radioSettings.channel_5g);
+                        const channelsChanged = (currentCanal2g != radioSettings.channel_2g) || (currentCanal5g != radioSettings.channel_5g);
                         
                         console.log('Radio settings - channels changed:', channelsChanged, {
-                            current2g: currentChannel2g,
+                            current2g: currentCanal2g,
                             new2g: radioSettings.channel_2g,
-                            current5g: currentChannel5g,
+                            current5g: currentCanal5g,
                             new5g: radioSettings.channel_5g
                         });
                         
@@ -8783,11 +8897,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Apply optimal channels (from scan results)
             $('#save-channels-btn').on('click', function() {
-                applyOptimalChannels();
+                applyOptimalCanals();
             });
             
             // Function to apply optimal channels from last scan
-            function applyOptimalChannels() {
+            function applyOptimalCanals() {
                 const scanData = window.lastScanResults;
                 
                 if (!scanData || (!scanData.optimal_channel_2g && !scanData.optimal_channel_5g)) {
@@ -8809,12 +8923,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
     
                 // Save channels with scan data
-                saveChannelSettings(optimal2g, optimal5g, true, 'channel_optimization');
+                saveCanalSettings(optimal2g, optimal5g, true, 'channel_optimization');
             }
 
-            // Channel scan button event handler
+            // Canal scan button event handler
             $('#scan-channels-btn').on('click', function() {
-                console.log('Channel scan button clicked');
+                console.log('Canal scan button clicked');
                 
                 // Populate device info in modal
                 const locationId = getLocationId();
@@ -8828,10 +8942,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#channel-scan-modal').modal('show');
             });
 
-            // Channel scan modal event handlers
+            // Canal scan modal event handlers
             $('#start-scan-btn').on('click', function() {
                 console.log('Starting channel scan');
-                startChannelScan();
+                startCanalScan();
             });
 
             $('#back-to-scan-btn').on('click', function() {
@@ -8846,7 +8960,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clean up polling when modal is closed
             $('#channel-scan-modal').on('hidden.bs.modal', function() {
-                console.log('Channel scan modal closed, cleaning up polling');
+                console.log('Canal scan modal closed, cleaning up polling');
                 if (window.scanPollingInterval) {
                     clearInterval(window.scanPollingInterval);
                     window.scanPollingInterval = null;
@@ -8856,8 +8970,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 showPreScanView();
             });
 
-            // Channel scan functions
-            function startChannelScan() {
+            // Canal scan functions
+            function startCanalScan() {
                 console.log('Starting real channel scan process');
 
                 const locationId = getLocationId();
@@ -8904,7 +9018,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Start polling for scan status
                             pollScanStatus(locationId, response.data.scan_id);
 
-                            toastr.success(`Channel scan initiated!`, 'Scan Started', {
+                            toastr.success(`Canal scan initiated!`, 'Scan Started', {
                                 timeOut: 5000,
                                 closeButton: true
                             });
@@ -9023,8 +9137,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#result-channel-5g').text(optimal5g);
                     
                     // Update last scan info
-                    $('#last-best-channel-2g').text('Channel ' + optimal2g);
-                    $('#last-best-channel-5g').text('Channel ' + optimal5g);
+                    $('#last-best-channel-2g').text('Canal ' + optimal2g);
+                    $('#last-best-channel-5g').text('Canal ' + optimal5g);
                     
                     if (scanData.completed_at) {
                         $('#last-scan-time').text(new Date(scanData.completed_at).toLocaleString());
@@ -9043,8 +9157,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Populate nearby networks table with real data
                     populateNearbyNetworksTable(scanData);
                     
-                    // Update Channel Optimization display with new scan results
-                    updateChannelOptimizationDisplay(scanData);
+                    // Update Canal Optimization display with new scan results
+                    updateCanalOptimizationDisplay(scanData);
                     
                     // Store scan results for apply function
                     window.lastScanResults = scanData;
@@ -9056,8 +9170,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#result-channel-2g').text(optimal2g);
                     $('#result-channel-5g').text(optimal5g);
                     
-                    $('#last-best-channel-2g').text('Channel ' + optimal2g);
-                    $('#last-best-channel-5g').text('Channel ' + optimal5g);
+                    $('#last-best-channel-2g').text('Canal ' + optimal2g);
+                    $('#last-best-channel-5g').text('Canal ' + optimal5g);
                     $('#last-scan-time').text(new Date().toLocaleString());
                     
                     // Show fallback data for nearby networks
@@ -9123,10 +9237,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // Add common channels that might not have networks
-                    const common2gChannels = [1, 6, 11];
-                    const common5gChannels = [36, 40, 44, 48, 149, 153, 157, 161];
+                    const common2gCanals = [1, 6, 11];
+                    const common5gCanals = [36, 40, 44, 48, 149, 153, 157, 161];
                     
-                    common2gChannels.forEach(function(channel) {
+                    common2gCanals.forEach(function(channel) {
                         const key = `2.4GHz-${channel}`;
                         if (!channelMap[key]) {
                             channelMap[key] = {
@@ -9139,7 +9253,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                     
-                    common5gChannels.forEach(function(channel) {
+                    common5gCanals.forEach(function(channel) {
                         const key = `5GHz-${channel}`;
                         if (!channelMap[key]) {
                             channelMap[key] = {
@@ -9153,7 +9267,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     
                     // Sort channels and create table rows
-                    const sortedChannels = Object.values(channelMap).sort(function(a, b) {
+                    const sortedCanals = Object.values(channelMap).sort(function(a, b) {
                         // Sort by band first (2.4GHz then 5GHz), then by channel number
                         if (a.band !== b.band) {
                             return a.band === '2.4 GHz' ? -1 : 1;
@@ -9161,7 +9275,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         return parseInt(a.channel) - parseInt(b.channel);
                     });
                     
-                    sortedChannels.forEach(function(channelData) {
+                    sortedCanals.forEach(function(channelData) {
                         const avgSignal = channelData.signals.length > 0 ? 
                             Math.round(channelData.signals.reduce((a, b) => a + b, 0) / channelData.signals.length) + ' dBm' : 
                             'N/A';
@@ -9330,8 +9444,8 @@ document.addEventListener('DOMContentLoaded', function() {
             function applyScanResults() {
                 console.log('Applying scan results');
                 
-                const newChannel2g = $('#result-channel-2g').text();
-                const newChannel5g = $('#result-channel-5g').text();
+                const newCanal2g = $('#result-channel-2g').text();
+                const newCanal5g = $('#result-channel-5g').text();
                 const locationId = getLocationId();
                 
                 if (!locationId) {
@@ -9345,32 +9459,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 $button.html('<i data-feather="loader" class="mr-1"></i> Applying...').prop('disabled', true);
                 
                 // Get current channel settings first
-                getCurrentChannelSettings(locationId)
+                getCurrentCanalSettings(locationId)
                     .then(function(currentSettings) {
                         console.log('Current channel settings:', currentSettings);
                         
-                        const currentChannel2g = currentSettings.channel_2g || null;
-                        const currentChannel5g = currentSettings.channel_5g || null;
+                        const currentCanal2g = currentSettings.channel_2g || null;
+                        const currentCanal5g = currentSettings.channel_5g || null;
                         
                         // Check if channels have changed
-                        const channelsChanged = (currentChannel2g != newChannel2g) || (currentChannel5g != newChannel5g);
+                        const channelsChanged = (currentCanal2g != newCanal2g) || (currentCanal5g != newCanal5g);
                         
-                        console.log('Channels changed:', channelsChanged, {
-                            current2g: currentChannel2g,
-                            new2g: newChannel2g,
-                            current5g: currentChannel5g,
-                            new5g: newChannel5g
+                        console.log('Canals changed:', channelsChanged, {
+                            current2g: currentCanal2g,
+                            new2g: newCanal2g,
+                            current5g: currentCanal5g,
+                            new5g: newCanal5g
                         });
                         
                         // Save the new channel settings
-                        return saveChannelSettings(locationId, newChannel2g, newChannel5g, channelsChanged);
+                        return saveCanalSettings(locationId, newCanal2g, newCanal5g, channelsChanged);
                     })
                     .then(function(response) {
-                        console.log('Channel settings saved successfully:', response);
+                        console.log('Canal settings saved successfully:', response);
                         
                         // Update the main form with optimal channels
-                        $('#channel-2g').val(newChannel2g);
-                        $('#channel-5g').val(newChannel5g);
+                        $('#channel-2g').val(newCanal2g);
+                        $('#channel-5g').val(newCanal5g);
                         
                         // Reset button state
                         $button.html(originalText).prop('disabled', false);
@@ -9380,12 +9494,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Show success message
                         if (response.config_version_incremented) {
-                            toastr.success(`Optimal channels applied and saved: 2.4GHz Channel ${newChannel2g}, 5GHz Channel ${newChannel5g}. Config version incremented to ${response.new_config_version}.`, 'Channels Updated', {
+                            toastr.success(`Optimal channels applied and saved: 2.4GHz Canal ${newCanal2g}, 5GHz Canal ${newCanal5g}. Config version incremented to ${response.new_config_version}.`, 'Canals Updated', {
                                 timeOut: 6000,
                                 closeButton: true
                             });
                         } else {
-                            toastr.success(`Optimal channels applied: 2.4GHz Channel ${newChannel2g}, 5GHz Channel ${newChannel5g}. No changes detected.`, 'Channels Applied', {
+                            toastr.success(`Optimal channels applied: 2.4GHz Canal ${newCanal2g}, 5GHz Canal ${newCanal5g}. No changes detected.`, 'Canals Applied', {
                                 timeOut: 4000,
                                 closeButton: true
                             });
@@ -9402,7 +9516,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Function to get current channel settings from location_settings
-            function getCurrentChannelSettings(locationId) {
+            function getCurrentCanalSettings(locationId) {
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         url: `/api/locations/${locationId}/settings`,
@@ -9442,7 +9556,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Function to save channel settings to location_settings
-            function saveChannelSettings(locationId, channel2g, channel5g, shouldIncrementVersion) {
+            function saveCanalSettings(locationId, channel2g, channel5g, shouldIncrementVersion) {
                 return new Promise(function(resolve, reject) {
                     const settingsData = {
                         channel_2g: parseInt(channel2g),
@@ -9463,7 +9577,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         data: JSON.stringify(settingsData),
                         success: function(response) {
-                            console.log('Channel settings saved successfully:', response);
+                            console.log('Canal settings saved successfully:', response);
                             resolve(response);
                         },
                         error: function(xhr, status, error) {
@@ -9510,10 +9624,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (response.data) {
                             const scanData = response.data;
-                            updateChannelOptimizationDisplay(scanData);
+                            updateCanalOptimizationDisplay(scanData);
                         } else {
                             console.log('No previous scan results found');
-                            updateChannelOptimizationDisplay(null);
+                            updateCanalOptimizationDisplay(null);
                         }
                     },
                     error: function(xhr, status, error) {
@@ -9545,27 +9659,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                         
                                         const latestScan = completedScans[0];
                                         console.log('Found latest completed scan:', latestScan);
-                                        updateChannelOptimizationDisplay(latestScan);
+                                        updateCanalOptimizationDisplay(latestScan);
                                     } else {
                                         console.log('No completed scans found in scan history');
-                                        updateChannelOptimizationDisplay(null);
+                                        updateCanalOptimizationDisplay(null);
                                     }
                                 } else {
                                     console.log('No scan history found');
-                                    updateChannelOptimizationDisplay(null);
+                                    updateCanalOptimizationDisplay(null);
                                 }
                             },
                             error: function(xhr2, status2, error2) {
                                 console.log('Failed to load scan history:', error2);
-                                updateChannelOptimizationDisplay(null);
+                                updateCanalOptimizationDisplay(null);
                             }
                         });
                     }
                 });
             }
             
-            // Function to update the Channel Optimization display
-            function updateChannelOptimizationDisplay(scanData) {
+            // Function to update the Canal Optimization display
+            function updateCanalOptimizationDisplay(scanData) {
                 console.log('Updating channel optimization display with:', scanData);
                 
                 if (scanData && scanData.is_completed && !scanData.is_failed) {
@@ -9577,14 +9691,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (scanData.completed_at) {
                         const scanDate = new Date(scanData.completed_at);
                         const timeAgo = getTimeAgo(scanDate);
-                        $('#last-scan-timestamp').text(`Last scan: ${timeAgo}`);
+                        $('#last-scan-timestamp').text(`Dernier scan: ${timeAgo}`);
                     } else {
-                        $('#last-scan-timestamp').text('Scan completed recently');
+                        $('#last-scan-timestamp').text('Scan terminé récemment');
                     }
                     
                     // Update status alert
                     $('#scan-status-alert').removeClass('alert-info alert-warning').addClass('alert-success');
-                    $('#scan-status-text').html('Optimal channels available from last scan.');
+                    $('#scan-status-text').html('Canaux optimaux disponibles du dernier scan.');
                     
                     // Enable Apply button
                     $('#save-channels-btn').prop('disabled', false);
@@ -9604,18 +9718,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Scan failed
                     $('#last-optimal-2g').text('--');
                     $('#last-optimal-5g').text('--');
-                    $('#last-scan-timestamp').text('Last scan failed');
+                    $('#last-scan-timestamp').text('Échec du dernier scan');
                     $('#scan-status-alert').removeClass('alert-info alert-success').addClass('alert-warning');
-                    $('#scan-status-text').html('<i data-feather="alert-triangle" class="mr-2"></i>Previous scan failed. Try scanning again.');
+                    $('#scan-status-text').html('<i data-feather="alert-triangle" class="mr-2"></i>Le scan précédent a échoué. Essayez de scanner à nouveau.');
                     $('#save-channels-btn').prop('disabled', true);
                     
                 } else {
                     // No scan data available
                     $('#last-optimal-2g').text('--');
                     $('#last-optimal-5g').text('--');
-                    $('#last-scan-timestamp').text('No scan performed yet');
+                    $('#last-scan-timestamp').text('Aucun scan effectué pour le moment');
                     $('#scan-status-alert').removeClass('alert-success alert-warning').addClass('alert-info');
-                    $('#scan-status-text').html('<i data-feather="info" class="mr-2"></i>Click Scan to analyze optimal channels.');
+                    $('#scan-status-text').html('<i data-feather="info" class="mr-2"></i>Cliquez sur Scanner pour analyser les canaux optimaux.');
                     $('#save-channels-btn').prop('disabled', true);
                 }
                 
@@ -10083,6 +10197,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 secured: []
             };
             
+            // Pagination state for MAC addresses
+            window.macPagination = {
+                captive: {
+                    currentPage: 1,
+                    itemsPerPage: 5
+                },
+                secured: {
+                    currentPage: 1,
+                    itemsPerPage: 5
+                }
+            };
+            
             // MAC address validation
             function validateMacAddress(macAddress) {
                 const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
@@ -10094,21 +10220,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 return window.macAddresses[context].some(item => item.mac === macAddress);
             }
             
+            // Map radio selection to API scope value
+            function mapRadioToScope(radio) {
+                switch(radio) {
+                    case '2.4GHz':
+                        return 'block_24';
+                    case '5GHz':
+                        return 'block_5';
+                    case 'both':
+                    default:
+                        return 'all';
+                }
+            }
+            
+            // Map API scope value to display text
+            function mapScopeToDisplay(scope) {
+                switch(scope) {
+                    case 'block_24':
+                        return '2.4GHz';
+                    case 'block_5':
+                        return '5GHz';
+                    case 'all':
+                    default:
+                        return 'Tout';
+                }
+            }
+            
             // Add MAC address to the list
-            function addMacAddress(macAddress, type, context) {
+            function addMacAddress(macAddress, type, context, radio = 'both') {
                 // Normalize MAC address
                 macAddress = macAddress.toUpperCase();
                 
                 // Check if already exists
                 if (checkDuplicateMac(macAddress, context)) {
-                    toastr.error('This MAC address is already in the list');
+                    toastr.error('Cette adresse MAC est déjà dans la liste');
                     return false;
                 }
                 
-                // Add to global storage
+                // Map radio selection to API scope value
+                const scope = mapRadioToScope(radio);
+                
+                // Add to global storage with scope information
                 window.macAddresses[context].push({
                     mac: macAddress,
-                    type: type
+                    type: type,
+                    scope: scope,
+                    radio: radio // Keep for display purposes
                 });
                 
                 // Refresh display
@@ -10117,7 +10274,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Auto-save
                 saveMacFilterSettings(context);
                 
-                toastr.success(`MAC address ${macAddress} added to ${type}`);
+                const radioText = radio === 'both' ? 'Tout' : `radio ${radio}`;
+                toastr.success(`Adresse MAC ${macAddress} ajoutée à ${type === 'blacklist' ? 'la liste noire' : 'la liste blanche'} sur ${radioText}`);
                 return true;
             }
             
@@ -10128,16 +10286,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     const removedItem = window.macAddresses[context].splice(index, 1)[0];
                     refreshMacDisplay(context);
                     saveMacFilterSettings(context);
-                    toastr.success(`MAC address ${macAddress} removed from ${removedItem.type}`);
+                    const typeText = removedItem.type === 'blacklist' ? 'la liste noire' : 'la liste blanche';
+                    toastr.success(`Adresse MAC ${macAddress} retirée de ${typeText}`);
                 }
             }
             
-            // Refresh the MAC address display based on current filter
+            // Refresh the MAC address display based on current filter with pagination
             function refreshMacDisplay(context) {
                 const container = context === 'captive' ? 
                     $('#captive-portal .filtered-mac-list') : 
                     $('#secured-wifi .filtered-mac-list');
                 const emptyElement = context === 'captive' ? $('#captive-mac-empty') : $('#secured-mac-empty');
+                const paginationContainer = context === 'captive' ? $('#captive-mac-pagination') : $('#secured-mac-pagination');
+                const paginationList = context === 'captive' ? $('#captive-mac-pagination-list') : $('#secured-mac-pagination-list');
                 const viewFilter = context === 'captive' ? $('#captive-mac-view-filter').val() : $('#secured-mac-view-filter').val();
                 
                 // Clear current display
@@ -10154,28 +10315,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show/hide empty message
                 if (filteredMacs.length === 0) {
                     emptyElement.show();
+                    paginationContainer.hide();
                 } else {
                     emptyElement.hide();
-                }
-                
-                // Add MAC addresses to display
-                filteredMacs.forEach(item => {
-                    const badgeClass = item.type === 'whitelist' ? 'badge-success' : 'badge-danger';
-                    const iconClass = item.type === 'whitelist' ? 'check-circle' : 'x-circle';
-                    const macItem = `
-                        <div class="d-flex justify-content-between align-items-center p-2 border-bottom mac-address-item" data-mac="${item.mac}" data-type="${item.type}">
-                            <div class="d-flex align-items-center">
-                                <i data-feather="${iconClass}" class="mr-2" style="width: 16px; height: 16px;"></i>
-                                <span class="mac-address-text font-weight-medium mr-2">${item.mac}</span>
-                                <span class="badge ${badgeClass}">${item.type}</span>
+                    
+                    // Pagination logic
+                    const pagination = window.macPagination[context];
+                    const totalPages = Math.ceil(filteredMacs.length / pagination.itemsPerPage);
+                    
+                    // Reset to page 1 if current page is out of bounds
+                    if (pagination.currentPage > totalPages && totalPages > 0) {
+                        pagination.currentPage = 1;
+                    }
+                    
+                    // Calculate pagination slice
+                    const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+                    const endIndex = startIndex + pagination.itemsPerPage;
+                    const paginatedMacs = filteredMacs.slice(startIndex, endIndex);
+                    
+                    // Add MAC addresses to display (only current page)
+                    paginatedMacs.forEach(item => {
+                        const badgeClass = item.type === 'whitelist' ? 'badge-success' : 'badge-danger';
+                        const iconClass = item.type === 'whitelist' ? 'check-circle' : 'x-circle';
+                        
+                        // Use scope if available, otherwise fall back to radio, then default to 'all'
+                        const scope = item.scope || (item.radio ? mapRadioToScope(item.radio) : 'all');
+                        const radioText = mapScopeToDisplay(scope);
+                        
+                        // Format display text based on type and scope (French)
+                        let displayText;
+                        if (item.type === 'blacklist') {
+                            displayText = `Blacklisté sur ${radioText}`;
+                        } else {
+                            displayText = `Whitelisté sur ${radioText}`;
+                        }
+                        
+                        const macItem = `
+                            <div class="d-flex justify-content-between align-items-center p-2 border-bottom mac-address-item" data-mac="${item.mac}" data-type="${item.type}" data-scope="${scope}">
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <i data-feather="${iconClass}" class="mr-2" style="width: 16px; height: 16px;"></i>
+                                    <span class="mac-address-text font-weight-medium mr-2">${item.mac}</span>
+                                    <span class="badge ${badgeClass}" title="${displayText}">${displayText}</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-mac" title="Retirer l'adresse MAC">
+                                    <i data-feather="x" style="width: 12px; height: 12px;"></i>
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-danger remove-mac" title="Remove MAC address">
-                                <i data-feather="x" style="width: 12px; height: 12px;"></i>
-                            </button>
-                        </div>
-                    `;
-                    container.append(macItem);
-                });
+                        `;
+                        container.append(macItem);
+                    });
+                    
+                    // Render pagination controls
+                    if (totalPages > 1) {
+                        renderMacPagination(context, pagination.currentPage, totalPages, paginationList);
+                        paginationContainer.show();
+                    } else {
+                        paginationContainer.hide();
+                    }
+                }
                 
                 // Update status
                 updateMacStatus(context);
@@ -10183,6 +10380,93 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Re-initialize feather icons
                 feather.replace();
             }
+            
+            // Render pagination controls
+            function renderMacPagination(context, currentPage, totalPages, paginationList) {
+                paginationList.empty();
+                
+                // Previous button
+                const prevDisabled = currentPage === 1 ? 'disabled' : '';
+                const prevPage = currentPage > 1 ? currentPage - 1 : 1;
+                paginationList.append(`
+                    <li class="page-item ${prevDisabled}">
+                        <a class="page-link mac-pagination-link" href="#" data-page="${prevPage}" data-context="${context}">Précédent</a>
+                    </li>
+                `);
+                
+                // Page numbers
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                // Adjust start page if we're near the end
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                // First page and ellipsis
+                if (startPage > 1) {
+                    paginationList.append(`
+                        <li class="page-item">
+                            <a class="page-link mac-pagination-link" href="#" data-page="1" data-context="${context}">1</a>
+                        </li>
+                    `);
+                    if (startPage > 2) {
+                        paginationList.append(`
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        `);
+                    }
+                }
+                
+                // Page number buttons
+                for (let i = startPage; i <= endPage; i++) {
+                    const activeClass = i === currentPage ? 'active' : '';
+                    paginationList.append(`
+                        <li class="page-item ${activeClass}">
+                            <a class="page-link mac-pagination-link" href="#" data-page="${i}" data-context="${context}">${i}</a>
+                        </li>
+                    `);
+                }
+                
+                // Last page and ellipsis
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        paginationList.append(`
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        `);
+                    }
+                    paginationList.append(`
+                        <li class="page-item">
+                            <a class="page-link mac-pagination-link" href="#" data-page="${totalPages}" data-context="${context}">${totalPages}</a>
+                        </li>
+                    `);
+                }
+                
+                // Next button
+                const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+                const nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
+                paginationList.append(`
+                    <li class="page-item ${nextDisabled}">
+                        <a class="page-link mac-pagination-link" href="#" data-page="${nextPage}" data-context="${context}">Suivant</a>
+                    </li>
+                `);
+            }
+            
+            // Handle pagination clicks
+            $(document).on('click', '.mac-pagination-link', function(e) {
+                e.preventDefault();
+                const page = parseInt($(this).data('page'));
+                const context = $(this).data('context');
+                
+                if (page && context && !$(this).closest('.page-item').hasClass('disabled')) {
+                    window.macPagination[context].currentPage = page;
+                    refreshMacDisplay(context);
+                }
+            });
             
             // Update status display
             function updateMacStatus(context) {
@@ -10192,59 +10476,106 @@ document.addEventListener('DOMContentLoaded', function() {
                 const blacklisted = window.macAddresses[context].filter(item => item.type === 'blacklist').length;
                 
                 if (total === 0) {
-                    statusElement.text('No MAC addresses added yet');
+                    statusElement.text('Aucune adresse MAC ajoutée pour le moment');
                 } else {
-                    statusElement.text(`Total: ${total} | Whitelisted: ${whitelisted} | Blacklisted: ${blacklisted}`);
+                    statusElement.text(`Total: ${total} | Liste blanche: ${whitelisted} | Liste noire: ${blacklisted}`);
                 }
             }
             
             // Handle view filter changes
             $('#captive-mac-view-filter').on('change', function() {
+                // Reset to page 1 when filter changes
+                window.macPagination.captive.currentPage = 1;
                 refreshMacDisplay('captive');
             });
             
             $('#secured-mac-view-filter').on('change', function() {
+                // Reset to page 1 when filter changes
+                window.macPagination.secured.currentPage = 1;
                 refreshMacDisplay('secured');
             });
             
-            // Handle adding MAC addresses for captive portal
+            // Handle adding MAC addresses for captive portal - show modal first
             $('#captive-add-mac').on('click', function() {
                 const macAddress = $('#captive-mac-address').val().trim().toUpperCase();
                 const macType = $('#captive-mac-type').val();
                 
                 if (!macAddress) {
-                    toastr.error('Please enter a MAC address');
+                    toastr.error('Veuillez entrer une adresse MAC');
                     return;
                 }
                 
                 if (!validateMacAddress(macAddress)) {
-                    toastr.error('Please enter a valid MAC address format (00:11:22:33:44:55)');
+                    toastr.error('Veuillez entrer une adresse MAC valide au format (00:11:22:33:44:55)');
                     return;
                 }
                 
-                if (addMacAddress(macAddress, macType, 'captive')) {
+                // Store MAC address and type for later use
+                $('#captive-mac-radio-display').text(macAddress);
+                $('#captive-mac-radio-modal').data('mac-address', macAddress);
+                $('#captive-mac-radio-modal').data('mac-type', macType);
+                
+                // Reset radio selection to default (both)
+                $('#captive-radio-both').prop('checked', true);
+                
+                // Show modal
+                $('#captive-mac-radio-modal').modal('show');
+            });
+            
+            // Handle confirm button in captive MAC radio modal
+            $('#captive-confirm-add-mac').on('click', function() {
+                const macAddress = $('#captive-mac-radio-modal').data('mac-address');
+                const macType = $('#captive-mac-radio-modal').data('mac-type');
+                const radioSelection = $('input[name="captive-radio-selection"]:checked').val();
+                
+                if (addMacAddress(macAddress, macType, 'captive', radioSelection)) {
                     $('#captive-mac-address').val('');
+                    $('#captive-mac-radio-modal').modal('hide');
                 }
             });
             
-            // Handle adding MAC addresses for secured WiFi
+            // Handle adding MAC addresses for secured WiFi - show modal first
             $('#secured-add-mac').on('click', function() {
                 const macAddress = $('#secured-mac-address').val().trim().toUpperCase();
                 const macType = $('#secured-mac-type').val();
                 
                 if (!macAddress) {
-                    toastr.error('Please enter a MAC address');
+                    toastr.error('Veuillez entrer une adresse MAC');
                     return;
                 }
                 
                 if (!validateMacAddress(macAddress)) {
-                    toastr.error('Please enter a valid MAC address format (00:11:22:33:44:55)');
+                    toastr.error('Veuillez entrer une adresse MAC valide au format (00:11:22:33:44:55)');
                     return;
                 }
                 
-                if (addMacAddress(macAddress, macType, 'secured')) {
+                // Store MAC address and type for later use
+                $('#secured-mac-radio-display').text(macAddress);
+                $('#secured-mac-radio-modal').data('mac-address', macAddress);
+                $('#secured-mac-radio-modal').data('mac-type', macType);
+                
+                // Reset radio selection to default (both)
+                $('#secured-radio-both').prop('checked', true);
+                
+                // Show modal
+                $('#secured-mac-radio-modal').modal('show');
+            });
+            
+            // Handle confirm button in secured MAC radio modal
+            $('#secured-confirm-add-mac').on('click', function() {
+                const macAddress = $('#secured-mac-radio-modal').data('mac-address');
+                const macType = $('#secured-mac-radio-modal').data('mac-type');
+                const radioSelection = $('input[name="secured-radio-selection"]:checked').val();
+                
+                if (addMacAddress(macAddress, macType, 'secured', radioSelection)) {
                     $('#secured-mac-address').val('');
+                    $('#secured-mac-radio-modal').modal('hide');
                 }
+            });
+            
+            // Initialize feather icons when radio selection modals are shown
+            $('#captive-mac-radio-modal, #secured-mac-radio-modal').on('shown.bs.modal', function() {
+                feather.replace();
             });
             
             // Handle removing MAC addresses
@@ -10279,17 +10610,35 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
+                // Transform MAC addresses to include scope field for API
+                const macAddressesForApi = window.macAddresses[context].map(item => {
+                    // Ensure scope is set - use existing scope or map from radio, default to 'all'
+                    const scope = item.scope || (item.radio ? mapRadioToScope(item.radio) : 'all');
+                    
+                    return {
+                        mac: item.mac,
+                        type: item.type,
+                        scope: scope
+                    };
+                });
+                
                 // Prepare the new data structure with context-specific field names
                 const macFilterData = {};
                 if (context === 'captive') {
                     // For captive portal - adds to radcheck, no config version increment
-                    macFilterData.captive_mac_filter_list = window.macAddresses[context];
+                    macFilterData.captive_mac_filter_list = macAddressesForApi;
                 } else if (context === 'secured') {
                     // For password WiFi - adds to list, increments config version
-                    macFilterData.secured_mac_filter_list = window.macAddresses[context];
+                    macFilterData.secured_mac_filter_list = macAddressesForApi;
                 }
                 
-                console.log('Saving MAC filter settings:', macFilterData);
+                // Print the JSON being submitted to API
+                const jsonString = JSON.stringify(macFilterData, null, 2);
+                console.log('=== MAC Filter JSON Being Submitted to API ===');
+                console.log('Context:', context);
+                console.log('URL:', `/api/locations/${locationId}/settings`);
+                console.log('JSON:', jsonString);
+                console.log('=============================================');
                 
                 // Save to API
                 $.ajax({
@@ -10300,14 +10649,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    data: JSON.stringify(macFilterData),
+                    data: jsonString, // Use pre-stringified JSON
                     success: function(response) {
                         console.log('MAC filter settings saved successfully:', response);
-                        // Don't show success toast for auto-save to avoid spam
                     },
                     error: function(xhr, status, error) {
                         console.error('Failed to save MAC filter settings:', error);
-                        toastr.error('Failed to save MAC filter settings. Please try again.');
+                        toastr.error('Échec de l\'enregistrement des paramètres de filtrage MAC. Veuillez réessayer.');
                     }
                 });
             }
@@ -10322,11 +10670,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Handle both old format (array of strings) and new format (array of objects)
                 const normalizedList = macFilterList.map(item => {
                     if (typeof item === 'string') {
-                        // Old format - default to blacklist for backward compatibility
-                        return { mac: item, type: 'blacklist' };
+                        // Old format - default to blacklist and all radios for backward compatibility
+                        return { 
+                            mac: item, 
+                            type: 'blacklist', 
+                            scope: 'all',
+                            radio: 'both' // For display purposes
+                        };
                     } else if (item && item.mac && item.type) {
-                        // New format
-                        return item;
+                        // New format - ensure scope property exists
+                        const scope = item.scope || 'all';
+                        return {
+                            mac: item.mac,
+                            type: item.type,
+                            scope: scope,
+                            radio: item.radio || mapScopeToDisplay(scope) // For display purposes
+                        };
                     }
                     return null;
                 }).filter(item => item !== null);
@@ -10713,7 +11072,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log('✅ /scan-results/latest SUCCESS:', response);
                         if (response.data) {
                             console.log('🎯 Found scan data in latest endpoint, testing update...');
-                            updateChannelOptimizationDisplay(response.data);
+                            updateCanalOptimizationDisplay(response.data);
                         }
                     },
                     error: function(xhr) {
@@ -10741,7 +11100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return bDate - aDate;
                                 });
                                 console.log('📊 Testing with latest scan:', completedScans[0]);
-                                updateChannelOptimizationDisplay(completedScans[0]);
+                                updateCanalOptimizationDisplay(completedScans[0]);
                             }
                         }
                     },
@@ -10994,9 +11353,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 const locationId = getLocationId();
                 if (locationId) {
-                    window.location.href = '/en/locations/' + locationId + '/guests';
+                    window.location.href = '/fr/locations/' + locationId + '/guests';
                 } else {
-                    toastr.error('Location ID not found');
+                    toastr.error('ID de localisation introuvable');
                 }
             });
 
@@ -11008,7 +11367,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Generate QR code when modal is shown
             $('#ssid-qr-modal').on('show.bs.modal', function() {
-                const ssid = $('#captive-portal-ssid').val() || 'Guest WiFi';
+                const ssid = $('#captive-portal-ssid').val() || 'WiFi invité';
                 
                 // Update SSID display in modal
                 $('#qr-ssid-display').text(ssid);
@@ -11041,15 +11400,15 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#download-qr-btn').on('click', function() {
                 const canvas = $('#qr-code-container canvas')[0];
                 if (canvas) {
-                    const ssid = $('#captive-portal-ssid').val() || 'Guest WiFi';
+                    const ssid = $('#captive-portal-ssid').val() || 'WiFi invité';
                     const url = canvas.toDataURL('image/png');
                     const link = document.createElement('a');
                     link.download = `wifi-qr-${ssid.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
                     link.href = url;
                     link.click();
-                    toastr.success('QR Code downloaded successfully');
+                    toastr.success('Code QR téléchargé avec succès');
                 } else {
-                    toastr.error('Failed to download QR code');
+                    toastr.error('Échec du téléchargement du code QR');
                 }
             });
 
@@ -11061,7 +11420,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Generate QR code for password-protected WiFi when modal is shown
             $('#password-ssid-qr-modal').on('show.bs.modal', function() {
-                const ssid = $('#password-wifi-ssid').val() || 'Home WiFi';
+                const ssid = $('#password-wifi-ssid').val() || 'WiFi domicile';
                 const password = $('#password-wifi-password').val() || '';
                 
                 // Update SSID display in modal
@@ -11100,15 +11459,15 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#download-password-qr-btn').on('click', function() {
                 const canvas = $('#password-qr-code-container canvas')[0];
                 if (canvas) {
-                    const ssid = $('#password-wifi-ssid').val() || 'Home WiFi';
+                    const ssid = $('#password-wifi-ssid').val() || 'WiFi domicile';
                     const url = canvas.toDataURL('image/png');
                     const link = document.createElement('a');
                     link.download = `wifi-qr-${ssid.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
                     link.href = url;
                     link.click();
-                    toastr.success('QR Code downloaded successfully');
+                    toastr.success('Code QR téléchargé avec succès');
                 } else {
-                    toastr.error('Failed to download QR code');
+                    toastr.error('Échec du téléchargement du code QR');
                 }
             });
 

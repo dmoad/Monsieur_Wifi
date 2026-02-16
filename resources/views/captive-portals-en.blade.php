@@ -452,6 +452,14 @@
             padding-top: 0.5rem;
             border-top: 1px solid #ebe9f1;
         }
+        
+        .design-actions .btn-group .btn {
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .design-actions .btn-group .btn + .btn {
+            margin-left: 0;
+        }
 
         .badge {
             font-size: 0.8rem;
@@ -558,6 +566,7 @@
             padding: 3rem;
             color: #6e6b7b;
         }
+
         
         /* Responsive styles for preview */
         @media (max-width: 991px) {
@@ -1106,13 +1115,15 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteDesignModalLabel">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to delete this design? This action cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
                 </div>
             </div>
@@ -1998,20 +2009,19 @@
                                 }
                             }
                             
-                            // Build dropdown menu items
-                            let dropdownItems = '';
+                            // Build action buttons
+                            let actionButtons = '';
                             if (isAdmin) {
-                                dropdownItems += `
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="showChangeOwnerModal(${design.id}, '${design.owner_name || design.creator_name}', ${design.current_owner_id || design.user_id})">
-                                        <i data-feather="user-check" class="mr-50"></i> Change Owner
-                                    </a>
-                                    <div class="dropdown-divider"></div>
+                                actionButtons += `
+                                    <button class="btn btn-sm btn-outline-info" onclick="showChangeOwnerModal(${design.id}, '${design.owner_name || design.creator_name}', ${design.current_owner_id || design.user_id})" title="Change Owner">
+                                        <i data-feather="user-check"></i>
+                                    </button>
                                 `;
                             }
-                            dropdownItems += `
-                                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteDesign(${design.id})">
-                                    <i data-feather="trash-2" class="mr-50"></i> Delete
-                                </a>
+                            actionButtons += `
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteDesign(${design.id})" title="Delete">
+                                    <i data-feather="trash-2"></i>
+                                </button>
                             `;
                             
                             const designCard = `
@@ -2042,13 +2052,8 @@
                                                 <button class="btn btn-sm btn-outline-primary edit-design" data-id="${design.id}">
                                                     <i data-feather="edit-2" class="mr-25"></i> Edit
                                                 </button>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-icon btn-outline-secondary" data-toggle="dropdown">
-                                                        <i data-feather="more-vertical"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        ${dropdownItems}
-                                                    </div>
+                                                <div class="btn-group">
+                                                    ${actionButtons}
                                                 </div>
                                             </div>
                                         </div>

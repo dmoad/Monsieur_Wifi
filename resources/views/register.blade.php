@@ -601,7 +601,7 @@
                 signingIn: 'Registering...',
                 forgotPassword: 'Forgot your password?',
                 resetPassword: 'Reset Password',
-                loginSuccessful: 'Registration successful!',
+                loginSuccessful: 'Registration successful! Redirecting...',
                 loginError: 'An error occurred during registration.',
                 fullName: 'Full Name',
                 fullNamePlaceholder: 'John Doe',
@@ -633,7 +633,7 @@
                 signingIn: 'Inscription en cours...',
                 forgotPassword: 'Mot de passe oublié?',
                 resetPassword: 'Réinitialiser le mot de passe',
-                loginSuccessful: 'Inscription réussie! Redirection vers le tableau de bord...',
+                loginSuccessful: 'Inscription réussie ! Redirection...',
                 loginError: 'Une erreur s\'est produite lors de l\'inscription.',
                 fullName: 'Nom Complet',
                 fullNamePlaceholder: 'Jean Dupont',
@@ -844,41 +844,55 @@
                         success: function(response) {
                             console.log('Registration successful');
                             console.log(response);
-                            // Store user info and token using UserManager from config.js
-                            UserManager.setToken(response.access_token);
-                            
-                            if (response.user) {
-                                console.log("registered user: ", response.user);
-                                UserManager.setUser(response.user);
-                            }
 
-                            if (response.user && response.user.profile_picture) {
-                                localStorage.setItem('profile_picture', response.user.profile_picture);
-                            }
-                            
                             // Reset button
                             $('#register-spinner').addClass('d-none');
                             $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
                             $('#register-btn').attr('disabled', false);
-                            
+
                             // Show success message
                             $('#login-success').html(
                                 '<span class="text-success text-bold">' + (window.currentTranslations ? window.currentTranslations.loginSuccessful : 'Registration successful!') + '</span>'
                             ).show();
 
-                            // Set a timeout to redirect to dashboard after showing the success message
-                            setTimeout(function() {
-                                const langPrefix = window.currentLang === 'fr' ? '/fr' : '/en';
-                                // If there's a redirect URL from the response, use it
-                                var redirectUrl = "";
-                                if (response.url) {
-                                    redirectUrl = langPrefix + response.url;
-                                } else {
-                                    redirectUrl = langPrefix + '/dashboard?status=registered';
+                            // Check if email verification is required
+                            if (response.requires_verification) {
+                                // Store email for the check-email page
+                                if (response.email) {
+                                    localStorage.setItem('pending_verification_email', response.email);
                                 }
-                                // alert(redirectUrl);
-                                window.location.href = redirectUrl;
-                            }, 1500); // Redirect after 1.5 seconds
+                                // Redirect to check-email page
+                                setTimeout(function() {
+                                    var email = response.email ? encodeURIComponent(response.email) : '';
+                                    window.location.href = '/check-email?email=' + email;
+                                }, 1500);
+                            } else {
+                                // Store user info and token using UserManager from config.js
+                                if (response.access_token) {
+                                    UserManager.setToken(response.access_token);
+                                }
+
+                                if (response.user) {
+                                    console.log("registered user: ", response.user);
+                                    UserManager.setUser(response.user);
+                                }
+
+                                if (response.user && response.user.profile_picture) {
+                                    localStorage.setItem('profile_picture', response.user.profile_picture);
+                                }
+
+                                // Redirect to dashboard
+                                setTimeout(function() {
+                                    const langPrefix = window.currentLang === 'fr' ? '/fr' : '/en';
+                                    var redirectUrl = "";
+                                    if (response.url) {
+                                        redirectUrl = langPrefix + response.url;
+                                    } else {
+                                        redirectUrl = langPrefix + '/dashboard?status=registered';
+                                    }
+                                    window.location.href = redirectUrl;
+                                }, 1500);
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.error('Registration failed:', status, error);
