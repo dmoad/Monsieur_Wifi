@@ -199,3 +199,19 @@ Route::resource('/guest-users', GuestNetworkUserController::class);
 Route::post('/location/{location_id}/guest/info', [GuestNetworkUserController::class, 'info']);
 Route::post('/guest/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/guest/request-otp', [GuestNetworkUserController::class, 'requestOtp']);
+
+// Subscription routes
+use App\Http\Controllers\SubscriptionController;
+
+// Public subscription routes
+Route::get('/subscription/plans', [SubscriptionController::class, 'plans']);
+
+// Protected subscription routes
+Route::group(['middleware' => 'auth:api', 'prefix' => 'subscription'], function () {
+    Route::get('/status', [SubscriptionController::class, 'status']);
+    Route::post('/checkout', [SubscriptionController::class, 'createCheckoutSession']);
+    Route::post('/payment-intent', [SubscriptionController::class, 'createPaymentIntent']);
+    Route::post('/cancel', [SubscriptionController::class, 'cancel']);
+    Route::post('/resume', [SubscriptionController::class, 'resume']);
+    Route::get('/billing-portal', [SubscriptionController::class, 'billingPortal']);
+});

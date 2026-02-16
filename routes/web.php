@@ -27,6 +27,26 @@ Route::get('/reset-password', function () {
     return view('reset-password');
 })->name('reset-password');
 
+Route::get('/verify-email', function () {
+    return view('verify-email');
+})->name('verify-email');
+
+Route::get('/check-email', function () {
+    return view('check-email');
+})->name('check-email');
+
+// Subscription routes
+Route::get('/pricing', function () {
+    return view('pricing');
+})->name('pricing');
+
+Route::get('/subscription/success', function () {
+    return view('subscription.success');
+})->name('subscription.success');
+
+Route::get('/subscription/cancel', function () {
+    return view('subscription.cancel');
+})->name('subscription.cancel');
 
 // Handle login submission (API endpoint - language agnostic)
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
