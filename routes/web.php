@@ -27,6 +27,14 @@ Route::get('/reset-password', function () {
     return view('reset-password');
 })->name('reset-password');
 
+Route::get('/verify-email', function () {
+    return view('verify-email');
+})->name('verify-email');
+
+Route::get('/check-email', function () {
+    return view('check-email');
+})->name('check-email');
+
 // Handle login submission (API endpoint - language agnostic)
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
