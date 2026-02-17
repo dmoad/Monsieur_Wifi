@@ -726,7 +726,32 @@
                     if (typeof feather !== 'undefined') {
                         feather.replace();
                     }
-                    // disable status filter
+                    
+                    // Initialize or reinitialize DataTable after data is loaded
+                    if ($.fn.DataTable.isDataTable('#locations-table')) {
+                        // Destroy existing DataTable instance
+                        $('#locations-table').DataTable().destroy();
+                    }
+                    
+                    // Initialize DataTable with data
+                    $('#locations-table').DataTable({
+                        responsive: true,
+                        columnDefs: [
+                            {
+                                targets: [5], // Actions column (index 5, not 6)
+                                orderable: false
+                            }
+                        ],
+                        dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                        language: {
+                            paginate: {
+                                previous: '&nbsp;',
+                                next: '&nbsp;'
+                            }
+                        }
+                    });
+                    
+                    // Enable status filter
                     $('#status-filter').prop('disabled', false);
                     // set value of status filter to ""
                     $('#status-filter').val("");
@@ -865,45 +890,19 @@
             function isValidMacAddress(mac) {
                 return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac);
             }
-            
-            // Initialize DataTable if not already initialized
-            if (!$.fn.DataTable.isDataTable('#locations-table')) {
-                $('#locations-table').DataTable({
-                    responsive: true,
-                    columnDefs: [
-                        {
-                            targets: [6], // Actions column
-                            orderable: false
-                        }
-                    ],
-                    dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-                    language: {
-                        paginate: {
-                            previous: '&nbsp;',
-                            next: '&nbsp;'
-                        }
-                    }
-                });
-            }
         });
 
         $('#status-filter').on('change', function() {
             var status = $(this).val();
             var table = $('#locations-table').DataTable();
             
+            // Use DataTable's search API instead of jQuery show/hide
             if (status !== '') {
-                // Use jQuery to filter table rows based on badge text content
-                $('#locations-table tbody tr').each(function() {
-                    var rowStatus = $(this).find('td:eq(4) .badge').text().trim();
-                    if (rowStatus === status) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
+                // Search in the Status column (index 4)
+                table.column(4).search(status).draw();
             } else {
-                // Show all rows when "All Status" is selected
-                $('#locations-table tbody tr').show();
+                // Clear the search to show all rows
+                table.column(4).search('').draw();
             }
         });
     </script>

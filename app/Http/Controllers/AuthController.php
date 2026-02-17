@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Mail\PasswordResetMail;
+use App\Mail\VerifyEmailMail;
+use Carbon\Carbon;
 use Log;
 
 class AuthController extends Controller
@@ -84,10 +86,14 @@ class AuthController extends Controller
             }
         }
 
-        $token = Auth::guard('api')->login($user);
-        $url = "/captive-portals?from=registration";
-        
-        return $this->respondWithToken_and_design_url($token, $url);
+        // Send verification email
+        $this->sendVerificationEmail($user);
+
+        return response()->json([
+            'message' => 'Registration successful! Please check your email to verify your account.',
+            'requires_verification' => true,
+            'email' => $user->email
+        ], 201);
     }
 
     public function register(Request $request)
@@ -133,9 +139,14 @@ class AuthController extends Controller
             }
         }
 
-        $token = Auth::guard('api')->login($user);
-        
-        return $this->respondWithToken($token);
+        // Send verification email
+        $this->sendVerificationEmail($user);
+
+        return response()->json([
+            'message' => 'Registration successful! Please check your email to verify your account.',
+            'requires_verification' => true,
+            'email' => $user->email
+        ], 201);
     }
 
     public function update(Request $request)
@@ -232,15 +243,24 @@ class AuthController extends Controller
         // Get the user by email
         $user = User::where('email', $request->email)->first();
         Log::info($user);
-        
+
         // If user doesn't exist or password doesn't match
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
+        // Check if email is verified
+        if (!$user->email_verified_at) {
+            return response()->json([
+                'error' => 'Please verify your email address before logging in.',
+                'requires_verification' => true,
+                'email' => $user->email
+            ], 403);
+        }
+
         // Generate token
         $token = Auth::guard('api')->login($user);
-        
+
         return $this->respondWithToken($token);
     }
 
@@ -598,6 +618,185 @@ class AuthController extends Controller
         ], 200);
     }
     
+    /**
+     * Send verification email to user.
+     *
+     * @param  User  $user
+     * @return void
+     */
+    protected function sendVerificationEmail(User $user)
+    {
+        // Delete any existing tokens
+        DB::table('email_verification_tokens')
+            ->where('user_id', $user->id)
+            ->delete();
+
+        // Generate new token
+        $token = Str::random(64);
+        $expiresAt = Carbon::now()->addMinutes(60);
+
+        // Store token
+        DB::table('email_verification_tokens')->insert([
+            'user_id' => $user->id,
+            'token' => Hash::make($token),
+            'expires_at' => $expiresAt,
+            'created_at' => now()
+        ]);
+
+        // Create verification URL
+        $verificationUrl = url('/verify-email?token=' . $token . '&email=' . urlencode($user->email));
+
+        // Send email
+        try {
+            Mail::to($user->email)->send(new VerifyEmailMail($verificationUrl, $user->name, 60));
+            Log::info('Verification email sent to: ' . $user->email);
+        } catch (\Exception $e) {
+            Log::error('Failed to send verification email', [
+                'email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Verify user email address.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verifyEmail(Request $request)
+    {
+        Log::info('=== Email Verification Request ===');
+
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Find user
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found.'], 404);
+        }
+
+        // Check if already verified
+        if ($user->email_verified_at) {
+            return response()->json([
+                'message' => 'Email already verified. You can now login.',
+                'already_verified' => true
+            ], 200);
+        }
+
+        // Find verification token
+        $tokenRecord = DB::table('email_verification_tokens')
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$tokenRecord) {
+            return response()->json([
+                'error' => 'Invalid or expired verification link. Please request a new one.'
+            ], 400);
+        }
+
+        // Check expiration
+        if (Carbon::parse($tokenRecord->expires_at)->isPast()) {
+            DB::table('email_verification_tokens')
+                ->where('user_id', $user->id)
+                ->delete();
+
+            return response()->json([
+                'error' => 'Verification link has expired. Please request a new one.',
+                'expired' => true
+            ], 400);
+        }
+
+        // Verify token
+        if (!Hash::check($request->token, $tokenRecord->token)) {
+            return response()->json([
+                'error' => 'Invalid verification link.'
+            ], 400);
+        }
+
+        // Mark email as verified
+        $user->email_verified_at = now();
+        $user->save();
+
+        // Delete used token
+        DB::table('email_verification_tokens')
+            ->where('user_id', $user->id)
+            ->delete();
+
+        Log::info('Email verified for user: ' . $user->email);
+
+        // Auto login after verification
+        $token = Auth::guard('api')->login($user);
+
+        return response()->json([
+            'message' => 'Email verified successfully!',
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,
+            'user' => $user
+        ], 200);
+    }
+
+    /**
+     * Resend verification email.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resendVerificationEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // For security, don't reveal if user exists
+            return response()->json([
+                'message' => 'If an account exists with this email, a verification link has been sent.'
+            ], 200);
+        }
+
+        if ($user->email_verified_at) {
+            return response()->json([
+                'message' => 'Email is already verified. You can login.',
+                'already_verified' => true
+            ], 200);
+        }
+
+        // Check rate limiting (max 1 email per 2 minutes)
+        $lastToken = DB::table('email_verification_tokens')
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($lastToken && Carbon::parse($lastToken->created_at)->addMinutes(2)->isFuture()) {
+            $waitSeconds = Carbon::parse($lastToken->created_at)->addMinutes(2)->diffInSeconds(now());
+            return response()->json([
+                'error' => 'Please wait before requesting another verification email.',
+                'wait_seconds' => $waitSeconds
+            ], 429);
+        }
+
+        $this->sendVerificationEmail($user);
+
+        return response()->json([
+            'message' => 'Verification email sent! Please check your inbox.'
+        ], 200);
+    }
+
     /**
      * Get the token array structure.
      *

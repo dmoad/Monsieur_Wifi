@@ -74,9 +74,14 @@ Route::prefix('en')->name('en.')->group(function () {
     })->name('locations');
     
     Route::get('/locations/{location}', function () {
-        return view('location-details-en');
+        return view('location-details-v3-en');
     })->name('location-details');
     
+    Route::get('/v2/locations/{location}', function ($location) {
+        return view('location-details-v2-en');
+    })->name('location-details-v2');
+    
+
     Route::get('/locations/analytics/{location_id}', function ($location_id) {
         return view('location-analytics', compact('location_id'));
     })->name('location-analytics');
@@ -140,7 +145,7 @@ Route::prefix('fr')->name('fr.')->group(function () {
     })->name('locations');
     
     Route::get('/locations/{location}', function ($location) {
-        return view('location-details-fr', compact('location'));
+        return view('location-details-v3-fr', compact('location'));
     })->name('location-details');
     
     // Route::get('/locations/{location}/', function () {

@@ -139,14 +139,33 @@ class BlockedDomainSeeder extends Seeder
         $prefixes = ['www', 'app', 'api', 'mail', 'shop', 'blog', 'news', 'forum', 'test', 'dev'];
         $baseNames = ['example', 'test', 'demo', 'sample', 'mock', 'fake', 'dummy', 'temp'];
         $tlds = ['com', 'org', 'net', 'info', 'biz', 'co.uk', 'de', 'fr'];
+        
+        // Track used domains to avoid duplicates within this batch
+        $usedDomains = [];
+        
+        // Get existing domains for this category to avoid duplicates
+        $existingDomains = BlockedDomain::where('category_id', $categoryId)
+            ->pluck('domain')
+            ->toArray();
+        $usedDomains = array_flip($existingDomains);
 
-        for ($i = 0; $i < $count; $i++) {
+        $attempts = 0;
+        $maxAttempts = $count * 10; // Safety limit to prevent infinite loop
+        
+        for ($i = 0; $i < $count && $attempts < $maxAttempts; $attempts++) {
             $prefix = $prefixes[array_rand($prefixes)];
             $baseName = $baseNames[array_rand($baseNames)];
-            $number = rand(1, 9999);
+            $number = rand(1, 99999); // Increased range to reduce collision probability
             $tld = $tlds[array_rand($tlds)];
 
             $domain = "{$prefix}{$number}.{$baseName}.{$tld}";
+
+            // Skip if domain already exists
+            if (isset($usedDomains[$domain])) {
+                continue;
+            }
+            
+            $usedDomains[$domain] = true;
 
             $domains[] = [
                 'domain' => $domain,
@@ -158,6 +177,8 @@ class BlockedDomainSeeder extends Seeder
                 'created_at' => now()->subDays(rand(1, 365)),
                 'updated_at' => now()->subDays(rand(0, 30)),
             ];
+            
+            $i++;
 
             // Insert in batches of 100 to avoid memory issues
             if (count($domains) >= 100) {
