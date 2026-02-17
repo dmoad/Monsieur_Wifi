@@ -98,6 +98,10 @@ class SubscriptionController extends Controller
                 ->checkout([
                     'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}'),
                     'cancel_url' => url('/subscription/cancel'),
+                    'billing_address_collection' => 'required',
+                    'shipping_address_collection' => [
+                        'allowed_countries' => ['FR', 'BE', 'CH', 'LU', 'MC', 'CA'],
+                    ],
                     'metadata' => [
                         'user_id' => $user->id,
                         'plan_name' => $request->plan_name,
