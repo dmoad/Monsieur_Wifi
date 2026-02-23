@@ -601,6 +601,10 @@ class AuthController extends Controller
 
         // Update the password
         $user->password = Hash::make($request->password);
+        // if email is not verified, verify it set email_verified_at to now
+        if (!$user->email_verified_at) {
+            $user->email_verified_at = now();
+        }
         $user->save();
         Log::info('Password updated in database for user: ' . $user->email);
 
