@@ -861,6 +861,10 @@
                                 if (response.email) {
                                     localStorage.setItem('pending_verification_email', response.email);
                                 }
+                                // If registered with a design_id, store flag to redirect to captive portals after verification
+                                if (designId) {
+                                    localStorage.setItem('pending_design_redirect', 'true');
+                                }
                                 // Redirect to check-email page
                                 setTimeout(function() {
                                     var email = response.email ? encodeURIComponent(response.email) : '';
@@ -935,14 +939,10 @@
                                 formData.design_id = designId;
                                 proceedWithRegistration(formData);
                             } else {
-                                // Reset button
-                                $('#register-spinner').addClass('d-none');
-                                $('#register-text').text(window.currentTranslations ? window.currentTranslations.registerButton : 'Register');
-                                $('#register-btn').attr('disabled', false);
-                                
-                                const errorMsg = response.message || 'Invalid design ID';
-                                $('#login-alert').html(errorMsg).show();
-                                console.error('Design ID validation failed:', errorMsg);
+                                // Design not found (may be expired or from a different environment)
+                                // Proceed without design_id — the localStorage flag will still redirect to captive-portals after verification
+                                console.warn('Design not found, proceeding without design_id:', response.message);
+                                proceedWithRegistration(formData);
                             }
                         },
                         error: function(xhr, status, error) {
@@ -986,8 +986,8 @@
                 $('#router-icon').html(feather.icons['wifi'].toSvg({ width: 26, height: 26 }));
             }
             
-            // Initialize typing animation with translated strings
-            if (window.currentTranslations && window.currentTranslations.typingStrings) {
+            // Initialize typing animation with translated strings (only if element exists)
+            if (window.currentTranslations && window.currentTranslations.typingStrings && $('.typing-text').length > 0) {
                 window.typed = new Typed('.typing-text', {
                     strings: window.currentTranslations.typingStrings,
                     typeSpeed: 50,
@@ -1009,6 +1009,8 @@
             const designId = urlParams.get('design_id');
             if (designId) {
                 $('#design_id').val(designId);
+                // Store immediately so it survives through the email verification flow
+                localStorage.setItem('pending_design_redirect', 'true');
             }
             
             // Toggle password visibility

@@ -285,7 +285,14 @@
                             }
                             setTimeout(() => {
                                 const redirectLang = lang === 'fr' ? 'fr' : 'en';
-                                window.location.href = '/' + redirectLang + '/dashboard';
+                                const urlParams = new URLSearchParams(window.location.search);
+                                const hasDesign = urlParams.get('has_design') === '1' || localStorage.getItem('pending_design_redirect') === 'true';
+                                localStorage.removeItem('pending_design_redirect');
+                                if (hasDesign) {
+                                    window.location.href = '/' + redirectLang + '/captive-portals?from=registration';
+                                } else {
+                                    window.location.href = '/' + redirectLang + '/dashboard';
+                                }
                             }, 2000);
                         }
                     },
