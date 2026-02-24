@@ -86,8 +86,8 @@ class AuthController extends Controller
             }
         }
 
-        // Send verification email
-        $this->sendVerificationEmail($user);
+        // Send verification email with has_design=1 so verify-email redirects to captive-portals
+        $this->sendVerificationEmail($user, true);
 
         return response()->json([
             'message' => 'Registration successful! Please check your email to verify your account.',
@@ -139,8 +139,9 @@ class AuthController extends Controller
             }
         }
 
-        // Send verification email
-        $this->sendVerificationEmail($user);
+        // Send verification email with design flag only if a design was actually transferred
+        $hasDesign = $request->has('design_id') && $request->design_id;
+        $this->sendVerificationEmail($user, $hasDesign);
 
         return response()->json([
             'message' => 'Registration successful! Please check your email to verify your account.',
@@ -628,7 +629,7 @@ class AuthController extends Controller
      * @param  User  $user
      * @return void
      */
-    protected function sendVerificationEmail(User $user)
+    protected function sendVerificationEmail(User $user, bool $hasDesign = false)
     {
         // Delete any existing tokens
         DB::table('email_verification_tokens')
@@ -649,6 +650,9 @@ class AuthController extends Controller
 
         // Create verification URL
         $verificationUrl = url('/verify-email?token=' . $token . '&email=' . urlencode($user->email));
+        if ($hasDesign) {
+            $verificationUrl .= '&has_design=1';
+        }
 
         // Send email
         try {
