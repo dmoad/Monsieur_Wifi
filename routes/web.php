@@ -312,3 +312,49 @@ Route::post('/captive-portal/login', [CaptivePortalController::class, 'login']);
 Route::get('/register-with-captive-portal', function () {
     return view('register-with-captive-portal');
 })->name('register-with-captive-portal');
+
+// E-commerce shop routes (public pages, auth handled by API)
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+
+// Shop listing
+Route::get('/en/shop', [ShopController::class, 'indexView'])->name('shop.en');
+Route::get('/fr/boutique', [ShopController::class, 'indexView'])->name('shop.fr');
+
+// Product detail
+Route::get('/en/shop/{slug}', [ShopController::class, 'detailView'])->name('product.en');
+Route::get('/fr/boutique/{slug}', [ShopController::class, 'detailView'])->name('product.fr');
+
+// Cart
+Route::get('/en/cart', [CartController::class, 'view'])->name('cart.en');
+Route::get('/fr/panier', [CartController::class, 'view'])->name('cart.fr');
+
+// Checkout
+Route::get('/en/checkout', [OrderController::class, 'checkoutView'])->name('checkout.en');
+Route::get('/fr/commander', [OrderController::class, 'checkoutView'])->name('checkout.fr');
+
+// My orders
+Route::get('/en/orders', [OrderController::class, 'listView'])->name('orders.en');
+Route::get('/fr/commandes', [OrderController::class, 'listView'])->name('orders.fr');
+
+// Order success
+Route::get('/en/orders/{orderNumber}', [OrderController::class, 'successView'])->name('order.success.en');
+Route::get('/fr/commandes/{orderNumber}', [OrderController::class, 'successView'])->name('order.success.fr');
+
+// Admin shop management routes (protected by admin role)
+Route::get('/en/admin/orders', function () {
+    return view('admin-orders-en');
+})->name('admin.orders.en');
+
+Route::get('/fr/admin/commandes', function () {
+    return view('admin-orders-fr');
+})->name('admin.orders.fr');
+
+Route::get('/en/admin/inventory', function () {
+    return view('admin-inventory-en');
+})->name('admin.inventory.en');
+
+Route::get('/fr/admin/inventaire', function () {
+    return view('admin-inventory-fr');
+})->name('admin.inventory.fr');

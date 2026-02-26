@@ -10,7 +10,7 @@ const APP_CONFIG = {
     API: {
         BASE_URL: window.location.hostname === 'localhost' 
             ? 'http://localhost:8000/api'
-            : 'https://portal.monsieur-wifi.com/api',
+            : 'https://mrwifi-temp.halowifi.com/api',
         VERSION: 'v1',
         TIMEOUT: 30000, // 30 seconds
     },

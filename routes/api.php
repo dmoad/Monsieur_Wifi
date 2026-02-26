@@ -217,3 +217,73 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'subscription'], function 
     Route::post('/resume', [SubscriptionController::class, 'resume']);
     Route::get('/billing-portal', [SubscriptionController::class, 'billingPortal']);
 });
+
+// E-commerce routes
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminShippingController;
+use App\Http\Controllers\Admin\AdminInventoryController;
+
+// Public shop endpoints
+Route::prefix('v1/shop')->group(function () {
+    Route::get('/products', [ShopController::class, 'index']);
+    Route::get('/products/{slug}', [ShopController::class, 'show']);
+    Route::get('/shipping-rates', [ShopController::class, 'getShippingRates']);
+});
+
+// Protected shop endpoints
+Route::middleware('auth:api')->prefix('v1')->group(function () {
+    // Cart
+    Route::get('/cart', [CartController::class, 'show']);
+    Route::post('/cart/items', [CartController::class, 'addItem']);
+    Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
+    Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
+    Route::delete('/cart', [CartController::class, 'clear']);
+    
+    // Orders
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{orderNumber}', [OrderController::class, 'show']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    
+    // Addresses
+    Route::get('/addresses', [AddressController::class, 'index']);
+    Route::post('/addresses', [AddressController::class, 'store']);
+    Route::put('/addresses/{id}', [AddressController::class, 'update']);
+    Route::delete('/addresses/{id}', [AddressController::class, 'destroy']);
+    Route::post('/addresses/{id}/set-default', [AddressController::class, 'setDefault']);
+    
+    // Payment success endpoint (accessible by authenticated users)
+    Route::get('/orders/{orderNumber}/success', [OrderController::class, 'success']);
+});
+
+// Admin-only endpoints
+Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
+    // Orders
+    Route::get('/orders', [AdminOrderController::class, 'index']);
+    Route::get('/orders/{orderNumber}', [AdminOrderController::class, 'show']);
+    Route::put('/orders/{orderNumber}/tracking', [AdminOrderController::class, 'updateTracking']);
+    Route::put('/orders/{orderNumber}/status', [AdminOrderController::class, 'updateStatus']);
+    Route::post('/orders/{orderNumber}/resend-email', [AdminOrderController::class, 'resendEmail']);
+    
+    // Shipping rates
+    Route::get('/shipping-rates', [AdminShippingController::class, 'index']);
+    Route::put('/shipping-rates/{id}', [AdminShippingController::class, 'update']);
+    Route::post('/shipping-rates/{id}/toggle', [AdminShippingController::class, 'toggle']);
+    
+    // Inventory management
+    Route::get('/inventory', [AdminInventoryController::class, 'index']);
+    Route::get('/inventory/summary', [AdminInventoryController::class, 'summary']);
+    Route::get('/inventory/{id}', [AdminInventoryController::class, 'show']);
+    Route::put('/inventory/{id}/quantity', [AdminInventoryController::class, 'updateQuantity']);
+    Route::post('/inventory/{id}/adjust', [AdminInventoryController::class, 'adjustQuantity']);
+    Route::put('/inventory/{id}/threshold', [AdminInventoryController::class, 'updateThreshold']);
+    
+    // Individual inventory items (devices)
+    Route::get('/inventory/{id}/items', [AdminInventoryController::class, 'getItems']);
+    Route::post('/inventory/{id}/items', [AdminInventoryController::class, 'addItem']);
+    Route::put('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'updateItem']);
+    Route::delete('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'deleteItem']);
+});

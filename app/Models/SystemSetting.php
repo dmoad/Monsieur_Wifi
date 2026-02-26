@@ -41,6 +41,10 @@ class SystemSetting extends Model
         'smtp_port',
         'sender_email',
         'smtp_password',
+        'tax_rate',
+        'cart_abandonment_hours',
+        'payment_mode',
+        'stripe_enabled',
     ];
 
     /**

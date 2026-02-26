@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Shop - Monsieur WiFi</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" href="/app-assets/css/components.css">
+    <link rel="stylesheet" href="/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" href="/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" href="/app-assets/css/themes/semi-dark-layout.css">
+    <link rel="stylesheet" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" href="/app-assets/vendors/css/extensions/toastr.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <style>
+        .product-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            background: #fff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(115, 103, 240, 0.2);
+        }
+        .product-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            overflow: hidden;
+        }
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        .product-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        .product-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #7367f0;
+            margin: 0;
+        }
+        .product-btn {
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .product-btn:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(115, 103, 240, 0.3);
+        }
+        .out-of-stock {
+            opacity: 0.7;
+        }
+        .out-of-stock .product-image-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.7);
+        }
+        .stock-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 10;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .badge-success {
+            background: linear-gradient(135deg, #28c76f 0%, #1e9f59 100%);
+            color: white;
+        }
+        .badge-danger {
+            background: linear-gradient(135deg, #ea5455 0%, #c72a2b 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="vertical-layout vertical-menu-modern navbar-floating footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
+    <!-- BEGIN: Header-->
+    <nav class="header-navbar navbar navbar-expand-lg align-items-center floating-nav navbar-light navbar-shadow">
+        <div class="navbar-container d-flex content">
+            <div class="bookmark-wrapper d-flex align-items-center">
+                <ul class="nav navbar-nav d-xl-none">
+                    <li class="nav-item"><a class="nav-link menu-toggle" href="javascript:void(0);"><i data-feather="menu"></i></a></li>
+                </ul>
+            </div>
+            <ul class="nav navbar-nav align-items-center ml-auto">
+                <li class="nav-item dropdown dropdown-language">
+                    <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown">
+                        <i class="flag-icon flag-icon-us"></i>
+                        <span class="selected-language">English</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="/en/shop"><i class="flag-icon flag-icon-us"></i> English</a>
+                        <a class="dropdown-item" href="/fr/boutique"><i class="flag-icon flag-icon-fr"></i> Français</a>
+                    </div>
+                </li>
+                <li class="nav-item d-none d-lg-block">
+                    <a class="nav-link nav-link-style"><i class="ficon" data-feather="moon"></i></a>
+                </li>
+                <li class="nav-item dropdown dropdown-user">
+                    <a class="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" href="javascript:void(0);" data-toggle="dropdown">
+                        <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div>
+                        <span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="/en/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item logout-button" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- END: Header-->
+
+    <!-- BEGIN: Main Menu-->
+    <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
+        <div class="navbar-header">
+            <ul class="nav navbar-nav flex-row">
+                <li class="nav-item mr-auto">
+                    <a class="navbar-brand" href="/en/dashboard">
+                        <span class="brand-logo"><img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="logo"></span>
+                        <h2 class="brand-text">monsieur-wifi</h2>
+                    </a>
+                </li>
+                <li class="nav-item nav-toggle">
+                    <a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse">
+                        <i class="d-block d-xl-none text-primary toggle-icon font-medium-4" data-feather="x"></i>
+                        <i class="d-none d-xl-block collapse-toggle-icon font-medium-4 text-primary" data-feather="disc"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="shadow-bottom"></div>
+        <div class="main-menu-content">
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                <li class="navigation-header"><span>Management</span></li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/dashboard"><i data-feather="home"></i><span class="menu-title text-truncate">Dashboard</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/locations"><i data-feather="map-pin"></i><span class="menu-title text-truncate">Locations</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/captive-portals"><i data-feather="layout"></i><span class="menu-title text-truncate">Captive Portals</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="d-flex align-items-center" href="/en/shop"><i data-feather="shopping-bag"></i><span class="menu-title text-truncate">Shop</span></a>
+                </li>
+                
+                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
+                <li class="nav-item only_admin hidden">
+                    <a class="d-flex align-items-center" href="/en/accounts"><i data-feather="users"></i><span class="menu-title text-truncate">Accounts</span></a>
+                </li>
+                <li class="nav-item only_admin hidden">
+                    <a class="d-flex align-items-center" href="/en/domain-blocking"><i data-feather="slash"></i><span class="menu-title text-truncate">Domain Blocking</span></a>
+                </li>
+                <li class="nav-item only_admin hidden">
+                    <a class="d-flex align-items-center" href="/en/firmware"><i data-feather="download"></i><span class="menu-title text-truncate">Firmware</span></a>
+                </li>
+                <li class="nav-item only_admin hidden">
+                    <a class="d-flex align-items-center" href="/en/system-settings"><i data-feather="settings"></i><span class="menu-title text-truncate">System Settings</span></a>
+                </li>
+                <li class="nav-item only_admin hidden">
+                    <a class="d-flex align-items-center" href="/en/admin/orders"><i data-feather="package"></i><span class="menu-title text-truncate">Manage Orders</span></a>
+                </li>
+                
+                <li class="navigation-header"><span>Account</span></li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/profile"><i data-feather="user"></i><span class="menu-title text-truncate">Profile</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center logout-button" href="/logout"><i data-feather="power"></i><span class="menu-title text-truncate">Logout</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- END: Main Menu-->
+
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="header-navbar-shadow"></div>
+        <div class="content-wrapper container-xxl p-0">
+            <div class="content-header row">
+                <div class="content-header-left col-md-9 col-12 mb-2">
+                    <div class="row breadcrumbs-top">
+                        <div class="col-12">
+                            <h2 class="content-header-title float-left mb-0">Shop</h2>
+                            <div class="breadcrumb-wrapper">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/en/dashboard">Home</a></li>
+                                    <li class="breadcrumb-item active">Shop</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-header-right col-md-3 col-12">
+                    <a href="/en/cart" class="btn btn-primary">
+                        <i data-feather="shopping-cart"></i>
+                        Cart (<span id="cart-count">0</span>)
+                    </a>
+                </div>
+            </div>
+            <div class="content-body">
+                <div id="products-grid" class="row match-height">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="pagination" class="row mt-3"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Content-->
+
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+    <footer class="footer footer-static footer-light">
+        <p class="clearfix mb-0"><span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT © 2025<a class="ml-25" href="https://mrwifi.com" target="_blank">monsieur-wifi</a></span></p>
+    </footer>
+
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <script src="/app-assets/js/core/app-menu.js"></script>
+    <script src="/app-assets/js/core/app.js"></script>
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/shop.js?v=<?php echo time(); ?>"></script>
+    <script>
+        if (typeof feather !== 'undefined') feather.replace();
+        
+        // Authentication check and user display
+        $(document).ready(function() {
+            const user = UserManager.getUser();
+            const token = UserManager.getToken();
+            
+            if (!token || !user) {
+                window.location.href = '/';
+                return;
+            }
+            
+            $('.user-name').text(user.name);
+            $('.user-status').text(user.role);
+            var profile_picture = localStorage.getItem('profile_picture');
+            $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
+            
+            $('.logout-button').on('click', function(e) {
+                e.preventDefault();
+                UserManager.logout(true);
+            });
+            
+            if (UserManager.hasRole('admin')) {
+                $('.only_admin').removeClass('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('inventories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_model_id')->unique()->constrained('product_models')->onDelete('cascade');
+            $table->integer('quantity')->default(0);
+            $table->integer('reserved_quantity')->default(0);
+            $table->integer('low_stock_threshold')->default(10);
+            $table->boolean('is_in_stock')->default(true);
+            $table->timestamps();
+            
+            $table->index('is_in_stock');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('inventories');
+    }
+};
