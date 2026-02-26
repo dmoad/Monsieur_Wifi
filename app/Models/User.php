@@ -100,4 +100,45 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     {
         return $this->hasMany(Location::class, 'owner_id');
     }
+
+    /**
+     * Check if user is a superadmin
+     *
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    /**
+     * Check if user is an admin
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is admin or superadmin
+     *
+     * @return bool
+     */
+    public function isAdminOrAbove(): bool
+    {
+        return in_array($this->role, ['admin', 'superadmin']);
+    }
+
+    /**
+     * Check if user has a specific role
+     *
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
 }

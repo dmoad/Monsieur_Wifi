@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
@@ -18,6 +19,10 @@ class ProductImage extends Model
 
     protected $casts = [
         'is_primary' => 'boolean',
+    ];
+
+    protected $appends = [
+        'image_url',
     ];
 
     /**
@@ -39,8 +44,16 @@ class ProductImage extends Model
     /**
      * Get the full URL for the image.
      */
+    public function getImageUrlAttribute()
+    {
+        return Storage::url($this->image_path);
+    }
+
+    /**
+     * Legacy accessor for backwards compatibility.
+     */
     public function getUrlAttribute()
     {
-        return asset('storage/product-images/' . $this->image_path);
+        return $this->image_url;
     }
 }

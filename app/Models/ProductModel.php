@@ -9,6 +9,8 @@ class ProductModel extends Model
 {
     use HasFactory;
 
+    public static $deviceTypes = ['820', '835'];
+
     protected $fillable = [
         'name',
         'slug',
@@ -96,6 +98,9 @@ class ProductModel extends Model
     {
         if ($this->relationLoaded('images')) {
             $primaryImage = $this->images->firstWhere('is_primary', true);
+            if (!$primaryImage && $this->images->count() > 0) {
+                $primaryImage = $this->images->first();
+            }
             return $primaryImage ? $primaryImage->image_url : null;
         }
         return null;
@@ -143,5 +148,13 @@ class ProductModel extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope a query to filter by device type.
+     */
+    public function scopeByType($query, $type)
+    {
+        return $query->where('device_type', $type);
     }
 }

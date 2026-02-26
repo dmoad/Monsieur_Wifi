@@ -95,6 +95,10 @@ async function updateQuantity(itemId, quantity) {
         
         if (response.ok) {
             loadCart();
+            // Refresh navbar cart if function exists
+            if (typeof loadNavbarCart === 'function') {
+                loadNavbarCart();
+            }
         } else {
             const data = await response.json();
             toastr.error(data.message || 'Échec de la mise à jour de la quantité');
@@ -126,6 +130,10 @@ async function removeItem(itemId) {
         if (response.ok) {
             toastr.success('Article retiré du panier');
             loadCart();
+            // Refresh navbar cart if function exists
+            if (typeof loadNavbarCart === 'function') {
+                loadNavbarCart();
+            }
         } else {
             toastr.error('Échec du retrait de l\'article');
         }

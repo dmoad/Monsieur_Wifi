@@ -79,16 +79,16 @@ class ShopSeeder extends Seeder
 
     private function createProducts()
     {
-        // Product 1: WiFi Router 820AX
+        // Product 1: WiFi Router 835AX
         $product1 = ProductModel::updateOrCreate(
-            ['slug' => 'wifi-router-820ax'],
+            ['slug' => 'wifi-router-835ax'],
             [
-                'name' => 'WiFi Router 820AX',
+                'name' => 'WiFi Router 835AX',
                 'description_en' => 'High-performance WiFi 6 router with dual-band connectivity. Perfect for small to medium businesses. Supports up to 50 simultaneous connections with advanced security features.',
                 'description_fr' => 'Routeur WiFi 6 haute performance avec connectivité bi-bande. Parfait pour les petites et moyennes entreprises. Supporte jusqu\'à 50 connexions simultanées avec des fonctionnalités de sécurité avancées.',
                 'price' => 299.99,
                 'is_active' => true,
-                'device_type' => '820AX',
+                'device_type' => '835',
                 'specifications' => [
                     'WiFi Standard' => 'WiFi 6 (802.11ax)',
                     'Frequency Bands' => 'Dual-band (2.4GHz & 5GHz)',
@@ -122,7 +122,7 @@ class ShopSeeder extends Seeder
                 'description_fr' => 'Routeur WiFi 6 de qualité entreprise avec technologie tri-bande. Idéal pour les grands espaces et les environnements à fort trafic. Supporte jusqu\'à 200 connexions simultanées avec capacité de réseau maillé.',
                 'price' => 549.99,
                 'is_active' => true,
-                'device_type' => '835AX',
+                'device_type' => '835',
                 'specifications' => [
                     'WiFi Standard' => 'WiFi 6 (802.11ax)',
                     'Frequency Bands' => 'Tri-band (2.4GHz & 2x 5GHz)',
@@ -157,7 +157,7 @@ class ShopSeeder extends Seeder
                 'description_fr' => 'Étendez votre couverture WiFi avec cet amplificateur de portée puissant. Fonctionne de manière transparente avec n\'importe quel routeur pour éliminer les zones mortes. Configuration et gestion faciles via l\'application mobile.',
                 'price' => 149.99,
                 'is_active' => true,
-                'device_type' => 'Extender',
+                'device_type' => '835',
                 'specifications' => [
                     'WiFi Standard' => 'WiFi 6 (802.11ax)',
                     'Frequency Bands' => 'Dual-band (2.4GHz & 5GHz)',
@@ -183,42 +183,6 @@ class ShopSeeder extends Seeder
             ]
         );
 
-        // Product 4: Access Point Bundle
-        $product4 = ProductModel::updateOrCreate(
-            ['slug' => 'access-point-bundle'],
-            [
-                'name' => 'Business Access Point Bundle (3-pack)',
-                'description_en' => 'Complete WiFi solution for businesses. Package includes 3 ceiling-mounted access points with centralized management. Perfect for offices, restaurants, and retail spaces.',
-                'description_fr' => 'Solution WiFi complète pour les entreprises. Le forfait comprend 3 points d\'accès montés au plafond avec gestion centralisée. Parfait pour les bureaux, restaurants et espaces commerciaux.',
-                'price' => 899.99,
-                'is_active' => true,
-                'device_type' => 'Access Point',
-                'specifications' => [
-                    'Package Contents' => '3 x Access Points, Mounting hardware, PoE injectors',
-                    'WiFi Standard' => 'WiFi 6 (802.11ax)',
-                    'Frequency Bands' => 'Dual-band (2.4GHz & 5GHz)',
-                    'Max Speed' => 'Up to 2.4 Gbps per unit',
-                    'Coverage' => 'Up to 5,000 sq ft total',
-                    'Power' => 'PoE (802.3af/at)',
-                    'Management' => 'Cloud-based controller',
-                    'Mounting' => 'Ceiling or wall mount',
-                    'Dimensions' => '200 x 200 x 38 mm per unit',
-                    'Warranty' => '2 years',
-                ],
-                'sort_order' => 4,
-            ]
-        );
-
-        Inventory::updateOrCreate(
-            ['product_model_id' => $product4->id],
-            [
-                'quantity' => 20,
-                'reserved_quantity' => 0,
-                'low_stock_threshold' => 5,
-                'is_in_stock' => true,
-            ]
-        );
-
-        $this->command->info('Created 4 sample products with inventory');
+        $this->command->info('Created 3 sample products with inventory');
     }
 }

@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Optional: Check if user is admin
-    if (!UserManager.hasRole('admin')) {
+    // Check if user is admin or superadmin
+    if (!UserManager.isAdminOrAbove()) {
         toastr.error('You do not have permission to access this page.');
         window.location.href = '/en/dashboard';
         return;

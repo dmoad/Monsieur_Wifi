@@ -47,15 +47,15 @@ function displayProduct(product) {
     if (product.images && product.images.length > 1) {
         const thumbnails = document.getElementById('thumbnails');
         thumbnails.innerHTML = product.images.map((img, index) => `
-            <img src="${img.url}" alt="Thumbnail" class="thumbnail ${index === 0 ? 'active' : ''}" 
-                 onclick="changeImage('${img.url}', this)">
+            <img src="${img.image_url}" alt="Thumbnail" class="thumbnail ${index === 0 ? 'active' : ''}" 
+                 onclick="changeImage('${img.image_url}', this)">
         `).join('');
     }
     
     const stockStatus = document.getElementById('stock-status');
     if (product.is_in_stock) {
-        stockStatus.innerHTML = `<span class="badge badge-success">In Stock (${product.available_stock} available)</span>`;
-        document.getElementById('quantity').max = product.available_stock;
+        stockStatus.innerHTML = `<span class="badge badge-success">In Stock (${product.available_quantity} available)</span>`;
+        document.getElementById('quantity').max = product.available_quantity;
     } else {
         stockStatus.innerHTML = `<span class="badge badge-danger">Out of Stock</span>`;
         document.getElementById('add-to-cart-btn').disabled = true;
@@ -100,6 +100,10 @@ async function addToCart() {
         
         if (response.ok) {
             toastr.success('Product added to cart!');
+            // Refresh navbar cart if function exists
+            if (typeof loadNavbarCart === 'function') {
+                loadNavbarCart();
+            }
             setTimeout(() => window.location.href = '/en/cart', 1000);
         } else {
             // Show validation errors if present

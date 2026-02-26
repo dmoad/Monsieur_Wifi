@@ -60,9 +60,16 @@ function displayProducts(products) {
                     <p class="product-description">${product.description_fr || 'Équipement WiFi de haute qualité pour vos besoins réseau.'}</p>
                     <div class="product-footer">
                         <h3 class="product-price">$${parseFloat(product.price).toFixed(2)}</h3>
-                        <a href="/fr/boutique/${product.slug}" class="btn btn-primary btn-sm product-btn">
-                            Voir Détails <i data-feather="arrow-right" style="width: 14px; height: 14px;"></i>
-                        </a>
+                        <div class="product-actions">
+                            ${product.is_in_stock 
+                                ? `<button onclick="addToCart(${product.id})" class="btn btn-success btn-sm product-btn mr-1" title="Ajouter au Panier">
+                                    <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
+                                </button>` 
+                                : ''}
+                            <a href="/fr/boutique/${product.slug}" class="btn btn-primary btn-sm product-btn" title="Voir Détails">
+                                <i data-feather="eye" style="width: 14px; height: 14px;"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,6 +79,54 @@ function displayProducts(products) {
     // Re-initialize feather icons for the new content
     if (typeof feather !== 'undefined') {
         feather.replace();
+    }
+}
+
+async function addToCart(productId) {
+    const token = UserManager.getToken();
+    
+    if (!token) {
+        toastr.warning('Veuillez vous connecter pour ajouter des articles au panier');
+        window.location.href = '/login';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart/items`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: 1
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            toastr.success('Produit ajouté au panier!');
+            updateCartCount();
+            // Refresh navbar cart if function exists
+            if (typeof loadNavbarCart === 'function') {
+                loadNavbarCart();
+            }
+        } else {
+            // Show validation errors if present
+            if (data.errors) {
+                Object.values(data.errors).forEach(err => {
+                    toastr.error(Array.isArray(err) ? err[0] : err);
+                });
+            } else {
+                toastr.error(data.message || 'Échec de l\'ajout au panier');
+            }
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        toastr.error('Échec de l\'ajout au panier');
     }
 }
 

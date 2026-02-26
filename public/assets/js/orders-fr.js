@@ -28,7 +28,8 @@ async function loadOrders() {
             throw new Error('Failed to load orders');
         }
         
-        const orders = await response.json();
+        const data = await response.json();
+        const orders = data.orders?.data || data.orders || [];
         displayOrders(orders);
     } catch (error) {
         console.error('Error loading orders:', error);

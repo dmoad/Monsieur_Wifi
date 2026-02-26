@@ -101,6 +101,33 @@ const UserManager = {
     },
     
     /**
+     * Checks if the user is a superadmin
+     * @returns {boolean} - True if user is superadmin
+     */
+    isSuperAdmin: function() {
+        const user = this.getUser();
+        return user && user.role === 'superadmin';
+    },
+    
+    /**
+     * Checks if the user is an admin
+     * @returns {boolean} - True if user is admin
+     */
+    isAdmin: function() {
+        const user = this.getUser();
+        return user && user.role === 'admin';
+    },
+    
+    /**
+     * Checks if the user is admin or superadmin
+     * @returns {boolean} - True if user is admin or superadmin
+     */
+    isAdminOrAbove: function() {
+        const user = this.getUser();
+        return user && (user.role === 'admin' || user.role === 'superadmin');
+    },
+    
+    /**
      * Logs the user out
      * @param {boolean} redirect - Whether to redirect to root page
      */

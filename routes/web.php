@@ -358,3 +358,11 @@ Route::get('/en/admin/inventory', function () {
 Route::get('/fr/admin/inventaire', function () {
     return view('admin-inventory-fr');
 })->name('admin.inventory.fr');
+
+Route::get('/en/admin/models', function () {
+    return view('admin-models-en');
+})->name('admin.models.en');
+
+Route::get('/fr/admin/modeles', function () {
+    return view('admin-models-fr');
+})->name('admin.models.fr');

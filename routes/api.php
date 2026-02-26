@@ -226,6 +226,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\Admin\AdminInventoryController;
+use App\Http\Controllers\Admin\AdminProductModelController;
 
 // Public shop endpoints
 Route::prefix('v1/shop')->group(function () {
@@ -286,4 +287,14 @@ Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     Route::post('/inventory/{id}/items', [AdminInventoryController::class, 'addItem']);
     Route::put('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'updateItem']);
     Route::delete('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'deleteItem']);
+    
+    // Product Models Management
+    Route::get('/models', [AdminProductModelController::class, 'index']);
+    Route::get('/models/{id}', [AdminProductModelController::class, 'show']);
+    Route::post('/models', [AdminProductModelController::class, 'store']);
+    Route::put('/models/{id}', [AdminProductModelController::class, 'update']);
+    Route::delete('/models/{id}', [AdminProductModelController::class, 'destroy']);
+    Route::post('/models/{id}/images', [AdminProductModelController::class, 'uploadImage']);
+    Route::delete('/models/{modelId}/images/{imageId}', [AdminProductModelController::class, 'deleteImage']);
+    Route::put('/models/{modelId}/images/{imageId}/primary', [AdminProductModelController::class, 'setPrimaryImage']);
 });
