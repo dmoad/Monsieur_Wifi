@@ -66,7 +66,8 @@ Route::prefix('en')->name('en.')->group(function () {
     })->name('devices');
     
     Route::get('/accounts', function () {
-        return view('accounts-en');
+        $locale = 'en';
+        return view('accounts-en', compact('locale'));
     })->name('accounts');
     
     Route::get('/locations', function () {
@@ -115,7 +116,8 @@ Route::prefix('en')->name('en.')->group(function () {
     })->name('analytics');
     
     Route::get('/captive-portals', function () {
-        return view('captive-portals-en');
+        $locale = 'en';
+        return view('captive-portals-en', compact('locale'));
     })->name('captive-portals');
     
     Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])->defaults('locale', 'en')->name('domain-blocking');
@@ -137,7 +139,8 @@ Route::prefix('fr')->name('fr.')->group(function () {
     })->name('devices');
     
     Route::get('/accounts', function () {
-        return view('accounts-fr');
+        $locale = 'fr';
+        return view('accounts-fr', compact('locale'));
     })->name('accounts');
     
     Route::get('/locations', function () {
@@ -185,7 +188,8 @@ Route::prefix('fr')->name('fr.')->group(function () {
     })->name('analytics');
     
     Route::get('/captive-portals', function () {
-        return view('captive-portals-fr');
+        $locale = 'fr';
+        return view('captive-portals-fr', compact('locale'));
     })->name('captive-portals');
     
     Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])->defaults('locale', 'fr')->name('domain-blocking');

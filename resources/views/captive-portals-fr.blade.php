@@ -1,2430 +1,963 @@
-<html class="loading" lang="fr" data-textdirection="ltr">
+@extends('layouts.app')
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="Tableau de bord du contrôleur WiFi monsieur-wifi pour gérer et surveiller les réseaux WiFi.">
-    <meta name="keywords" content="wifi, contrôleur cloud, gestion réseau, monsieur-wifi">
-    <meta name="author" content="Monsieur WiFi">
-    <title>Concepteur de portail captif - Monsieur WiFi</title>
-    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@section('title', 'Concepteur de portail captif - Monsieur WiFi')
 
-    <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/extensions/toastr.min.css">
-    <!-- END: Vendor CSS-->
+@push('styles')
+<style>
+    .upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 1rem;
+    }
     
-    <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/themes/semi-dark-layout.css">
-
-    <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-ecommerce.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
-    <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
-    <!-- END: Page CSS-->
+    .upload-area:hover {
+        border-color: #7367f0;
+        background-color: rgba(115, 103, 240, 0.05);
+    }
     
-    <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-    <!-- END: Custom CSS-->
+    .upload-area.highlight {
+        border-color: #7367f0;
+        background-color: rgba(115, 103, 240, 0.1);
+        transform: scale(1.02);
+    }
     
-    <!-- Custom styles for captive portal designer -->
-    <style>
-        .upload-area {
-            border: 2px dashed #dee2e6;
-            border-radius: 8px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 1rem;
-        }
+    .upload-icon {
+        font-size: 2.5rem;
+        color: #7367f0;
+        margin-bottom: 1rem;
+    }
+    
+    .color-picker-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .color-preview {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .image-preview {
+        width: 100%;
+        max-height: 150px;
+        object-fit: contain;
+        margin-top: 10px;
+        border-radius: 5px;
+        display: none;
+    }
+    
+    .preview-container {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .preview-header {
+        background-color: #f8f9fa;
+        padding: 0.75rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .portal-preview {
+        background: #fff;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        max-width: 100%;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 500px;
+    }
+    
+    .portal-preview.has-background-image::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        z-index: 0;
+    }
+    
+    .portal-preview.has-background-image > * {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .portal-preview.has-gradient {
+        background: var(--gradient-bg) !important;
+    }
 
-        .upload-area:hover {
-            border-color: #7367f0;
-            background-color: rgba(115, 103, 240, 0.05);
-        }
-        
-        .upload-area.highlight {
-            border-color: #7367f0;
-            background-color: rgba(115, 103, 240, 0.1);
-            transform: scale(1.02);
-        }
-        
-        .upload-icon {
-            font-size: 2.5rem;
-            color: #7367f0;
-            margin-bottom: 1rem;
-        }
-        
-        .color-picker-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .color-preview {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .image-preview {
-            width: 100%;
-            max-height: 150px;
-            object-fit: contain;
-            margin-top: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-        
+    .preview-main {
+        width: 100%;
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+    }
+    
+    .logo-container {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+    
+    .preview-logo {
+        max-height: 80px;
+        max-width: 200px;
+        object-fit: contain;
+    }
+    
+    #preview-welcome {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        text-align: center;
+        width: 100%;
+    }
+    
+    #preview-instructions {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 25px;
+        text-align: center;
+        line-height: 1.6;
+        width: 100%;
+    }
+    
+    .input-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 1rem;
+    }
+    
+    .preview-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    
+    .preview-button {
+        width: 100%;
+        padding: 12px 20px;
+        background-color: #7367f0;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .preview-terms {
+        font-size: 12px;
+        color: #666;
+        margin-top: 15px;
+        text-align: center;
+    }
+    
+    .preview-terms a {
+        color: #7367f0;
+        text-decoration: none;
+    }
+    
+    .header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+    
+    .location-logo {
+        height: 64px;
+        width: auto;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #666;
+        padding: 0 16px;
+    }
+    
+    .welcome-text {
+        color: #333;
+        font-size: 0.65rem;
+        line-height: 1.5;
+        margin: 24px 0 32px;
+        text-align: center;
+    }
+    
+    .login-placeholder {
+        background: #f8f8f8;
+        border: 2px dashed #ddd;
+        border-radius: 12px;
+        padding: 32px;
+        text-align: center;
+        color: #666;
+        margin-bottom: 24px;
+        flex-grow: 1;
+    }
+
+    .login-placeholder-footer {
+        background: #ffffff;
+        border: 0px;
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+        color: #666;
+        margin-bottom: 10px;
+        flex-grow: 1;
+    }
+    
+    .portal-preview .footer,
+    .preview-main .footer {
+        margin-top: auto;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border-top: 1px solid #eee;
+        padding-top: 1.5rem;
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+        width: 100%;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .brand-logo {
+        margin-bottom: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .brand-logo img {
+        max-height: 32px;
+        max-width: 150px;
+        object-fit: contain;
+        display: inline-block;
+        margin: 0;
+    }
+    
+    .terms {
+        font-size: 0.8rem;
+        color: #666;
+        width: 100%;
+        text-align: center;
+        display: block;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    #preview-terms-container {
+        margin-bottom: 0.5rem !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    #preview-powered-by {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .terms a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .terms a:hover {
+        text-decoration: underline;
+    }
+    
+    .design-card {
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .design-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .design-preview {
+        height: 180px;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .design-preview .preview-content {
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .location-logo-mini {
+        height: 24px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    
+    .login-area-mini {
+        flex-grow: 1;
+        background: rgba(248, 248, 248, 0.8);
+        border: 1px dashed #ddd;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #666;
+        margin: 8px 0;
+    }
+    
+    .brand-logo-mini {
+        height: 20px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    
+    .design-card:hover .design-preview {
+        transform: scale(1.02);
+        transition: transform 0.2s ease;
+    }
+
+    #preview-button {
+        transition: all 0.3s ease;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .terms-container {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .section-label {
+        font-weight: 600;
+        color: #5e5873;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+    }
+
+    .design-card {
+        transition: all 0.3s ease;
+        border: 1px solid #ebe9f1;
+    }
+
+    .design-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
+    }
+
+    .design-preview {
+        height: 160px;
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .preview-content {
+        padding: 1rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .design-actions {
+        padding-top: 0.5rem;
+        border-top: 1px solid #ebe9f1;
+    }
+    
+    .design-actions .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .design-actions .btn-group .btn + .btn {
+        margin-left: 0;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .bg-light-primary {
+        background-color: rgba(115, 103, 240, 0.12) !important;
+    }
+
+    .bg-light-success {
+        background-color: rgba(40, 199, 111, 0.12) !important;
+    }
+
+    .bg-light-danger {
+        background-color: rgba(234, 84, 85, 0.12) !important;
+    }
+
+    .tab-content h6 {
+        color: #5e5873;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #ebe9f1;
+        padding-bottom: 0.5rem;
+    }
+
+    .color-picker-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        max-width: 300px;
+    }
+
+    .form-control-color {
+        width: 60px;
+        padding: 0.2rem;
+        height: 38px;
+    }   
+
+    .card-fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        z-index: 2000 !important;
+        background: #fff;
+    }
+
+    .modal {
+        z-index: 2100 !important;
+    }
+    
+    .modal-backdrop {
+        z-index: 2050 !important;
+    }
+
+    .card-fullscreen .card-body {
+        height: calc(100% - 60px);
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    .card-fullscreen .portal-preview {
+        max-width: 100%;
+        width: 90%;
+        margin: 0 auto;
+        height: auto;
+        min-height: 500px;
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        border-radius: 0.428rem;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        color: #6e6b7b;
+    }
+
+    @media (max-width: 991px) {
         .preview-container {
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .preview-header {
-            background-color: #f8f9fa;
-            padding: 0.75rem;
-            border-bottom: 1px solid #dee2e6;
+            margin-top: 2rem;
         }
         
         .portal-preview {
-            background: #fff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
-            max-width: 100%;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 400px;
+            min-height: 350px;
         }
-        
-        /* Add a semi-transparent overlay for better text readability when a background image is present */
-        .portal-preview.has-background-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-            z-index: 0;
-        }
-        
-        /* Ensure content is above the overlay */
-        .portal-preview.has-background-image > * {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .portal-preview.has-gradient {
-            background: var(--gradient-bg) !important;
-        }
-
-        .preview-main {
-            width: 100%;
-            max-width: 420px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100%;
-        }
-        
-        .logo-container {
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-        
-        .preview-logo {
-            max-height: 80px;
-            max-width: 200px;
-            object-fit: contain;
+    }
+    
+    @media (max-width: 767px) {
+        .portal-preview {
+            padding: 20px;
+            min-height: 320px;
         }
         
         #preview-welcome {
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-            width: 100%;
+            font-size: 20px;
         }
         
         #preview-instructions {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 25px;
-            text-align: center;
-            line-height: 1.6;
-            width: 100%;
-        }
-        
-        .input-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 1rem;
-        }
-        
-        .preview-input {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
             font-size: 14px;
         }
         
-        .preview-button {
-            width: 100%;
-            padding: 12px 20px;
-            background-color: #7367f0;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .preview-terms {
-            font-size: 12px;
-            color: #666;
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .preview-terms a {
-            color: #7367f0;
-            text-decoration: none;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        
-        .location-logo {
-            height: 64px;
-            width: auto;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #666;
-            padding: 0 16px;
-        }
-        
-        .welcome-text {
-            color: #333;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin: 24px 0 32px;
-            text-align: center;
-        }
-        
-        .login-placeholder {
-            background: #f8f8f8;
-            border: 2px dashed #ddd;
-            border-radius: 12px;
-            padding: 32px;
-            text-align: center;
-            color: #666;
-            margin-bottom: 24px;
-            flex-grow: 1;
-        }
-
-        .login-placeholder-footer {
-            background: #ffffff;
-            border: 0px;
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            color: #666;
-            margin-bottom: 10px;
-            flex-grow: 1;
-        }
-        
-        .portal-preview .footer,
-        .preview-main .footer {
-            margin-top: auto;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            border-top: 1px solid #eee;
-            padding-top: 1.5rem;
-            padding-left: 0;
-            padding-right: 0;
-            text-align: center;
-            width: 100%;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .brand-logo {
-            margin-bottom: 1rem;
-            margin-left: 0;
-            margin-right: 0;
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .brand-logo img {
-            max-height: 32px;
-            max-width: 150px;
-            object-fit: contain;
-            display: inline-block;
-            margin: 0;
-        }
-        
-        .terms {
-            font-size: 0.8rem;
-            color: #666;
-            width: 100%;
-            text-align: center;
-            display: block;
-            margin-left: 0;
-            margin-right: 0;
-            padding-left: 0;
-            padding-right: 0;
-        }
-        
-        #preview-terms-container {
-            margin-bottom: 0.5rem !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-        }
-        
-        #preview-powered-by {
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-        }
-        
-        .terms a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        
-        /* Design cards styles */
-        .design-card {
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .design-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .design-preview {
-            height: 180px;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .design-preview .preview-content {
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .location-logo-mini {
-            height: 24px;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-        
-        .login-area-mini {
-            flex-grow: 1;
-            background: rgba(248, 248, 248, 0.8);
-            border: 1px dashed #ddd;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #666;
-            margin: 8px 0;
-        }
-        
-        .brand-logo-mini {
-            height: 20px;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        
-        .design-card:hover .design-preview {
-            transform: scale(1.02);
-            transition: transform 0.2s ease;
-        }
-
-        #preview-button {
-            transition: all 0.3s ease;
-            padding: 10px 20px;
+        .preview-input, .preview-button {
+            padding: 8px 15px;
             font-size: 14px;
         }
+    }
+    
+    @media (max-width: 575px) {
+        .preview-main {
+            max-width: 100%;
+        }
+    }
+</style>
+@endpush
 
-        .terms-container {
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        .section-label {
-            font-weight: 600;
-            color: #5e5873;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 1rem;
-        }
-
-        .design-card {
-            transition: all 0.3s ease;
-            border: 1px solid #ebe9f1;
-        }
-
-        .design-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
-        }
-
-        .design-preview {
-            height: 160px;
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .preview-content {
-            padding: 1rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .design-actions {
-            padding-top: 0.5rem;
-            border-top: 1px solid #ebe9f1;
-        }
-
-        .badge {
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .bg-light-primary {
-            background-color: rgba(115, 103, 240, 0.12) !important;
-        }
-
-        .bg-light-success {
-            background-color: rgba(40, 199, 111, 0.12) !important;
-        }
-
-        .bg-light-danger {
-            background-color: rgba(234, 84, 85, 0.12) !important;
-        }
-
-        .tab-content h6 {
-            color: #5e5873;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #ebe9f1;
-            padding-bottom: 0.5rem;
-        }
-
-        .color-picker-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            max-width: 300px;
-        }
-
-        .form-control-color {
-            width: 60px;
-            padding: 0.2rem;
-            height: 38px;
-        }   
-
-        .card-fullscreen {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100% !important;
-            max-height: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            z-index: 2000 !important;
-            background: #fff;
-        }
-
-        /* Fix for modals that need to display over fullscreen cards */
-        .modal {
-            z-index: 2100 !important;
-        }
-        
-        .modal-backdrop {
-            z-index: 2050 !important;
-        }
-
-        .card-fullscreen .card-body {
-            height: calc(100% - 60px); /* Adjust for card header height */
-            overflow-y: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-        }
-
-        .card-fullscreen .portal-preview {
-            max-width: 100%; /* Or your desired width */
-            width: 90%;
-            margin: 0 auto;
-            height: auto;
-            min-height: 500px;
-        }
-
-        /* Loading overlay styles */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            border-radius: 0.428rem;
-        }
-
-        /* Empty state styles */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem;
-            color: #6e6b7b;
-        }
-        
-        /* Responsive styles for preview */
-        @media (max-width: 991px) {
-            .preview-container {
-                margin-top: 2rem;
-            }
-            
-            .portal-preview {
-                min-height: 350px;
-            }
-        }
-        
-        @media (max-width: 767px) {
-            .portal-preview {
-                padding: 20px;
-                min-height: 320px;
-            }
-            
-            #preview-welcome {
-                font-size: 20px;
-            }
-            
-            #preview-instructions {
-                font-size: 14px;
-            }
-            
-            .preview-input, .preview-button {
-                padding: 8px 15px;
-                font-size: 14px;
-            }
-        }
-        
-        @media (max-width: 575px) {
-            .preview-main {
-                max-width: 100%;
-            }
-        }
-    </style>
-</head>
-
-<body class="vertical-layout vertical-menu-modern navbar-floating footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
-    <!-- BEGIN: Header-->
-    <nav class="header-navbar navbar navbar-expand-lg align-items-center floating-nav navbar-light navbar-shadow">
-        <div class="navbar-container d-flex content">
-            <div class="bookmark-wrapper d-flex align-items-center">
-                <ul class="nav navbar-nav d-xl-none">
-                    <li class="nav-item"><a class="nav-link menu-toggle" href="javascript:void(0);"><i data-feather="menu"></i></a></li>
-                </ul>
+@section('content')
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-left mb-0">Concepteur de portail captif</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
+                        <li class="breadcrumb-item active">Portails captifs</li>
+                    </ol>
+                </div>
             </div>
-            <ul class="nav navbar-nav align-items-center ml-auto">
-                <!-- Language dropdown -->
-                <li class="nav-item dropdown dropdown-language">
-                    <a class="nav-link dropdown-toggle" id="dropdown-flag" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="flag-icon flag-icon-fr"></i>
-                        <span class="selected-language">Français</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-flag">
-                        <a class="dropdown-item" href="/en/captive-portals" data-language="en">
-                            <i class="flag-icon flag-icon-us"></i> English
-                        </a>
-                        <a class="dropdown-item" href="/fr/captive-portals" data-language="fr">
-                            <i class="flag-icon flag-icon-fr"></i> Français
-                        </a>
-                    </div>
-                </li>
-                
-                <!-- Dark mode toggle -->
-                <li class="nav-item d-none d-lg-block">
-                    <a class="nav-link nav-link-style">
-                        <i class="ficon" data-feather="moon"></i>
-                    </a>
-                </li>
-                
-                <!-- Notifications -->
-                <!-- <li class="nav-item dropdown dropdown-notification mr-25">
-                    <a class="nav-link" href="javascript:void(0);" data-toggle="dropdown">
-                        <i class="ficon" data-feather="bell"></i>
-                        <span class="badge badge-pill badge-primary badge-up">5</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right">
-                        
-                    </ul>
-                </li> -->
-                
-                <!-- User dropdown -->
-                <li class="nav-item dropdown dropdown-user">
-                    <a class="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <div class="user-nav d-sm-flex d-none"><span class="user-name font-weight-bolder"></span><span class="user-status"></span></div>
-                        <span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/fr/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <!-- END: Header-->
-
-    <!-- BEGIN: Main Menu-->
-    <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
-        <div class="navbar-header">
-            <ul class="nav navbar-nav flex-row">
-                <li class="nav-item mr-auto">
-                    <a class="navbar-brand" href="dashboard.html">
-                        <span class="brand-logo">
-                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi logo">
-                        </span>
-                        <h2 class="brand-text">Mr WiFi</h2>
-                    </a>
-                </li>
-                <li class="nav-item nav-toggle">
-                    <a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse">
-                        <i class="d-block d-xl-none text-primary toggle-icon font-medium-4" data-feather="x"></i>
-                        <i class="d-none d-xl-block collapse-toggle-icon font-medium-4 text-primary" data-feather="disc" data-ticon="disc"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="shadow-bottom"></div>
-        <div class="main-menu-content">
-            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-                <!-- Management Section -->
-                <li class="navigation-header"><span>Gestion</span></li>
-                <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/fr/dashboard">
-                        <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Tableau de bord</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/fr/locations">
-                        <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Emplacements</span>
-                    </a>
-                </li>
-            
-                <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/fr/captive-portals">
-                        <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Portails captifs</span>
-                    </a>
-                </li>
-                
-                <!-- For Admin Section -->
-                <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/fr/accounts">
-                        <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Comptes</span>
-                    </a>
-                </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/fr/domain-blocking">
-                        <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Blocage de domaines</span>
-                    </a>
-                </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/fr/firmware">
-                        <i data-feather="download"></i>
-                        <span class="menu-title text-truncate">Firmware</span>
-                    </a>
-                </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/fr/system-settings">
-                        <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">Paramètres système</span>
-                    </a>
-                </li>
-                <!-- Account Section -->
-                <li class="navigation-header"><span>Compte</span></li>
-                <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/fr/profile">
-                         <i data-feather="user"></i>
-                         <span class="menu-title text-truncate">Profil</span>
-                     </a>
-                </li>
-                <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/logout">
-                         <i data-feather="power"></i>
-                         <span class="menu-title text-truncate">Déconnexion</span>
-                     </a>
-                </li> 
-            </ul>
         </div>
     </div>
-    <!-- END: Main Menu-->
+</div>
 
-    <!-- BEGIN: Content-->
-    <div class="app-content content">
-        <div class="content-overlay"></div>
-        <div class="header-navbar-shadow"></div>
-        <div class="content-wrapper">
-            <div class="content-header row">
-                <div class="content-header-left col-md-9 col-12 mb-2">
-                    <div class="row breadcrumbs-top">
-                        <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Concepteur de portail captif</h2>
-                            <div class="breadcrumb-wrapper">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a>
-                                    </li>
-                                    <li class="breadcrumb-item active">Portails captifs
-                                    </li>
-                                </ol>
-                            </div>
+<div class="content-body">
+    <!-- Captive Portal Designs List -->
+    <section id="captive-portal-designs-list">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Vos conceptions de portail captif</h4>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li>
+                                    <button type="button" class="btn btn-primary waves-effect waves-float waves-light" id="create-new-design">
+                                        <i data-feather="plus" class="mr-50"></i>
+                                        <span>Créer une nouvelle conception</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="portal-designs-container">
+                            <!-- Design Cards will be populated by JavaScript -->
                         </div>
                     </div>
                 </div>
-                
-            </div>
-            <div class="content-body">
-                <!-- Captive Portal Designs List -->
-                <section id="captive-portal-designs-list">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">Vos conceptions de portail captif</h4>
-                                    <div class="heading-elements">
-                                        <ul class="list-inline mb-0">
-                                            <li>
-                                                <button type="button" class="btn btn-primary waves-effect waves-float waves-light" id="create-new-design">
-                                                    <i data-feather="plus" class="mr-50"></i>
-                                                    <span>Créer une nouvelle conception</span>
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row" id="portal-designs-container">
-                                        <!-- Design Cards will be populated by JavaScript -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Captive Portal Design Content Starts - Initially hidden -->
-                <section id="captive-portal-designer" style="display: none;">
-                    <div class="row">
-                        <div class="col-12 mb-1">
-                            <button class="btn btn-outline-secondary waves-effect" id="back-to-list">
-                                <i data-feather="arrow-left" class="mr-50"></i>
-                                <span>Retour aux conceptions</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row match-height">
-                        <div class="col-lg-8 col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">Concevez votre page de connexion</h4>
-                                    <div class="heading-elements">
-                                        
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <ul class="nav nav-tabs" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" aria-controls="general" role="tab" aria-selected="true">
-                                                <i data-feather="settings" class="mr-25"></i>
-                                                <span class="font-weight-bold">Général</span>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="branding-tab" data-toggle="tab" href="#branding" aria-controls="branding" role="tab" aria-selected="false">
-                                                <i data-feather="image" class="mr-25"></i>
-                                                <span class="font-weight-bold">Image de marque</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <!-- General Tab (now includes content settings) -->
-                                        <div class="tab-pane active" id="general" aria-labelledby="general-tab" role="tabpanel">
-                                            <form class="mt-2">
-                                                <div class="row">
-                                                    <div class="col-12 mb-1">
-                                                        <h6 class="mb-1">Informations de base</h6>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="portal-name">Nom du portail</label>
-                                                            <input type="text" class="form-control" id="portal-name" placeholder="Entrez un nom pour cette page de connexion">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="portal-description">Description</label>
-                                                            <textarea class="form-control" id="portal-description" rows="2" placeholder="Brève description de cette conception"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="theme-color">Couleur du thème</label>
-                                                            <div class="color-picker-container">
-                                                                <input type="color" class="form-control form-control-color" id="theme-color" value="#7367f0">
-                                                                <div class="color-preview" style="background-color: #7367f0;"></div>
-                                                                <span class="color-value">#7367f0</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-12 mt-2 mb-1">
-                                                        <h6 class="mb-1">Contenu du portail</h6>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="welcome-message">Message de bienvenue</label>
-                                                            <input type="text" class="form-control" id="welcome-message" placeholder="Bienvenue sur notre WiFi" value="Bienvenue sur notre WiFi">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="button-text">Texte du bouton</label>
-                                                            <input type="text" class="form-control" id="button-text" placeholder="Se connecter au WiFi" value="Se connecter au WiFi">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="login-instructions">Instructions de connexion</label>
-                                                            <textarea class="form-control" id="login-instructions" rows="2" placeholder="Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-group">
-                                                            <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input" id="show-terms" checked>
-                                                                <label class="custom-control-label" for="show-terms">Afficher le lien Conditions générales</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-12 mt-2 mb-1">
-                                                        <h6 class="mb-1">Contenu légal</h6>
-                                                    </div>
-                                                    <div class="col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="terms-of-service">Contenu des conditions de service</label>
-                                                            <textarea class="form-control" id="terms-of-service" rows="3" placeholder="Entrez le contenu de vos conditions de service">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 mb-1">
-                                                        <div class="form-group">
-                                                            <label for="privacy-policy">Contenu de la politique de confidentialité</label>
-                                                            <textarea class="form-control" id="privacy-policy" rows="3" placeholder="Entrez le contenu de votre politique de confidentialité">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        
-                                        <!-- Branding Tab -->
-                                        <div class="tab-pane" id="branding" aria-labelledby="branding-tab" role="tabpanel">
-                                            <form class="mt-2">
-                                                <div class="row">
-                                                    <div class="col-12 mb-2">
-                                                        <div class="form-group">
-                                                            <label for="location-logo">Logo de l'emplacement</label>
-                                                            <div class="upload-area" id="location-logo-upload">
-                                                                <i data-feather="upload-cloud" class="upload-icon"></i>
-                                                                <h5 class="upload-text">Déposez votre logo d'emplacement ici ou cliquez pour parcourir</h5>
-                                                                <p class="text-muted small">Recommandé : PNG ou SVG, 200x100px</p>
-                                                            </div>
-                                                            <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
-                                                            <img src="" id="location-logo-preview" class="image-preview">
-                                                            <p class="note">Votre logo d'emplacement apparaîtra en haut de la page de connexion.</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 mb-2">
-                                                        <div class="form-group">
-                                                            <label for="background-image">Image d'arrière-plan</label>
-                                                            <div class="upload-area" id="background-upload">
-                                                                <i data-feather="image" class="upload-icon"></i>
-                                                                <h5 class="upload-text">Déposez votre image d'arrière-plan ici ou cliquez pour parcourir</h5>
-                                                                <p class="text-muted small">Recommandé : JPG ou PNG, 1920x1080px</p>
-                                                            </div>
-                                                            <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
-                                                            <img src="" id="background-preview" class="image-preview">
-                                                            <p class="note">Cette image sera affichée comme arrière-plan de la page.</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 mb-2">
-                                                        <h6 class="mb-1">Dégradé d'arrière-plan (Alternative à l'image)</h6>
-                                                        <p class="text-muted small mb-2">Créez un arrière-plan dégradé au lieu d'utiliser une image. Cela remplacera l'image d'arrière-plan si les deux sont définis.</p>
-                                                        <div class="row">
-                                                            <div class="col-md-6 col-12 mb-1">
-                                                                <div class="form-group">
-                                                                    <label for="gradient-start">Couleur de début du dégradé</label>
-                                                                    <div class="color-picker-container">
-                                                                        <input type="color" class="form-control form-control-color" id="gradient-start">
-                                                                        <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
-                                                                        <span class="color-value" id="gradient-start-value">None</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6 col-12 mb-1">
-                                                                <div class="form-group">
-                                                                    <label for="gradient-end">Couleur de fin du dégradé</label>
-                                                                    <div class="color-picker-container">
-                                                                        <input type="color" class="form-control form-control-color" id="gradient-end">
-                                                                        <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
-                                                                        <span class="color-value" id="gradient-end-value">None</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
-                                                                    <i data-feather="x" class="mr-25"></i>Effacer le dégradé
-                                                                </button>
-                                                                <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
-                                                                    Bleu vers violet
-                                                                </button>
-                                                                <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
-                                                                    Orange vers rose
-                                                                </button>
-                                                                <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
-                                                                    Tester le dégradé
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-12 d-flex justify-content-end">
-                                            <button id="save-design" class="btn btn-primary">
-                                                <i data-feather="save" class="mr-50"></i>Enregistrer la conception
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add this new preview column -->
-                        <div class="col-lg-4 col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">Aperçu</h4>
-                                    <div class="heading-elements">
-                                        <ul class="list-inline mb-0">
-                                            <li>
-                                                <a data-action="reload"><i data-feather="rotate-cw"></i></a>
-                                            </li>
-                                            <li>
-                                                <a data-action="expand" id="expand-preview"><i data-feather="maximize"></i></a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="portal-preview">
-                                        <div class="preview-main">
-                                            <!-- Header with Location Logo -->
-                                            <div class="logo-container">
-                                                <img src="/img/wifi-placeholder.png" alt="Location Logo" id="preview-logo" class="preview-logo">
-                                            </div>
-                                            
-                                            <!-- Welcome Text -->
-                                            <h2 id="preview-welcome">Bienvenue sur notre WiFi</h2>
-                                            <p id="preview-instructions">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</p>
-                                            
-                                            <!-- Login Form -->
-                                            <div class="input-container">
-                                                <input type="text" class="preview-input" placeholder="Adresse e-mail">
-                                                <button id="preview-button" class="preview-button">Se connecter au WiFi</button>
-                                            </div>
-                                            
-                                            <!-- Footer with Brand Logo and Terms -->
-                                            <div class="footer">
-                                                <div class="brand-logo">
-                                                    <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
-                                                </div>
-                                                <div class="terms" id="preview-terms-container" style="display: none; margin-bottom: 0.5rem;">
-                                                    <!-- Terms links will be inserted here when show_terms is enabled -->
-                                                </div>
-                                                <div class="terms" id="preview-powered-by">
-                                                    Propulsé par Monsieur WiFi
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </div>
         </div>
-    </div>
-    <!-- END: Content-->
+    </section>
 
-    <!-- Preview Modals -->
-    <div class="modal fade" id="previewTermsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="termsModalLabel">Conditions de service</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="preview-terms-content">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                </div>
+    <!-- Captive Portal Design Content Starts - Initially hidden -->
+    <section id="captive-portal-designer" style="display: none;">
+        <div class="row">
+            <div class="col-12 mb-1">
+                <button class="btn btn-outline-secondary waves-effect" id="back-to-list">
+                    <i data-feather="arrow-left" class="mr-50"></i>
+                    <span>Retour aux conceptions</span>
+                </button>
             </div>
         </div>
-    </div>
-
-    <div class="modal fade" id="previewPrivacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="privacyModalLabel">Politique de confidentialité</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="preview-privacy-content">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteDesignModal" tabindex="-1" aria-labelledby="deleteDesignModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteDesignModalLabel">Confirmer la suppression</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Êtes-vous sûr de vouloir supprimer cette conception ? Cette action ne peut pas être annulée.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Change Owner Modal -->
-    <div class="modal fade" id="changeOwnerModal" tabindex="-1" aria-labelledby="changeOwnerModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="changeOwnerModalLabel">Changer le propriétaire de la conception</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="changeOwnerText">Sélectionnez un nouveau propriétaire pour cette conception de portail captif :</p>
-                    <div class="form-group">
-                        <label for="newOwnerSelect">Nouveau propriétaire</label>
-                        <select class="form-control" id="newOwnerSelect">
-                            <option value="">Chargement des utilisateurs...</option>
-                        </select>
+        <div class="row match-height">
+            <div class="col-lg-8 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Concevez votre page de connexion</h4>
                     </div>
-                    <div class="alert alert-info mt-2">
-                        <strong>Note :</strong> Cette action transférera la propriété de la conception à l'utilisateur sélectionné. Les informations du créateur original seront préservées.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" id="confirmChangeOwnerBtn">Changer le propriétaire</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BEGIN: Vendor JS-->
-    <!-- Make sure jQuery is loaded first -->
-    <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
-    <!-- Then load Bootstrap bundle which includes Popper.js -->
-    <script src="/app-assets/vendors/js/bootstrap/bootstrap.bundle.min.js"></script>
-    <!-- Load other vendor scripts -->
-    <script src="/app-assets/vendors/js/vendors.min.js"></script>
-    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
-    <!-- END: Vendor JS-->
-
-    <!-- BEGIN: Theme JS -->
-    <script src="/app-assets/js/core/app-menu.js"></script>
-    <script src="/app-assets/js/core/app.js"></script>
-    <script src="/assets/js/config.js?v=1"></script>
-    <!-- END: Theme JS -->
-
-    <script>
-        // Define token as a global variable
-        let token;
-        
-        // Function to update preview background with gradient or image (global scope)
-        function updatePreviewBackground() {
-            const startColor = $('#gradient-start').val();
-            const endColor = $('#gradient-end').val();
-            const backgroundImage = $('#background-preview').attr('src');
-            
-            // Check if gradient is disabled (e.g., when background image is uploaded)
-            const gradientDisabled = $('#gradient-start').data('disabled') === true;
-            
-            console.log('updatePreviewBackground called:', { startColor, endColor, backgroundImage, gradientDisabled });
-            console.log('Portal preview element found:', $('.portal-preview').length);
-            
-            // Check if gradient colors are actually set and not disabled
-            const hasStartColor = startColor && startColor.length > 0 && !gradientDisabled;
-            const hasEndColor = endColor && endColor.length > 0 && !gradientDisabled;
-            const hasBackgroundImage = backgroundImage && backgroundImage !== '';
-            
-            console.log('Has start color:', hasStartColor, 'Has end color:', hasEndColor, 'Has background image:', hasBackgroundImage);
-            
-            if (hasStartColor && hasEndColor) {
-                // Use gradient if both colors are set
-                console.log('Applying gradient:', `linear-gradient(135deg, ${startColor} 0%, ${endColor} 100%)`);
-                const $preview = $('.portal-preview');
-                $preview.removeClass('has-background-image');
-                
-                // Clear any previous inline styles
-                $preview[0].style.cssText = '';
-                
-                // Apply gradient
-                const gradientCSS = `linear-gradient(135deg, ${startColor} 0%, ${endColor} 100%)`;
-                $preview.addClass('has-gradient');
-                $preview[0].style.setProperty('background', gradientCSS, 'important');
-                $preview[0].style.setProperty('--gradient-bg', gradientCSS);
-                
-                console.log('Applied CSS background:', $preview.css('background'));
-                console.log('Element style attribute:', $preview[0].style.cssText);
-                console.log('Computed background:', window.getComputedStyle($preview[0]).background);
-            } else if (hasStartColor || hasEndColor) {
-                // If only one gradient color is set, use solid color
-                const color = startColor || endColor;
-                console.log('Applying solid color:', color);
-                const $preview = $('.portal-preview');
-                $preview.removeClass('has-background-image').addClass('has-gradient');
-                
-                // Clear any previous inline styles
-                $preview[0].style.cssText = '';
-                
-                $preview[0].style.setProperty('background', color, 'important');
-                $preview[0].style.setProperty('--gradient-bg', color);
-            } else if (hasBackgroundImage) {
-                // Use background image if no gradient is set
-                console.log('Applying background image:', backgroundImage);
-                const $preview = $('.portal-preview');
-                $preview.removeClass('has-gradient').addClass('has-background-image');
-                
-                // Clear any previous inline styles that might interfere (especially !important ones)
-                $preview[0].style.cssText = '';
-                
-                // Apply background image directly to the element's style
-                $preview[0].style.backgroundImage = `url(${backgroundImage})`;
-                $preview[0].style.backgroundSize = 'cover';
-                $preview[0].style.backgroundPosition = 'center';
-                $preview[0].style.backgroundRepeat = 'no-repeat';
-                $preview[0].style.backgroundColor = '#fff';
-                
-                console.log('Background image applied.');
-                console.log('- backgroundImage:', $preview[0].style.backgroundImage);
-                console.log('- Computed backgroundImage:', window.getComputedStyle($preview[0]).backgroundImage);
-                console.log('- Element classes:', $preview[0].className);
-            } else {
-                // Clear background
-                console.log('Clearing background');
-                $('.portal-preview').removeClass('has-background-image has-gradient').css({
-                    'background': '#fff',
-                    'background-image': 'none'
-                });
-            }
-        }
-        
-        // Add this to ensure DOM is fully loaded before running scripts
-        $(document).ready(function() {
-            
-            // Initialize feather icons
-            if (typeof feather !== 'undefined') {
-                    feather.replace();
-            }
-            try {
-                token = UserManager.getToken();
-                console.log("Token from UserManager:", token ? "Present" : "Missing");
-                
-                // Fallback to localStorage if needed
-                if (!token) {
-                    token = localStorage.getItem('jwt_token');
-                    console.log("Token from localStorage:", token ? "Present" : "Missing");
-                }
-                
-                if (!token) {
-                    console.error("No authentication token found");
-                    toastr.error("You appear to be logged out. Please refresh the page and log in again.");
-                }
-            } catch (e) {
-                console.error("Error getting token:", e);
-                // Try to get token from localStorage as fallback
-                token = localStorage.getItem('jwt_token');
-                console.log("Fallback token from localStorage:", token ? "Present" : "Missing");
-            }
-            
-            var profile_picture = localStorage.getItem('profile_picture');
-            $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
-            
-            // Check if coming from registration
-            const urlParams = new URLSearchParams(window.location.search);
-            const fromRegistration = urlParams.get('from') === 'registration';
-            
-            // Initial page load - fetch all designs
-            console.log("Fetching designs on page load...");
-            fetchDesigns(fromRegistration);
-
-            // Check if user object exists before trying to access it
-            if (typeof user !== 'undefined') {
-                $('.user-name').text(user.name);
-                $('.user-status').text(user.role);
-                
-            }
-            
-            // Make sure preview displays properly on initial load
-            initializePreview();
-            
-            // Initialize preview background
-            updatePreviewBackground();
-            
-            // Fix for modal links in the preview to ensure they work in both normal and fullscreen modes
-            $(document).on('click', '.preview-terms a[data-toggle="modal"]', function(e) {
-                e.preventDefault();
-                const modalId = $(this).data('target');
-                $(modalId).modal('show');
-            });
-            
-            // Handle expand preview functionality with fixed modal behavior
-            $('[data-action="expand"]').on('click', function(e) {
-                e.preventDefault();
-                const $previewCard = $(this).closest('.card');
-                
-                if ($previewCard.hasClass('card-fullscreen')) {
-                    // Exit fullscreen
-                    $previewCard.removeClass('card-fullscreen');
-                    $(this).find('i').replaceWith(feather.icons['maximize'].toSvg());
-                } else {
-                    // Enter fullscreen
-                    $previewCard.addClass('card-fullscreen');
-                    $(this).find('i').replaceWith(feather.icons['minimize'].toSvg());
-                    
-                    // Ensure modals are at body level for proper z-index stacking
-                    $('#previewTermsModal, #previewPrivacyModal').appendTo('body');
-                    
-                    // Reinitialize modal links in fullscreen mode
-                    $previewCard.find('.preview-terms a[data-toggle="modal"]').each(function() {
-                        const targetModal = $(this).data('target');
-                        $(this).off('click').on('click', function(e) {
-                            e.preventDefault();
-                            $(targetModal).modal('show');
-                        });
-                    });
-                }
-                
-                // Re-initialize feather icons
-                feather.replace();
-            });
-
-            // Live preview updates
-            $('#welcome-message').on('input', function() {
-                $('#preview-welcome').text($(this).val() || 'Welcome to our WiFi');
-            });
-
-            $('#login-instructions').on('input', function() {
-                $('#preview-instructions').text($(this).val() || 'Enter your email to connect to our WiFi network');
-            });
-
-            $('#button-text').on('input', function() {
-                $('#preview-button').text($(this).val() || 'Connect to WiFi');
-            });
-
-            $('#theme-color').on('change', function() {
-                const color = $(this).val();
-                $('.color-preview').css('background-color', color);
-                $('.color-value').text(color);
-                $('#preview-button').css({
-                    'background-color': color,
-                    'border-color': color
-                });
-            });
-
-            $('#show-terms').on('change', function() {
-                if (this.checked) {
-                    $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
-                } else {
-                    $('#preview-terms-container').hide();
-                }
-            });
-            
-            $('#terms-of-service').on('input', function() {
-                $('#preview-terms-content').text($(this).val() || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
-            });
-            
-            $('#privacy-policy').on('input', function() {
-                $('#preview-privacy-content').text($(this).val() || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
-            });
-
-            // Gradient color handlers
-            $('#gradient-start').on('change', function() {
-                const color = $(this).val();
-                // Re-enable gradient when user changes color
-                $('#gradient-start').data('disabled', false);
-                $('#gradient-end').data('disabled', false);
-                $('#gradient-start-preview').css('background-color', color);
-                $('#gradient-start-value').text(color);
-                updatePreviewBackground();
-            });
-
-            $('#gradient-end').on('change', function() {
-                const color = $(this).val();
-                // Re-enable gradient when user changes color
-                $('#gradient-start').data('disabled', false);
-                $('#gradient-end').data('disabled', false);
-                $('#gradient-end-preview').css('background-color', color);
-                $('#gradient-end-value').text(color);
-                updatePreviewBackground();
-            });
-
-            // Clear gradient button
-            $('#clear-gradient').on('click', function() {
-                $('#gradient-start').data('disabled', true);
-                $('#gradient-end').data('disabled', true);
-                $('#gradient-start').val('');
-                $('#gradient-end').val('');
-                $('#gradient-start-preview').css('background-color', 'transparent');
-                $('#gradient-end-preview').css('background-color', 'transparent');
-                $('#gradient-start-value').text('None');
-                $('#gradient-end-value').text('None');
-                updatePreviewBackground();
-            });
-
-            // Preset gradient buttons
-            $('#preset-gradient-1').on('click', function() {
-                $('#gradient-start').data('disabled', false);
-                $('#gradient-end').data('disabled', false);
-                $('#gradient-start').val('#667eea');
-                $('#gradient-end').val('#764ba2');
-                $('#gradient-start-preview').css('background-color', '#667eea');
-                $('#gradient-end-preview').css('background-color', '#764ba2');
-                $('#gradient-start-value').text('#667eea');
-                $('#gradient-end-value').text('#764ba2');
-                updatePreviewBackground();
-            });
-
-            $('#preset-gradient-2').on('click', function() {
-                $('#gradient-start').data('disabled', false);
-                $('#gradient-end').data('disabled', false);
-                $('#gradient-start').val('#f093fb');
-                $('#gradient-end').val('#f5576c');
-                $('#gradient-start-preview').css('background-color', '#f093fb');
-                $('#gradient-end-preview').css('background-color', '#f5576c');
-                $('#gradient-start-value').text('#f093fb');
-                $('#gradient-end-value').text('#f5576c');
-                updatePreviewBackground();
-            });
-
-            // Gradient color handlers
-            $('#gradient-start').on('change', function() {
-                const color = $(this).val();
-                $('#gradient-start-preview').css('background-color', color);
-                $('#gradient-start-value').text(color);
-                updatePreviewBackground();
-            });
-
-            $('#gradient-end').on('change', function() {
-                const color = $(this).val();
-                $('#gradient-end-preview').css('background-color', color);
-                $('#gradient-end-value').text(color);
-                updatePreviewBackground();
-            });
-
-            // Clear gradient button
-            $('#clear-gradient').on('click', function() {
-                $('#gradient-start').val('');
-                $('#gradient-end').val('');
-                $('#gradient-start-preview').css('background-color', 'transparent');
-                $('#gradient-end-preview').css('background-color', 'transparent');
-                $('#gradient-start-value').text('None');
-                $('#gradient-end-value').text('None');
-                updatePreviewBackground();
-            });
-
-            // Preset gradient buttons
-            $('#preset-gradient-1').on('click', function() {
-                $('#gradient-start').val('#667eea').trigger('change');
-                $('#gradient-end').val('#764ba2').trigger('change');
-            });
-
-            $('#preset-gradient-2').on('click', function() {
-                $('#gradient-start').val('#f093fb').trigger('change');
-                $('#gradient-end').val('#f5576c').trigger('change');
-            });
-            
-            // Test gradient button for debugging
-            $('#test-gradient').on('click', function() {
-                console.log('Test gradient button clicked');
-                $('#gradient-start').val('#ff0000');
-                $('#gradient-end').val('#0000ff');
-                $('#gradient-start-preview').css('background-color', '#ff0000');
-                $('#gradient-end-preview').css('background-color', '#0000ff');
-                $('#gradient-start-value').text('#ff0000');
-                $('#gradient-end-value').text('#0000ff');
-                updatePreviewBackground();
-            });
-
-            // Update preview when uploading images
-            function readURL(input, previewId) {
-                console.log('readURL called for', previewId);
-                if (input.files && input.files[0]) {
-                    console.log('File found:', input.files[0].name);
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        console.log('File loaded, data URL length:', e.target.result.length);
-                        const preview = $(`#${previewId}`);
-                        preview.attr('src', e.target.result);
-                        preview.css('display', 'block');
-                        
-                        console.log('Preview element src set:', preview.attr('src') ? 'Yes' : 'No');
-                        
-                        if (previewId === 'location-logo-preview') {
-                            $('#preview-logo').attr('src', e.target.result).show();
-                        } else if (previewId === 'background-preview') {
-                            // When a background image is uploaded, disable gradient so the image takes priority
-                            console.log('Background image uploaded - disabling gradient to show image');
-                            $('#gradient-start').data('disabled', true);
-                            $('#gradient-end').data('disabled', true);
-                            $('#gradient-start-preview').css('background-color', 'transparent');
-                            $('#gradient-end-preview').css('background-color', 'transparent');
-                            $('#gradient-start-value').text('None (Image Active)');
-                            $('#gradient-end-value').text('None (Image Active)');
-                            
-                            // Use setTimeout to ensure the DOM is updated before applying background
-                            setTimeout(function() {
-                                console.log('Calling updatePreviewBackground after background image loaded');
-                                console.log('Background preview src:', $('#background-preview').attr('src') ? 'Set' : 'Not set');
-                                updatePreviewBackground();
-                            }, 50);
-                        }
-                    }
-                    
-                    reader.onerror = function(error) {
-                        console.error('Error reading file:', error);
-                    }
-                    
-                    reader.readAsDataURL(input.files[0]);
-                } else {
-                    console.log('No file found in input');
-                }
-            }
-
-            // Upload area click handlers - update to a more direct approach
-            document.getElementById('location-logo-upload').addEventListener('click', function() {
-                console.log('Location logo upload area clicked');
-                document.getElementById('location-logo-file').click();
-            });
-            
-            document.getElementById('background-upload').addEventListener('click', function() {
-                console.log('Background upload area clicked');
-                document.getElementById('background-file').click();
-            });
-            
-            // Make sure file inputs are initialized properly
-            $('#location-logo-file').on('change', function(e) {
-                console.log('Location logo file selected:', e.target.files);
-                readURL(this, 'location-logo-preview');
-            });
-
-            $('#background-file').on('change', function(e) {
-                console.log('Background file selected:', e.target.files);
-                readURL(this, 'background-preview');
-            });
-
-            // Edit design buttons - now using event delegation for dynamically created elements
-            $(document).on('click', '.edit-design', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                // alert('edit design');
-                const designId = $(this).data('id');
-                fetchDesignDetails(designId);
-            });
-
-            // Back to Designs button handler
-            $('#back-to-list').on('click', function() {
-                $('#captive-portal-designer').hide();
-                $('#captive-portal-designs-list').show();
-                
-                // Reset for next use
-                resetDesignForm();
-                currentDesignId = null;
-            });
-
-            // Create New Design button handler
-            $('#create-new-design').on('click', function() {
-                $('#captive-portal-designs-list').hide();
-                $('#captive-portal-designer').show();
-                
-                // Reset the current design ID when creating new
-                currentDesignId = null;
-                
-                // Set default values
-                resetDesignForm();
-                
-                console.log("Creating new design, form reset with default values");
-                
-                // Initialize any event handlers or components that need it
-                if (typeof feather !== 'undefined') {
-                    feather.replace();
-                }
-            });
-            
-            // Save design button
-            $(document).on('click', '#save-design', function() {
-                // Validate required fields
-                const name = $('#portal-name').val().trim();
-                const themeColor = $('#theme-color').val().trim();
-                const welcomeMessage = $('#welcome-message').val().trim();
-                const buttonText = $('#button-text').val().trim();
-                
-                // Check for required fields
-                let hasErrors = false;
-                let errorMessages = [];
-                
-                if (!name) {
-                    hasErrors = true;
-                    errorMessages.push('Portal name is required');
-                    $('#portal-name').addClass('is-invalid');
-                } else {
-                    $('#portal-name').removeClass('is-invalid');
-                }
-                
-                if (!themeColor) {
-                    hasErrors = true;
-                    errorMessages.push('Theme color is required');
-                    $('#theme-color').addClass('is-invalid');
-                } else {
-                    $('#theme-color').removeClass('is-invalid');
-                }
-                
-                if (!welcomeMessage) {
-                    hasErrors = true;
-                    errorMessages.push('Welcome message is required');
-                    $('#welcome-message').addClass('is-invalid');
-                } else {
-                    $('#welcome-message').removeClass('is-invalid');
-                }
-                
-                if (!buttonText) {
-                    hasErrors = true;
-                    errorMessages.push('Button text is required');
-                    $('#button-text').addClass('is-invalid');
-                } else {
-                    $('#button-text').removeClass('is-invalid');
-                }
-                
-                if (hasErrors) {
-                    toastr.error(errorMessages.join('<br>'));
-                    return;
-                }
-
-                const formData = new FormData();
-
-                // Collect form data
-                formData.append('name', name);
-                formData.append('description', $('#portal-description').val());
-                formData.append('theme_color', themeColor);
-                formData.append('welcome_message', welcomeMessage);
-                formData.append('login_instructions', $('#login-instructions').val());
-                formData.append('button_text', buttonText);
-                formData.append('show_terms', $('#show-terms').is(':checked') ? 1 : 0);
-                
-                // Add terms of service and privacy policy content
-                formData.append('terms_content', $('#terms-of-service').val());
-                formData.append('privacy_content', $('#privacy-policy').val());
-                
-                // Add gradient colors
-                formData.append('background_color_gradient_start', $('#gradient-start').val() || '');
-                formData.append('background_color_gradient_end', $('#gradient-end').val() || '');
-                
-                console.log('formData:', formData);
-                // Add files if selected
-                if ($('#location-logo-file')[0].files[0]) {
-                    formData.append('location_logo', $('#location-logo-file')[0].files[0]);
-                }
-                
-                if ($('#background-file')[0].files[0]) {
-                    formData.append('background_image', $('#background-file')[0].files[0]);
-                }
-                
-                // Add CSRF token for Laravel
-                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-                
-                console.log('Current design ID:', currentDesignId);
-                console.log('Form data prepared for submission:');
-                
-                // Log form data for debugging (can't directly console.log FormData)
-                for (let pair of formData.entries()) {
-                    console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
-                }
-                
-                if (currentDesignId) {
-                    // Update existing design
-                    saveDesign(formData, `/api/captive-portal-designs/${currentDesignId}`);
-                } else {
-                    // Create new design
-                    saveDesign(formData, '/api/captive-portal-designs/create');
-                }
-            });
-
-            // Add drag and drop functionality
-            function setupDragAndDrop(dropAreaId, fileInputId) {
-                const dropArea = document.getElementById(dropAreaId);
-                const fileInput = document.getElementById(fileInputId);
-                
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, preventDefaults, false);
-                });
-                
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-                
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, highlight, false);
-                });
-                
-                ['dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, unhighlight, false);
-                });
-                
-                function highlight() {
-                    dropArea.classList.add('highlight');
-                }
-                
-                function unhighlight() {
-                    dropArea.classList.remove('highlight');
-                }
-                
-                dropArea.addEventListener('drop', handleDrop, false);
-                
-                function handleDrop(e) {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-                    
-                    if (files.length) {
-                        console.log('File dropped:', files[0].name);
-                        fileInput.files = files;
-                        $(fileInput).trigger('change');
-                    }
-                }
-            }
-            
-            // Initialize drag and drop
-            setupDragAndDrop('location-logo-upload', 'location-logo-file');
-            setupDragAndDrop('background-upload', 'background-file');
-        });
-
-        // Function to initialize the preview with default values
-        function initializePreview() {
-            // Get initial values from form
-            const welcomeText = $('#welcome-message').val() || 'Welcome to our WiFi';
-            const instructions = $('#login-instructions').val() || 'Enter your email to connect to our WiFi network';
-            const buttonText = $('#button-text').val() || 'Connect to WiFi';
-            const themeColor = $('#theme-color').val() || '#7367f0';
-            const showTerms = $('#show-terms').is(':checked');
-            
-            // Update preview elements
-            $('#preview-welcome').text(welcomeText);
-            $('#preview-instructions').text(instructions);
-            $('#preview-button').text(buttonText);
-            $('#preview-button').css({
-                'background-color': themeColor,
-                'border-color': themeColor
-            });
-            
-            // Update terms display
-            if (showTerms) {
-                $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
-            } else {
-                $('#preview-terms-container').hide();
-            }
-            
-            // Check if we have a logo in preview
-            const logoPreview = $('#location-logo-preview');
-            if (logoPreview.attr('src') && logoPreview.css('display') !== 'none') {
-                $('#preview-logo').attr('src', logoPreview.attr('src')).show();
-            } else {
-                $('#preview-logo').hide();
-            }
-            
-            // Check if we have a background image in preview
-            const bgPreview = $('#background-preview');
-            if (bgPreview.attr('src') && bgPreview.css('display') !== 'none') {
-                $('.portal-preview').css({
-                    'background-image': `url(${bgPreview.attr('src')})`,
-                    'background-size': 'cover',
-                    'background-position': 'center',
-                    'background-repeat': 'no-repeat'
-                });
-            }
-            
-            // Move modals to body to ensure they work with proper z-index
-            if ($('#previewTermsModal').parent()[0] !== document.body) {
-                $('#previewTermsModal, #previewPrivacyModal').appendTo('body');
-            }
-        }
-
-
-
-        // Global variable to store the current design ID being edited
-        let currentDesignId = null;
-
-        // Function to load a design for editing - now fetches from API
-        function fetchDesignDetails(designId) {
-            console.log("Fetching design details for ID:", designId);
-            
-            // Show loading state
-            $('#captive-portal-designer').prepend(
-                `<div class="loading-overlay">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>`
-            );
-            
-            // Hide the designs list and show the designer
-            $('#captive-portal-designs-list').hide();
-            $('#captive-portal-designer').show();
-            
-            // Fetch design details from API
-            $.ajax({
-                url: `/api/captive-portal-designs/${designId}`,
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log('Design details received:', response);
-                    
-                    // Store the current design ID
-                    currentDesignId = designId;
-                    
-                    if (response.success && response.data) {
-                        const design = response.data;
-                        console.log('Populating form with design data:', design);
-                        
-                        // Populate form fields with default fallbacks
-                        $('#portal-name').val(design.name || 'New Design');
-                        $('#portal-description').val(design.description || '');
-                        $('#theme-color').val(design.theme_color || '#7367f0');
-                        $('.color-preview').css('background-color', design.theme_color || '#7367f0');
-                        $('.color-value').text(design.theme_color || '#7367f0');
-                        $('#welcome-message').val(design.welcome_message || 'Welcome to our WiFi');
-                        $('#login-instructions').val(design.login_instructions || 'Enter your email to connect to our WiFi network');
-                        $('#button-text').val(design.button_text || 'Connect to WiFi');
-                        $('#show-terms').prop('checked', design.show_terms === undefined ? true : !!design.show_terms);
-                        
-                        // Load terms and privacy content if available
-                        $('#terms-of-service').val(design.terms_content || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
-                        $('#privacy-policy').val(design.privacy_content || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
-                        
-                        // Check if background image exists - if so, disable gradient by default
-                        const hasBackgroundImage = design.background_image_path || design.background_image_url;
-                        
-                        // Load gradient colors if available
-                        if (design.background_color_gradient_start) {
-                            $('#gradient-start').val(design.background_color_gradient_start);
-                            $('#gradient-start-preview').css('background-color', design.background_color_gradient_start);
-                            $('#gradient-start-value').text(design.background_color_gradient_start);
-                        } else {
-                            $('#gradient-start').val('');
-                            $('#gradient-start-preview').css('background-color', 'transparent');
-                            $('#gradient-start-value').text('None');
-                        }
-                        
-                        if (design.background_color_gradient_end) {
-                            $('#gradient-end').val(design.background_color_gradient_end);
-                            $('#gradient-end-preview').css('background-color', design.background_color_gradient_end);
-                            $('#gradient-end-value').text(design.background_color_gradient_end);
-                        } else {
-                            $('#gradient-end').val('');
-                            $('#gradient-end-preview').css('background-color', 'transparent');
-                            $('#gradient-end-value').text('None');
-                        }
-                        
-                        // If background image exists, disable gradient so image shows
-                        if (hasBackgroundImage) {
-                            console.log('Design has background image - disabling gradient');
-                            $('#gradient-start').data('disabled', true);
-                            $('#gradient-end').data('disabled', true);
-                            $('#gradient-start-value').text('None (Image Active)');
-                            $('#gradient-end-value').text('None (Image Active)');
-                        } else {
-                            // No background image, enable gradient
-                            $('#gradient-start').data('disabled', false);
-                            $('#gradient-end').data('disabled', false);
-                        }
-                        
-                        // Update preview values
-                        $('#preview-welcome').text(design.welcome_message || 'Bienvenue sur notre WiFi');
-                        $('#preview-instructions').text(design.login_instructions || 'Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi');
-                        $('#preview-button').text(design.button_text || 'Se connecter au WiFi');
-                        $('#preview-button').css({
-                            'background-color': design.theme_color || '#7367f0',
-                            'border-color': design.theme_color || '#7367f0'
-                        });
-                        
-                        // Update terms display
-                        const showTermsPreview = design.show_terms === undefined ? true : !!design.show_terms;
-                        if (showTermsPreview) {
-                            $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
-                        } else {
-                            $('#preview-terms-container').hide();
-                        }
-                        
-                        // Update modal content for terms and privacy policy
-                        $('#preview-terms-content').text(design.terms_content || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
-                        $('#preview-privacy-content').text(design.privacy_content || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
-                        
-                        // Handle logo preview if available
-                        if (design.location_logo_url) {
-                            const logoUrl = design.location_logo_url;
-                            $('#location-logo-preview').attr('src', logoUrl).show();
-                            $('#preview-logo').attr('src', logoUrl).show();
-                        } else if (design.location_logo_path) {
-                            const logoUrl = `/storage/${design.location_logo_path}`;
-                            $('#location-logo-preview').attr('src', logoUrl).show();
-                            $('#preview-logo').attr('src', logoUrl).show();
-                        }
-                        
-                        // Handle background preview if available
-                        if (design.background_image_path) {
-                            const bgUrl = `/storage/${design.background_image_path}`;
-                            $('#background-preview').attr('src', bgUrl).show();
-                        }
-                        
-                        // Update preview background (this will apply either gradient or background image based on priority)
-                        updatePreviewBackground();
-                    } else {
-                        console.error('Invalid response format or missing data');
-                        toastr.error('Could not load design details. Invalid response format.');
-                    }
-                    
-                    // Remove loading overlay
-                    $('.loading-overlay').remove();
-                },
-                error: function(xhr) {
-                    console.error('Error fetching design details:', xhr.responseText);
-                    toastr.error('Failed to load design details. Please try again.');
-                    
-                    // Remove loading overlay
-                    $('.loading-overlay').remove();
-                    
-                    // Go back to list view
-                    $('#captive-portal-designer').hide();
-                    $('#captive-portal-designs-list').show();
-                }
-            });
-        }
-        
-        // Function to fetch all designs and populate the list
-        function fetchDesigns(openFirstDesign = false) {
-            console.log("fetchDesigns called", { openFirstDesign });
-            
-            // Show loading state
-            $('#portal-designs-container').html(
-                `<div class="col-12 text-center py-3">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading designs...</span>
-                    </div>
-                </div>`
-            );
-            
-            // Fetch designs from API
-            $.ajax({
-                url: '/api/captive-portal-designs',
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log("Designs received:", response);
-                    // Clear container
-                    $('#portal-designs-container').empty();
-                    
-                    if (response.data && response.data.length > 0) {
-                        // Check if user is admin to show admin features
-                        const isAdmin = response.is_admin || false;
-                        
-                        // If coming from registration, open the first design
-                        if (openFirstDesign) {
-                            console.log("Opening first design automatically:", response.data[0].id);
-                            const firstDesignId = response.data[0].id;
-                            
-                            // Remove the 'from' parameter from URL
-                            const newUrl = window.location.pathname + window.location.hash;
-                            window.history.replaceState({}, document.title, newUrl);
-                            
-                            // Open the first design
-                            fetchDesignDetails(firstDesignId);
-                            return; // Exit early, don't populate the list
-                        }
-                        
-                        // Populate designs
-                        response.data.forEach(function(design) {
-                            const bgColorClass = getRandomBgColorClass();
-                            const formattedDate = new Date(design.updated_at).toISOString().split('T')[0];
-                            
-                            // Build owner information for admin users
-                            let ownerInfo = '';
-                            if (isAdmin && design.owner_name) {
-                                ownerInfo = `<small class="text-info d-block">Owner: ${design.owner_name}</small>`;
-                                if (design.creator_name && design.creator_name !== design.owner_name) {
-                                    ownerInfo += `<small class="text-muted d-block">Creator: ${design.creator_name}</small>`;
-                                }
-                            }
-                            
-                            // Build dropdown menu items
-                            let dropdownItems = '';
-                            if (isAdmin) {
-                                dropdownItems += `
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="showChangeOwnerModal(${design.id}, '${design.owner_name || design.creator_name}', ${design.current_owner_id || design.user_id})">
-                                        <i data-feather="user-check" class="mr-50"></i> Change Owner
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                `;
-                            }
-                            dropdownItems += `
-                                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteDesign(${design.id})">
-                                    <i data-feather="trash-2" class="mr-50"></i> Delete
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" aria-controls="general" role="tab" aria-selected="true">
+                                    <i data-feather="settings" class="mr-25"></i>
+                                    <span class="font-weight-bold">Général</span>
                                 </a>
-                            `;
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="branding-tab" data-toggle="tab" href="#branding" aria-controls="branding" role="tab" aria-selected="false">
+                                    <i data-feather="image" class="mr-25"></i>
+                                    <span class="font-weight-bold">Image de marque</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- General Tab -->
+                            <div class="tab-pane active" id="general" aria-labelledby="general-tab" role="tabpanel">
+                                <form class="mt-2">
+                                    <div class="row">
+                                        <div class="col-12 mb-1">
+                                            <h6 class="mb-1">Informations de base</h6>
+                                        </div>
+                                        <div class="col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="portal-name">Nom du portail</label>
+                                                <input type="text" class="form-control" id="portal-name" placeholder="Entrez un nom pour cette page de connexion">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="portal-description">Description</label>
+                                                <textarea class="form-control" id="portal-description" rows="2" placeholder="Brève description de cette conception"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="theme-color">Couleur du thème</label>
+                                                <div class="color-picker-container">
+                                                    <input type="color" class="form-control form-control-color" id="theme-color" value="#7367f0">
+                                                    <div class="color-preview" style="background-color: #7367f0;"></div>
+                                                    <span class="color-value">#7367f0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 mt-2 mb-1">
+                                            <h6 class="mb-1">Contenu du portail</h6>
+                                        </div>
+                                        <div class="col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="welcome-message">Message de bienvenue</label>
+                                                <input type="text" class="form-control" id="welcome-message" placeholder="Bienvenue sur notre WiFi" value="Bienvenue sur notre WiFi">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="button-text">Texte du bouton</label>
+                                                <input type="text" class="form-control" id="button-text" placeholder="Se connecter au WiFi" value="Se connecter au WiFi">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="login-instructions">Instructions de connexion</label>
+                                                <textarea class="form-control" id="login-instructions" rows="2" placeholder="Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="show-terms" checked>
+                                                    <label class="custom-control-label" for="show-terms">Afficher le lien Conditions générales</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 mt-2 mb-1">
+                                            <h6 class="mb-1">Contenu légal</h6>
+                                        </div>
+                                        <div class="col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="terms-of-service">Contenu des conditions de service</label>
+                                                <textarea class="form-control" id="terms-of-service" rows="3" placeholder="Entrez le contenu de vos conditions de service">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-1">
+                                            <div class="form-group">
+                                                <label for="privacy-policy">Contenu de la politique de confidentialité</label>
+                                                <textarea class="form-control" id="privacy-policy" rows="3" placeholder="Entrez le contenu de votre politique de confidentialité">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                             
-                            const designCard = `
-                                <div class="col-md-3 col-sm-6 mb-2">
-                                    <div class="card design-card">
-                                        <div class="card-body p-2">
-                                            <div class="design-preview ${bgColorClass}">
-                                                <div class="preview-content">
-                                                    <div class="location-logo-mini">
-                                                        ${design.location_logo_url ? 
-                                                          `<img src="${design.location_logo_url}" alt="${design.name}" style="max-height: 20px;">` : 
-                                                          (design.location_logo_path ? 
-                                                          `<img src="/storage/${design.location_logo_path}" alt="${design.name}" style="max-height: 20px;">` :
-                                                          '<span>Logo</span>')}
+                            <!-- Branding Tab -->
+                            <div class="tab-pane" id="branding" aria-labelledby="branding-tab" role="tabpanel">
+                                <form class="mt-2">
+                                    <div class="row">
+                                        <div class="col-12 mb-2">
+                                            <div class="form-group">
+                                                <label for="location-logo">Logo de l'emplacement</label>
+                                                <div class="upload-area" id="location-logo-upload">
+                                                    <i data-feather="upload-cloud" class="upload-icon"></i>
+                                                    <h5 class="upload-text">Déposez votre logo d'emplacement ici ou cliquez pour parcourir</h5>
+                                                    <p class="text-muted small">Recommandé : PNG ou SVG, 200x100px</p>
+                                                </div>
+                                                <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
+                                                <img src="" id="location-logo-preview" class="image-preview">
+                                                <p class="note">Votre logo d'emplacement apparaîtra en haut de la page de connexion.</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-2">
+                                            <div class="form-group">
+                                                <label for="background-image">Image d'arrière-plan</label>
+                                                <div class="upload-area" id="background-upload">
+                                                    <i data-feather="image" class="upload-icon"></i>
+                                                    <h5 class="upload-text">Déposez votre image d'arrière-plan ici ou cliquez pour parcourir</h5>
+                                                    <p class="text-muted small">Recommandé : JPG ou PNG, 1920x1080px</p>
+                                                </div>
+                                                <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
+                                                <img src="" id="background-preview" class="image-preview">
+                                                <p class="note">Cette image sera affichée comme arrière-plan de la page.</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-2">
+                                            <h6 class="mb-1">Dégradé d'arrière-plan (Alternative à l'image)</h6>
+                                            <p class="text-muted small mb-2">Créez un arrière-plan dégradé au lieu d'utiliser une image. Cela remplacera l'image d'arrière-plan si les deux sont définis.</p>
+                                            <div class="row">
+                                                <div class="col-md-6 col-12 mb-1">
+                                                    <div class="form-group">
+                                                        <label for="gradient-start">Couleur de début du dégradé</label>
+                                                        <div class="color-picker-container">
+                                                            <input type="color" class="form-control form-control-color" id="gradient-start">
+                                                            <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
+                                                            <span class="color-value" id="gradient-start-value">Aucun</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="login-area-mini">${design.name}</div>
-                                                    <div class="brand-logo-mini">
-                                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi" style="max-height: 15px;">
+                                                </div>
+                                                <div class="col-md-6 col-12 mb-1">
+                                                    <div class="form-group">
+                                                        <label for="gradient-end">Couleur de fin du dégradé</label>
+                                                        <div class="color-picker-container">
+                                                            <input type="color" class="form-control form-control-color" id="gradient-end">
+                                                            <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
+                                                            <span class="color-value" id="gradient-end-value">Aucun</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="mt-1">
-                                                <h5 class="mb-0">${design.name}</h5>
-                                                <small class="text-muted">Last modified: ${formattedDate}</small>
-                                                ${ownerInfo}
-                                            </div>
-                                            <div class="design-actions mt-1 d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-sm btn-outline-primary edit-design" data-id="${design.id}">
-                                                    <i data-feather="edit-2" class="mr-25"></i> Edit
-                                                </button>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-icon btn-outline-secondary" data-toggle="dropdown">
-                                                        <i data-feather="more-vertical"></i>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
+                                                        <i data-feather="x" class="mr-25"></i>Effacer le dégradé
                                                     </button>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        ${dropdownItems}
-                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
+                                                        Bleu vers violet
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
+                                                        Orange vers rose
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
+                                                        Tester le dégradé
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            `;
-                            
-                            $('#portal-designs-container').append(designCard);
-                        });
-                    } else {
-                        // No designs found
-                        $('#portal-designs-container').html(
-                            `<div class="col-12 text-center py-5">
-                                <div class="empty-state">
-                                    <i data-feather="layout" style="height: 64px; width: 64px; color: #d0d0d0;"></i>
-                                    <h4 class="mt-2">No captive portal designs found</h4>
-                                    <p>Create your first design to get started</p>
-                                </div>
-                            </div>`
-                        );
-                    }
-                    
-                    // Re-initialize feather icons for the newly added elements
-                    if (typeof feather !== 'undefined') {
-                        feather.replace();
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error fetching designs:', xhr.responseText);
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        console.error('Error details:', errorResponse);
-                    } catch (e) {
-                        console.error('Could not parse error response');
-                    }
-                    
-                    $('#portal-designs-container').html(
-                        `<div class="col-12 text-center py-3">
-                            <div class="alert alert-danger">
-                                Failed to load designs. Please try again later.
+                                </form>
                             </div>
-                        </div>`
-                    );
-                }
-            });
-        }
-
-        // Function to save a design (create or update)
-        function saveDesign(formData, url) {
-            // Show loading state
-            const saveBtn = $('#save-design');
-            const originalText = saveBtn.html();
-            saveBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
-            saveBtn.attr('disabled', true);
-
-            console.log('formData #2:', formData);
-            
-            // Determine the HTTP method based on whether it's a create or update operation
-            const isUpdate = !url.includes('/create');
-            const method = isUpdate ? 'POST' : 'POST'; // Always use POST, but use method spoofing for updates
-            
-            // If it's an update, add the _method field for Laravel method spoofing
-            if (isUpdate) {
-                formData.append('_method', 'PUT');
-            }
-            
-            console.log('Request method:', method);
-            console.log('Is update operation:', isUpdate);
-            console.log('URL:', url);
-            
-            $.ajax({
-                url: url,
-                method: method,
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log('Save response:', response);
-                    toastr.success('Captive portal design saved successfully');
-                    
-                    // Return to the designs list and refresh
-                    $('#captive-portal-designer').hide();
-                    $('#captive-portal-designs-list').show();
-                    fetchDesigns();
-                    
-                    // Reset form for next use
-                    resetDesignForm();
-                    
-                    // Clear background image
-                    $('.portal-preview').css({
-                        'background-image': 'none',
-                        'background-color': '#fff'
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error saving design:', xhr.responseText);
-                    
-                    try {
-                        const responseObj = JSON.parse(xhr.responseText);
-                        if (responseObj.debug) {
-                            console.log('Debug info:', responseObj.debug);
-                        }
-                        
-                        if (xhr.status === 422 && responseObj.errors) {
-                            // Validation errors
-                            let errorMessage = 'Please correct the following errors:<br>';
-                            
-                            for (const field in responseObj.errors) {
-                                errorMessage += `- ${responseObj.errors[field][0]}<br>`;
-                            }
-                            
-                            toastr.error(errorMessage);
-                        } else {
-                            toastr.error(responseObj.message || 'Failed to save design. Please try again.');
-                        }
-                    } catch (e) {
-                        toastr.error('Failed to save design. Please try again.');
-                    }
-                },
-                complete: function() {
-                    // Reset button state
-                    saveBtn.html(originalText);
-                    saveBtn.attr('disabled', false);
-                }
-            });
-        }
-
-        // Helper function to get random background color class for design cards
-        function getRandomBgColorClass() {
-            const colorClasses = [
-                'bg-light-primary',
-                'bg-light-success',
-                'bg-light-danger',
-                'bg-light-warning',
-                'bg-light-info'
-            ];
-            return colorClasses[Math.floor(Math.random() * colorClasses.length)];
-        }
-
-        // Function to reset the design form to default values
-        function resetDesignForm() {
-            // Set default values for required fields
-            $('#portal-name').val('New Design');
-            $('#portal-description').val('');
-            $('#theme-color').val('#7367f0');
-            $('.color-preview').css('background-color', '#7367f0');
-            $('.color-value').text('#7367f0');
-            $('#welcome-message').val('Welcome to our WiFi');
-            $('#login-instructions').val('Enter your email to connect to our WiFi network');
-            $('#button-text').val('Connect to WiFi');
-            $('#show-terms').prop('checked', true);
-            
-            // Reset terms and privacy policy to default values
-            $('#terms-of-service').val('By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
-            $('#privacy-policy').val('We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
-            
-            // Reset file inputs
-            $('#location-logo-file').val('');
-            $('#background-file').val('');
-            
-            // Hide image previews
-            $('#location-logo-preview').attr('src', '').hide();
-            $('#background-preview').attr('src', '').hide();
-            
-            // Reset gradient values
-            $('#gradient-start').val('');
-            $('#gradient-end').val('');
-            $('#gradient-start-preview').css('background-color', 'transparent');
-            $('#gradient-end-preview').css('background-color', 'transparent');
-            $('#gradient-start-value').text('None');
-            $('#gradient-end-value').text('None');
-            
-            // Reset background of preview
-            $('.portal-preview').css({
-                'background-image': 'none',
-                'background-color': '#fff',
-                'background': '#fff'
-            });
-            
-            // Update preview with default values
-            $('#preview-welcome').text('Bienvenue sur notre WiFi');
-            $('#preview-instructions').text('Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi');
-            $('#preview-button').text('Se connecter au WiFi');
-            $('#preview-button').css({
-                'background-color': '#7367f0',
-                'border-color': '#7367f0'
-            });
-            $('#preview-terms-container').html('<small>En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.</small>').show();
-            $('#preview-logo').attr('src', '').hide();
-            
-            // Update preview background to clear any gradients
-            updatePreviewBackground();
-        }
-
-        // Function to delete a captive portal design
-        function deleteDesign(designId) {
-            if (!designId) {
-                toastr.error('Invalid design ID');
-                return;
-            }
-
-            // Store the design ID in the modal for reference
-            $('#deleteDesignModal').data('designId', designId);
-            
-            // Show the modal
-            $('#deleteDesignModal').modal('show');
-        }
-
-        // Set up the delete confirmation button
-        $(document).ready(function() {
-            $('#confirmDeleteBtn').on('click', function() {
-                // Get the design ID from the modal's data
-                const designId = $('#deleteDesignModal').data('designId');
-                
-                // Hide the modal
-                $('#deleteDesignModal').modal('hide');
-                
-                // Show loading state on the design card
-                const designCard = $(`.edit-design[data-id="${designId}"]`).closest('.design-card');
-                designCard.addClass('opacity-50');
-                designCard.append(`
-                    <div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center" style="top: 0; left: 0; background: rgba(255,255,255,0.7); z-index: 5;">
-                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-                            <span class="sr-only">Deleting...</span>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12 d-flex justify-content-end">
+                                <button id="save-design" class="btn btn-primary">
+                                    <i data-feather="save" class="mr-50"></i>Enregistrer la conception
+                                </button>
+                            </div>
                         </div>
                     </div>
-                `);
+                </div>
+            </div>
 
-                // Create form data with method spoofing for Laravel
-                const formData = new FormData();
-                formData.append('_method', 'DELETE');
-                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+            <!-- Preview Column -->
+            <div class="col-lg-4 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Aperçu</h4>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li>
+                                    <a data-action="reload"><i data-feather="rotate-cw"></i></a>
+                                </li>
+                                <li>
+                                    <a data-action="expand" id="expand-preview"><i data-feather="maximize"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="portal-preview">
+                            <div class="preview-main">
+                                <!-- Header with Location Logo -->
+                                <div class="logo-container">
+                                    <img src="/img/wifi-placeholder.png" alt="Logo de l'emplacement" id="preview-logo" class="preview-logo">
+                                </div>
+                                
+                                <!-- Welcome Text -->
+                                <h2 id="preview-welcome">Bienvenue sur notre WiFi</h2>
+                                <p id="preview-instructions">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</p>
+                                
+                                <!-- Login Form -->
+                                <div class="input-container">
+                                    <input type="text" class="preview-input" placeholder="Adresse e-mail">
+                                    <button id="preview-button" class="preview-button">Se connecter au WiFi</button>
+                                </div>
+                                
+                                <!-- Footer with Brand Logo and Terms -->
+                                <div class="footer">
+                                    <div class="brand-logo">
+                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Logo de marque">
+                                    </div>
+                                    <div class="terms" id="preview-terms-container" style="display: none; margin-bottom: 0.5rem;">
+                                        <!-- Terms links will be inserted here when show_terms is enabled -->
+                                    </div>
+                                    <div class="terms" id="preview-powered-by">
+                                        Propulsé par Monsieur WiFi
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 
-                // Send delete request to the API
-                $.ajax({
-                    url: `/api/captive-portal-designs/${designId}`,
-                    method: 'DELETE', // Always use POST with _method field for Laravel
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    },
-                    success: function(response) {
-                        console.log('Delete response:', response);
-                        toastr.success('Design deleted successfully');
-                        
-                        // Refresh the designs list
-                        fetchDesigns();
-                    },
-                    error: function(xhr) {
-                        console.error('Error deleting design:', xhr.responseText);
-                        
-                        try {
-                            const responseObj = JSON.parse(xhr.responseText);
-                            toastr.error(responseObj.message || 'Failed to delete design. Please try again.');
-                        } catch (e) {
-                            toastr.error('Failed to delete design. Please try again.');
-                        }
-                        
-                        // Remove loading state
-                        designCard.removeClass('opacity-50');
-                        designCard.find('.position-absolute').remove();
-                    }
-                });
-            });
-            
-            // Set up the change owner confirmation button
-            $('#confirmChangeOwnerBtn').on('click', function() {
-                const designId = $('#changeOwnerModal').data('designId');
-                const newOwnerId = $('#newOwnerSelect').val();
-                
-                if (!newOwnerId) {
-                    toastr.error('Please select a new owner');
-                    return;
-                }
-                
-                // Show loading state
-                const $btn = $(this);
-                const originalText = $btn.text();
-                $btn.text('Changing...').prop('disabled', true);
-                
-                // Send change owner request
-                $.ajax({
-                    url: `/api/captive-portal-designs/${designId}/change-owner`,
-                    method: 'POST',
-                    data: {
-                        owner_id: newOwnerId,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    },
-                    success: function(response) {
-                        console.log('Change owner response:', response);
-                        toastr.success('Owner changed successfully');
-                        
-                        // Hide the modal
-                        $('#changeOwnerModal').modal('hide');
-                        
-                        // Refresh the designs list
-                        fetchDesigns();
-                    },
-                    error: function(xhr) {
-                        console.error('Error changing owner:', xhr.responseText);
-                        
-                        try {
-                            const responseObj = JSON.parse(xhr.responseText);
-                            toastr.error(responseObj.message || 'Failed to change owner. Please try again.');
-                        } catch (e) {
-                            toastr.error('Failed to change owner. Please try again.');
-                        }
-                    },
-                    complete: function() {
-                        // Reset button state
-                        $btn.text(originalText).prop('disabled', false);
-                    }
-                });
-            });
-        });
-        
-        // Function to show the change owner modal
-        function showChangeOwnerModal(designId, currentOwnerName, currentOwnerId) {
-            console.log('Showing change owner modal for design:', designId, 'current owner:', currentOwnerName);
-            
-            // Store design ID in modal
-            $('#changeOwnerModal').data('designId', designId);
-            
-            // Update modal text
-            $('#changeOwnerText').text(`Select a new owner for this captive portal design (currently owned by ${currentOwnerName}):`);
-            
-            // Load users list
-            loadUsersForOwnerChange(currentOwnerId);
-            
-            // Show the modal
-            $('#changeOwnerModal').modal('show');
-        }
-        
-        // Function to load users for the owner change dropdown
-        function loadUsersForOwnerChange(currentOwnerId) {
-            const $select = $('#newOwnerSelect');
-            $select.html('<option value="">Loading users...</option>');
-            
-            // Fetch users from the API
-            $.ajax({
-                url: '/api/accounts/users',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log('Users response:', response);
-                    $select.empty();
-                    
-                    if (response.users && response.users.length > 0) {
-                        response.users.forEach(function(user) {
-                            const isCurrentOwner = user.id == currentOwnerId;
-                            const selected = isCurrentOwner ? 'selected' : '';
-                            const disabled = isCurrentOwner ? 'disabled' : '';
-                            
-                            $select.append(`
-                                <option value="${user.id}" ${selected} ${disabled}>
-                                    ${user.name} (${user.email})${isCurrentOwner ? ' - Current Owner' : ''}
-                                </option>
-                            `);
-                        });
-                    } else {
-                        $select.append('<option value="">No users found</option>');
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error loading users:', xhr.responseText);
-                    $select.html('<option value="">Error loading users</option>');
-                    toastr.error('Failed to load users list');
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+<!-- Preview Modals -->
+<div class="modal fade" id="previewTermsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Conditions de service</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="preview-terms-content">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="previewPrivacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">Politique de confidentialité</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="preview-privacy-content">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteDesignModal" tabindex="-1" aria-labelledby="deleteDesignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteDesignModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cette conception ? Cette action ne peut pas être annulée.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Owner Modal -->
+<div class="modal fade" id="changeOwnerModal" tabindex="-1" aria-labelledby="changeOwnerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeOwnerModalLabel">Changer le propriétaire de la conception</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="changeOwnerText">Sélectionnez un nouveau propriétaire pour cette conception de portail captif :</p>
+                <div class="form-group">
+                    <label for="newOwnerSelect">Nouveau propriétaire</label>
+                    <select class="form-control" id="newOwnerSelect">
+                        <option value="">Chargement des utilisateurs...</option>
+                    </select>
+                </div>
+                <div class="alert alert-info mt-2">
+                    <strong>Note :</strong> Cette action transférera la propriété de la conception à l'utilisateur sélectionné. Les informations du créateur original seront préservées.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="confirmChangeOwnerBtn">Changer le propriétaire</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    const locale = '{{ $locale }}';
+</script>
+<script src="/assets/js/captive-portals.js?v={{ time() }}"></script>
+@endpush
+
+@php
+    $locale = 'fr';
+@endphp
