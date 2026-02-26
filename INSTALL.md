@@ -367,23 +367,78 @@ GOOGLE_WHITELIST_SERVERS=google.com,googleapis.com,gstatic.com
 
 These whitelists allow specified domains and servers to be accessible during the captive portal authentication process.
 
-#### Mail Configuration (Optional)
+#### Mail Configuration (Required for E-commerce)
 
-If you need to send emails from the application:
+Email configuration is required for e-commerce order notifications (order confirmation, shipping updates, etc.):
 
 ```env
 # Mail Configuration
-MAIL_MAILER=smtp  # smtp, sendmail, mailgun, ses, postmark, log
-MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=your_username
-MAIL_PASSWORD=your_password
-MAIL_ENCRYPTION=tls  # tls, ssl, or null
-MAIL_FROM_ADDRESS="noreply@your-domain.com"
-MAIL_FROM_NAME="${APP_NAME}"
+MAIL_MAILER=smtp
+MAIL_HOST=smtp-relay.brevo.com
+MAIL_PORT=587
+MAIL_USERNAME=XXXXX
+MAIL_PASSWORD=XXXYYY
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="xyz@example.com"
+MAIL_FROM_NAME="Monsieur WiFi"
 ```
 
-**Note**: For development, you can use `MAIL_MAILER=log` which saves emails to `storage/logs/laravel.log`.
+**For Production:** Use a reliable email service like:
+- [Mailgun](https://www.mailgun.com/)
+- [Amazon SES](https://aws.amazon.com/ses/)
+- [SendGrid](https://sendgrid.com/)
+- [Postmark](https://postmarkapp.com/)
+
+**For Development:** Use `MAIL_MAILER=log` which saves emails to `storage/logs/laravel.log` instead of sending real emails.
+
+#### E-commerce Configuration (Optional)
+
+Configure e-commerce settings for the shop:
+
+```env
+# E-commerce System Settings (managed via admin panel)
+# These will be set by the ShopSeeder, but you can customize them later via:
+# System Settings page in the admin panel
+
+# Payment Mode: 'mock' for testing, 'stripe' for production (Stripe not yet integrated)
+# Tax Rate: Default sales tax rate (e.g., 0.13 for 13%)
+# Cart Abandonment: Hours before sending cart abandonment emails
+```
+
+**Note**: E-commerce system settings (tax rate, payment mode, cart abandonment hours) are stored in the database and can be configured through the admin panel after installation. The `ShopSeeder` sets up default values.
+
+#### Stripe Payment Configuration (Optional - For Future Use)
+
+Stripe integration is planned for future releases. You can set up your Stripe credentials in advance:
+
+```env
+# Stripe Configuration
+STRIPE_KEY=pk_test_your_stripe_public_key_here
+STRIPE_SECRET=sk_test_your_stripe_secret_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+STRIPE_PRICE_STANDARD=price_your_standard_price_id_here
+STRIPE_PRICE_PREMIUM=price_your_premium_price_id_here
+```
+
+**How to obtain Stripe credentials:**
+
+1. **Sign up for Stripe**: Visit [stripe.com](https://stripe.com) and create an account
+2. **Get API Keys**: 
+   - Navigate to Developers → API keys in your Stripe Dashboard
+   - Copy your **Publishable key** (`pk_test_...`) and **Secret key** (`sk_test_...`)
+   - Use test keys for development, live keys for production
+3. **Create Products**: 
+   - In Stripe Dashboard, go to Products
+   - Create products with pricing
+   - Copy the **Price IDs** (e.g., `price_1ABC...`)
+4. **Set up Webhooks** (when Stripe integration is enabled):
+   - Navigate to Developers → Webhooks
+   - Add endpoint: `https://your-domain.com/stripe/webhook`
+   - Copy the **Webhook secret** (`whsec_...`)
+
+**Current Status**: The application currently uses `mock` payment mode for testing. Stripe integration will be activated in a future update. Once enabled, you can switch the payment mode to `stripe` via the System Settings admin panel.
+
+**For Development/Testing**: Leave Stripe settings empty or use test mode credentials. The mock payment mode will handle all transactions for testing purposes.
 
 ---
 
@@ -419,6 +474,7 @@ This will:
 - Create admin users (from `UserSeeder`)
 - Create domain categories (from `CategorySeeder`)
 - Create blocked domains (from `BlockedDomainSeeder`)
+- Create sample products, shipping rates, and e-commerce settings (from `ShopSeeder`)
 
 **Default Admin Users Created:**
 - Email: `admin@monsieur-wifi.com`
@@ -427,6 +483,19 @@ This will:
 - Password: `abcd1234`
 
 ⚠️ **IMPORTANT**: Change these passwords immediately after first login!
+
+**Optional - Seed E-commerce Data Separately:**
+
+If you want to run the shop seeder separately or re-seed the e-commerce data:
+
+```bash
+php artisan db:seed --class=ShopSeeder
+```
+
+This creates:
+- 3 sample product models (WiFi routers and extenders)
+- Default shipping rates (standard and expedited)
+- System settings for e-commerce (tax rate, payment mode, etc.)
 
 ### 4. Create Storage Link
 
@@ -476,6 +545,16 @@ cd /var/www/mrwifi
 mkdir -p storage/framework/{sessions,views,cache}
 mkdir -p storage/logs
 mkdir -p public/uploads/profile_pictures
+mkdir -p storage/app/public/products
+```
+
+### 3. Set Permissions for Product Images
+
+Ensure the product images directory is writable:
+
+```bash
+sudo chmod -R 775 /var/www/mrwifi/storage/app/public/products
+sudo chgrp -R www-data /var/www/mrwifi/storage/app/public/products
 ```
 
 ---
@@ -697,6 +776,45 @@ This is the final verification step to confirm your setup is complete and workin
 - Navigate to your profile/settings to update the password
 - Use a strong password with a mix of uppercase, lowercase, numbers, and special characters
 
+### 5. Test E-commerce Features
+
+After successful admin login, verify the e-commerce functionality:
+
+1. **Shop Page** (For all users including customers):
+   - Navigate to `/en/shop` or `/fr/boutique`
+   - You should see 3 sample products (created by ShopSeeder)
+   - Test language switching between English and French
+
+2. **Admin - Manage Models** (Admin/Superadmin only):
+   - Navigate to `/en/admin/models` or `/fr/admin/modeles`
+   - View, create, edit, and delete product models
+   - Upload product images
+   - Filter by device type (820/835)
+
+3. **Admin - Manage Inventory** (Admin/Superadmin only):
+   - Navigate to `/en/admin/inventory` or `/fr/admin/inventaire`
+   - Manage stock quantities
+   - Add individual devices with MAC addresses and serial numbers
+
+4. **Admin - Manage Orders** (Admin/Superadmin only):
+   - Navigate to `/en/admin/orders` or `/fr/admin/commandes`
+   - View all customer orders
+   - Update order status and add tracking information
+
+5. **User Orders** (For authenticated users):
+   - Navigate to `/en/orders` or `/fr/commandes`
+   - Regular users see only their own orders
+   - Admins see their personal orders here (not customer orders)
+
+**E-commerce Features Include:**
+- Bilingual shop (English/French)
+- Shopping cart with persistent storage
+- Checkout process with shipping/billing addresses
+- Order management and tracking
+- Inventory management with individual device tracking
+- Email notifications for order events
+- Mock payment system (Stripe integration planned)
+
 ---
 
 ## Production Optimization
@@ -808,6 +926,142 @@ sudo a2enconf php8.2-fpm
 sudo systemctl restart apache2
 ```
 
+#### 9. Product Images Not Displaying
+
+**Check:**
+- Storage link exists: `ls -la public/storage`
+- Product images directory exists: `ls -la storage/app/public/products`
+- Proper permissions on storage directory
+
+**Solution:**
+```bash
+# Recreate storage link if needed
+php artisan storage:link
+
+# Ensure proper permissions
+sudo chmod -R 775 /var/www/mrwifi/storage/app/public/products
+sudo chgrp -R www-data /var/www/mrwifi/storage/app/public/products
+
+# Verify images exist
+ls -la storage/app/public/products/
+```
+
+#### 10. E-commerce Pages Showing Empty or Errors
+
+**Check:**
+- ShopSeeder was run: `php artisan db:seed --class=ShopSeeder`
+- Products exist in database: `php artisan tinker` then `App\Models\ProductModel::count();`
+- API responses are working: Check browser console for errors
+
+**Solution:**
+```bash
+# Seed shop data if missing
+php artisan db:seed --class=ShopSeeder
+
+# Clear all caches
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+php artisan route:clear
+```
+
+#### 11. Cart or Orders Not Working
+
+**Common causes:**
+- User not authenticated (JWT token missing or expired)
+- Database connection issues
+- JavaScript errors in browser console
+
+**Solution:**
+1. Check browser console (F12) for JavaScript errors
+2. Verify API endpoints are accessible
+3. Test authentication: `php artisan tinker` then `App\Models\User::first();`
+4. Check Laravel logs: `tail -f storage/logs/laravel.log`
+
+---
+
+## User Roles and Access Control
+
+The application implements a 3-tier role-based access control system:
+
+### Role Hierarchy
+
+1. **Superadmin** (Highest privileges)
+   - Full access to all features
+   - Can manage:
+     - System Settings
+     - Firmware updates
+     - All admin features
+     - User accounts
+     - E-commerce (products, inventory, orders)
+
+2. **Admin** (Administrative privileges)
+   - Can manage:
+     - User accounts
+     - Domain blocking
+     - E-commerce (products, inventory, orders)
+     - View reports
+   - Cannot access:
+     - System Settings
+     - Firmware management
+
+3. **User** (Regular user)
+   - Can access:
+     - Dashboard
+     - Their own locations and devices
+     - Shop and place orders
+     - View their own orders
+   - Cannot access:
+     - Admin panels
+     - Other users' data
+     - System configuration
+
+### Managing User Roles
+
+**Via Database:**
+```bash
+php artisan tinker
+```
+
+Then in tinker:
+```php
+// Change a user to superadmin
+$user = App\Models\User::where('email', 'admin@monsieur-wifi.com')->first();
+$user->role = 'superadmin';
+$user->save();
+
+// Change a user to admin
+$user->role = 'admin';
+$user->save();
+
+// Change a user to regular user
+$user->role = 'user';
+$user->save();
+
+exit
+```
+
+**Via User Management UI:**
+- Superadmins can change user roles through the Accounts management page
+- Navigate to `/en/accounts` or `/fr/accounts`
+- Edit user and select appropriate role
+
+### Default Admin Accounts
+
+The seeder creates admin accounts with `admin` role by default. To create a superadmin:
+
+```bash
+php artisan tinker
+```
+
+Then:
+```php
+$admin = App\Models\User::where('email', 'admin@monsieur-wifi.com')->first();
+$admin->role = 'superadmin';
+$admin->save();
+exit
+```
+
 ---
 
 ## Development Setup
@@ -838,4 +1092,4 @@ For issues or questions:
 
 ---
 
-**Last Updated**: January 2026
+**Last Updated**: February 2026
