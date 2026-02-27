@@ -46,10 +46,10 @@ class LocationController extends Controller
     {
         $user = Auth::user();
         if ($user->role == 'admin') {
-            // Get locations with their associated devices
-            $locations = Location::with('device')->get();
+            // Get locations with their associated devices and zones
+            $locations = Location::with(['device', 'zone'])->get();
         } else {
-            $locations = Location::with('device')->where('owner_id', $user->id)->get();
+            $locations = Location::with(['device', 'zone'])->where('owner_id', $user->id)->get();
         }
         
         // Determine online status for each location's device
@@ -201,7 +201,7 @@ class LocationController extends Controller
         $device->device_secret = Str::random(30);
         $device->save();
 
-                // Try to get the default firmware for the device model
+        // Try to get the default firmware for the device model
         $firmware = Firmware::getDefaultForModel($device->model);
         
         // If no default firmware found, get the latest enabled firmware for the model
@@ -213,9 +213,9 @@ class LocationController extends Controller
         if (!$firmware) {
             $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
         }
-        
-        // Set firmware_id - either the found firmware ID or 0 if no firmware found
-        $device->firmware_id = $firmware ? $firmware->id : 0;
+
+        // Set firmware_id - either the found firmware ID or null if no firmware found
+        $device->firmware_id = $firmware ? $firmware->id : null;
         $device->save();
 
         // Create the location with the device
@@ -281,9 +281,9 @@ class LocationController extends Controller
             ], 401);
         }
         if ($user->role == 'admin') {
-            $location = Location::with('device')->find($id);
+            $location = Location::with(['device', 'zone', 'settings'])->find($id);
         } else {
-            $location = Location::with('device')->where('owner_id', $user->id)->find($id);
+            $location = Location::with(['device', 'zone', 'settings'])->where('owner_id', $user->id)->find($id);
         }
         
         if (!$location) {
@@ -299,6 +299,10 @@ class LocationController extends Controller
         $locationData = $location->toArray();
         $locationData['settings'] = $locationSettings;
         $locationData['device'] = $device;
+        
+        // Add zone-related information
+        $locationData['is_primary_in_zone'] = $location->isPrimaryInZone();
+        $locationData['can_edit_settings'] = $location->canEditSettings();
         
         if ($device) {
             $device->is_online = false;

@@ -80,4 +80,77 @@ class Location extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    /**
+     * Get the zone this location belongs to.
+     */
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+
+    /**
+     * Get the effective settings for this location.
+     * If in a zone and not primary, returns primary location's settings.
+     * Otherwise, returns own settings.
+     */
+    public function getEffectiveSettings()
+    {
+        if ($this->zone_id && !$this->isPrimaryInZone()) {
+            $zone = $this->zone()->with('primaryLocation.settings')->first();
+            if ($zone && $zone->primaryLocation && $zone->primaryLocation->settings) {
+                return $zone->primaryLocation->settings;
+            }
+        }
+        
+        return $this->settings;
+    }
+
+    /**
+     * Check if this location is the primary location in its zone.
+     */
+    public function isPrimaryInZone()
+    {
+        if (!$this->zone_id) {
+            return false;
+        }
+
+        $zone = $this->zone;
+        return $zone && $zone->primary_location_id === $this->id;
+    }
+
+    /**
+     * Check if this location can edit its own settings.
+     * Returns false if in a zone and not the primary location.
+     */
+    public function canEditSettings()
+    {
+        if (!$this->zone_id) {
+            return true;
+        }
+
+        return $this->isPrimaryInZone();
+    }
+
+    /**
+     * Decouple this location from its zone.
+     */
+    public function decoupleFromZone()
+    {
+        if ($this->zone_id) {
+            // If this is the primary location, clear the zone's primary
+            $zone = $this->zone;
+            if ($zone && $zone->primary_location_id === $this->id) {
+                $zone->primary_location_id = null;
+                $zone->save();
+            }
+
+            $this->zone_id = null;
+            $this->save();
+
+            return true;
+        }
+
+        return false;
+    }
 }

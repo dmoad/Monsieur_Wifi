@@ -88,8 +88,8 @@ class DeviceController extends Controller
             $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
         }
         
-        // Set firmware_id - either the found firmware ID or 0 if no firmware found
-        $device->firmware_id = $firmware ? $firmware->id : 0;
+        // Set firmware_id - either the found firmware ID or null if no firmware found
+        $device->firmware_id = $firmware ? $firmware->id : null;
         $device->save();
 
         return redirect()->route('devices.index')

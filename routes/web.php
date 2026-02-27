@@ -92,7 +92,8 @@ Route::prefix('en')->name('en.')->group(function () {
     })->name('system-settings');
     
     Route::get('/profile', function () {
-        return view('profile-en');
+        $locale = 'en'; 
+        return view('profile-en', compact('locale'));
     })->name('profile');
     
     Route::get('/location-details', function () {
@@ -106,6 +107,15 @@ Route::prefix('en')->name('en.')->group(function () {
     Route::get('/locations/{location}/guests', function ($location) {
         return view('location-guests', compact('location'));
     })->name('location-guests');
+    
+    // Zones
+    Route::get('/zones', function () {
+        return view('zones-en');
+    })->name('zones');
+    
+    Route::get('/zones/{zone}', function ($zone) {
+        return view('zone-details-en', compact('zone'));
+    })->name('zone-details');
     
     Route::get('/firmware', function () {
         return view('firmware-en');
@@ -158,6 +168,15 @@ Route::prefix('fr')->name('fr.')->group(function () {
     Route::get('/locations/{location}/guests', function ($location) {
         return view('location-guests-fr', compact('location'));
     })->name('location-guests');
+    
+    // Zones
+    Route::get('/zones', function () {
+        return view('zones-fr');
+    })->name('zones');
+    
+    Route::get('/zones/{zone}', function ($zone) {
+        return view('zone-details-fr', compact('zone'));
+    })->name('zone-details');
 
     Route::get('/locations/analytics/{location_id}', function ($location_id) {
         return view('location-analytics', compact('location_id'));
@@ -168,7 +187,8 @@ Route::prefix('fr')->name('fr.')->group(function () {
     })->name('system-settings');
     
     Route::get('/profile', function () {
-        return view('profile-fr');
+        $locale = 'fr';
+        return view('profile-fr', compact('locale'));
     })->name('profile');
     
     Route::get('/location-details', function () {

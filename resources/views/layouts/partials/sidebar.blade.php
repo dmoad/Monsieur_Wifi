@@ -22,6 +22,9 @@
             <li class="nav-item {{ request()->is('*/dashboard') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/dashboard"><i data-feather="home"></i><span class="menu-title text-truncate">Dashboard</span></a>
             </li>
+            <li class="nav-item {{ request()->is('*/zones*') ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="/{{ $locale }}/zones"><i data-feather="layers"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Zones' : 'Zones' }}</span></a>
+            </li>
             <li class="nav-item {{ request()->is('*/locations') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/locations"><i data-feather="map-pin"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Emplacements' : 'Locations' }}</span></a>
             </li>

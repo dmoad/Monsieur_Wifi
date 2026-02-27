@@ -81,7 +81,7 @@ function displayModels(modelsData) {
     
     models.forEach(model => {
         const imageUrl = model.primary_image || '/app-assets/images/placeholder.png';
-        const stockQty = model.inventory ? model.inventory.available_quantity || 0 : 0;
+        const stockQty = model.available_quantity || 0;
         const stockBadge = stockQty > 0 
             ? `<span class="badge badge-success">${stockQty}</span>`
             : `<span class="badge badge-danger">${PAGE_LOCALE === 'fr' ? 'Épuisé' : 'Out of Stock'}</span>`;

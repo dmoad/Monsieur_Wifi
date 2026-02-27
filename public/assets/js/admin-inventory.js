@@ -1,4 +1,6 @@
 // Admin inventory management
+const PAGE_LOCALE = document.documentElement.lang || 'en';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for UserManager to be available
     if (typeof UserManager === 'undefined') {
@@ -18,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check if user is admin or superadmin
     if (!UserManager.isAdminOrAbove()) {
-        toastr.error('You do not have permission to access this page.');
-        window.location.href = '/en/dashboard';
+        toastr.error(PAGE_LOCALE === 'fr' ? 'Vous n\'avez pas la permission d\'accéder à cette page.' : 'You do not have permission to access this page.');
+        window.location.href = `/${PAGE_LOCALE}/dashboard`;
         return;
     }
     
@@ -111,7 +113,7 @@ function displayInventory(products) {
     const container = document.getElementById('inventory-list');
     
     if (products.length === 0) {
-        container.innerHTML = '<div class="card"><div class="card-body text-center">No products found</div></div>';
+        container.innerHTML = `<div class="card"><div class="card-body text-center">${PAGE_LOCALE === 'fr' ? 'Aucun produit trouvé' : 'No products found'}</div></div>`;
         return;
     }
     
@@ -143,11 +145,11 @@ function displayInventory(products) {
                         ${stockStatus}
                     </div>
                     <div class="col-md-2 text-right">
-                        <button class="btn btn-sm btn-info" onclick="viewDevices(${product.id}, '${product.name}')" title="View Devices">
-                            <i data-feather="list"></i> Devices
+                        <button class="btn btn-sm btn-success" onclick="viewDevices(${product.id}, '${product.name}')" title="${PAGE_LOCALE === 'fr' ? 'Voir/Ajouter des appareils' : 'View/Add Devices'}">
+                            <i data-feather="package"></i> ${PAGE_LOCALE === 'fr' ? 'Appareils' : 'Devices'}
                         </button>
-                        <button class="btn btn-sm btn-primary" onclick="showUpdateModal(${product.id}, '${product.name}', ${inventory.quantity}, ${inventory.low_stock_threshold})">
-                            <i data-feather="edit"></i> Update
+                        <button class="btn btn-sm btn-outline-secondary" onclick="showUpdateModal(${product.id}, '${product.name}', ${inventory.quantity}, ${inventory.low_stock_threshold})" title="${PAGE_LOCALE === 'fr' ? 'Réglages' : 'Settings'}">
+                            <i data-feather="settings"></i>
                         </button>
                     </div>
                 </div>
@@ -161,11 +163,11 @@ function displayInventory(products) {
 
 function getStockStatus(inventory) {
     if (inventory.quantity <= 0) {
-        return '<span class="badge badge-danger">Out of Stock</span>';
+        return `<span class="badge badge-danger">${PAGE_LOCALE === 'fr' ? 'Rupture de Stock' : 'Out of Stock'}</span>`;
     } else if (inventory.quantity <= inventory.low_stock_threshold) {
-        return '<span class="badge badge-warning">Low Stock</span>';
+        return `<span class="badge badge-warning">${PAGE_LOCALE === 'fr' ? 'Stock Faible' : 'Low Stock'}</span>`;
     } else {
-        return '<span class="badge badge-success">In Stock</span>';
+        return `<span class="badge badge-success">${PAGE_LOCALE === 'fr' ? 'En Stock' : 'In Stock'}</span>`;
     }
 }
 
@@ -342,44 +344,45 @@ function displayDevicesModal(productId, productName, items) {
         const statusBadge = getDeviceStatusBadge(item.status);
         return `
             <tr>
-                <td>${item.mac_address}</td>
-                <td>${item.serial_number}</td>
+                <td><code>${item.mac_address}</code></td>
+                <td><code>${item.serial_number}</code></td>
                 <td>${statusBadge}</td>
                 <td>
                     <small class="text-muted">${item.notes || '-'}</small>
                 </td>
                 <td>
                     ${item.status !== 'sold' ? `
-                        <button class="btn btn-xs btn-primary" onclick="editDevice(${productId}, ${item.id}, '${item.mac_address}', '${item.serial_number}', '${item.status}', '${item.notes || ''}')">
+                        <button class="btn btn-xs btn-primary" onclick="editDevice(${productId}, ${item.id}, '${item.mac_address}', '${item.serial_number}', '${item.status}', '${item.notes || ''}')" title="${PAGE_LOCALE === 'fr' ? 'Modifier' : 'Edit'}">
                             <i data-feather="edit"></i>
                         </button>
-                        <button class="btn btn-xs btn-danger" onclick="deleteDevice(${productId}, ${item.id})">
+                        <button class="btn btn-xs btn-danger" onclick="deleteDevice(${productId}, ${item.id})" title="${PAGE_LOCALE === 'fr' ? 'Supprimer' : 'Delete'}">
                             <i data-feather="trash-2"></i>
                         </button>
                     ` : ''}
                 </td>
             </tr>
         `;
-    }).join('') : '<tr><td colspan="5" class="text-center">No devices found</td></tr>';
+    }).join('') : `<tr><td colspan="5" class="text-center">${PAGE_LOCALE === 'fr' ? 'Aucun appareil trouvé' : 'No devices found'}</td></tr>`;
     
     document.getElementById('modal-content').innerHTML = `
         <h5>${productName}</h5>
+        <p class="text-muted">${PAGE_LOCALE === 'fr' ? 'Gérez les appareils individuels avec leurs adresses MAC et numéros de série' : 'Manage individual devices with their MAC addresses and serial numbers'}</p>
         
         <div class="mb-3">
             <button class="btn btn-success btn-sm" onclick="showAddDeviceForm(${productId})">
-                <i data-feather="plus"></i> Add Device
+                <i data-feather="plus"></i> ${PAGE_LOCALE === 'fr' ? 'Ajouter un Appareil' : 'Add Device'}
             </button>
         </div>
         
         <div class="table-responsive">
-            <table class="table table-sm">
+            <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th>MAC Address</th>
-                        <th>Serial Number</th>
-                        <th>Status</th>
-                        <th>Notes</th>
-                        <th>Actions</th>
+                        <th>${PAGE_LOCALE === 'fr' ? 'Adresse MAC' : 'MAC Address'}</th>
+                        <th>${PAGE_LOCALE === 'fr' ? 'Numéro de Série' : 'Serial Number'}</th>
+                        <th>${PAGE_LOCALE === 'fr' ? 'Statut' : 'Status'}</th>
+                        <th>${PAGE_LOCALE === 'fr' ? 'Notes' : 'Notes'}</th>
+                        <th>${PAGE_LOCALE === 'fr' ? 'Actions' : 'Actions'}</th>
                     </tr>
                 </thead>
                 <tbody id="devices-table-body">
@@ -389,7 +392,7 @@ function displayDevicesModal(productId, productName, items) {
         </div>
         
         <div class="text-right">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">${PAGE_LOCALE === 'fr' ? 'Fermer' : 'Close'}</button>
         </div>
     `;
     
@@ -398,7 +401,12 @@ function displayDevicesModal(productId, productName, items) {
 }
 
 function getDeviceStatusBadge(status) {
-    const badges = {
+    const badges = PAGE_LOCALE === 'fr' ? {
+        'available': '<span class="badge badge-success">Disponible</span>',
+        'reserved': '<span class="badge badge-warning">Réservé</span>',
+        'sold': '<span class="badge badge-secondary">Vendu</span>',
+        'defective': '<span class="badge badge-danger">Défectueux</span>'
+    } : {
         'available': '<span class="badge badge-success">Available</span>',
         'reserved': '<span class="badge badge-warning">Reserved</span>',
         'sold': '<span class="badge badge-secondary">Sold</span>',
@@ -409,31 +417,32 @@ function getDeviceStatusBadge(status) {
 
 function showAddDeviceForm(productId) {
     document.getElementById('modal-content').innerHTML = `
-        <h5>Add New Device</h5>
+        <h5>${PAGE_LOCALE === 'fr' ? 'Ajouter un Nouvel Appareil' : 'Add New Device'}</h5>
         <form id="add-device-form">
             <div class="form-group">
-                <label>MAC Address *</label>
-                <input type="text" id="mac-address" class="form-control" required placeholder="00:11:22:33:44:55">
+                <label>${PAGE_LOCALE === 'fr' ? 'Adresse MAC' : 'MAC Address'} *</label>
+                <input type="text" id="mac-address" class="form-control" required placeholder="00:11:22:33:44:55" pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
+                <small class="form-text text-muted">${PAGE_LOCALE === 'fr' ? 'Format: 00:11:22:33:44:55' : 'Format: 00:11:22:33:44:55'}</small>
             </div>
             
             <div class="form-group">
-                <label>Serial Number *</label>
+                <label>${PAGE_LOCALE === 'fr' ? 'Numéro de Série' : 'Serial Number'} *</label>
                 <input type="text" id="serial-number" class="form-control" required placeholder="SN123456789">
             </div>
             
             <div class="form-group">
-                <label>Notes</label>
-                <textarea id="device-notes" class="form-control" rows="2"></textarea>
+                <label>${PAGE_LOCALE === 'fr' ? 'Notes' : 'Notes'}</label>
+                <textarea id="device-notes" class="form-control" rows="2" placeholder="${PAGE_LOCALE === 'fr' ? 'Notes optionnelles sur cet appareil' : 'Optional notes about this device'}"></textarea>
             </div>
             
             <div class="form-group">
-                <label>Received Date</label>
+                <label>${PAGE_LOCALE === 'fr' ? 'Date de Réception' : 'Received Date'}</label>
                 <input type="date" id="received-at" class="form-control" value="${new Date().toISOString().split('T')[0]}">
             </div>
             
             <div class="text-right">
-                <button type="button" class="btn btn-secondary" onclick="viewDevices(${productId}, '')">Cancel</button>
-                <button type="button" class="btn btn-success" onclick="addDevice(${productId})">Add Device</button>
+                <button type="button" class="btn btn-secondary" onclick="viewDevices(${productId}, '')">${PAGE_LOCALE === 'fr' ? 'Annuler' : 'Cancel'}</button>
+                <button type="button" class="btn btn-success" onclick="addDevice(${productId})">${PAGE_LOCALE === 'fr' ? 'Ajouter l\'Appareil' : 'Add Device'}</button>
             </div>
         </form>
     `;
@@ -447,7 +456,7 @@ async function addDevice(productId) {
     const receivedAt = document.getElementById('received-at').value;
     
     if (!macAddress || !serialNumber) {
-        toastr.error('MAC Address and Serial Number are required');
+        toastr.error(PAGE_LOCALE === 'fr' ? 'L\'adresse MAC et le numéro de série sont requis' : 'MAC Address and Serial Number are required');
         return;
     }
     
@@ -476,7 +485,7 @@ async function addDevice(productId) {
         const data = await response.json();
         
         if (response.ok) {
-            toastr.success('Device added successfully');
+            toastr.success(PAGE_LOCALE === 'fr' ? 'Appareil ajouté avec succès' : 'Device added successfully');
             loadSummary();
             loadInventory();
             viewDevices(productId, '');
@@ -485,49 +494,61 @@ async function addDevice(productId) {
             if (errors) {
                 Object.values(errors).forEach(err => toastr.error(err[0]));
             } else {
-                toastr.error(data.message || 'Failed to add device');
+                toastr.error(data.message || (PAGE_LOCALE === 'fr' ? 'Échec de l\'ajout de l\'appareil' : 'Failed to add device'));
             }
         }
     } catch (error) {
         console.error('Error adding device:', error);
-        toastr.error('Failed to add device: ' + error.message);
+        toastr.error((PAGE_LOCALE === 'fr' ? 'Échec de l\'ajout de l\'appareil: ' : 'Failed to add device: ') + error.message);
     }
 }
 
 function editDevice(productId, itemId, macAddress, serialNumber, status, notes) {
+    const statusOptions = PAGE_LOCALE === 'fr' ? {
+        'available': 'Disponible',
+        'reserved': 'Réservé',
+        'sold': 'Vendu',
+        'defective': 'Défectueux'
+    } : {
+        'available': 'Available',
+        'reserved': 'Reserved',
+        'sold': 'Sold',
+        'defective': 'Defective'
+    };
+    
     document.getElementById('modal-content').innerHTML = `
-        <h5>Edit Device</h5>
+        <h5>${PAGE_LOCALE === 'fr' ? 'Modifier l\'Appareil' : 'Edit Device'}</h5>
         <form id="edit-device-form">
             <input type="hidden" id="item-id" value="${itemId}">
             
             <div class="form-group">
-                <label>MAC Address *</label>
-                <input type="text" id="mac-address" class="form-control" required value="${macAddress}">
+                <label>${PAGE_LOCALE === 'fr' ? 'Adresse MAC' : 'MAC Address'} *</label>
+                <input type="text" id="mac-address" class="form-control" required value="${macAddress}" pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
             </div>
             
             <div class="form-group">
-                <label>Serial Number *</label>
+                <label>${PAGE_LOCALE === 'fr' ? 'Numéro de Série' : 'Serial Number'} *</label>
                 <input type="text" id="serial-number" class="form-control" required value="${serialNumber}">
             </div>
             
             <div class="form-group">
-                <label>Status</label>
+                <label>${PAGE_LOCALE === 'fr' ? 'Statut' : 'Status'}</label>
                 <select id="device-status" class="form-control">
-                    <option value="available" ${status === 'available' ? 'selected' : ''}>Available</option>
-                    <option value="reserved" ${status === 'reserved' ? 'selected' : ''}>Reserved</option>
-                    <option value="sold" ${status === 'sold' ? 'selected' : ''}>Sold</option>
-                    <option value="defective" ${status === 'defective' ? 'selected' : ''}>Defective</option>
+                    <option value="available" ${status === 'available' ? 'selected' : ''}>${statusOptions.available}</option>
+                    <option value="reserved" ${status === 'reserved' ? 'selected' : ''}>${statusOptions.reserved}</option>
+                    <option value="sold" ${status === 'sold' ? 'selected' : ''}>${statusOptions.sold}</option>
+                    <option value="defective" ${status === 'defective' ? 'selected' : ''}>${statusOptions.defective}</option>
                 </select>
             </div>
             
             <div class="form-group">
-                <label>Notes</label>
+                <label>${PAGE_LOCALE === 'fr' ? 'Notes' : 'Notes'}</label>
                 <textarea id="device-notes" class="form-control" rows="2">${notes}</textarea>
             </div>
             
             <div class="text-right">
-                <button type="button" class="btn btn-secondary" onclick="viewDevices(${productId}, '')">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="updateDevice(${productId}, ${itemId})">Update Device</button>
+                <button type="button" class="btn btn-secondary" onclick="viewDevices(${productId}, '')">${PAGE_LOCALE === 'fr' ? 'Annuler' : 'Cancel'}</button>
+                <button type="button" class="btn btn-primary" onclick="updateDevice(${productId}, ${itemId})">${PAGE_LOCALE === 'fr' ? 'Mettre à Jour' : 'Update Device'}</button>
             </div>
         </form>
     `;
@@ -565,7 +586,7 @@ async function updateDevice(productId, itemId) {
         const data = await response.json();
         
         if (response.ok) {
-            toastr.success('Device updated successfully');
+            toastr.success(PAGE_LOCALE === 'fr' ? 'Appareil mis à jour avec succès' : 'Device updated successfully');
             loadSummary();
             loadInventory();
             viewDevices(productId, '');
@@ -574,17 +595,17 @@ async function updateDevice(productId, itemId) {
             if (errors) {
                 Object.values(errors).forEach(err => toastr.error(err[0]));
             } else {
-                toastr.error(data.message || 'Failed to update device');
+                toastr.error(data.message || (PAGE_LOCALE === 'fr' ? 'Échec de la mise à jour de l\'appareil' : 'Failed to update device'));
             }
         }
     } catch (error) {
         console.error('Error updating device:', error);
-        toastr.error('Failed to update device: ' + error.message);
+        toastr.error((PAGE_LOCALE === 'fr' ? 'Échec de la mise à jour de l\'appareil: ' : 'Failed to update device: ') + error.message);
     }
 }
 
 async function deleteDevice(productId, itemId) {
-    if (!confirm('Are you sure you want to delete this device?')) {
+    if (!confirm(PAGE_LOCALE === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cet appareil?' : 'Are you sure you want to delete this device?')) {
         return;
     }
     
@@ -607,16 +628,16 @@ async function deleteDevice(productId, itemId) {
         }
         
         if (response.ok) {
-            toastr.success('Device deleted successfully');
+            toastr.success(PAGE_LOCALE === 'fr' ? 'Appareil supprimé avec succès' : 'Device deleted successfully');
             loadSummary();
             loadInventory();
             viewDevices(productId, '');
         } else {
             const data = await response.json();
-            toastr.error(data.message || 'Failed to delete device');
+            toastr.error(data.message || (PAGE_LOCALE === 'fr' ? 'Échec de la suppression de l\'appareil' : 'Failed to delete device'));
         }
     } catch (error) {
         console.error('Error deleting device:', error);
-        toastr.error('Failed to delete device: ' + error.message);
+        toastr.error((PAGE_LOCALE === 'fr' ? 'Échec de la suppression de l\'appareil: ' : 'Failed to delete device: ') + error.message);
     }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\CaptivePortalHourlyScheduleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
+use App\Http\Controllers\ZoneController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -258,6 +259,19 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     
     // Payment success endpoint (accessible by authenticated users)
     Route::get('/orders/{orderNumber}/success', [OrderController::class, 'success']);
+    
+    // Zones management
+    Route::prefix('zones')->group(function () {
+        Route::get('/', [ZoneController::class, 'index']);
+        Route::post('/', [ZoneController::class, 'store']);
+        Route::get('/{zone}', [ZoneController::class, 'show']);
+        Route::put('/{zone}', [ZoneController::class, 'update']);
+        Route::delete('/{zone}', [ZoneController::class, 'destroy']);
+        Route::get('/{zone}/available-locations', [ZoneController::class, 'getAvailableLocations']);
+        Route::post('/{zone}/locations/{location}', [ZoneController::class, 'addLocation']);
+        Route::delete('/{zone}/locations/{location}', [ZoneController::class, 'removeLocation']);
+        Route::put('/{zone}/primary/{location}', [ZoneController::class, 'setPrimaryLocation']);
+    });
 });
 
 // Admin-only endpoints
