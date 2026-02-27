@@ -325,6 +325,11 @@ class AuthController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
         
+        // Only superadmin can edit superadmin accounts
+        if($targetUser->role === 'superadmin' && $user->role !== 'superadmin') {
+            return response()->json(['error' => 'Only superadmin can edit superadmin accounts'], 403);
+        }
+        
         // Update the target user's fields
         if($request->has('name')) {
             $targetUser->name = $request->name;
@@ -332,10 +337,18 @@ class AuthController extends Controller
         if($request->has('email')) {
             $targetUser->email = $request->email;
         }
-        if($request->has('role') && $user->role == 'admin') {
+        if($request->has('role') && ($user->role == 'admin' || $user->role == 'superadmin')) {
+            // Only superadmin can assign superadmin role
+            if($request->role === 'superadmin' && $user->role !== 'superadmin') {
+                return response()->json(['error' => 'Only superadmin can assign superadmin role'], 403);
+            }
             $targetUser->role = $request->role;
         }
         if($request->has('password') && $request->password !== '' && $request->password !== null) {
+            // Only superadmin can change superadmin passwords
+            if($targetUser->role === 'superadmin' && $user->role !== 'superadmin') {
+                return response()->json(['error' => 'Only superadmin can change superadmin passwords'], 403);
+            }
             if($request->password !== $request->confirm_password) {
                 return response()->json(['error' => 'Passwords do not match'], 400);
             }
@@ -353,15 +366,26 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        // Validate role based on current user permissions
+        $allowedRoles = ['user', 'admin'];
+        if ($user->role === 'superadmin') {
+            $allowedRoles[] = 'superadmin';
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,user',
+            'role' => 'required|string|in:' . implode(',', $allowedRoles),
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+
+        // Additional check: only superadmin can create superadmin accounts
+        if ($request->role === 'superadmin' && $user->role !== 'superadmin') {
+            return response()->json(['error' => 'Only superadmin can create superadmin accounts'], 403);
         }
 
         $newUser = User::create([
@@ -369,6 +393,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'email_verified_at' => now(), // Auto-verify admin-created accounts
         ]);
 
         return response()->json([
@@ -380,15 +405,27 @@ class AuthController extends Controller
     public function deleteUser(Request $request, $id)
     
     {
-        $user = Auth::guard('api')->user();
-        if(!$user) {
+        $currentUser = Auth::guard('api')->user();
+        if(!$currentUser) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $user = User::find($id);
-        if(!$user) {
+        
+        $targetUser = User::find($id);
+        if(!$targetUser) {
             return response()->json(['error' => 'User not found'], 404);
         }
-        $user->delete();
+        
+        // Only superadmin can delete superadmin accounts
+        if($targetUser->role === 'superadmin' && $currentUser->role !== 'superadmin') {
+            return response()->json(['error' => 'Only superadmin can delete superadmin accounts'], 403);
+        }
+        
+        // Prevent users from deleting themselves
+        if($targetUser->id === $currentUser->id) {
+            return response()->json(['error' => 'You cannot delete your own account'], 400);
+        }
+        
+        $targetUser->delete();
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
 

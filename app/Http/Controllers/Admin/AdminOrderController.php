@@ -101,7 +101,9 @@ class AdminOrderController extends Controller
             'tracking_id' => 'required|string|max:255',
         ]);
 
-        $order = Order::where('order_number', $orderNumber)->firstOrFail();
+        $order = Order::with(['user', 'shippingAddress'])
+            ->where('order_number', $orderNumber)
+            ->firstOrFail();
 
         // Check if order can be shipped
         if ($order->status === 'cancelled') {
@@ -157,7 +159,9 @@ class AdminOrderController extends Controller
             'status' => 'required|in:processing,shipped,delivered,cancelled',
         ]);
 
-        $order = Order::where('order_number', $orderNumber)->firstOrFail();
+        $order = Order::with(['user', 'shippingAddress'])
+            ->where('order_number', $orderNumber)
+            ->firstOrFail();
 
         // Validate status transitions
         if ($order->status === 'cancelled') {
@@ -402,7 +406,12 @@ class AdminOrderController extends Controller
     public function confirmPayment($orderNumber)
     {
         try {
-            $order = Order::with('items.productModel.inventory')
+            $order = Order::with([
+                'items.productModel.inventory',
+                'user',
+                'shippingAddress',
+                'billingAddress'
+            ])
                 ->where('order_number', $orderNumber)
                 ->firstOrFail();
             
@@ -451,7 +460,12 @@ class AdminOrderController extends Controller
     public function confirmStripePayment($orderNumber)
     {
         try {
-            $order = Order::with('items.productModel.inventory')
+            $order = Order::with([
+                'items.productModel.inventory',
+                'user',
+                'shippingAddress',
+                'billingAddress'
+            ])
                 ->where('order_number', $orderNumber)
                 ->firstOrFail();
             

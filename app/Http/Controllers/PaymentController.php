@@ -177,7 +177,12 @@ class PaymentController extends Controller
             return;
         }
         
-        $order = Order::with('items.productModel.inventory')
+        $order = Order::with([
+            'items.productModel.inventory',
+            'user',
+            'shippingAddress',
+            'billingAddress'
+        ])
             ->where('order_number', $orderNumber)
             ->first();
         
@@ -240,7 +245,9 @@ class PaymentController extends Controller
             return;
         }
         
-        $order = Order::where('order_number', $orderNumber)->first();
+        $order = Order::with(['user', 'items.productModel'])
+            ->where('order_number', $orderNumber)
+            ->first();
         
         if (!$order) {
             Log::error('Order not found for failed payment intent', [
@@ -275,8 +282,13 @@ class PaymentController extends Controller
         }
         
         try {
-            // Get order belonging to authenticated user
-            $order = Order::with('items.productModel.inventory')
+            // Get order belonging to authenticated user with all relationships needed for email
+            $order = Order::with([
+                'items.productModel.inventory',
+                'user',
+                'shippingAddress',
+                'billingAddress'
+            ])
                 ->where('order_number', $orderNumber)
                 ->where('user_id', $user->id)
                 ->first();

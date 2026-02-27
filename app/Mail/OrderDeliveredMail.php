@@ -4,15 +4,13 @@ namespace App\Mail;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class OrderDeliveredMail extends Mailable implements ShouldQueue
+class OrderDeliveredMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
     public $order;
     public $locale;
@@ -43,6 +41,10 @@ class OrderDeliveredMail extends Mailable implements ShouldQueue
         
         return new Content(
             view: $this->locale === 'fr' ? 'emails.order-delivered-fr' : 'emails.order-delivered-en',
+            with: [
+                'order' => $this->order,
+                'locale' => $this->locale,
+            ],
         );
     }
 

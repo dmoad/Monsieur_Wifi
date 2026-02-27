@@ -4,15 +4,13 @@ namespace App\Mail;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class PaymentFailedMail extends Mailable implements ShouldQueue
+class PaymentFailedMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
     public $order;
     public $locale;
@@ -43,6 +41,10 @@ class PaymentFailedMail extends Mailable implements ShouldQueue
         
         return new Content(
             view: $this->locale === 'fr' ? 'emails.payment-failed-fr' : 'emails.payment-failed-en',
+            with: [
+                'order' => $this->order,
+                'locale' => $this->locale,
+            ],
         );
     }
 

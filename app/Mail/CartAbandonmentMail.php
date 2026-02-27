@@ -4,15 +4,13 @@ namespace App\Mail;
 
 use App\Models\Cart;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class CartAbandonmentMail extends Mailable implements ShouldQueue
+class CartAbandonmentMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
     public $cart;
     public $locale;
@@ -36,6 +34,10 @@ class CartAbandonmentMail extends Mailable implements ShouldQueue
     {
         return new Content(
             view: $this->locale === 'fr' ? 'emails.cart-abandonment-fr' : 'emails.cart-abandonment-en',
+            with: [
+                'cart' => $this->cart,
+                'locale' => $this->locale,
+            ],
         );
     }
 

@@ -3,6 +3,7 @@
 const TRANSLATIONS = {
     en: {
         admin: 'Admin',
+        superadmin: 'Super Admin',
         user: 'User',
         edit: 'Edit',
         delete: 'Delete',
@@ -25,6 +26,7 @@ const TRANSLATIONS = {
     },
     fr: {
         admin: 'Administrateur',
+        superadmin: 'Super Administrateur',
         user: 'Utilisateur',
         edit: 'Modifier',
         delete: 'Supprimer',
@@ -70,6 +72,11 @@ $(window).on('load', function() {
         const dashboardUrl = PAGE_LOCALE === 'fr' ? '/fr/dashboard' : '/en/dashboard';
         window.location.href = dashboardUrl;
         return;
+    }
+    
+    // Show superadmin option only if current user is superadmin
+    if (user.role === 'superadmin') {
+        $('.superadmin-only').show();
     }
     
     if ($.fn.select2) {
@@ -167,15 +174,20 @@ $(document).ready(function() {
                             profile_picture = `<img src="/uploads/profile_pictures/${profile_picture}" alt="Profile Picture" class="img-fluid" style="width: 50px; height: 50px;">`;
                         }
                         
-                        const roleBadge = role === 'admin' || role === 'superadmin'
-                            ? `<span class="badge badge-role-admin">${t.admin}</span>`
-                            : `<span class="badge badge-light-secondary">${t.user}</span>`;
+                        let roleBadge;
+                        if (role === 'superadmin') {
+                            roleBadge = `<span class="badge badge-role-superadmin">${t.superadmin}</span>`;
+                        } else if (role === 'admin') {
+                            roleBadge = `<span class="badge badge-role-admin">${t.admin}</span>`;
+                        } else {
+                            roleBadge = `<span class="badge badge-light-secondary">${t.user}</span>`;
+                        }
                         
                         const userId = users[i].id;
                         const actions = `<button class="btn btn-sm btn-primary edit-user-btn" data-user-id="${userId}" data-name="${name}" data-email="${email}" data-role="${role}" data-profile-picture="${profile_picture_path}">
                                           <i data-feather="edit-2"></i> ${t.edit}
                                        </button> 
-                                       <button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}">
+                                       <button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}" data-user-name="${name}" data-user-role="${role}">
                                           <i data-feather="trash-2"></i> ${t.delete}
                                        </button>`;
                         
@@ -323,13 +335,28 @@ $(document).ready(function() {
         const userRole = $(this).data('role');
         const userProfilePicture = $(this).data('profile-picture');
         
+        // Check if current user can edit this account
+        const currentUser = UserManager.getUser();
+        if (userRole === 'superadmin' && currentUser.role !== 'superadmin') {
+            toastr.error('Only Super Admin can edit Super Admin accounts', 'Permission Denied');
+            return;
+        }
+        
         $('#edit-user-modal').data('user-id', userId);
+        $('#edit-user-modal').data('original-role', userRole);
         
         $('#edit-user-name').val(userName);
         $('#edit-user-email').val(userEmail);
         $('#edit-user-role').val(userRole);
         $('#edit-user-password').val('');
         $('#edit-user-confirm-password').val('');
+        
+        // Show/hide superadmin option based on current user role
+        if (currentUser.role === 'superadmin') {
+            $('#edit-user-role option.superadmin-only').show();
+        } else {
+            $('#edit-user-role option.superadmin-only').hide();
+        }
         
         if (userProfilePicture && userProfilePicture !== 'null' && userProfilePicture !== '') {
             $('#edit-user-upload-img').attr('src', userProfilePicture);
@@ -366,11 +393,24 @@ $(document).ready(function() {
         e.preventDefault();
         
         const userId = $('#edit-user-modal').data('user-id');
+        const originalRole = $('#edit-user-modal').data('original-role');
         const name = $('#edit-user-name').val();
         const email = $('#edit-user-email').val();
         const role = $('#edit-user-role').val();
         const password = $('#edit-user-password').val();
         const confirmPassword = $('#edit-user-confirm-password').val();
+        
+        // Check if current user can perform this action
+        const currentUser = UserManager.getUser();
+        if (originalRole === 'superadmin' && currentUser.role !== 'superadmin') {
+            toastr.error('Only Super Admin can edit Super Admin accounts', 'Permission Denied');
+            return;
+        }
+        
+        if (role === 'superadmin' && currentUser.role !== 'superadmin') {
+            toastr.error('Only Super Admin can assign Super Admin role', 'Permission Denied');
+            return;
+        }
         
         if (!name || !email || !role) {
             toastr.error(t.validationError, 'Validation Error');
@@ -466,7 +506,15 @@ $(document).ready(function() {
 
     $(document).on('click', '.delete-user-btn', function() {
         const userId = $(this).data('user-id');
-        const userName = $(this).closest('tr').find('td:nth-child(2)').text();
+        const userName = $(this).data('user-name');
+        const userRole = $(this).data('user-role');
+        
+        // Check if current user can delete this account
+        const currentUser = UserManager.getUser();
+        if (userRole === 'superadmin' && currentUser.role !== 'superadmin') {
+            toastr.error('Only Super Admin can delete Super Admin accounts', 'Permission Denied');
+            return;
+        }
         
         if (confirm(`${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`)) {
             const $button = $(this);

@@ -236,7 +236,12 @@ class OrderController extends Controller
         $isAdmin = $user && $user->role === 'admin';
         
         // Admin can process any order, regular users can only process their own
-        $query = Order::with('items.productModel.inventory')
+        $query = Order::with([
+            'items.productModel.inventory',
+            'user',
+            'shippingAddress',
+            'billingAddress'
+        ])
             ->where('order_number', $orderNumber);
             
         if (!$isAdmin) {

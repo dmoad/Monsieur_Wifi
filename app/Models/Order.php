@@ -109,10 +109,19 @@ class Order extends Model
         $this->status = 'processing';
         $this->save();
         
-        // Ensure user relationship is loaded to get locale and email
-        if (!$this->relationLoaded('user')) {
-            $this->load('user');
-        }
+        // Force reload all required relationships for email (don't use conditional check)
+        $this->load(['user', 'items.productModel', 'shippingAddress', 'billingAddress']);
+        
+        // DEBUG: Log what we have before sending email
+        \Log::info('DEBUG: markAsPaid - About to send email', [
+            'order_id' => $this->id,
+            'user_id' => $this->user_id,
+            'user_object_null' => is_null($this->user),
+            'user_name' => $this->user ? $this->user->name : 'NULL',
+            'has_shippingAddress' => !is_null($this->shippingAddress),
+            'has_billingAddress' => !is_null($this->billingAddress),
+            'items_count' => $this->items->count()
+        ]);
         
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new OrderProcessedMail($this, $locale));
@@ -129,10 +138,8 @@ class Order extends Model
         $this->shipped_at = Carbon::now();
         $this->save();
         
-        // Ensure user relationship is loaded to get locale and email
-        if (!$this->relationLoaded('user')) {
-            $this->load('user');
-        }
+        // Force reload all required relationships for email
+        $this->load(['user', 'shippingAddress']);
         
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new ShippingTrackingMail($this, $locale));
@@ -147,10 +154,8 @@ class Order extends Model
         $this->delivered_at = Carbon::now();
         $this->save();
         
-        // Ensure user relationship is loaded to get locale and email
-        if (!$this->relationLoaded('user')) {
-            $this->load('user');
-        }
+        // Force reload all required relationships for email
+        $this->load(['user', 'shippingAddress']);
         
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new OrderDeliveredMail($this, $locale));
@@ -170,10 +175,8 @@ class Order extends Model
         
         $this->save();
         
-        // Ensure user relationship is loaded to get locale and email
-        if (!$this->relationLoaded('user')) {
-            $this->load('user');
-        }
+        // Force reload all required relationships for email
+        $this->load(['user', 'items.productModel']);
         
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new PaymentFailedMail($this, $locale));

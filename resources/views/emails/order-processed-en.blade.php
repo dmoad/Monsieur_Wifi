@@ -34,7 +34,7 @@
                 <h3 style="margin-top: 0;">Order Summary</h3>
                 @foreach($order->items as $item)
                 <div class="order-item">
-                    <span>{{ $item->product_model->name }} × {{ $item->quantity }}</span>
+                    <span>{{ $item->productModel->name }} × {{ $item->quantity }}</span>
                     <span>${{ number_format($item->subtotal, 2) }}</span>
                 </div>
                 @endforeach

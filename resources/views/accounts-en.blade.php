@@ -41,6 +41,11 @@
         background-color: rgba(108, 117, 125, 0.12);
         color: #6c757d;
     }
+    
+    .badge-role-superadmin {
+        background-color: rgba(234, 84, 85, 0.12);
+        color: #ea5455;
+    }
 </style>
 @endpush
 
@@ -178,6 +183,7 @@
                                     <option value="">Select Role</option>
                                     <option value="user">User</option>
                                     <option value="admin">Admin</option>
+                                    <option value="superadmin" class="superadmin-only" style="display:none;">Super Admin</option>
                                 </select>
                             </div>
                         </div>
@@ -268,6 +274,7 @@
                                     <option value="">Select Role</option>
                                     <option value="user">User</option>
                                     <option value="admin">Admin</option>
+                                    <option value="superadmin" class="superadmin-only" style="display:none;">Super Admin</option>
                                 </select>
                             </div>
                         </div>
