@@ -50,6 +50,9 @@ const TRANSLATIONS = {
 
 const T = TRANSLATIONS[PAGE_LOCALE];
 let currentZoneId = null;
+let allZones = [];
+let currentPage = 1;
+let itemsPerPage = 25;
 
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof UserManager === 'undefined') {
@@ -68,6 +71,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     renderAdminAlert();
     loadZones();
+    
+    // Load users for admin/superadmin
+    if (UserManager.isAdminOrAbove()) {
+        loadUsersForZones();
+    }
 });
 
 function renderAdminAlert() {
@@ -82,6 +90,47 @@ function renderAdminAlert() {
             </div>
         `;
         feather.replace();
+    }
+}
+
+async function loadUsersForZones() {
+    console.log('loadUsersForZones called');
+    console.log('isAdminOrAbove:', UserManager.isAdminOrAbove());
+    
+    if (!UserManager.isAdminOrAbove()) {
+        console.log('User is not admin, skipping user load');
+        return;
+    }
+    
+    const token = UserManager.getToken();
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load users');
+        
+        const data = await response.json();
+        console.log('Users loaded:', data.users.length);
+        const select = document.getElementById('zone-owner-select');
+        
+        if (select) {
+            let options = `<option value="">${PAGE_LOCALE === 'fr' ? 'Sélectionner le propriétaire...' : 'Select owner...'}</option>`;
+            data.users.forEach(user => {
+                options += `<option value="${user.id}">${user.name} (${user.email})</option>`;
+            });
+            
+            select.innerHTML = options;
+            console.log('User dropdown populated');
+        } else {
+            console.error('zone-owner-select element not found');
+        }
+    } catch (error) {
+        console.error('Error loading users:', error);
     }
 }
 
@@ -106,7 +155,9 @@ async function loadZones() {
         }
         
         const data = await response.json();
-        displayZones(data.zones || []);
+        allZones = data.zones || [];
+        currentPage = 1;
+        displayZones();
     } catch (error) {
         console.error('Error loading zones:', error);
         toastr.error(T.errorLoading);
@@ -122,17 +173,18 @@ async function loadZones() {
     }
 }
 
-function displayZones(zones) {
+function displayZones() {
     const listEl = document.getElementById('zones-list');
+    const paginationEl = document.getElementById('pagination-container');
     const isAdmin = UserManager.isAdminOrAbove();
     
-    if (zones.length === 0) {
+    if (allZones.length === 0) {
         listEl.innerHTML = `
             <div class="card">
                 <div class="card-body">
                     <div class="empty-state">
                         <div class="empty-state-icon">
-                            <i data-feather="layers" style="width: 40px; height: 40px;"></i>
+                            <i data-feather="layers" style="width: 32px; height: 32px;"></i>
                         </div>
                         <h4>${T.noZones}</h4>
                         <p class="text-muted">${T.noZonesDesc}</p>
@@ -143,23 +195,39 @@ function displayZones(zones) {
                 </div>
             </div>
         `;
+        paginationEl.innerHTML = '';
         feather.replace();
         return;
     }
     
     const locale = PAGE_LOCALE === 'fr' ? 'fr' : 'en';
     
-    listEl.innerHTML = zones.map(zone => {
+    // Calculate pagination
+    const totalItems = allZones.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    const currentZones = allZones.slice(startIndex, endIndex);
+    
+    // Display zones
+    listEl.innerHTML = currentZones.map(zone => {
         const locationCount = zone.location_count || zone.locations?.length || 0;
-        const ownerName = zone.owner ? `${zone.owner.name} (${zone.owner.email})` : '';
+        const ownerName = zone.owner ? `${zone.owner.name}` : '';
+        const ownerEmail = zone.owner ? `${zone.owner.email}` : '';
         
         return `
             <div class="zone-card">
-                <div class="zone-header">
-                    <div class="flex-grow-1">
-                        <h3 class="zone-name">${zone.name}</h3>
-                        ${zone.description ? `<p class="zone-description">${zone.description}</p>` : ''}
-                        ${isAdmin && zone.owner ? `<small class="text-muted"><i data-feather="user" style="width: 14px; height: 14px;"></i> ${ownerName}</small>` : ''}
+                <div class="zone-row">
+                    <div class="zone-info">
+                        <div class="zone-name">${zone.name}</div>
+                        <div class="zone-meta">
+                            ${zone.description ? `<span class="zone-description" title="${zone.description}">${zone.description}</span>` : ''}
+                            <span class="zone-stat">
+                                <i data-feather="map-pin"></i>
+                                ${locationCount} ${T.locations}
+                            </span>
+                            ${isAdmin && zone.owner ? `<span class="zone-owner"><i data-feather="user"></i> ${ownerName}</span>` : ''}
+                        </div>
                     </div>
                     <div class="zone-actions">
                         <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='/${locale}/zones/${zone.id}'" title="${T.viewDetails}">
@@ -173,24 +241,99 @@ function displayZones(zones) {
                         </button>
                     </div>
                 </div>
-                <div class="zone-body">
-                    <div class="zone-stats">
-                        <div class="zone-stat">
-                            <div class="zone-stat-icon bg-light-primary text-primary">
-                                <i data-feather="map-pin"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted">${T.locations}</small>
-                                <h5 class="mb-0">${locationCount}</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         `;
     }).join('');
     
+    // Display pagination
+    if (totalPages > 1) {
+        const showingText = PAGE_LOCALE === 'fr' 
+            ? `Affichage ${startIndex + 1}-${endIndex} sur ${totalItems}`
+            : `Showing ${startIndex + 1}-${endIndex} of ${totalItems}`;
+        
+        let paginationButtons = '';
+        
+        // Previous button
+        paginationButtons += `
+            <button class="btn btn-sm btn-outline-primary" 
+                    onclick="goToPage(${currentPage - 1})" 
+                    ${currentPage === 1 ? 'disabled' : ''}>
+                <i data-feather="chevron-left"></i>
+            </button>
+        `;
+        
+        // Page numbers
+        const maxPageButtons = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+        let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+        
+        if (endPage - startPage < maxPageButtons - 1) {
+            startPage = Math.max(1, endPage - maxPageButtons + 1);
+        }
+        
+        if (startPage > 1) {
+            paginationButtons += `
+                <button class="btn btn-sm btn-outline-primary" onclick="goToPage(1)">1</button>
+            `;
+            if (startPage > 2) {
+                paginationButtons += `<span class="mx-2">...</span>`;
+            }
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            paginationButtons += `
+                <button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'}" 
+                        onclick="goToPage(${i})">
+                    ${i}
+                </button>
+            `;
+        }
+        
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                paginationButtons += `<span class="mx-2">...</span>`;
+            }
+            paginationButtons += `
+                <button class="btn btn-sm btn-outline-primary" onclick="goToPage(${totalPages})">${totalPages}</button>
+            `;
+        }
+        
+        // Next button
+        paginationButtons += `
+            <button class="btn btn-sm btn-outline-primary" 
+                    onclick="goToPage(${currentPage + 1})" 
+                    ${currentPage === totalPages ? 'disabled' : ''}>
+                <i data-feather="chevron-right"></i>
+            </button>
+        `;
+        
+        paginationEl.innerHTML = `
+            <div class="pagination-controls">
+                <div class="pagination-info">${showingText}</div>
+                <div class="pagination-buttons">${paginationButtons}</div>
+            </div>
+        `;
+    } else {
+        paginationEl.innerHTML = '';
+    }
+    
     feather.replace();
+}
+
+function goToPage(page) {
+    const totalPages = Math.ceil(allZones.length / itemsPerPage);
+    if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        displayZones();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function changeItemsPerPage() {
+    const select = document.getElementById('items-per-page');
+    itemsPerPage = parseInt(select.value);
+    currentPage = 1;
+    displayZones();
 }
 
 function showZoneModal(zoneId = null) {
@@ -205,6 +348,28 @@ function showZoneModal(zoneId = null) {
     const primaryInfoContainer = document.getElementById('primary-location-info-edit');
     if (primaryInfoContainer) {
         primaryInfoContainer.innerHTML = '';
+    }
+    
+    // Show/hide owner dropdown based on admin status and mode
+    console.log('showZoneModal - zoneId:', zoneId);
+    console.log('showZoneModal - isAdminOrAbove:', UserManager.isAdminOrAbove());
+    
+    const ownerGroup = document.getElementById('zone-owner-select-group');
+    console.log('ownerGroup element:', ownerGroup);
+    
+    if (ownerGroup) {
+        const shouldShow = UserManager.isAdminOrAbove() && !zoneId;
+        console.log('shouldShow owner dropdown:', shouldShow);
+        
+        if (shouldShow) {
+            ownerGroup.style.display = 'block';
+            console.log('Owner dropdown shown');
+        } else {
+            ownerGroup.style.display = 'none';
+            console.log('Owner dropdown hidden');
+        }
+    } else {
+        console.error('zone-owner-select-group element not found!');
     }
     
     if (zoneId) {
@@ -335,6 +500,16 @@ async function saveZone() {
         ? `${APP_CONFIG.API.BASE_URL}/v1/zones/${zoneId}`
         : `${APP_CONFIG.API.BASE_URL}/v1/zones`;
     
+    const payload = { name, description };
+    
+    // Add owner_id if admin is creating for another user
+    if (!isEdit && UserManager.isAdminOrAbove()) {
+        const ownerId = document.getElementById('zone-owner-select')?.value;
+        if (ownerId) {
+            payload.owner_id = ownerId;
+        }
+    }
+    
     try {
         const response = await fetch(url, {
             method: isEdit ? 'PUT' : 'POST',
@@ -343,7 +518,7 @@ async function saveZone() {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ name, description })
+            body: JSON.stringify(payload)
         });
         
         const data = await response.json();
@@ -361,7 +536,7 @@ async function saveZone() {
         
         toastr.success(T.zoneSaved);
         $('#zone-modal').modal('hide');
-        loadZones();
+        await loadZones();
     } catch (error) {
         console.error('Error saving zone:', error);
         toastr.error(T.errorSaving);
@@ -391,7 +566,7 @@ async function deleteZone(zoneId) {
         }
         
         toastr.success(T.zoneDeleted);
-        loadZones();
+        await loadZones();
     } catch (error) {
         console.error('Error deleting zone:', error);
         toastr.error(T.errorDeleting);

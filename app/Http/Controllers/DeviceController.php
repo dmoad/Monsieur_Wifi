@@ -904,4 +904,150 @@ class DeviceController extends Controller
                 return 0;
         }
     }
+
+    /**
+     * API: List all devices with filtering.
+     */
+    public function apiIndex(Request $request)
+    {
+        $user = auth()->user();
+        
+        $query = Device::with(['owner', 'location', 'inventoryItem']);
+        
+        // Admin/superadmin sees all devices, regular users see only their own
+        if (!in_array($user->role, ['admin', 'superadmin'])) {
+            $query->where('owner_id', $user->id);
+        }
+        
+        // Filter by owner
+        if ($request->has('owner_id')) {
+            $query->where('owner_id', $request->owner_id);
+        }
+        
+        // Filter by location status
+        if ($request->has('location_status')) {
+            if ($request->location_status === 'assigned') {
+                $query->whereNotNull('location_id');
+            } elseif ($request->location_status === 'unassigned') {
+                $query->whereNull('location_id');
+            }
+        }
+        
+        // Search by serial, MAC, or model
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('serial_number', 'like', "%{$search}%")
+                  ->orWhere('mac_address', 'like', "%{$search}%")
+                  ->orWhere('model', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%");
+            });
+        }
+        
+        $devices = $query->orderBy('created_at', 'desc')->paginate(20);
+        
+        return response()->json([
+            'success' => true,
+            'devices' => $devices,
+        ]);
+    }
+
+    /**
+     * API: Get device details.
+     */
+    public function apiShow($id)
+    {
+        $user = auth()->user();
+        
+        $device = Device::with(['owner', 'location', 'inventoryItem'])->find($id);
+        
+        if (!$device) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Device not found'
+            ], 404);
+        }
+        
+        // Check permission: owner can see their device, admin/superadmin can see all
+        if ($device->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'device' => $device,
+        ]);
+    }
+
+    /**
+     * API: Update device owner (admin/superadmin only).
+     */
+    public function updateOwner(Request $request, $id)
+    {
+        $user = auth()->user();
+        
+        if (!in_array($user->role, ['admin', 'superadmin'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+        
+        $request->validate([
+            'owner_id' => 'required|exists:users,id',
+        ]);
+        
+        $device = Device::find($id);
+        
+        if (!$device) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Device not found'
+            ], 404);
+        }
+        
+        $device->owner_id = $request->owner_id;
+        $device->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Device owner updated successfully',
+            'device' => $device->load('owner'),
+        ]);
+    }
+
+    /**
+     * API: Get devices available for location assignment.
+     * Returns unassigned devices first, then assigned ones with location names.
+     */
+    public function getAvailableForLocation(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Get unassigned devices
+        $unassignedQuery = Device::with('owner')
+            ->whereDoesntHave('location');
+        
+        // Get assigned devices
+        $assignedQuery = Device::with(['owner', 'location'])
+            ->whereHas('location');
+        
+        // If not admin, filter by ownership
+        if (!in_array($user->role, ['admin', 'superadmin'])) {
+            $unassignedQuery->where('owner_id', $user->id);
+            $assignedQuery->where('owner_id', $user->id);
+        }
+        
+        $unassignedDevices = $unassignedQuery->orderBy('serial_number')->get();
+        $assignedDevices = $assignedQuery->orderBy('serial_number')->get();
+        
+        return response()->json([
+            'success' => true,
+            'unassigned' => $unassignedDevices,
+            'assigned' => $assignedDevices,
+        ]);
+    }
 }

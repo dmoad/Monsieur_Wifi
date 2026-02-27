@@ -74,7 +74,13 @@ class AdminOrderController extends Controller
      */
     public function show($orderNumber)
     {
-        $order = Order::with(['user', 'items.productModel.images', 'shippingAddress', 'billingAddress'])
+        $order = Order::with([
+            'user', 
+            'items.productModel.images', 
+            'items.inventoryItems.device',
+            'shippingAddress', 
+            'billingAddress'
+        ])
             ->where('order_number', $orderNumber)
             ->firstOrFail();
 
@@ -255,6 +261,185 @@ class AdminOrderController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to send email.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Assign inventory items to order and create devices.
+     */
+    public function assignInventory(Request $request, $orderNumber)
+    {
+        $user = auth()->user();
+        
+        if (!in_array($user->role, ['admin', 'superadmin'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+        
+        $request->validate([
+            'assignments' => 'required|array',
+            'assignments.*.order_item_id' => 'required|exists:order_items,id',
+            'assignments.*.inventory_item_ids' => 'required|array',
+            'assignments.*.inventory_item_ids.*' => 'required|exists:inventory_items,id',
+        ]);
+        
+        $order = Order::with('items')->where('order_number', $orderNumber)->firstOrFail();
+        
+        // Check if order is paid
+        if ($order->payment_status !== 'succeeded') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order must be paid before assigning inventory',
+            ], 400);
+        }
+        
+        DB::beginTransaction();
+        try {
+            foreach ($request->assignments as $assignment) {
+                $orderItem = \App\Models\OrderItem::find($assignment['order_item_id']);
+                
+                // Validate assignment belongs to this order
+                if ($orderItem->order_id !== $order->id) {
+                    throw new \Exception('Order item does not belong to this order');
+                }
+                
+                // Validate quantity matches
+                if (count($assignment['inventory_item_ids']) !== $orderItem->quantity) {
+                    throw new \Exception("Must assign exactly {$orderItem->quantity} items for {$orderItem->productModel->name}");
+                }
+                
+                // First, clean up any existing assignments for this order item
+                $existingInventoryItems = \App\Models\InventoryItem::where('order_item_id', $orderItem->id)->get();
+                foreach ($existingInventoryItems as $existingItem) {
+                    // Delete associated device if exists
+                    if ($existingItem->device_id) {
+                        $device = \App\Models\Device::find($existingItem->device_id);
+                        if ($device) {
+                            $device->delete();
+                            \Illuminate\Support\Facades\Log::info('Device deleted for re-assignment', [
+                                'device_id' => $device->id,
+                                'inventory_item_id' => $existingItem->id,
+                            ]);
+                        }
+                    }
+                    
+                    // Reset inventory item if not in new assignment
+                    if (!in_array($existingItem->id, $assignment['inventory_item_ids'])) {
+                        $existingItem->device_id = null;
+                        $existingItem->order_item_id = null;
+                        $existingItem->status = 'available';
+                        $existingItem->save();
+                    }
+                }
+                
+                // Now process new assignments
+                foreach ($assignment['inventory_item_ids'] as $inventoryItemId) {
+                    $inventoryItem = \App\Models\InventoryItem::find($inventoryItemId);
+                    
+                    // Validate inventory item
+                    if ($inventoryItem->product_model_id !== $orderItem->product_model_id) {
+                        throw new \Exception('Inventory item does not match order product model');
+                    }
+                    
+                    if (!in_array($inventoryItem->status, ['available', 'sold'])) {
+                        throw new \Exception('Inventory item must be available or sold');
+                    }
+                    
+                    if ($inventoryItem->order_item_id && $inventoryItem->order_item_id != $orderItem->id) {
+                        throw new \Exception('Inventory item already assigned to another order');
+                    }
+                    
+                    // Delete existing device if this item already has one
+                    if ($inventoryItem->device_id) {
+                        $oldDevice = \App\Models\Device::find($inventoryItem->device_id);
+                        if ($oldDevice) {
+                            $oldDevice->delete();
+                        }
+                    }
+                    
+                    // Create device from inventory item
+                    $device = $inventoryItem->convertToDevice($order->user_id);
+                    
+                    // Link inventory item to device, order item, and mark as sold
+                    $inventoryItem->device_id = $device->id;
+                    $inventoryItem->order_item_id = $orderItem->id;
+                    $inventoryItem->status = 'sold';
+                    $inventoryItem->save();
+                    
+                    \Illuminate\Support\Facades\Log::info('Device created from inventory item', [
+                        'device_id' => $device->id,
+                        'inventory_item_id' => $inventoryItem->id,
+                        'order_number' => $orderNumber,
+                        'owner_id' => $order->user_id,
+                    ]);
+                }
+            }
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Inventory assigned and devices created successfully',
+                'order' => $order->fresh(['items.inventoryItems.device']),
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+    
+    /**
+     * Confirm payment for an order (mark as paid)
+     */
+    public function confirmPayment($orderNumber)
+    {
+        try {
+            $order = Order::with('items.productModel.inventory')
+                ->where('order_number', $orderNumber)
+                ->firstOrFail();
+            
+            if ($order->payment_status === 'succeeded') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order is already marked as paid',
+                ], 400);
+            }
+            
+            DB::beginTransaction();
+            
+            // Mark order as paid
+            $order->markAsPaid();
+            
+            // Deduct inventory quantities
+            foreach ($order->items as $item) {
+                $item->productModel->inventory->deduct($item->quantity);
+            }
+            
+            DB::commit();
+            
+            \Illuminate\Support\Facades\Log::info('Payment confirmed for order', [
+                'order_number' => $orderNumber,
+                'admin_id' => auth()->id(),
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment confirmed successfully',
+                'order' => $order->fresh(['user', 'items.productModel.images', 'items.inventoryItems.device', 'shippingAddress', 'billingAddress']),
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to confirm payment: ' . $e->getMessage(),
             ], 500);
         }
     }

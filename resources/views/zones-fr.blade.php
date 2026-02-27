@@ -6,82 +6,130 @@
 <style>
     .zone-card {
         border: none;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        transition: all 0.2s ease;
+        margin-bottom: 0.75rem;
+        background: white;
     }
     .zone-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(115, 103, 240, 0.2);
+        box-shadow: 0 4px 12px rgba(115, 103, 240, 0.15);
     }
-    .zone-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid #f0f0f0;
+    .zone-row {
+        padding: 0.875rem 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 1rem;
     }
-    .zone-body {
-        padding: 1.5rem;
+    .zone-info {
+        flex: 1;
+        min-width: 0;
     }
     .zone-name {
-        font-size: 1.25rem;
+        font-size: 1rem;
         font-weight: 600;
         color: #2c3e50;
         margin-bottom: 0.25rem;
     }
+    .zone-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
     .zone-description {
         color: #6c757d;
-        font-size: 0.9rem;
-        margin-bottom: 0;
-    }
-    .zone-stats {
-        display: flex;
-        gap: 1.5rem;
-        margin-top: 1rem;
+        font-size: 0.85rem;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
     }
     .zone-stat {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.35rem;
+        font-size: 0.85rem;
+        color: #6c757d;
     }
-    .zone-stat-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .zone-stat svg {
+        width: 14px;
+        height: 14px;
+    }
+    .zone-owner {
+        font-size: 0.8rem;
+        color: #6c757d;
     }
     .zone-actions {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.35rem;
+        flex-shrink: 0;
+    }
+    .zone-actions .btn {
+        padding: 0.375rem 0.5rem;
     }
     .admin-alert {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 1.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
+        font-size: 0.9rem;
     }
     .empty-state {
         text-align: center;
-        padding: 4rem 2rem;
+        padding: 3rem 2rem;
     }
     .empty-state-icon {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1.5rem;
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1rem;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
+    }
+    .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .pagination-info {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .pagination-buttons {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    .per-page-selector {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .per-page-selector label {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .per-page-selector select {
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #d8d6de;
+        border-radius: 4px;
+        font-size: 0.9rem;
     }
 </style>
 @endpush
@@ -111,6 +159,20 @@
 <div class="content-body">
     <div id="admin-alert-container"></div>
     
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="per-page-selector">
+                <label for="items-per-page">Éléments par page:</label>
+                <select id="items-per-page" class="form-control" onchange="changeItemsPerPage()">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
     <div id="zones-loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Chargement...</span>
@@ -118,6 +180,8 @@
     </div>
     
     <div id="zones-list"></div>
+    
+    <div id="pagination-container"></div>
 </div>
 
 <!-- Zone Modal -->
@@ -134,6 +198,13 @@
                 <div id="primary-location-info-edit" class="mb-3"></div>
                 <form id="zone-form">
                     <input type="hidden" id="zone-id">
+                    <div class="form-group" id="zone-owner-select-group" style="display: none;">
+                        <label for="zone-owner-select">Propriétaire <span class="text-danger">*</span></label>
+                        <select class="form-control" id="zone-owner-select">
+                            <option value="">Chargement des utilisateurs...</option>
+                        </select>
+                        <small class="form-text text-muted">Sélectionnez le propriétaire de cette zone.</small>
+                    </div>
                     <div class="form-group">
                         <label for="zone-name">Nom de la Zone *</label>
                         <input type="text" class="form-control" id="zone-name" required placeholder="Entrez le nom de la zone">

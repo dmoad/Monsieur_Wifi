@@ -145,8 +145,8 @@ function displayInventory(products) {
                         ${stockStatus}
                     </div>
                     <div class="col-md-2 text-right">
-                        <button class="btn btn-sm btn-success" onclick="viewDevices(${product.id}, '${product.name}')" title="${PAGE_LOCALE === 'fr' ? 'Voir/Ajouter des appareils' : 'View/Add Devices'}">
-                            <i data-feather="package"></i> ${PAGE_LOCALE === 'fr' ? 'Appareils' : 'Devices'}
+                        <button class="btn btn-sm btn-success" onclick="viewDevices(${product.id}, '${product.name}')" title="${PAGE_LOCALE === 'fr' ? 'Voir/Ajouter des appareils individuels' : 'View/Add Individual Devices'}">
+                            <i data-feather="plus-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Ajouter/Voir Appareils' : 'Add/View Devices'}
                         </button>
                         <button class="btn btn-sm btn-outline-secondary" onclick="showUpdateModal(${product.id}, '${product.name}', ${inventory.quantity}, ${inventory.low_stock_threshold})" title="${PAGE_LOCALE === 'fr' ? 'Réglages' : 'Settings'}">
                             <i data-feather="settings"></i>
@@ -369,8 +369,11 @@ function displayDevicesModal(productId, productName, items) {
         <p class="text-muted">${PAGE_LOCALE === 'fr' ? 'Gérez les appareils individuels avec leurs adresses MAC et numéros de série' : 'Manage individual devices with their MAC addresses and serial numbers'}</p>
         
         <div class="mb-3">
-            <button class="btn btn-success btn-sm" onclick="showAddDeviceForm(${productId})">
+            <button class="btn btn-success btn-sm mr-2" onclick="showAddDeviceForm(${productId})">
                 <i data-feather="plus"></i> ${PAGE_LOCALE === 'fr' ? 'Ajouter un Appareil' : 'Add Device'}
+            </button>
+            <button class="btn btn-info btn-sm" onclick="showCsvUploadForm(${productId})">
+                <i data-feather="upload"></i> ${PAGE_LOCALE === 'fr' ? 'Importer CSV' : 'Import CSV'}
             </button>
         </div>
         
@@ -640,4 +643,174 @@ async function deleteDevice(productId, itemId) {
         console.error('Error deleting device:', error);
         toastr.error((PAGE_LOCALE === 'fr' ? 'Échec de la suppression de l\'appareil: ' : 'Failed to delete device: ') + error.message);
     }
+}
+
+function showCsvUploadForm(productId) {
+    document.getElementById('modal-content').innerHTML = `
+        <h5>${PAGE_LOCALE === 'fr' ? 'Importer des Appareils depuis CSV' : 'Import Devices from CSV'}</h5>
+        
+        <div class="mb-3">
+            <button class="btn btn-outline-primary btn-sm" onclick="downloadCsvTemplate()">
+                <i data-feather="download"></i> ${PAGE_LOCALE === 'fr' ? 'Télécharger le Modèle CSV' : 'Download CSV Template'}
+            </button>
+        </div>
+        
+        <div class="alert alert-info">
+            <strong>${PAGE_LOCALE === 'fr' ? 'Format du fichier CSV :' : 'CSV file format:'}</strong><br>
+            ${PAGE_LOCALE === 'fr' ? 'Le fichier doit contenir les colonnes suivantes (avec en-tête) :' : 'File must contain the following columns (with header):'}
+            <ul class="mb-0 mt-2">
+                <li><code>mac_address</code> - ${PAGE_LOCALE === 'fr' ? 'Adresse MAC (format: 00:11:22:33:44:55)' : 'MAC Address (format: 00:11:22:33:44:55)'}</li>
+                <li><code>serial_number</code> - ${PAGE_LOCALE === 'fr' ? 'Numéro de série (requis)' : 'Serial Number (required)'}</li>
+                <li><code>notes</code> - ${PAGE_LOCALE === 'fr' ? 'Notes (optionnel)' : 'Notes (optional)'}</li>
+            </ul>
+        </div>
+        
+        <div class="alert alert-secondary">
+            <strong>${PAGE_LOCALE === 'fr' ? 'Exemple :' : 'Example:'}</strong><br>
+            <code>mac_address,serial_number,notes</code><br>
+            <code>00:11:22:33:44:55,SN123456,Device 1</code><br>
+            <code>00:11:22:33:44:66,SN123457,Device 2</code>
+        </div>
+        
+        <form id="csv-upload-form">
+            <div class="form-group">
+                <label>${PAGE_LOCALE === 'fr' ? 'Sélectionner le fichier CSV' : 'Select CSV File'} *</label>
+                <input type="file" id="csv-file" class="form-control-file" accept=".csv" required>
+                <small class="form-text text-muted">${PAGE_LOCALE === 'fr' ? 'Taille maximale: 5MB' : 'Max size: 5MB'}</small>
+            </div>
+            
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="skip-duplicates" checked>
+                    <label class="custom-control-label" for="skip-duplicates">
+                        ${PAGE_LOCALE === 'fr' ? 'Ignorer les doublons (MAC/Série existants)' : 'Skip duplicates (existing MAC/Serial)'}
+                    </label>
+                </div>
+            </div>
+            
+            <div id="csv-upload-progress" style="display: none;">
+                <div class="progress mb-2">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+                <p class="text-center text-muted" id="csv-upload-status"></p>
+            </div>
+            
+            <div class="text-right">
+                <button type="button" class="btn btn-secondary" onclick="viewDevices(${productId}, '')">${PAGE_LOCALE === 'fr' ? 'Annuler' : 'Cancel'}</button>
+                <button type="button" class="btn btn-primary" onclick="uploadCsvFile(${productId})" id="upload-csv-btn">
+                    <i data-feather="upload"></i> ${PAGE_LOCALE === 'fr' ? 'Télécharger et Importer' : 'Upload & Import'}
+                </button>
+            </div>
+        </form>
+    `;
+    
+    if (typeof feather !== 'undefined') feather.replace();
+}
+
+async function uploadCsvFile(productId) {
+    const fileInput = document.getElementById('csv-file');
+    const skipDuplicates = document.getElementById('skip-duplicates').checked;
+    const uploadBtn = document.getElementById('upload-csv-btn');
+    const progressDiv = document.getElementById('csv-upload-progress');
+    const progressBar = progressDiv.querySelector('.progress-bar');
+    const statusText = document.getElementById('csv-upload-status');
+    
+    if (!fileInput.files || !fileInput.files[0]) {
+        toastr.error(PAGE_LOCALE === 'fr' ? 'Veuillez sélectionner un fichier CSV' : 'Please select a CSV file');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    
+    // Check file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+        toastr.error(PAGE_LOCALE === 'fr' ? 'Le fichier est trop volumineux (max 5MB)' : 'File is too large (max 5MB)');
+        return;
+    }
+    
+    // Check file type
+    if (!file.name.endsWith('.csv')) {
+        toastr.error(PAGE_LOCALE === 'fr' ? 'Veuillez sélectionner un fichier CSV valide' : 'Please select a valid CSV file');
+        return;
+    }
+    
+    const token = UserManager.getToken();
+    const formData = new FormData();
+    formData.append('csv_file', file);
+    formData.append('skip_duplicates', skipDuplicates ? '1' : '0');
+    
+    try {
+        uploadBtn.disabled = true;
+        progressDiv.style.display = 'block';
+        progressBar.style.width = '0%';
+        statusText.textContent = PAGE_LOCALE === 'fr' ? 'Téléchargement...' : 'Uploading...';
+        
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/inventory/${productId}/items/import-csv`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+        
+        progressBar.style.width = '50%';
+        statusText.textContent = PAGE_LOCALE === 'fr' ? 'Traitement...' : 'Processing...';
+        
+        if (response.status === 401) {
+            toastr.error('Session expired. Please login again.');
+            UserManager.logout(true);
+            return;
+        }
+        
+        const data = await response.json();
+        progressBar.style.width = '100%';
+        
+        if (response.ok) {
+            const successMsg = PAGE_LOCALE === 'fr' 
+                ? `Importation réussie! ${data.imported} appareil(s) ajouté(s)${data.skipped > 0 ? `, ${data.skipped} ignoré(s)` : ''}${data.errors > 0 ? `, ${data.errors} erreur(s)` : ''}`
+                : `Import successful! ${data.imported} device(s) added${data.skipped > 0 ? `, ${data.skipped} skipped` : ''}${data.errors > 0 ? `, ${data.errors} error(s)` : ''}`;
+            
+            toastr.success(successMsg);
+            
+            if (data.error_details && data.error_details.length > 0) {
+                console.warn('Import errors:', data.error_details);
+                toastr.warning(PAGE_LOCALE === 'fr' 
+                    ? 'Certaines lignes contiennent des erreurs. Consultez la console pour plus de détails.'
+                    : 'Some rows had errors. Check console for details.');
+            }
+            
+            loadSummary();
+            loadInventory();
+            viewDevices(productId, '');
+        } else {
+            const errors = data.errors;
+            if (errors) {
+                Object.values(errors).forEach(err => toastr.error(err[0]));
+            } else {
+                toastr.error(data.message || (PAGE_LOCALE === 'fr' ? 'Échec de l\'importation' : 'Failed to import'));
+            }
+            uploadBtn.disabled = false;
+        }
+    } catch (error) {
+        console.error('Error uploading CSV:', error);
+        toastr.error((PAGE_LOCALE === 'fr' ? 'Échec du téléchargement: ' : 'Failed to upload: ') + error.message);
+        uploadBtn.disabled = false;
+        progressDiv.style.display = 'none';
+    }
+}
+
+function downloadCsvTemplate() {
+    const csvContent = "mac_address,serial_number,notes\n00:11:22:33:44:55,SN123456,Sample device 1\n00:11:22:33:44:66,SN123457,Sample device 2";
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'inventory_import_template.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toastr.success(PAGE_LOCALE === 'fr' ? 'Modèle CSV téléchargé' : 'CSV template downloaded');
 }

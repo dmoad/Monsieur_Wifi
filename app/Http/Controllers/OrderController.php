@@ -184,39 +184,32 @@ class OrderController extends Controller
                 ]);
             }
 
-            // In mock payment mode, immediately process payment and clear cart
+            // Get payment mode from settings
             $settings = SystemSetting::first();
             $paymentMode = $settings ? $settings->payment_mode : 'mock';
             
-            if ($paymentMode === 'mock') {
-                // Mark as paid
-                $order->markAsPaid();
-                
-                // Deduct inventory
-                foreach ($order->fresh('items.productModel.inventory')->items as $item) {
-                    $item->productModel->inventory->deduct($item->quantity);
-                }
-                
-                // Clear cart
-                $cart->clear();
-                
-                Log::info('Order Controller :: store - Mock payment processed, cart cleared');
-            }
-
+            // NOTE: For mock payment mode, orders are created with payment_status = 'pending'
+            // Admin will manually confirm payment via the admin panel
+            // For Stripe mode (future), payment will be confirmed via webhook
+            
             DB::commit();
+
+            // Clear cart after successful order creation
+            $cart->clear();
 
             Log::info('Order Controller :: store - Order created successfully', [
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
                 'total' => $order->total,
-                'payment_status' => $order->payment_status
+                'payment_status' => $order->payment_status,
+                'payment_mode' => $paymentMode
             ]);
 
             // Return order with redirect URL
             return response()->json([
                 'success' => true,
                 'order_number' => $order->order_number,
-                'redirect_url' => $paymentMode === 'mock' ? null : "/api/v1/orders/{$order->order_number}/success",
+                'redirect_url' => $paymentMode === 'stripe' ? "/api/v1/orders/{$order->order_number}/payment" : null,
                 'payment_mode' => $paymentMode,
             ]);
 

@@ -53,7 +53,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 // Logout routes (API endpoints - language agnostic)
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
-Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 // English language routes group
 Route::prefix('en')->name('en.')->group(function () {
@@ -390,3 +390,12 @@ Route::get('/en/admin/models', function () {
 Route::get('/fr/admin/modeles', function () {
     return view('admin-models-fr');
 })->name('admin.models.fr');
+
+// Devices
+Route::get('/en/devices', function () {
+    return view('devices-en');
+})->name('devices');
+
+Route::get('/fr/appareils', function () {
+    return view('devices-fr');
+})->name('fr.devices');

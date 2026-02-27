@@ -250,11 +250,7 @@ async function handleSubmit(e) {
         console.log('Redirecting to:', `/en/orders/${orderResult.order_number}`);
         console.log('Token exists:', !!UserManager.getToken());
         
-        if (orderResult.payment_mode === 'mock') {
-            toastr.success('Order placed and payment processed successfully!');
-        } else {
-            toastr.success('Order placed successfully!');
-        }
+        toastr.success('Order placed successfully! Your order is pending payment confirmation.');
         
         setTimeout(() => {
             window.location.href = `/en/orders/${orderResult.order_number}`;

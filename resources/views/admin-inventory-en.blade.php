@@ -65,7 +65,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0">Inventory Management</h4>
             <div class="text-muted">
-                <small><i data-feather="info" style="width: 14px; height: 14px;"></i> Click "Devices" to add individual units with MAC address & serial number</small>
+                <small><i data-feather="info" style="width: 14px; height: 14px;"></i> Click <strong>"Add/View Devices"</strong> button to add inventory items one at a time with MAC address & serial number</small>
             </div>
         </div>
         <div class="card-body">

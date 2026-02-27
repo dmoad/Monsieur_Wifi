@@ -16,6 +16,7 @@ class InventoryItem extends Model
         'status',
         'cart_item_id',
         'order_item_id',
+        'device_id',
         'notes',
         'received_at',
     ];
@@ -46,6 +47,14 @@ class InventoryItem extends Model
     public function orderItem()
     {
         return $this->belongsTo(OrderItem::class);
+    }
+
+    /**
+     * Get the device created from this inventory item.
+     */
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
     }
 
     /**
@@ -123,5 +132,45 @@ class InventoryItem extends Model
     public function scopeForProduct($query, $productModelId)
     {
         return $query->where('product_model_id', $productModelId);
+    }
+
+    /**
+     * Convert this inventory item to a Device.
+     */
+    public function convertToDevice($ownerId)
+    {
+        $productModel = $this->productModel()->first();
+        
+        $device = Device::create([
+            'name' => "{$productModel->device_type}-{$this->serial_number}",
+            'model' => $productModel->device_type,
+            'serial_number' => $this->serial_number,
+            'mac_address' => $this->mac_address,
+            'device_key' => \Illuminate\Support\Str::random(32),
+            'device_secret' => \Illuminate\Support\Str::random(64),
+            'owner_id' => $ownerId,
+            'configuration_version' => 1,
+        ]);
+
+        // Auto-assign firmware based on model
+        $firmware = \App\Models\Firmware::getDefaultForModel($device->model);
+        
+        if (!$firmware) {
+            $firmware = \App\Models\Firmware::forModel($device->model)
+                ->enabled()
+                ->orderBy('created_at', 'desc')
+                ->first();
+        }
+        
+        if (!$firmware) {
+            $firmware = \App\Models\Firmware::forModel($device->model)
+                ->orderBy('created_at', 'desc')
+                ->first();
+        }
+
+        $device->firmware_id = $firmware ? $firmware->id : null;
+        $device->save();
+
+        return $device;
     }
 }

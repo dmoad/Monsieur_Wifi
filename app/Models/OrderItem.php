@@ -37,4 +37,24 @@ class OrderItem extends Model
     {
         return $this->belongsTo(ProductModel::class);
     }
+
+    /**
+     * Get the inventory items assigned to this order item.
+     */
+    public function inventoryItems()
+    {
+        return $this->hasMany(InventoryItem::class);
+    }
+
+    /**
+     * Get devices created from assigned inventory items.
+     */
+    public function getAssignedDevices()
+    {
+        return $this->inventoryItems()
+            ->with('device')
+            ->whereNotNull('device_id')
+            ->get()
+            ->pluck('device');
+    }
 }

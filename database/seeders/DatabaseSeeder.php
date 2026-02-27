@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CategorySeeder::class,
             BlockedDomainSeeder::class,
+            ShopSeeder::class,
+            InventorySeeder::class,
         ]);
     }
 }

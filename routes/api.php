@@ -272,16 +272,26 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
         Route::delete('/{zone}/locations/{location}', [ZoneController::class, 'removeLocation']);
         Route::put('/{zone}/primary/{location}', [ZoneController::class, 'setPrimaryLocation']);
     });
+    
+    // Device management
+    Route::prefix('devices')->group(function () {
+        Route::get('/', [DeviceController::class, 'apiIndex']);
+        Route::get('/available-for-location', [DeviceController::class, 'getAvailableForLocation']);
+        Route::get('/{id}', [DeviceController::class, 'apiShow']);
+        Route::put('/{id}/owner', [DeviceController::class, 'updateOwner']);
+    });
 });
 
 // Admin-only endpoints
 Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     // Orders
-    Route::get('/orders', [AdminOrderController::class, 'index']);
-    Route::get('/orders/{orderNumber}', [AdminOrderController::class, 'show']);
-    Route::put('/orders/{orderNumber}/tracking', [AdminOrderController::class, 'updateTracking']);
-    Route::put('/orders/{orderNumber}/status', [AdminOrderController::class, 'updateStatus']);
-    Route::post('/orders/{orderNumber}/resend-email', [AdminOrderController::class, 'resendEmail']);
+    Route::get('/orders', [\App\Http\Controllers\Admin\AdminOrderController::class, 'index']);
+    Route::get('/orders/{orderNumber}', [\App\Http\Controllers\Admin\AdminOrderController::class, 'show']);
+    Route::put('/orders/{orderNumber}/tracking', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateTracking']);
+    Route::put('/orders/{orderNumber}/status', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateStatus']);
+    Route::post('/orders/{orderNumber}/resend-email', [\App\Http\Controllers\Admin\AdminOrderController::class, 'resendEmail']);
+    Route::post('/orders/{orderNumber}/assign-inventory', [\App\Http\Controllers\Admin\AdminOrderController::class, 'assignInventory']);
+    Route::post('/orders/{orderNumber}/confirm-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmPayment']);
     
     // Shipping rates
     Route::get('/shipping-rates', [AdminShippingController::class, 'index']);
@@ -299,6 +309,7 @@ Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     // Individual inventory items (devices)
     Route::get('/inventory/{id}/items', [AdminInventoryController::class, 'getItems']);
     Route::post('/inventory/{id}/items', [AdminInventoryController::class, 'addItem']);
+    Route::post('/inventory/{id}/items/import-csv', [AdminInventoryController::class, 'importCsv']);
     Route::put('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'updateItem']);
     Route::delete('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'deleteItem']);
     

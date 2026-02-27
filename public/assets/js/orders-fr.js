@@ -57,7 +57,7 @@ function displayOrders(orders) {
                     </div>
                     <div class="col-md-3">
                         <small class="text-muted">Statut</small>
-                        <p class="mb-0">${getStatusBadge(order.status)}</p>
+                        <p class="mb-0">${getStatusBadge(order)}</p>
                     </div>
                     <div class="col-md-3">
                         <small class="text-muted">Total</small>
@@ -77,15 +77,25 @@ function displayOrders(orders) {
     `).join('');
 }
 
-function getStatusBadge(status) {
-    const badges = {
-        'pending': '<span class="badge badge-warning">En Attente</span>',
-        'processing': '<span class="badge badge-info">En Traitement</span>',
-        'completed': '<span class="badge badge-success">Terminée</span>',
-        'shipped': '<span class="badge badge-primary">Expédiée</span>',
-        'delivered': '<span class="badge badge-success">Livrée</span>',
-        'cancelled': '<span class="badge badge-danger">Annulée</span>',
-        'payment_failed': '<span class="badge badge-danger">Échec du Paiement</span>'
-    };
-    return badges[status] || `<span class="badge badge-secondary">${status}</span>`;
+function getStatusBadge(order) {
+    const isPaid = order.payment_status === 'succeeded';
+    const status = order.status;
+    
+    // Cancelled orders always show as cancelled
+    if (status === 'cancelled') {
+        return '<span class="badge badge-danger">Annulée</span>';
+    }
+    
+    // If not paid, show awaiting payment
+    if (!isPaid) {
+        return '<span class="badge badge-warning">En attente de paiement</span>';
+    }
+    
+    // If shipped or delivered, show shipped
+    if (status === 'shipped' || status === 'delivered') {
+        return '<span class="badge badge-primary">Expédiée</span>';
+    }
+    
+    // Otherwise, payment received (paid but not shipped)
+    return '<span class="badge badge-success">Paiement reçu</span>';
 }

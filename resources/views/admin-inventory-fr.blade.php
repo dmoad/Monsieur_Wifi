@@ -65,7 +65,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0">Gestion de l'inventaire</h4>
             <div class="text-muted">
-                <small><i data-feather="info" style="width: 14px; height: 14px;"></i> Cliquez sur "Appareils" pour ajouter des unités individuelles avec adresse MAC et numéro de série</small>
+                <small><i data-feather="info" style="width: 14px; height: 14px;"></i> Cliquez sur le bouton <strong>"Ajouter/Voir Appareils"</strong> pour ajouter des articles d'inventaire un par un avec adresse MAC et numéro de série</small>
             </div>
         </div>
         <div class="card-body">

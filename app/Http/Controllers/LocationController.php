@@ -150,9 +150,8 @@ class LocationController extends Controller
             'manager_name' => 'nullable|string|max:255',
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:255',
-            'mac_address' => 'required|string|max:255|unique:devices,mac_address',
-            'model' => 'required|string|in:820AX,835AX',
-            'serial_number' => 'nullable|string|max:255|unique:devices,serial_number',
+            'device_id' => 'required|exists:devices,id',
+            'owner_id' => 'nullable|exists:users,id',
         ]);
 
         // Geocode address if provided and lat/lng not already set
@@ -184,44 +183,37 @@ class LocationController extends Controller
             }
         }
 
-        // Create a new device
-        $device = new Device();
-        // $mac_address = strtoupper($request->mac_address);
-        $mac_address = str_replace(':', '-', $request->mac_address);
-        $device->name = $request->mac_address;
-        $device->mac_address = $mac_address;
-        $device->model = $request->model; // Set the device model
-        $device->configuration_version = 1;
-        if ($request->serial_number) {
-            $device->serial_number = $request->serial_number;
-        } else {
-            $device->serial_number = Str::random(20);
-        }
-        $device->device_key = Str::random(20);
-        $device->device_secret = Str::random(30);
-        $device->save();
-
-        // Try to get the default firmware for the device model
-        $firmware = Firmware::getDefaultForModel($device->model);
+        // Get existing device with firmware relationship
+        $device = Device::with('firmware')->find($request->device_id);
         
-        // If no default firmware found, get the latest enabled firmware for the model
-        if (!$firmware) {
-            $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+        // Check if device is already assigned to another location
+        $existingLocation = Location::where('device_id', $device->id)->first();
+        if ($existingLocation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Device is already assigned to another location: ' . $existingLocation->name
+            ], 400);
         }
         
-        // If still no firmware found, get the latest firmware for the model (even if disabled)
-        if (!$firmware) {
-            $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
-        }
+        // Get the firmware from the device
+        $firmware = $device->firmware;
 
-        // Set firmware_id - either the found firmware ID or null if no firmware found
-        $device->firmware_id = $firmware ? $firmware->id : null;
-        $device->save();
+        // Determine the owner_id
+        $user = Auth::user();
+        $ownerId = $request->owner_id;
+        
+        // If not admin, force owner_id to be the current user
+        if (!in_array($user->role, ['admin', 'superadmin'])) {
+            $ownerId = $user->id;
+        } else if (!$ownerId) {
+            // If admin doesn't specify owner_id, use current user
+            $ownerId = $user->id;
+        }
 
         // Create the location with the device
-        $location = new Location($request->except(['mac_address', 'device_name', 'serial_number']));
+        $location = new Location($request->except(['mac_address', 'device_name', 'serial_number', 'owner_id']));
         $location->device_id = $device->id;
-        $location->user_id = Auth::id();
+        $location->user_id = $ownerId;
         $location->save();
 
         // Create the location settings

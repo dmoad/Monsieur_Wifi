@@ -2504,82 +2504,68 @@
         <div class="navbar-header">
             <ul class="nav navbar-nav flex-row">
                 <li class="nav-item mr-auto">
-                    <a class="navbar-brand" href="/dashboard">
-                        <span class="brand-logo">
-                            <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi logo">
-                        </span>
-                        <h2 class="brand-text">Mr WiFi</h2>
+                    <a class="navbar-brand" href="/en/dashboard">
+                        <span class="brand-logo"><img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="logo"></span>
+                        <h2 class="brand-text">monsieur-wifi</h2>
                     </a>
                 </li>
                 <li class="nav-item nav-toggle">
                     <a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse">
                         <i class="d-block d-xl-none text-primary toggle-icon font-medium-4" data-feather="x"></i>
-                        <i class="d-none d-xl-block collapse-toggle-icon font-medium-4 text-primary" data-feather="disc" data-ticon="disc"></i>
+                        <i class="d-none d-xl-block collapse-toggle-icon font-medium-4 text-primary" data-feather="disc"></i>
                     </a>
                 </li>
             </ul>
         </div>
-
         <div class="shadow-bottom"></div>
-
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-                <!-- Management Section -->
-                <li class="navigation-header">
-                    <span>Management</span>
+                <li class="navigation-header"><span>Management</span></li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/dashboard"><i data-feather="home"></i><span class="menu-title text-truncate">Dashboard</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/en/dashboard">
-                        <i data-feather="home"></i>
-                        <span class="menu-title text-truncate">Dashboard</span>
-                    </a>
+                    <a class="d-flex align-items-center" href="/en/zones"><i data-feather="layers"></i><span class="menu-title text-truncate">Zones</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/devices"><i data-feather="hard-drive"></i><span class="menu-title text-truncate">Devices</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="d-flex align-items-center" href="/en/locations">
-                        <i data-feather="map-pin"></i>
-                        <span class="menu-title text-truncate">Locations</span>
-                    </a>
+                    <a class="d-flex align-items-center" href="/en/locations"><i data-feather="map-pin"></i><span class="menu-title text-truncate">Locations</span></a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/analytics">
-                        <i data-feather="bar-chart-2"></i>
-                        <span class="menu-title text-truncate">Usage Analytics</span>
-                    </a>
-                </li> -->
                 <li class="nav-item">
-                    <a class="d-flex align-items-center" href="/en/captive-portals">
-                        <i data-feather="layout"></i>
-                        <span class="menu-title text-truncate">Captive Portals</span>
-                    </a>
+                    <a class="d-flex align-items-center" href="/en/captive-portals"><i data-feather="layout"></i><span class="menu-title text-truncate">Captive Portals</span></a>
                 </li>
-
-                <!-- For Admin Section -->
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/accounts">
-                        <i data-feather="users"></i>
-                        <span class="menu-title text-truncate">Accounts</span>
-                    </a>
+                <li class="nav-item">
+                    <a class="d-flex align-items-center" href="/en/shop"><i data-feather="shopping-bag"></i><span class="menu-title text-truncate">Shop</span></a>
                 </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/domain-blocking">
-                        <i data-feather="slash"></i>
-                        <span class="menu-title text-truncate">Domain Blocking</span>
-                    </a>
+                
+                
+                <li class="navigation-header admin_and_above hidden"><span>For Admin</span></li>
+                <li class="nav-item admin_and_above hidden">
+                    <a class="d-flex align-items-center" href="/en/accounts"><i data-feather="users"></i><span class="menu-title text-truncate">Accounts</span></a>
                 </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/firmware">
-                        <i data-feather="download"></i>
-                        <span class="menu-title text-truncate">Firmware</span>
-                    </a>
+                <li class="nav-item admin_and_above hidden">
+                    <a class="d-flex align-items-center" href="/en/domain-blocking"><i data-feather="slash"></i><span class="menu-title text-truncate">Domain Blocking</span></a>
                 </li>
-                <li class="nav-item only_admin hidden">
-                    <a class="d-flex align-items-center" href="/en/system-settings">
-                        <i data-feather="settings"></i>
-                        <span class="menu-title text-truncate">System Settings</span>
-                    </a>
+                <li class="nav-item admin_and_above hidden">
+                    <a class="d-flex align-items-center" href="/en/admin/models"><i data-feather="cpu"></i><span class="menu-title text-truncate">Manage Models</span></a>
                 </li>
-                <!-- Account Section -->
+                <li class="nav-item admin_and_above hidden">
+                    <a class="d-flex align-items-center" href="/en/admin/inventory"><i data-feather="box"></i><span class="menu-title text-truncate">Manage Inventory</span></a>
+                </li>
+                <li class="nav-item admin_and_above hidden">
+                    <a class="d-flex align-items-center" href="/en/admin/orders"><i data-feather="package"></i><span class="menu-title text-truncate">Manage Orders</span></a>
+                </li>
+                
+                <li class="navigation-header only_superadmin hidden"><span>Super Admin</span></li>
+                <li class="nav-item only_superadmin hidden">
+                    <a class="d-flex align-items-center" href="/en/firmware"><i data-feather="download"></i><span class="menu-title text-truncate">Firmware</span></a>
+                </li>
+                <li class="nav-item only_superadmin hidden">
+                    <a class="d-flex align-items-center" href="/en/system-settings"><i data-feather="settings"></i><span class="menu-title text-truncate">System Settings</span></a>
+                </li>
+                
                 <li class="navigation-header"><span>Account</span></li>
                 <li class="nav-item">
                      <a class="d-flex align-items-center" href="/en/profile">
@@ -2588,7 +2574,13 @@
                      </a>
                 </li>
                 <li class="nav-item">
-                     <a class="d-flex align-items-center" href="/logout">
+                     <a class="d-flex align-items-center" href="/en/orders">
+                         <i data-feather="list"></i>
+                         <span class="menu-title text-truncate">My Orders</span>
+                     </a>
+                </li>
+                <li class="nav-item">
+                     <a class="d-flex align-items-center logout-button" href="/logout">
                          <i data-feather="power"></i>
                          <span class="menu-title text-truncate">Logout</span>
                      </a>
@@ -7656,12 +7648,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Authentication token found:', UserManager.getToken().substring(0, 20) + '...');
             }
             
-            // Check user role and hide admin-only elements
-            if (!UserManager.hasRole('admin')) {
-                console.log('Non-admin user detected, hiding admin-only elements');
-                $('[data-admin-only="true"]').hide();
+            // Check user role and show/hide role-based menu items
+            if (UserManager.hasRole('superadmin')) {
+                console.log('SuperAdmin user detected, showing all menu items');
+                $('.admin_and_above').removeClass('hidden').show();
+                $('.only_superadmin').removeClass('hidden').show();
+                $('[data-admin-only="true"]').show();
+            } else if (UserManager.hasRole('admin')) {
+                console.log('Admin user detected, showing admin menu items');
+                $('.admin_and_above').removeClass('hidden').show();
+                $('.only_superadmin').addClass('hidden').hide();
+                $('[data-admin-only="true"]').show();
             } else {
-                console.log('Admin user detected, showing all elements');
+                console.log('Regular user detected, hiding admin-only elements');
+                $('.admin_and_above').addClass('hidden').hide();
+                $('.only_superadmin').addClass('hidden').hide();
+                $('[data-admin-only="true"]').hide();
             }
 
             // Clear/unset router model on page load

@@ -412,4 +412,141 @@ class AdminInventoryController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Import inventory items from CSV file.
+     */
+    public function importCsv(Request $request, $productId)
+    {
+        $validator = Validator::make($request->all(), [
+            'csv_file' => 'required|file|mimes:csv,txt|max:5120', // 5MB max
+            'skip_duplicates' => 'nullable|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $product = ProductModel::findOrFail($productId);
+        $skipDuplicates = $request->skip_duplicates ?? true;
+        
+        $file = $request->file('csv_file');
+        $imported = 0;
+        $skipped = 0;
+        $errors = 0;
+        $errorDetails = [];
+
+        DB::beginTransaction();
+        try {
+            // Read CSV file
+            $csvData = array_map('str_getcsv', file($file->getRealPath()));
+            $header = array_map('trim', $csvData[0]);
+            unset($csvData[0]); // Remove header row
+
+            // Validate header
+            $requiredColumns = ['mac_address', 'serial_number'];
+            foreach ($requiredColumns as $col) {
+                if (!in_array($col, $header)) {
+                    throw new \Exception("Missing required column: {$col}");
+                }
+            }
+
+            // Get column indices
+            $macIndex = array_search('mac_address', $header);
+            $serialIndex = array_search('serial_number', $header);
+            $notesIndex = array_search('notes', $header);
+
+            // Process each row
+            $rowNumber = 1;
+            foreach ($csvData as $row) {
+                $rowNumber++;
+                
+                try {
+                    if (count($row) < 2) {
+                        $errorDetails[] = "Row {$rowNumber}: Insufficient columns";
+                        $errors++;
+                        continue;
+                    }
+
+                    $macAddress = isset($row[$macIndex]) ? trim($row[$macIndex]) : null;
+                    $serialNumber = isset($row[$serialIndex]) ? trim($row[$serialIndex]) : null;
+                    $notes = ($notesIndex !== false && isset($row[$notesIndex])) ? trim($row[$notesIndex]) : null;
+
+                    // Skip empty rows
+                    if (empty($macAddress) && empty($serialNumber)) {
+                        continue;
+                    }
+
+                    // Validate required fields
+                    if (empty($macAddress) || empty($serialNumber)) {
+                        $errorDetails[] = "Row {$rowNumber}: MAC address and serial number are required";
+                        $errors++;
+                        continue;
+                    }
+
+                    // Check for duplicates if skip_duplicates is enabled
+                    if ($skipDuplicates) {
+                        $existingMac = InventoryItem::where('mac_address', $macAddress)->exists();
+                        $existingSerial = InventoryItem::where('serial_number', $serialNumber)->exists();
+                        
+                        if ($existingMac || $existingSerial) {
+                            $skipped++;
+                            continue;
+                        }
+                    }
+
+                    // Create inventory item
+                    InventoryItem::create([
+                        'product_model_id' => $productId,
+                        'mac_address' => $macAddress,
+                        'serial_number' => $serialNumber,
+                        'status' => 'available',
+                        'notes' => $notes,
+                        'received_at' => now(),
+                    ]);
+
+                    $imported++;
+
+                } catch (\Exception $e) {
+                    $errorDetails[] = "Row {$rowNumber}: " . $e->getMessage();
+                    $errors++;
+                }
+            }
+
+            // Update inventory count
+            $inventory = $product->inventory;
+            if ($inventory) {
+                $inventory->increment('quantity', $imported);
+                $inventory->update(['is_in_stock' => true]);
+            } else {
+                $product->inventory()->create([
+                    'quantity' => $imported,
+                    'reserved_quantity' => 0,
+                    'low_stock_threshold' => 5,
+                    'is_in_stock' => true,
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "CSV import completed. {$imported} device(s) imported, {$skipped} skipped, {$errors} error(s)",
+                'imported' => $imported,
+                'skipped' => $skipped,
+                'errors' => $errors,
+                'error_details' => $errorDetails,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to import CSV: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

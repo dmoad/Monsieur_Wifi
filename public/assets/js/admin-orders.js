@@ -135,7 +135,7 @@ function displayOrders(orders) {
                         <small class="text-muted">${order.user.email}</small>
                     </div>
                     <div class="col-md-2">
-                        ${getStatusBadge(order.status)}
+                        ${getStatusBadge(order)}
                     </div>
                     <div class="col-md-2">
                         <strong>$${parseFloat(order.total).toFixed(2)}</strong>
@@ -182,6 +182,10 @@ async function viewOrder(orderNumber) {
         const data = await response.json();
         const order = data.order || data;
         
+        console.log('Order data:', order);
+        console.log('Payment status:', order.payment_status);
+        console.log('Order status:', order.status);
+        
         document.getElementById('modal-content').innerHTML = `
             <h6>Order Information</h6>
             <table class="table">
@@ -226,6 +230,11 @@ async function viewOrder(orderNumber) {
         `;
         
         $('#order-modal').modal('show');
+        
+        // Refresh feather icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
     } catch (error) {
         console.error('Error loading order:', error);
         toastr.error('Failed to load order details');
@@ -386,17 +395,35 @@ async function updateStatus(orderNumber, status) {
     }
 }
 
-function getStatusBadge(status) {
-    const badges = {
-        'pending': '<span class="badge badge-warning">Pending</span>',
-        'processing': '<span class="badge badge-info">Processing</span>',
-        'completed': '<span class="badge badge-success">Completed</span>',
-        'shipped': '<span class="badge badge-primary">Shipped</span>',
-        'delivered': '<span class="badge badge-success">Delivered</span>',
-        'cancelled': '<span class="badge badge-danger">Cancelled</span>',
-        'payment_failed': '<span class="badge badge-danger">Payment Failed</span>'
-    };
-    return badges[status] || `<span class="badge badge-secondary">${status}</span>`;
+function getStatusBadge(order) {
+    const isPaid = order.payment_status === 'succeeded';
+    const status = order.status;
+    
+    // Cancelled orders always show as cancelled
+    if (status === 'cancelled') {
+        return PAGE_LOCALE === 'fr' 
+            ? '<span class="badge badge-danger">Annulée</span>'
+            : '<span class="badge badge-danger">Cancelled</span>';
+    }
+    
+    // If not paid, show awaiting payment
+    if (!isPaid) {
+        return PAGE_LOCALE === 'fr'
+            ? '<span class="badge badge-warning">En attente de paiement</span>'
+            : '<span class="badge badge-warning">Awaiting payment</span>';
+    }
+    
+    // If shipped or delivered, show shipped
+    if (status === 'shipped' || status === 'delivered') {
+        return PAGE_LOCALE === 'fr'
+            ? '<span class="badge badge-primary">Expédiée</span>'
+            : '<span class="badge badge-primary">Shipped</span>';
+    }
+    
+    // Otherwise, payment received (paid but not shipped)
+    return PAGE_LOCALE === 'fr'
+        ? '<span class="badge badge-success">Paiement reçu</span>'
+        : '<span class="badge badge-success">Payment received</span>';
 }
 
 function getOrderActionButtons(order) {
@@ -406,13 +433,35 @@ function getOrderActionButtons(order) {
     const isShipped = order.status === 'shipped';
     const hasTracking = order.tracking_id && order.shipping_provider;
     
+    console.log('getOrderActionButtons:', { isPaid, isCancelled, isDelivered, isShipped, hasTracking });
+    console.log('Should show Confirm Payment?', !isPaid && !isCancelled);
+    
     let buttons = [];
     
-    // Mark as Paid button - only for unpaid, non-cancelled orders
+    // Confirm Payment button - only for unpaid, non-cancelled orders
     if (!isPaid && !isCancelled) {
+        console.log('Adding Confirm Payment button');
         buttons.push(`
             <button class="btn btn-warning btn-sm" onclick="if(confirm('${PAGE_LOCALE === 'fr' ? 'Confirmer que le paiement a été reçu?' : 'Confirm payment has been received?'}')) markAsPaid('${order.order_number}')">
-                <i data-feather="dollar-sign"></i> ${PAGE_LOCALE === 'fr' ? 'Marquer comme payé' : 'Mark as Paid'}
+                <i data-feather="check-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Confirmer le paiement' : 'Confirm Payment'}
+            </button>
+        `);
+    } else {
+        console.log('Not adding Confirm Payment button - isPaid:', isPaid, 'isCancelled:', isCancelled);
+    }
+    
+    // Assign/Update Inventory button - only for paid orders
+    if (isPaid && !isCancelled) {
+        const hasInventoryAssigned = order.items && order.items.some(item => 
+            item.inventory_items && item.inventory_items.length > 0 && item.inventory_items.some(inv => inv.device_id)
+        );
+        
+        buttons.push(`
+            <button class="btn btn-secondary btn-sm" onclick="$('#order-modal').modal('hide'); setTimeout(() => showAssignInventoryModal('${order.order_number}'), 300);">
+                <i data-feather="package"></i> ${hasInventoryAssigned 
+                    ? (PAGE_LOCALE === 'fr' ? 'Mettre à jour l\'inventaire' : 'Update Inventory')
+                    : (PAGE_LOCALE === 'fr' ? 'Assigner l\'inventaire' : 'Assign Inventory')
+                }
             </button>
         `);
     }
@@ -454,6 +503,8 @@ function getOrderActionButtons(order) {
     }
     
     // Show status info if no actions available
+    console.log('Total buttons:', buttons.length);
+    
     if (buttons.length === 0) {
         if (isCancelled) {
             return `<p class="text-muted"><i data-feather="x-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Commande annulée - aucune action disponible' : 'Order cancelled - no actions available'}</p>`;
@@ -463,14 +514,17 @@ function getOrderActionButtons(order) {
         }
     }
     
-    return buttons.join(' ');
+    const buttonsHtml = buttons.join(' ');
+    console.log('Buttons HTML:', buttonsHtml);
+    return buttonsHtml;
 }
 
 async function markAsPaid(orderNumber) {
     const token = UserManager.getToken();
     
     try {
-        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/orders/${orderNumber}/success`, {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/orders/${orderNumber}/confirm-payment`, {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -487,14 +541,166 @@ async function markAsPaid(orderNumber) {
         const data = await response.json();
         
         if (response.ok) {
-            toastr.success(PAGE_LOCALE === 'fr' ? 'Commande marquée comme payée' : 'Order marked as paid');
+            toastr.success(PAGE_LOCALE === 'fr' ? 'Paiement confirmé avec succès' : 'Payment confirmed successfully');
             $('#order-modal').modal('hide');
             loadOrders();
         } else {
-            toastr.error(data.message || (PAGE_LOCALE === 'fr' ? 'Échec de la mise à jour du paiement' : 'Failed to update payment'));
+            toastr.error(data.message || (PAGE_LOCALE === 'fr' ? 'Échec de la confirmation du paiement' : 'Failed to confirm payment'));
         }
     } catch (error) {
-        console.error('Error marking as paid:', error);
-        toastr.error(PAGE_LOCALE === 'fr' ? 'Échec de la mise à jour du paiement' : 'Failed to update payment');
+        console.error('Error confirming payment:', error);
+        toastr.error(PAGE_LOCALE === 'fr' ? 'Échec de la confirmation du paiement' : 'Failed to confirm payment');
+    }
+}
+
+// Assign Inventory Functions
+let currentOrderForInventory = null;
+
+async function showAssignInventoryModal(orderNumber) {
+    const token = UserManager.getToken();
+    currentOrderForInventory = orderNumber;
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/orders/${orderNumber}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load order');
+        
+        const data = await response.json();
+        const order = data.order;
+        
+        // Load available inventory for each product
+        const inventoryPromises = order.items.map(async item => {
+            const invResponse = await fetch(
+                `${APP_CONFIG.API.BASE_URL}/v1/admin/inventory/${item.product_model_id}/items`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                }
+            );
+            const invData = await invResponse.json();
+            // Filter for items with 'available' status (not yet assigned), or already assigned to this order item
+            return {
+                orderItem: item,
+                availableInventory: (invData.items || []).filter(inv => 
+                    inv.status === 'available' || inv.order_item_id == item.id
+                )
+            };
+        });
+        
+        const inventoryData = await Promise.all(inventoryPromises);
+        
+        // Build modal content
+        let modalContent = `
+            <div class="alert alert-info">
+                ${PAGE_LOCALE === 'fr' 
+                    ? 'Sélectionnez les articles d\'inventaire à assigner à chaque article de commande. Le nombre d\'articles doit correspondre à la quantité commandée.' 
+                    : 'Select inventory items to assign to each order item. The number of items must match the ordered quantity.'}
+            </div>
+        `;
+        
+        inventoryData.forEach(({ orderItem, availableInventory }) => {
+            modalContent += `
+                <div class="mb-4 p-3 border rounded">
+                    <h5>${orderItem.product_model.name}</h5>
+                    <p class="text-muted">
+                        ${PAGE_LOCALE === 'fr' ? 'Quantité' : 'Quantity'}: ${orderItem.quantity} | 
+                        ${PAGE_LOCALE === 'fr' ? 'Articles disponibles' : 'Available items'}: ${availableInventory.length}
+                    </p>
+                    <div class="form-group">
+                        <label>${PAGE_LOCALE === 'fr' ? 'Sélectionner les articles (exactement ' + orderItem.quantity + ')' : 'Select items (exactly ' + orderItem.quantity + ')'}</label>
+                        <div class="inventory-checkbox-list border rounded p-2" style="max-height: 200px; overflow-y: auto;" data-order-item-id="${orderItem.id}" data-required="${orderItem.quantity}">
+                            ${availableInventory.map(inv => `
+                                <div class="custom-control custom-checkbox mb-1">
+                                    <input type="checkbox" class="custom-control-input inventory-checkbox" id="inv-${inv.id}" value="${inv.id}" ${inv.order_item_id == orderItem.id ? 'checked' : ''}>
+                                    <label class="custom-control-label" for="inv-${inv.id}">
+                                        <code>${inv.serial_number}</code> - <small>${inv.mac_address}</small>
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <small class="form-text text-muted">
+                            ${PAGE_LOCALE === 'fr' ? 'Cliquez pour sélectionner/désélectionner les articles' : 'Click to select/deselect items'}
+                        </small>
+                    </div>
+                </div>
+            `;
+        });
+        
+        document.getElementById('assign-inventory-content').innerHTML = modalContent;
+        $('#assign-inventory-modal').modal('show');
+    } catch (error) {
+        console.error('Error loading order for inventory assignment:', error);
+        toastr.error(PAGE_LOCALE === 'fr' ? 'Erreur lors du chargement de la commande' : 'Error loading order');
+    }
+}
+
+async function assignInventoryToOrder() {
+    const token = UserManager.getToken();
+    const checkboxLists = document.querySelectorAll('.inventory-checkbox-list');
+    const assignments = [];
+    let hasError = false;
+    
+    // Validate and collect assignments
+    checkboxLists.forEach(list => {
+        const orderItemId = list.dataset.orderItemId;
+        const required = parseInt(list.dataset.required);
+        const checkboxes = list.querySelectorAll('.inventory-checkbox:checked');
+        const selected = Array.from(checkboxes).map(cb => parseInt(cb.value));
+        
+        if (selected.length !== required) {
+            toastr.error(
+                PAGE_LOCALE === 'fr' 
+                    ? `Vous devez sélectionner exactement ${required} article(s)`
+                    : `You must select exactly ${required} item(s)`
+            );
+            hasError = true;
+            return;
+        }
+        
+        assignments.push({
+            order_item_id: parseInt(orderItemId),
+            inventory_item_ids: selected
+        });
+    });
+    
+    if (hasError || assignments.length === 0) return;
+    
+    try {
+        const response = await fetch(
+            `${APP_CONFIG.API.BASE_URL}/v1/admin/orders/${currentOrderForInventory}/assign-inventory`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ assignments })
+            }
+        );
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to assign inventory');
+        }
+        
+        toastr.success(
+            PAGE_LOCALE === 'fr' 
+                ? 'Inventaire assigné et appareils créés avec succès'
+                : 'Inventory assigned and devices created successfully'
+        );
+        $('#assign-inventory-modal').modal('hide');
+        loadOrders();
+    } catch (error) {
+        console.error('Error assigning inventory:', error);
+        toastr.error(error.message || (PAGE_LOCALE === 'fr' ? 'Erreur lors de l\'assignation de l\'inventaire' : 'Error assigning inventory'));
     }
 }

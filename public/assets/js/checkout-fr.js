@@ -250,11 +250,7 @@ async function handleSubmit(e) {
         console.log('Redirecting to:', `/fr/commandes/${orderResult.order_number}`);
         console.log('Token exists:', !!UserManager.getToken());
         
-        if (orderResult.payment_mode === 'mock') {
-            toastr.success('Commande passée et paiement traité avec succès!');
-        } else {
-            toastr.success('Commande passée avec succès!');
-        }
+        toastr.success('Commande passée avec succès! Votre commande est en attente de confirmation de paiement.');
         
         setTimeout(() => {
             window.location.href = `/fr/commandes/${orderResult.order_number}`;

@@ -258,6 +258,13 @@
             </div>
             <div class="modal-body">
                 <form id="add-location-form">
+                    <div class="form-group" id="owner-select-group" style="display: none;">
+                        <label for="owner-select">Propriétaire <span class="text-danger">*</span></label>
+                        <select class="form-control" id="owner-select">
+                            <option value="">Chargement des utilisateurs...</option>
+                        </select>
+                        <small class="form-text text-muted">Sélectionnez le propriétaire de cet emplacement.</small>
+                    </div>
                     <div class="form-group">
                         <label for="location-name">Nom de l'emplacement <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="location-name" placeholder="Entrez le nom de l'emplacement">
@@ -266,21 +273,12 @@
                         <label for="location-address">Adresse</label>
                         <input type="text" class="form-control" id="location-address" placeholder="Entrez l'adresse">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="location-router">Adresse MAC du routeur <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="location-router" placeholder="Format: 00:11:22:33:44:55">
-                            <small class="form-text text-muted">Ceci sera utilisé pour créer un nouvel appareil pour cet emplacement.</small>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="device-model">Modèle d'appareil <span class="text-danger">*</span></label>
-                            <select class="form-control" id="device-model" required>
-                                <option value="">Sélectionnez le modèle d'appareil</option>
-                                <option value="820AX">820AX</option>
-                                <option value="835AX">835AX</option>
-                            </select>
-                            <small class="form-text text-muted">Sélectionnez le modèle de votre appareil WiFi.</small>
-                        </div>
+                    <div class="form-group">
+                        <label for="device-select">Sélectionner un Appareil <span class="text-danger">*</span></label>
+                        <select class="form-control" id="device-select" required>
+                            <option value="">Chargement des appareils...</option>
+                        </select>
+                        <small class="form-text text-muted">Sélectionnez un appareil existant à assigner à cet emplacement.</small>
                     </div>
                     <div class="form-group">
                         <label for="location-notes">Description</label>
@@ -421,10 +419,14 @@ $(document).ready(function() {
         const locationData = {
             name: $('#location-name').val(),
             address: $('#location-address').val(),
-            mac_address: $('#location-router').val(),
-            model: $('#device-model').val(),
+            device_id: $('#device-select').val(),
             description: $('#location-notes').val()
         };
+        
+        // Add owner_id if admin is creating for another user
+        if (UserManager.isAdminOrAbove() && $('#owner-select').val()) {
+            locationData.owner_id = $('#owner-select').val();
+        }
 
         let hasErrors = false;
         if (!locationData.name) {
@@ -432,16 +434,8 @@ $(document).ready(function() {
             hasErrors = true;
         }
 
-        if (!locationData.mac_address) {
-            showFieldError('location-router', 'L\'adresse MAC du routeur est requise');
-            hasErrors = true;
-        } else if (!isValidMacAddress(locationData.mac_address)) {
-            showFieldError('location-router', 'Veuillez entrer une adresse MAC valide (ex: 00:11:22:33:44:55)');
-            hasErrors = true;
-        }
-
-        if (!locationData.model) {
-            showFieldError('device-model', 'Le modèle d\'appareil est requis');
+        if (!locationData.device_id) {
+            showFieldError('device-select', 'La sélection de l\'appareil est requise');
             hasErrors = true;
         }
 
@@ -522,6 +516,99 @@ $('#status-filter').on('change', function() {
     } else {
         table.column(4).search('').draw();
     }
+});
+
+async function loadUsers() {
+    console.log('loadUsers called');
+    console.log('isAdminOrAbove:', UserManager.isAdminOrAbove());
+    
+    if (!UserManager.isAdminOrAbove()) {
+        console.log('User is not admin, skipping user load');
+        return;
+    }
+    
+    const token = UserManager.getToken();
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load users');
+        
+        const data = await response.json();
+        console.log('Users loaded:', data.users.length);
+        const select = $('#owner-select');
+        
+        let options = '<option value="">Sélectionner le propriétaire...</option>';
+        data.users.forEach(user => {
+            options += `<option value="${user.id}">${user.name} (${user.email})</option>`;
+        });
+        
+        select.html(options);
+        console.log('Showing owner-select-group');
+        $('#owner-select-group').show();
+        console.log('owner-select-group display:', $('#owner-select-group').css('display'));
+    } catch (error) {
+        console.error('Error loading users:', error);
+    }
+}
+
+async function loadAvailableDevices() {
+    const token = UserManager.getToken();
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/devices/available-for-location`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load devices');
+        
+        const data = await response.json();
+        const select = $('#device-select');
+        
+        let options = '<option value="">Sélectionner un appareil...</option>';
+        
+        // Unassigned devices first
+        if (data.unassigned && data.unassigned.length > 0) {
+            options += '<optgroup label="Appareils Disponibles">';
+            data.unassigned.forEach(device => {
+                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - Disponible</option>`;
+            });
+            options += '</optgroup>';
+        }
+        
+        // Assigned devices second
+        if (data.assigned && data.assigned.length > 0) {
+            options += '<optgroup label="Appareils Assignés à D\'autres Emplacements">';
+            data.assigned.forEach(device => {
+                const locationName = device.location ? device.location.name : 'Emplacement Inconnu';
+                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - Assigné à: ${locationName}</option>`;
+            });
+            options += '</optgroup>';
+        }
+        
+        if (data.unassigned.length === 0 && data.assigned.length === 0) {
+            options = '<option value="">Aucun appareil disponible</option>';
+        }
+        
+        select.html(options);
+    } catch (error) {
+        console.error('Error loading devices:', error);
+        $('#device-select').html('<option value="">Erreur lors du chargement des appareils</option>');
+    }
+}
+
+// Load devices and users when modal is shown
+$('#add-location-modal').on('show.bs.modal', function() {
+    loadAvailableDevices();
+    loadUsers();
 });
 </script>
 @endpush

@@ -25,6 +25,9 @@
             <li class="nav-item {{ request()->is('*/zones*') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/zones"><i data-feather="layers"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Zones' : 'Zones' }}</span></a>
             </li>
+            <li class="nav-item {{ request()->is('*/devices', '*/appareils') ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/appareils' : 'en/devices' }}"><i data-feather="hard-drive"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Appareils' : 'Devices' }}</span></a>
+            </li>
             <li class="nav-item {{ request()->is('*/locations') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/locations"><i data-feather="map-pin"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Emplacements' : 'Locations' }}</span></a>
             </li>
@@ -34,9 +37,7 @@
             <li class="nav-item {{ request()->is('*/shop', '*/boutique', '*/cart', '*/panier', '*/checkout', '*/commander') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/boutique' : 'en/shop' }}"><i data-feather="shopping-bag"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Boutique' : 'Shop' }}</span></a>
             </li>
-            <li class="nav-item {{ request()->is('*/orders', '*/commandes') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/commandes' : 'en/orders' }}"><i data-feather="list"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Mes Commandes' : 'My Orders' }}</span></a>
-            </li>
+            
             
             <li class="navigation-header admin_and_above hidden"><span>{{ $locale === 'fr' ? 'Pour Admin' : 'For Admin' }}</span></li>
             <li class="nav-item admin_and_above hidden {{ request()->is('*/accounts') ? 'active' : '' }}">
@@ -66,6 +67,9 @@
             <li class="navigation-header"><span>{{ $locale === 'fr' ? 'Compte' : 'Account' }}</span></li>
             <li class="nav-item {{ request()->is('*/profile') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/profile"><i data-feather="user"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Profil' : 'Profile' }}</span></a>
+            </li>
+            <li class="nav-item {{ request()->is('*/orders', '*/commandes') ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/commandes' : 'en/orders' }}"><i data-feather="list"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Mes Commandes' : 'My Orders' }}</span></a>
             </li>
             <li class="nav-item">
                 <a class="d-flex align-items-center logout-button" href="/logout"><i data-feather="power"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Déconnexion' : 'Logout' }}</span></a>

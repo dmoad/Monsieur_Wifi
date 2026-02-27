@@ -21,6 +21,7 @@ class Device extends Model
         'mac_address',
         'firmware_version',
         'firmware_id',
+        'owner_id',
         'last_seen',
         'configuration_version',
         'device_key',
@@ -31,11 +32,43 @@ class Device extends Model
     ];
 
     /**
-     * Get the locations associated with the device.
+     * Get the owner of the device.
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * Get the firmware of the device.
+     */
+    public function firmware()
+    {
+        return $this->belongsTo(Firmware::class, 'firmware_id');
+    }
+
+    /**
+     * Get the location associated with the device.
+     */
+    public function location()
+    {
+        return $this->hasOne(Location::class);
+    }
+
+    /**
+     * Get the locations associated with the device (legacy relationship).
      */
     public function locations()
     {
         return $this->hasMany(Location::class);
+    }
+
+    /**
+     * Get the inventory item associated with the device.
+     */
+    public function inventoryItem()
+    {
+        return $this->hasOne(InventoryItem::class);
     }
 
     /**
