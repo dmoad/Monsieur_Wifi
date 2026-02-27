@@ -57,7 +57,7 @@ async function loadSummary() {
         document.getElementById('total-products').textContent = summary.total_products;
         document.getElementById('out-of-stock').textContent = summary.out_of_stock;
         document.getElementById('low-stock').textContent = summary.low_stock;
-        document.getElementById('total-value').textContent = `$${parseFloat(summary.total_inventory_value).toFixed(2)}`;
+        document.getElementById('total-value').textContent = `€${parseFloat(summary.total_inventory_value).toFixed(2)}`;
     } catch (error) {
         console.error('Error loading summary:', error);
         toastr.error('Failed to load inventory summary');

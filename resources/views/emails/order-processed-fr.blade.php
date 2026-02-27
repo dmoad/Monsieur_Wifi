@@ -35,23 +35,23 @@
                 @foreach($order->items as $item)
                 <div class="order-item">
                     <span>{{ $item->productModel->name }} × {{ $item->quantity }}</span>
-                    <span>${{ number_format($item->subtotal, 2) }}</span>
+                    <span>€{{ number_format($item->subtotal, 2) }}</span>
                 </div>
                 @endforeach
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #7367f0;">
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
                         <span>Sous-total:</span>
-                        <span>${{ number_format($order->product_amount, 2) }}</span>
+                        <span>€{{ number_format($order->product_amount, 2) }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
                         <span>Livraison:</span>
-                        <span>${{ number_format($order->shipping_cost, 2) }}</span>
+                        <span>€{{ number_format($order->shipping_cost, 2) }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
                         <span>Taxes:</span>
-                        <span>${{ number_format($order->tax_amount, 2) }}</span>
+                        <span>€{{ number_format($order->tax_amount, 2) }}</span>
                     </div>
-                    <div class="total">Total: ${{ number_format($order->total, 2) }}</div>
+                    <div class="total">Total: €{{ number_format($order->total, 2) }}</div>
                 </div>
             </div>
             

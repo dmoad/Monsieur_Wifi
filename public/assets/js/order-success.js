@@ -56,7 +56,7 @@ function displayOrder(order) {
     document.getElementById('info-order-number').textContent = order.order_number;
     document.getElementById('info-date').textContent = new Date(order.created_at).toLocaleDateString();
     document.getElementById('info-status').innerHTML = getStatusBadge(order.status);
-    document.getElementById('info-total').textContent = `$${parseFloat(order.total).toFixed(2)}`;
+    document.getElementById('info-total').textContent = `€${parseFloat(order.total).toFixed(2)}`;
     
     const address = order.shipping_address;
     document.getElementById('shipping-address').innerHTML = `
@@ -73,14 +73,14 @@ function displayOrder(order) {
     itemsContainer.innerHTML = order.items.map(item => `
         <div class="d-flex justify-content-between mb-2">
             <span>${item.product_model.name} × ${item.quantity}</span>
-            <span>$${parseFloat(item.subtotal).toFixed(2)}</span>
+            <span>€${parseFloat(item.subtotal).toFixed(2)}</span>
         </div>
     `).join('');
     
-    document.getElementById('summary-subtotal').textContent = `$${parseFloat(order.product_amount).toFixed(2)}`;
-    document.getElementById('summary-shipping').textContent = `$${parseFloat(order.shipping_cost).toFixed(2)}`;
-    document.getElementById('summary-tax').textContent = `$${parseFloat(order.tax_amount).toFixed(2)}`;
-    document.getElementById('summary-total').textContent = `$${parseFloat(order.total).toFixed(2)}`;
+    document.getElementById('summary-subtotal').textContent = `€${parseFloat(order.product_amount).toFixed(2)}`;
+    document.getElementById('summary-shipping').textContent = `€${parseFloat(order.shipping_cost).toFixed(2)}`;
+    document.getElementById('summary-tax').textContent = `€${parseFloat(order.tax_amount).toFixed(2)}`;
+    document.getElementById('summary-total').textContent = `€${parseFloat(order.total).toFixed(2)}`;
     
     document.getElementById('order-loading').style.display = 'none';
     document.getElementById('order-details').style.display = 'block';

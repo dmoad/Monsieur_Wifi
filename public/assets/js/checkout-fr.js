@@ -80,7 +80,7 @@ function displayShippingMethods() {
                    onchange="selectShipping(${rate.id}, ${rate.cost})">
             <label class="custom-control-label d-flex justify-content-between w-100" for="shipping-${rate.id}">
                 <span>${rate.name_fr} - ${rate.estimated_days_min}-${rate.estimated_days_max} jours</span>
-                <strong>$${parseFloat(rate.cost).toFixed(2)}</strong>
+                <strong>€${parseFloat(rate.cost).toFixed(2)}</strong>
             </label>
         </div>
     `).join('');
@@ -102,11 +102,11 @@ function displayOrderSummary() {
     itemsContainer.innerHTML = cart.cart.items.map(item => `
         <div class="d-flex justify-content-between mb-2">
             <span>${item.product_model.name} × ${item.quantity}</span>
-            <span>$${parseFloat(item.price_at_add * item.quantity).toFixed(2)}</span>
+            <span>€${parseFloat(item.price_at_add * item.quantity).toFixed(2)}</span>
         </div>
     `).join('');
     
-    document.getElementById('order-subtotal').textContent = `$${parseFloat(cart.total).toFixed(2)}`;
+    document.getElementById('order-subtotal').textContent = `€${parseFloat(cart.total).toFixed(2)}`;
     updateTotals();
 }
 
@@ -118,9 +118,9 @@ function updateTotals() {
     const tax = (subtotal + shipping) * 0.13;
     const total = subtotal + shipping + tax;
     
-    document.getElementById('order-shipping').textContent = `$${shipping.toFixed(2)}`;
-    document.getElementById('order-tax').textContent = `$${tax.toFixed(2)}`;
-    document.getElementById('order-total').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('order-shipping').textContent = `€${shipping.toFixed(2)}`;
+    document.getElementById('order-tax').textContent = `€${tax.toFixed(2)}`;
+    document.getElementById('order-total').textContent = `€${total.toFixed(2)}`;
 }
 
 async function handleSubmit(e) {

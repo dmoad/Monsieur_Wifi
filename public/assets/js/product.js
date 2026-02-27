@@ -38,7 +38,7 @@ async function loadProduct(slug) {
 
 function displayProduct(product) {
     document.getElementById('product-name').textContent = product.name;
-    document.getElementById('product-price').textContent = `$${parseFloat(product.price).toFixed(2)}`;
+    document.getElementById('product-price').textContent = `€${parseFloat(product.price).toFixed(2)}`;
     document.getElementById('product-description').innerHTML = product.description_en || '';
     
     const mainImage = product.primary_image || '/app-assets/images/placeholder.png';

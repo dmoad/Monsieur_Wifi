@@ -90,7 +90,7 @@ function displayModels(modelsData) {
         html += `<td><img src="${imageUrl}" alt="${model.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"></td>`;
         html += `<td><strong>${model.name}</strong><br><small class="text-muted">${model.slug}</small></td>`;
         html += `<td><span class="badge badge-info">${model.device_type || 'N/A'}</span></td>`;
-        html += `<td><strong>$${parseFloat(model.price).toFixed(2)}</strong></td>`;
+        html += `<td><strong>€${parseFloat(model.price).toFixed(2)}</strong></td>`;
         html += `<td>${stockBadge}</td>`;
         html += `<td>`;
         html += `<div class="custom-control custom-switch">`;

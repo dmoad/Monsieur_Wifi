@@ -138,7 +138,7 @@ function displayOrders(orders) {
                         ${getStatusBadge(order)}
                     </div>
                     <div class="col-md-2">
-                        <strong>$${parseFloat(order.total).toFixed(2)}</strong>
+                        <strong>€${parseFloat(order.total).toFixed(2)}</strong>
                     </div>
                     <div class="col-md-2">
                         ${order.tracking_id ? `<small>${order.tracking_id}</small>` : '<small class="text-muted">No tracking</small>'}
@@ -285,7 +285,7 @@ async function viewOrder(orderNumber) {
                                             <div class="item-name">${item.product_model.name}</div>
                                             <div class="item-qty">×${item.quantity}</div>
                                         </div>
-                                        <div class="item-price">$${parseFloat(item.subtotal).toFixed(2)}</div>
+                                        <div class="item-price">€${parseFloat(item.subtotal).toFixed(2)}</div>
                                     </div>
                                 `).join('')}
                             </div>
@@ -293,19 +293,19 @@ async function viewOrder(orderNumber) {
                             <div class="summary-breakdown">
                                 <div class="summary-row">
                                     <span>${PAGE_LOCALE === 'fr' ? 'Sous-total' : 'Subtotal'}</span>
-                                    <span>$${parseFloat(order.product_amount || 0).toFixed(2)}</span>
+                                    <span>€${parseFloat(order.product_amount || 0).toFixed(2)}</span>
                                 </div>
                                 <div class="summary-row">
                                     <span>${PAGE_LOCALE === 'fr' ? 'Livraison' : 'Shipping'}</span>
-                                    <span>$${parseFloat(order.shipping_cost || 0).toFixed(2)}</span>
+                                    <span>€${parseFloat(order.shipping_cost || 0).toFixed(2)}</span>
                                 </div>
                                 <div class="summary-row">
                                     <span>${PAGE_LOCALE === 'fr' ? 'Taxes' : 'Tax'}</span>
-                                    <span>$${parseFloat(order.tax_amount || 0).toFixed(2)}</span>
+                                    <span>€${parseFloat(order.tax_amount || 0).toFixed(2)}</span>
                                 </div>
                                 <div class="summary-row summary-total">
                                     <span>${PAGE_LOCALE === 'fr' ? 'Total' : 'Total'}</span>
-                                    <span>$${parseFloat(order.total).toFixed(2)}</span>
+                                    <span>€${parseFloat(order.total).toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>

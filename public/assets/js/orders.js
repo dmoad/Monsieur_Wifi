@@ -62,8 +62,8 @@ function displayOrders(orders) {
                     </div>
                     <div class="col-md-3">
                         <small class="text-muted">Total</small>
-                        <p class="mb-0"><strong>$${parseFloat(order.total).toFixed(2)}</strong></p>
-                        ${order.tax_amount ? `<small class="text-muted">(Tax: $${parseFloat(order.tax_amount).toFixed(2)})</small>` : ''}
+                        <p class="mb-0"><strong>€${parseFloat(order.total).toFixed(2)}</strong></p>
+                        ${order.tax_amount ? `<small class="text-muted">(Tax: €${parseFloat(order.tax_amount).toFixed(2)})</small>` : ''}
                     </div>
                     <div class="col-md-3 text-right">
                         <a href="/en/orders/${order.order_number}" class="btn btn-primary btn-sm">View Details</a>

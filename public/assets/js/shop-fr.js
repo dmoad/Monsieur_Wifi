@@ -59,7 +59,7 @@ function displayProducts(products) {
                     <h5 class="product-title">${product.name}</h5>
                     <p class="product-description">${product.description_fr || 'Équipement WiFi de haute qualité pour vos besoins réseau.'}</p>
                     <div class="product-footer">
-                        <h3 class="product-price">$${parseFloat(product.price).toFixed(2)}</h3>
+                        <h3 class="product-price">€${parseFloat(product.price).toFixed(2)}</h3>
                         <div class="product-actions">
                             ${product.is_in_stock 
                                 ? `<button onclick="addToCart(${product.id})" class="btn btn-success btn-sm product-btn mr-1" title="Ajouter au Panier">

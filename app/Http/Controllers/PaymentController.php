@@ -61,7 +61,7 @@ class PaymentController extends Controller
             
             $paymentIntent = PaymentIntent::create([
                 'amount' => $order->getAmountInCents(),
-                'currency' => 'cad',
+                'currency' => 'eur',
                 'metadata' => [
                     'order_number' => $order->order_number,
                     'user_id' => $user->id,

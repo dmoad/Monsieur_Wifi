@@ -56,7 +56,7 @@ function displayCart(data) {
                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
             <div class="ml-3 flex-grow-1">
                 <h6 class="mb-1">${item.product_model.name}</h6>
-                <p class="text-muted mb-0">$${parseFloat(item.price_at_add).toFixed(2)} each</p>
+                <p class="text-muted mb-0">€${parseFloat(item.price_at_add).toFixed(2)} each</p>
             </div>
             <div class="d-flex align-items-center">
                 <input type="number" class="form-control" style="width: 80px;" 
@@ -67,13 +67,13 @@ function displayCart(data) {
                 </button>
             </div>
             <div class="ml-3 text-right" style="min-width: 100px;">
-                <strong>$${parseFloat(item.price_at_add * item.quantity).toFixed(2)}</strong>
+                <strong>€${parseFloat(item.price_at_add * item.quantity).toFixed(2)}</strong>
             </div>
         </div>
     `).join('');
     
-    document.getElementById('cart-subtotal').textContent = `$${parseFloat(data.total).toFixed(2)}`;
-    document.getElementById('cart-total').textContent = `$${parseFloat(data.total).toFixed(2)}`;
+    document.getElementById('cart-subtotal').textContent = `€${parseFloat(data.total).toFixed(2)}`;
+    document.getElementById('cart-total').textContent = `€${parseFloat(data.total).toFixed(2)}`;
     
     document.getElementById('cart-content').style.display = 'flex';
     feather.replace();

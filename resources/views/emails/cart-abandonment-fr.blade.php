@@ -22,11 +22,11 @@
             @foreach($cart->items as $item)
             <div class="product-box">
                 <span>{{ $item->product->name }} × {{ $item->quantity }}</span>
-                <span>${{ number_format($item->subtotal, 2) }}</span>
+                <span>€{{ number_format($item->subtotal, 2) }}</span>
             </div>
             @endforeach
             <p style="text-align: center; margin-top: 30px; font-size: 18px; color: #7367f0;">
-                <strong>Total: ${{ number_format($cart->getTotal(), 2) }}</strong>
+                <strong>Total: €{{ number_format($cart->getTotal(), 2) }}</strong>
             </p>
             <div style="text-align: center;">
                 <a href="{{ url('/fr/panier') }}" class="button">Finaliser Votre Commande</a>
