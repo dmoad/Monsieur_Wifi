@@ -32,6 +32,18 @@ Route::get('temp-captive-portal-designs/{id}', [TempCaptivePortalDesignControlle
 // Stripe webhook endpoint (public, no CSRF protection)
 Route::post('payment-notifications', [PaymentController::class, 'handleWebhook']);
 
+// Webhook test endpoint (for debugging)
+Route::get('webhook-test', function() {
+    return response()->json([
+        'success' => true,
+        'message' => 'Webhook endpoint is reachable',
+        'webhook_url' => config('app.url') . '/api/payment-notifications',
+        'webhook_secret_configured' => !empty(config('services.stripe.webhook.secret')),
+        'stripe_key_configured' => !empty(config('services.stripe.key')),
+        'stripe_secret_configured' => !empty(config('services.stripe.secret')),
+    ]);
+});
+
 // Protected routes (auth required)
 Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::post('logout', [AuthController::class, 'logout']);
@@ -255,7 +267,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::get('/orders/{orderNumber}/invoice', [OrderController::class, 'downloadInvoice']);
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{orderNumber}/payment-intent', [PaymentController::class, 'createPaymentIntent']);
-    Route::get('/orders/{orderNumber}/mark-paid', [PaymentController::class, 'markOrderAsPaid']);
+    Route::post('/orders/{orderNumber}/verify-payment', [PaymentController::class, 'verifyAndConfirmPayment']);
     
     // Addresses
     Route::get('/addresses', [AddressController::class, 'index']);

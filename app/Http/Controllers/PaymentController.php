@@ -108,6 +108,12 @@ class PaymentController extends Controller
         $sigHeader = $request->header('Stripe-Signature');
         $webhookSecret = config('services.stripe.webhook.secret');
         
+        Log::info('Webhook received', [
+            'has_signature' => !empty($sigHeader),
+            'has_secret' => !empty($webhookSecret),
+            'payload_length' => strlen($payload)
+        ]);
+        
         if (!$webhookSecret) {
             Log::error('Stripe webhook secret not configured');
             return response()->json(['error' => 'Webhook secret not configured'], 500);
@@ -121,12 +127,16 @@ class PaymentController extends Controller
             );
         } catch (SignatureVerificationException $e) {
             Log::error('Webhook signature verification failed', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'signature_present' => !empty($sigHeader),
+                'secret_configured' => !empty($webhookSecret),
+                'secret_prefix' => substr($webhookSecret, 0, 10) . '...'
             ]);
             return response()->json(['error' => 'Invalid signature'], 400);
         } catch (\Exception $e) {
             Log::error('Webhook error', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             return response()->json(['error' => 'Webhook error'], 400);
         }
@@ -251,9 +261,9 @@ class PaymentController extends Controller
     }
     
     /**
-     * Manually mark a Stripe payment as paid (for testing or manual confirmation).
+     * Verify payment with Stripe API and mark order as paid
      */
-    public function markOrderAsPaid($orderNumber)
+    public function verifyAndConfirmPayment($orderNumber)
     {
         $user = Auth::user();
         
@@ -264,44 +274,82 @@ class PaymentController extends Controller
             ], 401);
         }
         
-        // Get order belonging to authenticated user
-        $order = Order::with('items.productModel.inventory')
-            ->where('order_number', $orderNumber)
-            ->where('user_id', $user->id)
-            ->first();
-        
-        if (!$order) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found.',
-            ], 404);
-        }
-        
-        // Verify payment method is Stripe
-        if ($order->payment_method !== 'stripe') {
-            return response()->json([
-                'success' => false,
-                'message' => 'This endpoint only works for Stripe payments.',
-            ], 400);
-        }
-        
-        // Check if already paid
-        if ($order->payment_status === 'succeeded') {
-            return response()->json([
-                'success' => true,
-                'message' => 'Order is already marked as paid.',
-                'order' => [
-                    'order_number' => $order->order_number,
-                    'payment_status' => $order->payment_status,
-                    'total' => $order->total,
-                ],
-            ]);
-        }
-        
-        DB::beginTransaction();
         try {
-            // Mark order as paid (use manual as payment intent ID since this is manual)
-            $order->markAsPaid('manual_' . time());
+            // Get order belonging to authenticated user
+            $order = Order::with('items.productModel.inventory')
+                ->where('order_number', $orderNumber)
+                ->where('user_id', $user->id)
+                ->first();
+            
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order not found.',
+                ], 404);
+            }
+            
+            // Verify payment method is Stripe
+            if ($order->payment_method !== 'stripe') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This endpoint only works for Stripe payments.',
+                ], 400);
+            }
+            
+            // Check if already paid
+            if ($order->payment_status === 'succeeded') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order is already marked as paid.',
+                    'order' => [
+                        'order_number' => $order->order_number,
+                        'payment_status' => $order->payment_status,
+                        'total' => $order->total,
+                    ],
+                ]);
+            }
+            
+            // Verify payment with Stripe API
+            if (!$order->payment_intent_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No payment intent found for this order.',
+                ], 400);
+            }
+            
+            Stripe::setApiKey(config('services.stripe.secret'));
+            $paymentIntent = PaymentIntent::retrieve($order->payment_intent_id);
+            
+            Log::info('Payment intent retrieved from Stripe', [
+                'order_number' => $orderNumber,
+                'payment_intent_id' => $paymentIntent->id,
+                'status' => $paymentIntent->status,
+                'amount' => $paymentIntent->amount / 100,
+            ]);
+            
+            // Verify payment succeeded
+            if ($paymentIntent->status !== 'succeeded') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment has not been completed. Status: ' . $paymentIntent->status,
+                    'payment_status' => $paymentIntent->status,
+                ], 400);
+            }
+            
+            // Verify amount matches
+            $expectedAmount = (int)($order->total * 100); // Convert to cents
+            if ($paymentIntent->amount !== $expectedAmount) {
+                Log::warning('Payment amount mismatch', [
+                    'order_number' => $orderNumber,
+                    'expected' => $expectedAmount,
+                    'actual' => $paymentIntent->amount,
+                ]);
+            }
+            
+            DB::beginTransaction();
+            
+            // Mark order as paid
+            $order->markAsPaid($paymentIntent->id);
             
             // Deduct inventory
             foreach ($order->items as $item) {
@@ -312,15 +360,16 @@ class PaymentController extends Controller
             
             DB::commit();
             
-            Log::info('Payment manually marked as paid', [
+            Log::info('Payment verified and confirmed via API', [
                 'order_number' => $orderNumber,
+                'payment_intent_id' => $paymentIntent->id,
                 'user_id' => $user->id,
                 'total' => $order->total,
             ]);
             
             return response()->json([
                 'success' => true,
-                'message' => 'Payment marked as paid successfully.',
+                'message' => 'Payment verified and confirmed successfully.',
                 'order' => [
                     'order_number' => $order->order_number,
                     'payment_status' => $order->payment_status,
@@ -330,10 +379,21 @@ class PaymentController extends Controller
                 ],
             ]);
             
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            Log::error('Stripe API error while verifying payment', [
+                'order_number' => $orderNumber,
+                'error' => $e->getMessage(),
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to verify payment with Stripe: ' . $e->getMessage(),
+            ], 500);
+            
         } catch (\Exception $e) {
             DB::rollBack();
             
-            Log::error('Failed to manually mark payment as paid', [
+            Log::error('Failed to verify and confirm payment', [
                 'order_number' => $orderNumber,
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),

@@ -189,10 +189,22 @@ class LocationController extends Controller
         // Check if device is already assigned to another location
         $existingLocation = Location::where('device_id', $device->id)->first();
         if ($existingLocation) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Device is already assigned to another location: ' . $existingLocation->name
-            ], 400);
+            // Device is assigned to another location - reassign it
+            Log::info('Reassigning device to new location', [
+                'device_id' => $device->id,
+                'old_location' => $existingLocation->name,
+                'old_location_id' => $existingLocation->id,
+                'new_location_request' => $request->name
+            ]);
+            
+            // Remove device from old location
+            $existingLocation->device_id = null;
+            $existingLocation->save();
+            
+            Log::info('Device removed from old location', [
+                'old_location_id' => $existingLocation->id,
+                'old_location_name' => $existingLocation->name
+            ]);
         }
         
         // Get the firmware from the device
@@ -213,7 +225,8 @@ class LocationController extends Controller
         // Create the location with the device
         $location = new Location($request->except(['mac_address', 'device_name', 'serial_number', 'owner_id']));
         $location->device_id = $device->id;
-        $location->user_id = $ownerId;
+        $location->user_id = $ownerId;  // User who created/manages the location
+        $location->owner_id = $ownerId; // Owner of the location
         $location->save();
 
         // Create the location settings

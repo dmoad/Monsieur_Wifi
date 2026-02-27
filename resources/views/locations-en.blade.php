@@ -423,9 +423,13 @@ $(document).ready(function() {
             description: $('#location-notes').val()
         };
         
-        // Add owner_id if admin is creating for another user
+        // Set owner_id
         if (UserManager.isAdminOrAbove() && $('#owner-select').val()) {
+            // Admin selected a specific owner
             locationData.owner_id = $('#owner-select').val();
+        } else {
+            // Non-admin or admin without selection - set to current user
+            locationData.owner_id = user.id;
         }
 
         let hasErrors = false;

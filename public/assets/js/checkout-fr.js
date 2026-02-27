@@ -371,16 +371,45 @@ async function handlePaymentSubmit(clientSecret) {
             submitBtn.innerHTML = 'Payer Maintenant';
             toastr.error(error.message);
         } else if (paymentIntent.status === 'succeeded') {
-            // Payment successful
+            // Payment successful - verify and confirm with backend
             paymentForm.style.display = 'none';
             processingDiv.style.display = 'block';
             
-            toastr.success('Paiement réussi! Traitement de votre commande...');
+            toastr.success('Paiement réussi! Confirmation de votre commande...');
             
-            // Wait a moment for webhook to process, then redirect
-            setTimeout(() => {
-                window.location.href = `/fr/commandes/${currentOrderNumber}`;
-            }, 2000);
+            // Verify payment with backend
+            try {
+                const token = UserManager.getToken();
+                const verifyResponse = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/orders/${currentOrderNumber}/verify-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const verifyResult = await verifyResponse.json();
+                
+                if (verifyResponse.ok && verifyResult.success) {
+                    toastr.success('Commande confirmée! Redirection...');
+                    setTimeout(() => {
+                        window.location.href = `/fr/commandes/${currentOrderNumber}`;
+                    }, 1000);
+                } else {
+                    console.error('Payment verification failed:', verifyResult);
+                    toastr.warning('Paiement effectué mais confirmation en attente. Veuillez contacter le support si nécessaire.');
+                    setTimeout(() => {
+                        window.location.href = `/fr/commandes/${currentOrderNumber}`;
+                    }, 2000);
+                }
+            } catch (verifyError) {
+                console.error('Error verifying payment:', verifyError);
+                toastr.warning('Paiement effectué. Redirection vers votre commande...');
+                setTimeout(() => {
+                    window.location.href = `/fr/commandes/${currentOrderNumber}`;
+                }, 2000);
+            }
         } else {
             // Handle other statuses
             toastr.warning('Le paiement est en cours de traitement. Veuillez vérifier le statut de votre commande.');
