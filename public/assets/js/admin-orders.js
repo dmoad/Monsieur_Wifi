@@ -187,64 +187,130 @@ async function viewOrder(orderNumber) {
         console.log('Order status:', order.status);
         
         document.getElementById('modal-content').innerHTML = `
-            <h6>Order Information</h6>
-            <table class="table">
-                <tr><td>Order Number:</td><td>${order.order_number}</td></tr>
-                <tr><td>Status:</td><td>${getStatusBadge(order.status)}</td></tr>
-                <tr><td>${PAGE_LOCALE === 'fr' ? 'Méthode de paiement' : 'Payment Method'}:</td><td><span class="badge badge-${order.payment_method === 'stripe' ? 'primary' : 'secondary'}">${order.payment_method === 'stripe' ? 'Stripe' : (order.payment_method || 'N/A')}</span></td></tr>
-                <tr><td>${PAGE_LOCALE === 'fr' ? 'Statut du paiement' : 'Payment Status'}:</td><td><span class="badge badge-${order.payment_status === 'succeeded' ? 'success' : 'warning'}">${order.payment_status || 'pending'}</span></td></tr>
-                <tr><td>${PAGE_LOCALE === 'fr' ? 'Date de commande' : 'Order Date'}:</td><td>${new Date(order.created_at).toLocaleString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' })}</td></tr>
-                ${order.delivered_at ? `<tr><td>${PAGE_LOCALE === 'fr' ? 'Date de livraison' : 'Delivered Date'}:</td><td><strong class="text-success">${new Date(order.delivered_at).toLocaleString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' })}</strong></td></tr>` : ''}
-                <tr><td>Customer:</td><td>${order.user.name} (${order.user.email})</td></tr>
-            </table>
-            
-            <h6>${PAGE_LOCALE === 'fr' ? 'Résumé de la commande' : 'Order Summary'}</h6>
-            <table class="table">
-                <tr><td>${PAGE_LOCALE === 'fr' ? 'Sous-total' : 'Subtotal'}:</td><td>$${parseFloat(order.product_amount || 0).toFixed(2)}</td></tr>
-                <tr><td>${PAGE_LOCALE === 'fr' ? 'Frais de livraison' : 'Shipping Cost'}:</td><td>$${parseFloat(order.shipping_cost || 0).toFixed(2)}</td></tr>
-                <tr><td>${PAGE_LOCALE === 'fr' ? 'Taxe' : 'Tax'}:</td><td>$${parseFloat(order.tax_amount || 0).toFixed(2)}</td></tr>
-                <tr class="font-weight-bold"><td>${PAGE_LOCALE === 'fr' ? 'Total' : 'Total'}:</td><td>$${parseFloat(order.total).toFixed(2)}</td></tr>
-            </table>
-            
-            <h6>Items</h6>
-            <table class="table">
-                <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
-                <tbody>
-                    ${order.items.map(item => `
-                        <tr>
-                            <td>${item.product_model.name}</td>
-                            <td>${item.quantity}</td>
-                            <td>$${parseFloat(item.price).toFixed(2)}</td>
-                            <td>$${parseFloat(item.subtotal).toFixed(2)}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-            
-            <h6>Shipping Address</h6>
-            <p>
-                ${order.shipping_address.first_name} ${order.shipping_address.last_name}<br>
-                ${order.shipping_address.address_line1}<br>
-                ${order.shipping_address.city}, ${order.shipping_address.province} ${order.shipping_address.postal_code}
-            </p>
-            
-            <h6>${PAGE_LOCALE === 'fr' ? 'Informations de suivi' : 'Tracking Information'}</h6>
-            <p>
-                ${order.shipping_provider 
-                    ? `<strong>${PAGE_LOCALE === 'fr' ? 'Transporteur' : 'Provider'}:</strong> ${order.shipping_provider}<br><strong>${PAGE_LOCALE === 'fr' ? 'Suivi' : 'Tracking'}:</strong> ${order.tracking_id || 'N/A'}` 
-                    : `<span class="text-muted">${PAGE_LOCALE === 'fr' ? 'Pas encore ajouté' : 'Not yet added'}</span>`}
-            </p>
-            
-            ${order.payment_status === 'succeeded' ? `
-            <div class="mb-3">
-                <button class="btn btn-outline-primary btn-sm" onclick="downloadInvoice('${order.order_number}')">
-                    <i data-feather="download"></i> ${PAGE_LOCALE === 'fr' ? 'Télécharger la facture' : 'Download Invoice'}
-                </button>
-            </div>
-            ` : ''}
-            
-            <div class="mt-3">
-                ${getOrderActionButtons(order)}
+            <div class="order-modal-redesign">
+                <!-- Hero Header Section -->
+                <div class="order-hero-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="order-number-badge">${order.order_number}</div>
+                            <div class="order-date">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                ${new Date(order.created_at).toLocaleDateString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ${new Date(order.created_at).toLocaleTimeString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                        </div>
+                        <div class="order-status-large">
+                            ${getStatusBadge(order)}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Toolbar -->
+                <div class="quick-actions-toolbar">
+                    ${getOrderActionButtons(order)}
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="order-content-grid">
+                    <!-- Left Column -->
+                    <div class="order-column-left">
+                        <!-- Customer Info -->
+                        <div class="info-card customer-card">
+                            <div class="info-card-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-label">${PAGE_LOCALE === 'fr' ? 'Client' : 'Customer'}</div>
+                                <div class="info-value">${order.user.name}</div>
+                                <div class="info-meta">${order.user.email}</div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Info -->
+                        <div class="info-card payment-card">
+                            <div class="info-card-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-label">${PAGE_LOCALE === 'fr' ? 'Paiement' : 'Payment'}</div>
+                                <div class="payment-badges">
+                                    <span class="mini-badge badge-${order.payment_method === 'stripe' ? 'blue' : 'gray'}">${order.payment_method === 'stripe' ? 'Stripe' : (order.payment_method || 'N/A')}</span>
+                                    <span class="mini-badge badge-${order.payment_status === 'succeeded' ? 'green' : 'yellow'}">${order.payment_status || 'pending'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Address -->
+                        <div class="info-card address-card">
+                            <div class="info-card-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-label">${PAGE_LOCALE === 'fr' ? 'Livraison' : 'Shipping'}</div>
+                                <div class="info-value-sm">${order.shipping_address.first_name} ${order.shipping_address.last_name}</div>
+                                <div class="info-meta">
+                                    ${order.shipping_address.address_line1}${order.shipping_address.address_line2 ? ', ' + order.shipping_address.address_line2 : ''}<br>
+                                    ${order.shipping_address.city}, ${order.shipping_address.province} ${order.shipping_address.postal_code}
+                                </div>
+                            </div>
+                        </div>
+
+                        ${order.shipping_provider ? `
+                        <!-- Tracking Info -->
+                        <div class="info-card tracking-card">
+                            <div class="info-card-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-label">${PAGE_LOCALE === 'fr' ? 'Suivi' : 'Tracking'}</div>
+                                <div class="info-value-sm">${order.shipping_provider}</div>
+                                <div class="tracking-number">${order.tracking_id}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="order-column-right">
+                        <!-- Order Summary Card -->
+                        <div class="summary-card">
+                            <div class="summary-header">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                <span>${PAGE_LOCALE === 'fr' ? 'Commande' : 'Order Summary'}</span>
+                            </div>
+                            
+                            <div class="items-list">
+                                ${order.items.map(item => `
+                                    <div class="item-row">
+                                        <div class="item-info">
+                                            <div class="item-name">${item.product_model.name}</div>
+                                            <div class="item-qty">×${item.quantity}</div>
+                                        </div>
+                                        <div class="item-price">$${parseFloat(item.subtotal).toFixed(2)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <div class="summary-breakdown">
+                                <div class="summary-row">
+                                    <span>${PAGE_LOCALE === 'fr' ? 'Sous-total' : 'Subtotal'}</span>
+                                    <span>$${parseFloat(order.product_amount || 0).toFixed(2)}</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>${PAGE_LOCALE === 'fr' ? 'Livraison' : 'Shipping'}</span>
+                                    <span>$${parseFloat(order.shipping_cost || 0).toFixed(2)}</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>${PAGE_LOCALE === 'fr' ? 'Taxes' : 'Tax'}</span>
+                                    <span>$${parseFloat(order.tax_amount || 0).toFixed(2)}</span>
+                                </div>
+                                <div class="summary-row summary-total">
+                                    <span>${PAGE_LOCALE === 'fr' ? 'Total' : 'Total'}</span>
+                                    <span>$${parseFloat(order.total).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
         
@@ -465,17 +531,13 @@ function getOrderActionButtons(order) {
     
     let buttons = [];
     
-    // Confirm Payment button - only for unpaid, non-cancelled orders
-    if (!isPaid && !isCancelled) {
-        console.log('Adding Confirm Payment button');
-        const isStripe = order.payment_method === 'stripe';
+    // Download Invoice button - show first for paid orders
+    if (isPaid) {
         buttons.push(`
-            <button class="btn btn-warning btn-sm" onclick="if(confirm('${PAGE_LOCALE === 'fr' ? 'Confirmer que le paiement a été reçu?' : 'Confirm payment has been received?'}')) markAsPaid('${order.order_number}', ${isStripe})">
-                <i data-feather="check-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Confirmer le paiement' : 'Confirm Payment'}${isStripe ? ' (Stripe)' : ''}
+            <button class="btn btn-outline-primary btn-sm" onclick="downloadInvoice('${order.order_number}')">
+                <i data-feather="download"></i> ${PAGE_LOCALE === 'fr' ? 'Facture' : 'Invoice'}
             </button>
         `);
-    } else {
-        console.log('Not adding Confirm Payment button - isPaid:', isPaid, 'isCancelled:', isCancelled);
     }
     
     // Assign/Update Inventory button - only for paid orders
@@ -485,10 +547,10 @@ function getOrderActionButtons(order) {
         );
         
         buttons.push(`
-            <button class="btn btn-secondary btn-sm" onclick="showAssignInventoryModalFromOrderView('${order.order_number}')">
+            <button class="btn btn-info btn-sm" onclick="showAssignInventoryModalFromOrderView('${order.order_number}')">
                 <i data-feather="package"></i> ${hasInventoryAssigned 
-                    ? (PAGE_LOCALE === 'fr' ? 'Mettre à jour l\'inventaire' : 'Update Inventory')
-                    : (PAGE_LOCALE === 'fr' ? 'Assigner l\'inventaire' : 'Assign Inventory')
+                    ? (PAGE_LOCALE === 'fr' ? 'Inventaire' : 'Inventory')
+                    : (PAGE_LOCALE === 'fr' ? 'Assigner' : 'Assign')
                 }
             </button>
         `);
@@ -497,17 +559,30 @@ function getOrderActionButtons(order) {
     // Add/Update Tracking button - only for paid, non-cancelled, non-delivered orders
     if (isPaid && !isCancelled && !isDelivered) {
         buttons.push(`
-            <button class="btn btn-info btn-sm" onclick="showTrackingModalFromOrderView('${order.order_number}')">
-                <i data-feather="truck"></i> ${hasTracking ? (PAGE_LOCALE === 'fr' ? 'Modifier le suivi' : 'Update Tracking') : (PAGE_LOCALE === 'fr' ? 'Ajouter le suivi' : 'Add Tracking')}
+            <button class="btn btn-success btn-sm" onclick="showTrackingModalFromOrderView('${order.order_number}')">
+                <i data-feather="truck"></i> ${hasTracking ? (PAGE_LOCALE === 'fr' ? 'Modifier suivi' : 'Update Tracking') : (PAGE_LOCALE === 'fr' ? 'Ajouter suivi' : 'Add Tracking')}
             </button>
         `);
+    }
+    
+    // Confirm Payment button - only for unpaid, non-cancelled orders
+    if (!isPaid && !isCancelled) {
+        console.log('Adding Confirm Payment button');
+        const isStripe = order.payment_method === 'stripe';
+        buttons.push(`
+            <button class="btn btn-warning btn-sm" onclick="if(confirm('${PAGE_LOCALE === 'fr' ? 'Confirmer que le paiement a été reçu?' : 'Confirm payment has been received?'}')) markAsPaid('${order.order_number}', ${isStripe})">
+                <i data-feather="check-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Confirmer paiement' : 'Confirm Payment'}${isStripe ? ' (Stripe)' : ''}
+            </button>
+        `);
+    } else {
+        console.log('Not adding Confirm Payment button - isPaid:', isPaid, 'isCancelled:', isCancelled);
     }
     
     // Mark as Shipped button - only for paid orders with tracking that aren't shipped/delivered/cancelled
     if (isPaid && hasTracking && !isShipped && !isDelivered && !isCancelled) {
         buttons.push(`
-            <button class="btn btn-success btn-sm" onclick="updateStatus('${order.order_number}', 'shipped')">
-                ${PAGE_LOCALE === 'fr' ? 'Marquer comme expédié' : 'Mark as Shipped'}
+            <button class="btn btn-primary btn-sm" onclick="updateStatus('${order.order_number}', 'shipped')">
+                <i data-feather="send"></i> ${PAGE_LOCALE === 'fr' ? 'Expédier' : 'Mark Shipped'}
             </button>
         `);
     }
@@ -516,7 +591,7 @@ function getOrderActionButtons(order) {
     if (isShipped && !isDelivered) {
         buttons.push(`
             <button class="btn btn-primary btn-sm" onclick="updateStatus('${order.order_number}', 'delivered')">
-                ${PAGE_LOCALE === 'fr' ? 'Marquer comme livré' : 'Mark as Delivered'}
+                <i data-feather="check"></i> ${PAGE_LOCALE === 'fr' ? 'Livrer' : 'Mark Delivered'}
             </button>
         `);
     }
@@ -524,8 +599,8 @@ function getOrderActionButtons(order) {
     // Cancel button - only for orders that aren't already cancelled or delivered
     if (!isCancelled && !isDelivered) {
         buttons.push(`
-            <button class="btn btn-danger btn-sm" onclick="if(confirm('${PAGE_LOCALE === 'fr' ? 'Êtes-vous sûr de vouloir annuler cette commande?' : 'Are you sure you want to cancel this order?'}')) updateStatus('${order.order_number}', 'cancelled')">
-                ${PAGE_LOCALE === 'fr' ? 'Annuler la commande' : 'Cancel Order'}
+            <button class="btn btn-outline-danger btn-sm" onclick="if(confirm('${PAGE_LOCALE === 'fr' ? 'Êtes-vous sûr de vouloir annuler cette commande?' : 'Are you sure you want to cancel this order?'}')) updateStatus('${order.order_number}', 'cancelled')">
+                <i data-feather="x"></i> ${PAGE_LOCALE === 'fr' ? 'Annuler' : 'Cancel'}
             </button>
         `);
     }
@@ -535,10 +610,10 @@ function getOrderActionButtons(order) {
     
     if (buttons.length === 0) {
         if (isCancelled) {
-            return `<p class="text-muted"><i data-feather="x-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Commande annulée - aucune action disponible' : 'Order cancelled - no actions available'}</p>`;
+            return `<div class="text-center text-muted py-2"><i data-feather="x-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Commande annulée' : 'Order cancelled'}</div>`;
         }
         if (isDelivered) {
-            return `<p class="text-muted"><i data-feather="check-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Commande livrée - terminée' : 'Order delivered - completed'}</p>`;
+            return `<div class="text-center text-muted py-2"><i data-feather="check-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Commande livrée' : 'Order completed'}</div>`;
         }
     }
     
