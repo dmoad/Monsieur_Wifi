@@ -109,6 +109,11 @@ class Order extends Model
         $this->status = 'processing';
         $this->save();
         
+        // Ensure user relationship is loaded to get locale and email
+        if (!$this->relationLoaded('user')) {
+            $this->load('user');
+        }
+        
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new OrderProcessedMail($this, $locale));
     }
@@ -124,6 +129,11 @@ class Order extends Model
         $this->shipped_at = Carbon::now();
         $this->save();
         
+        // Ensure user relationship is loaded to get locale and email
+        if (!$this->relationLoaded('user')) {
+            $this->load('user');
+        }
+        
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new ShippingTrackingMail($this, $locale));
     }
@@ -136,6 +146,11 @@ class Order extends Model
         $this->status = 'delivered';
         $this->delivered_at = Carbon::now();
         $this->save();
+        
+        // Ensure user relationship is loaded to get locale and email
+        if (!$this->relationLoaded('user')) {
+            $this->load('user');
+        }
         
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new OrderDeliveredMail($this, $locale));
@@ -154,6 +169,11 @@ class Order extends Model
         }
         
         $this->save();
+        
+        // Ensure user relationship is loaded to get locale and email
+        if (!$this->relationLoaded('user')) {
+            $this->load('user');
+        }
         
         $locale = $this->user->language ?? 'en';
         Mail::to($this->user->email)->send(new PaymentFailedMail($this, $locale));

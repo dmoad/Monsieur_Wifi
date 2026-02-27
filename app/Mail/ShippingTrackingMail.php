@@ -19,6 +19,8 @@ class ShippingTrackingMail extends Mailable implements ShouldQueue
 
     public function __construct(Order $order, string $locale = 'en')
     {
+        // Eager load relationships before serialization
+        $order->load(['user', 'shippingAddress']);
         $this->order = $order;
         $this->locale = $locale;
     }
@@ -34,6 +36,11 @@ class ShippingTrackingMail extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
+        // Ensure relationships are loaded when rendering
+        if (!$this->order->relationLoaded('user')) {
+            $this->order->load(['user', 'shippingAddress']);
+        }
+        
         return new Content(
             view: $this->locale === 'fr' ? 'emails.shipping-tracking-fr' : 'emails.shipping-tracking-en',
         );
