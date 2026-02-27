@@ -148,9 +148,7 @@ function displayInventory(products) {
                         <button class="btn btn-sm btn-success" onclick="viewDevices(${product.id}, '${product.name}')" title="${PAGE_LOCALE === 'fr' ? 'Voir/Ajouter des appareils individuels' : 'View/Add Individual Devices'}">
                             <i data-feather="plus-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Ajouter/Voir Appareils' : 'Add/View Devices'}
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="showUpdateModal(${product.id}, '${product.name}', ${inventory.quantity}, ${inventory.low_stock_threshold})" title="${PAGE_LOCALE === 'fr' ? 'Réglages' : 'Settings'}">
-                            <i data-feather="settings"></i>
-                        </button>
+                        
                     </div>
                 </div>
             </div>
@@ -173,77 +171,85 @@ function getStockStatus(inventory) {
 
 function showUpdateModal(productId, productName, currentStock, currentThreshold) {
     document.getElementById('modal-content').innerHTML = `
-        <form id="update-inventory-form">
-            <input type="hidden" id="product-id" value="${productId}">
+        <div class="inventory-settings-modal">
+            <h5 class="mb-3">${productName}</h5>
             
-            <div class="mb-3">
-                <strong>Product:</strong> ${productName}
+            <div class="alert alert-info">
+                <div class="d-flex align-items-center">
+                    <i data-feather="info" style="width: 20px; height: 20px;" class="mr-2"></i>
+                    <div>
+                        <strong>${PAGE_LOCALE === 'fr' ? 'Suivi basé sur les appareils' : 'Device-Based Tracking'}</strong><br>
+                        <small>${PAGE_LOCALE === 'fr' 
+                            ? 'La quantité d\'inventaire est automatiquement calculée en fonction des appareils individuels que vous ajoutez avec des adresses MAC et des numéros de série.'
+                            : 'Inventory quantity is automatically calculated based on individual devices you add with MAC addresses and serial numbers.'}</small>
+                    </div>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label>Update Type:</label>
-                <select id="update-type" class="form-control" onchange="toggleUpdateFields()">
-                    <option value="set">Set Quantity</option>
-                    <option value="adjust">Adjust Quantity</option>
-                </select>
+            <div class="row mb-4">
+                <div class="col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <i data-feather="package"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">${currentStock}</div>
+                            <div class="stat-label">${PAGE_LOCALE === 'fr' ? 'Appareils en Stock' : 'Devices in Stock'}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning">
+                            <i data-feather="alert-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">${currentThreshold}</div>
+                            <div class="stat-label">${PAGE_LOCALE === 'fr' ? 'Seuil de Stock Faible' : 'Low Stock Threshold'}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div id="set-quantity-field" class="form-group">
-                <label>New Quantity in Stock:</label>
-                <input type="number" id="new-quantity" class="form-control" value="${currentStock}" min="0">
-                <small class="text-muted">Current: ${currentStock}</small>
-            </div>
-            
-            <div id="adjust-quantity-field" class="form-group" style="display: none;">
-                <label>Adjust By:</label>
-                <input type="number" id="adjustment" class="form-control" value="0">
-                <small class="text-muted">Use positive numbers to add stock, negative to remove. Current: ${currentStock}</small>
-            </div>
-            
-            <div class="form-group">
-                <label>Low Stock Threshold:</label>
-                <input type="number" id="threshold" class="form-control" value="${currentThreshold}" min="0">
-            </div>
-            
-            <div class="form-group">
-                <label>Note (Optional):</label>
-                <textarea id="note" class="form-control" rows="2"></textarea>
-            </div>
-            
-            <div class="text-right">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveInventory()">Save</button>
-            </div>
-        </form>
+            <form id="update-inventory-form">
+                <input type="hidden" id="product-id" value="${productId}">
+                
+                <div class="form-group">
+                    <label class="font-weight-bold">${PAGE_LOCALE === 'fr' ? 'Seuil de Stock Faible' : 'Low Stock Threshold'}</label>
+                    <input type="number" id="threshold" class="form-control" value="${currentThreshold}" min="0">
+                    <small class="text-muted">${PAGE_LOCALE === 'fr' 
+                        ? 'Vous serez alerté lorsque le nombre d\'appareils disponibles est inférieur ou égal à ce seuil.'
+                        : 'You will be alerted when available device count is at or below this threshold.'}</small>
+                </div>
+                
+                <div class="card bg-light border-0 mb-3">
+                    <div class="card-body">
+                        <p class="mb-2"><strong>${PAGE_LOCALE === 'fr' ? 'Pour modifier la quantité en stock :' : 'To modify stock quantity:'}</strong></p>
+                        <button type="button" class="btn btn-primary btn-block" onclick="$('#inventory-modal').modal('hide'); viewDevices(${productId}, '${productName}');">
+                            <i data-feather="plus-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Ajouter/Gérer les Appareils Individuels' : 'Add/Manage Individual Devices'}
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">${PAGE_LOCALE === 'fr' ? 'Annuler' : 'Cancel'}</button>
+                    <button type="button" class="btn btn-success" onclick="saveThreshold()">${PAGE_LOCALE === 'fr' ? 'Enregistrer le Seuil' : 'Save Threshold'}</button>
+                </div>
+            </form>
+        </div>
     `;
     
     $('#inventory-modal').modal('show');
+    if (typeof feather !== 'undefined') feather.replace();
 }
 
-function toggleUpdateFields() {
-    const updateType = document.getElementById('update-type').value;
-    const setField = document.getElementById('set-quantity-field');
-    const adjustField = document.getElementById('adjust-quantity-field');
-    
-    if (updateType === 'set') {
-        setField.style.display = 'block';
-        adjustField.style.display = 'none';
-    } else {
-        setField.style.display = 'none';
-        adjustField.style.display = 'block';
-    }
-}
-
-async function saveInventory() {
+async function saveThreshold() {
     const token = UserManager.getToken();
     const productId = document.getElementById('product-id').value;
-    const updateType = document.getElementById('update-type').value;
     const threshold = document.getElementById('threshold').value;
-    const note = document.getElementById('note').value;
     
     try {
-        // Update threshold first
-        await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/inventory/${productId}/threshold`, {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/inventory/${productId}/threshold`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -253,38 +259,6 @@ async function saveInventory() {
             body: JSON.stringify({ threshold: parseInt(threshold) })
         });
         
-        // Update or adjust quantity
-        let response;
-        if (updateType === 'set') {
-            const newQuantity = document.getElementById('new-quantity').value;
-            response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/inventory/${productId}/quantity`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    quantity: parseInt(newQuantity),
-                    note: note
-                })
-            });
-        } else {
-            const adjustment = document.getElementById('adjustment').value;
-            response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/inventory/${productId}/adjust`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    adjustment: parseInt(adjustment),
-                    note: note
-                })
-            });
-        }
-        
         if (response.status === 401) {
             toastr.error('Session expired. Please login again.');
             UserManager.logout(true);
@@ -292,23 +266,31 @@ async function saveInventory() {
         }
         
         if (response.ok) {
-            toastr.success('Inventory updated successfully');
+            toastr.success(PAGE_LOCALE === 'fr' ? 'Seuil de stock mis à jour avec succès' : 'Stock threshold updated successfully');
             $('#inventory-modal').modal('hide');
             loadSummary();
             loadInventory();
         } else {
             const errorData = await response.json();
-            toastr.error(errorData.message || 'Failed to update inventory');
+            toastr.error(errorData.message || (PAGE_LOCALE === 'fr' ? 'Échec de la mise à jour du seuil' : 'Failed to update threshold'));
         }
     } catch (error) {
-        console.error('Error saving inventory:', error);
-        toastr.error('Failed to save inventory: ' + error.message);
+        console.error('Error saving threshold:', error);
+        toastr.error((PAGE_LOCALE === 'fr' ? 'Échec de l\'enregistrement: ' : 'Failed to save: ') + error.message);
     }
 }
 
 // View individual devices for a product
-async function viewDevices(productId, productName) {
+let currentDevicesPage = 1;
+let currentDevicesProductId = null;
+let currentDevicesProductName = '';
+const DEVICES_PER_PAGE = 10;
+
+async function viewDevices(productId, productName, page = 1) {
     const token = UserManager.getToken();
+    currentDevicesPage = page;
+    currentDevicesProductId = productId;
+    currentDevicesProductName = productName;
     
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/inventory/${productId}/items`, {
@@ -330,16 +312,22 @@ async function viewDevices(productId, productName) {
         }
         
         const data = await response.json();
-        const items = data.items || [];
+        const allItems = data.items || [];
         
-        displayDevicesModal(productId, productName, items);
+        displayDevicesModal(productId, productName, allItems, page);
     } catch (error) {
         console.error('Error loading devices:', error);
         toastr.error('Failed to load devices: ' + error.message);
     }
 }
 
-function displayDevicesModal(productId, productName, items) {
+function displayDevicesModal(productId, productName, allItems, page = 1) {
+    const totalItems = allItems.length;
+    const totalPages = Math.ceil(totalItems / DEVICES_PER_PAGE);
+    const startIndex = (page - 1) * DEVICES_PER_PAGE;
+    const endIndex = startIndex + DEVICES_PER_PAGE;
+    const items = allItems.slice(startIndex, endIndex);
+    
     const itemsHtml = items.length > 0 ? items.map(item => {
         const statusBadge = getDeviceStatusBadge(item.status);
         return `
@@ -363,6 +351,26 @@ function displayDevicesModal(productId, productName, items) {
             </tr>
         `;
     }).join('') : `<tr><td colspan="5" class="text-center">${PAGE_LOCALE === 'fr' ? 'Aucun appareil trouvé' : 'No devices found'}</td></tr>`;
+    
+    // Pagination controls
+    let paginationHtml = '';
+    if (totalPages > 1) {
+        paginationHtml = `
+            <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+                <div class="text-muted">
+                    <small>${PAGE_LOCALE === 'fr' ? 'Page' : 'Page'} ${page} ${PAGE_LOCALE === 'fr' ? 'sur' : 'of'} ${totalPages} (${totalItems} ${PAGE_LOCALE === 'fr' ? 'appareils' : 'devices'})</small>
+                </div>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary" onclick="viewDevices(${productId}, '${productName}', ${page - 1})" ${page === 1 ? 'disabled' : ''}>
+                        <i data-feather="chevron-left" style="width: 14px; height: 14px;"></i> ${PAGE_LOCALE === 'fr' ? 'Précédent' : 'Previous'}
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="viewDevices(${productId}, '${productName}', ${page + 1})" ${page === totalPages ? 'disabled' : ''}>
+                        ${PAGE_LOCALE === 'fr' ? 'Suivant' : 'Next'} <i data-feather="chevron-right" style="width: 14px; height: 14px;"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
     
     document.getElementById('modal-content').innerHTML = `
         <h5>${productName}</h5>
@@ -394,6 +402,8 @@ function displayDevicesModal(productId, productName, items) {
             </table>
         </div>
         
+        ${paginationHtml}
+        
         <div class="text-right">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">${PAGE_LOCALE === 'fr' ? 'Fermer' : 'Close'}</button>
         </div>
@@ -424,8 +434,8 @@ function showAddDeviceForm(productId) {
         <form id="add-device-form">
             <div class="form-group">
                 <label>${PAGE_LOCALE === 'fr' ? 'Adresse MAC' : 'MAC Address'} *</label>
-                <input type="text" id="mac-address" class="form-control" required placeholder="00:11:22:33:44:55" pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
-                <small class="form-text text-muted">${PAGE_LOCALE === 'fr' ? 'Format: 00:11:22:33:44:55' : 'Format: 00:11:22:33:44:55'}</small>
+                <input type="text" id="mac-address" class="form-control" required placeholder="00-11-22-33-44-55" pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
+                <small class="form-text text-muted">${PAGE_LOCALE === 'fr' ? 'Formats acceptés: 00-11-22-33-44-55 ou 00:11:22:33:44:55 (normalisé automatiquement)' : 'Accepted formats: 00-11-22-33-44-55 or 00:11:22:33:44:55 (auto-normalized)'}</small>
             </div>
             
             <div class="form-group">
@@ -453,7 +463,7 @@ function showAddDeviceForm(productId) {
 
 async function addDevice(productId) {
     const token = UserManager.getToken();
-    const macAddress = document.getElementById('mac-address').value;
+    const macAddress = normalizeMacAddress(document.getElementById('mac-address').value);
     const serialNumber = document.getElementById('serial-number').value;
     const notes = document.getElementById('device-notes').value;
     const receivedAt = document.getElementById('received-at').value;
@@ -491,7 +501,7 @@ async function addDevice(productId) {
             toastr.success(PAGE_LOCALE === 'fr' ? 'Appareil ajouté avec succès' : 'Device added successfully');
             loadSummary();
             loadInventory();
-            viewDevices(productId, '');
+            viewDevices(productId, currentDevicesProductName || '', currentDevicesPage);
         } else {
             const errors = data.errors;
             if (errors) {
@@ -559,7 +569,7 @@ function editDevice(productId, itemId, macAddress, serialNumber, status, notes) 
 
 async function updateDevice(productId, itemId) {
     const token = UserManager.getToken();
-    const macAddress = document.getElementById('mac-address').value;
+    const macAddress = normalizeMacAddress(document.getElementById('mac-address').value);
     const serialNumber = document.getElementById('serial-number').value;
     const status = document.getElementById('device-status').value;
     const notes = document.getElementById('device-notes').value;
@@ -592,7 +602,7 @@ async function updateDevice(productId, itemId) {
             toastr.success(PAGE_LOCALE === 'fr' ? 'Appareil mis à jour avec succès' : 'Device updated successfully');
             loadSummary();
             loadInventory();
-            viewDevices(productId, '');
+            viewDevices(productId, currentDevicesProductName || '', currentDevicesPage);
         } else {
             const errors = data.errors;
             if (errors) {
@@ -634,7 +644,7 @@ async function deleteDevice(productId, itemId) {
             toastr.success(PAGE_LOCALE === 'fr' ? 'Appareil supprimé avec succès' : 'Device deleted successfully');
             loadSummary();
             loadInventory();
-            viewDevices(productId, '');
+            viewDevices(productId, currentDevicesProductName || '', currentDevicesPage);
         } else {
             const data = await response.json();
             toastr.error(data.message || (PAGE_LOCALE === 'fr' ? 'Échec de la suppression de l\'appareil' : 'Failed to delete device'));
@@ -659,7 +669,7 @@ function showCsvUploadForm(productId) {
             <strong>${PAGE_LOCALE === 'fr' ? 'Format du fichier CSV :' : 'CSV file format:'}</strong><br>
             ${PAGE_LOCALE === 'fr' ? 'Le fichier doit contenir les colonnes suivantes (avec en-tête) :' : 'File must contain the following columns (with header):'}
             <ul class="mb-0 mt-2">
-                <li><code>mac_address</code> - ${PAGE_LOCALE === 'fr' ? 'Adresse MAC (format: 00:11:22:33:44:55)' : 'MAC Address (format: 00:11:22:33:44:55)'}</li>
+                <li><code>mac_address</code> - ${PAGE_LOCALE === 'fr' ? 'Adresse MAC (formats acceptés: 00-11-22-33-44-55 ou 00:11:22:33:44:55)' : 'MAC Address (accepted formats: 00-11-22-33-44-55 or 00:11:22:33:44:55)'}</li>
                 <li><code>serial_number</code> - ${PAGE_LOCALE === 'fr' ? 'Numéro de série (requis)' : 'Serial Number (required)'}</li>
                 <li><code>notes</code> - ${PAGE_LOCALE === 'fr' ? 'Notes (optionnel)' : 'Notes (optional)'}</li>
             </ul>
@@ -668,8 +678,9 @@ function showCsvUploadForm(productId) {
         <div class="alert alert-secondary">
             <strong>${PAGE_LOCALE === 'fr' ? 'Exemple :' : 'Example:'}</strong><br>
             <code>mac_address,serial_number,notes</code><br>
-            <code>00:11:22:33:44:55,SN123456,Device 1</code><br>
-            <code>00:11:22:33:44:66,SN123457,Device 2</code>
+            <code>00-11-22-33-44-55,SN123456,Device 1</code><br>
+            <code>00-11-22-33-44-66,SN123457,Device 2</code><br>
+            <small class="text-muted mt-2 d-block">${PAGE_LOCALE === 'fr' ? 'Note: Les adresses MAC sont automatiquement normalisées (MAJUSCULES, délimiteur -)' : 'Note: MAC addresses are automatically normalized (UPPERCASE, - delimiter)'}</small>
         </div>
         
         <form id="csv-upload-form">
@@ -771,18 +782,11 @@ async function uploadCsvFile(productId) {
                 ? `Importation réussie! ${data.imported} appareil(s) ajouté(s)${data.skipped > 0 ? `, ${data.skipped} ignoré(s)` : ''}${data.errors > 0 ? `, ${data.errors} erreur(s)` : ''}`
                 : `Import successful! ${data.imported} device(s) added${data.skipped > 0 ? `, ${data.skipped} skipped` : ''}${data.errors > 0 ? `, ${data.errors} error(s)` : ''}`;
             
-            toastr.success(successMsg);
-            
-            if (data.error_details && data.error_details.length > 0) {
-                console.warn('Import errors:', data.error_details);
-                toastr.warning(PAGE_LOCALE === 'fr' 
-                    ? 'Certaines lignes contiennent des erreurs. Consultez la console pour plus de détails.'
-                    : 'Some rows had errors. Check console for details.');
-            }
-            
             loadSummary();
             loadInventory();
-            viewDevices(productId, '');
+            
+            // Show detailed results modal
+            showCsvImportResults(productId, data);
         } else {
             const errors = data.errors;
             if (errors) {
@@ -800,8 +804,82 @@ async function uploadCsvFile(productId) {
     }
 }
 
+function showCsvImportResults(productId, data) {
+    const hasErrors = data.error_details && data.error_details.length > 0;
+    const statusIcon = data.errors === 0 ? '✅' : '⚠️';
+    
+    let resultsHtml = `
+        <div class="csv-import-results">
+            <div class="alert ${data.errors === 0 ? 'alert-success' : 'alert-warning'}">
+                <h5 class="mb-2">${statusIcon} ${PAGE_LOCALE === 'fr' ? 'Résultats de l\'importation' : 'Import Results'}</h5>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="result-stat">
+                            <div class="stat-number text-success">${data.imported}</div>
+                            <div class="stat-label">${PAGE_LOCALE === 'fr' ? 'Importés' : 'Imported'}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="result-stat">
+                            <div class="stat-number text-warning">${data.skipped}</div>
+                            <div class="stat-label">${PAGE_LOCALE === 'fr' ? 'Doublons (Ignorés)' : 'Duplicates (Skipped)'}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="result-stat">
+                            <div class="stat-number text-danger">${data.errors}</div>
+                            <div class="stat-label">${PAGE_LOCALE === 'fr' ? 'Erreurs' : 'Errors'}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    `;
+    
+    if (hasErrors) {
+        resultsHtml += `
+            <div class="card border-danger mb-3">
+                <div class="card-header bg-danger text-white">
+                    <strong>${PAGE_LOCALE === 'fr' ? 'Détails des Erreurs' : 'Error Details'}</strong>
+                </div>
+                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                    <ul class="mb-0 list-unstyled">
+                        ${data.error_details.map(err => `
+                            <li class="mb-2">
+                                <i data-feather="alert-circle" class="text-danger" style="width: 14px; height: 14px;"></i>
+                                <code>${err}</code>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+    
+    resultsHtml += `
+            <div class="text-right mt-3">
+                <button type="button" class="btn btn-secondary" onclick="viewDevices(${productId}, '${currentDevicesProductName}')">
+                    ${PAGE_LOCALE === 'fr' ? 'Retour à la Liste' : 'Back to List'}
+                </button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">
+                    ${PAGE_LOCALE === 'fr' ? 'Fermer' : 'Close'}
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('modal-content').innerHTML = resultsHtml;
+    
+    if (typeof feather !== 'undefined') feather.replace();
+}
+
+function normalizeMacAddress(macAddress) {
+    if (!macAddress) return macAddress;
+    // Convert to uppercase and replace : with -
+    return macAddress.toUpperCase().replace(/:/g, '-');
+}
+
 function downloadCsvTemplate() {
-    const csvContent = "mac_address,serial_number,notes\n00:11:22:33:44:55,SN123456,Sample device 1\n00:11:22:33:44:66,SN123457,Sample device 2";
+    const csvContent = "mac_address,serial_number,notes\n00-11-22-33-44-55,SN123456,Sample device 1\n00-11-22-33-44-66,SN123457,Sample device 2";
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);

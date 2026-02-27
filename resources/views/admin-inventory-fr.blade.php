@@ -65,7 +65,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0">Gestion de l'inventaire</h4>
             <div class="text-muted">
-                <small><i data-feather="info" style="width: 14px; height: 14px;"></i> Cliquez sur le bouton <strong>"Ajouter/Voir Appareils"</strong> pour ajouter des articles d'inventaire un par un avec adresse MAC et numéro de série</small>
+                <small><i data-feather="info" style="width: 14px; height: 14px;"></i> Cliquez sur le bouton <strong>"Ajouter/Voir Appareils"</strong> pour ajouter des articles. Les adresses MAC sont automatiquement normalisées en MAJUSCULES avec délimiteur "-".</small>
             </div>
         </div>
         <div class="card-body">
@@ -95,7 +95,7 @@
     <div id="inventory-list"></div>
     
     <div id="inventory-modal" class="modal fade" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Mettre à jour l'inventaire</h5>
@@ -107,6 +107,79 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+/* CSV Import Results */
+.csv-import-results .result-stat {
+    padding: 0.75rem 0;
+}
+.csv-import-results .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+.csv-import-results .stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+.csv-import-results .card-body ul li {
+    padding: 0.5rem;
+    background: #fff3cd;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+.csv-import-results .card-body ul li:last-child {
+    margin-bottom: 0;
+}
+
+/* Inventory Settings Modal */
+.inventory-settings-modal .stat-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s;
+}
+.inventory-settings-modal .stat-card:hover {
+    border-color: #7367f0;
+    box-shadow: 0 2px 8px rgba(115, 103, 240, 0.1);
+}
+.inventory-settings-modal .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+.inventory-settings-modal .stat-icon.bg-success {
+    background: linear-gradient(135deg, #28c76f 0%, #1e9f59 100%);
+}
+.inventory-settings-modal .stat-icon.bg-warning {
+    background: linear-gradient(135deg, #ff9f43 0%, #ff6b35 100%);
+}
+.inventory-settings-modal .stat-content {
+    flex: 1;
+}
+.inventory-settings-modal .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1;
+}
+.inventory-settings-modal .stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+</style>
+@endpush
 
 @push('scripts')
 <script src="/assets/js/admin-inventory.js?v=<?php echo time(); ?>"></script>

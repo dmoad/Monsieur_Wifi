@@ -102,9 +102,11 @@ function displayProducts(products) {
                     <img src="${product.primary_image || '/app-assets/images/placeholder.png'}" 
                          alt="${product.name}" 
                          class="product-image">
-                    ${product.is_in_stock 
-                        ? `<span class="stock-badge badge-success">In Stock</span>` 
-                        : '<span class="stock-badge badge-danger">Out of Stock</span>'}
+                    ${!product.is_in_stock 
+                        ? '<span class="stock-badge badge-danger">Out of Stock</span>'
+                        : (product.inventory && totalAvailable <= (product.inventory.low_stock_threshold || 0)
+                            ? `<span class="stock-badge badge-warning">Low Stock</span>`
+                            : `<span class="stock-badge badge-success">In Stock</span>`)}
                     ${cartQty > 0 
                         ? `<span class="cart-qty-badge">${cartQty} in cart</span>` 
                         : ''}

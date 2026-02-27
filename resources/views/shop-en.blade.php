@@ -122,6 +122,10 @@
         background: linear-gradient(135deg, #28c76f 0%, #1e9f59 100%);
         color: white;
     }
+    .badge-warning {
+        background: linear-gradient(135deg, #ff9f43 0%, #ff6b35 100%);
+        color: white;
+    }
     .badge-danger {
         background: linear-gradient(135deg, #ea5455 0%, #c72a2b 100%);
         color: white;

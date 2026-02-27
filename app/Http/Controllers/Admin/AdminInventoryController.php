@@ -18,6 +18,19 @@ class AdminInventoryController extends Controller
     }
 
     /**
+     * Normalize MAC address: uppercase and use - delimiter.
+     */
+    private function normalizeMacAddress($macAddress)
+    {
+        if (empty($macAddress)) {
+            return $macAddress;
+        }
+        
+        // Convert to uppercase and replace : with -
+        return strtoupper(str_replace(':', '-', $macAddress));
+    }
+
+    /**
      * List all products with inventory levels.
      */
     public function index(Request $request)
@@ -277,7 +290,10 @@ class AdminInventoryController extends Controller
      */
     public function addItem(Request $request, $productId)
     {
-        $validator = Validator::make($request->all(), [
+        // Normalize MAC address before validation
+        $normalizedMac = $this->normalizeMacAddress($request->mac_address);
+        
+        $validator = Validator::make(array_merge($request->all(), ['mac_address' => $normalizedMac]), [
             'mac_address' => 'required|string|unique:inventory_items,mac_address',
             'serial_number' => 'required|string|unique:inventory_items,serial_number',
             'notes' => 'nullable|string|max:1000',
@@ -298,7 +314,7 @@ class AdminInventoryController extends Controller
             // Create inventory item
             $item = InventoryItem::create([
                 'product_model_id' => $productId,
-                'mac_address' => $request->mac_address,
+                'mac_address' => $normalizedMac,
                 'serial_number' => $request->serial_number,
                 'status' => 'available',
                 'notes' => $request->notes,
@@ -340,7 +356,10 @@ class AdminInventoryController extends Controller
      */
     public function updateItem(Request $request, $productId, $itemId)
     {
-        $validator = Validator::make($request->all(), [
+        // Normalize MAC address before validation
+        $normalizedMac = $this->normalizeMacAddress($request->mac_address);
+        
+        $validator = Validator::make(array_merge($request->all(), ['mac_address' => $normalizedMac]), [
             'mac_address' => 'required|string|unique:inventory_items,mac_address,' . $itemId,
             'serial_number' => 'required|string|unique:inventory_items,serial_number,' . $itemId,
             'status' => 'required|in:available,reserved,sold,defective',
@@ -357,7 +376,12 @@ class AdminInventoryController extends Controller
         $item = InventoryItem::where('product_model_id', $productId)
             ->findOrFail($itemId);
 
-        $item->update($request->only(['mac_address', 'serial_number', 'status', 'notes']));
+        $item->update([
+            'mac_address' => $normalizedMac,
+            'serial_number' => $request->serial_number,
+            'status' => $request->status,
+            'notes' => $request->notes,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -486,6 +510,9 @@ class AdminInventoryController extends Controller
                         $errors++;
                         continue;
                     }
+
+                    // Normalize MAC address
+                    $macAddress = $this->normalizeMacAddress($macAddress);
 
                     // Check for duplicates if skip_duplicates is enabled
                     if ($skipDuplicates) {
