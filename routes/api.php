@@ -16,6 +16,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
 use App\Http\Controllers\ZoneController;
+use App\Http\Controllers\PaymentController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -27,6 +28,9 @@ Route::post('auth/verify-email', [AuthController::class, 'verifyEmail']);
 Route::post('auth/resend-verification', [AuthController::class, 'resendVerificationEmail']);
 Route::post('temp-captive-portal-designs', [TempCaptivePortalDesignController::class, 'store']);
 Route::get('temp-captive-portal-designs/{id}', [TempCaptivePortalDesignController::class, 'index']);
+
+// Stripe webhook endpoint (public, no CSRF protection)
+Route::post('payment-notifications', [PaymentController::class, 'handleWebhook']);
 
 // Protected routes (auth required)
 Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
@@ -248,7 +252,10 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     // Orders
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show']);
+    Route::get('/orders/{orderNumber}/invoice', [OrderController::class, 'downloadInvoice']);
     Route::post('/orders', [OrderController::class, 'store']);
+    Route::post('/orders/{orderNumber}/payment-intent', [PaymentController::class, 'createPaymentIntent']);
+    Route::get('/orders/{orderNumber}/mark-paid', [PaymentController::class, 'markOrderAsPaid']);
     
     // Addresses
     Route::get('/addresses', [AddressController::class, 'index']);
@@ -287,11 +294,13 @@ Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     // Orders
     Route::get('/orders', [\App\Http\Controllers\Admin\AdminOrderController::class, 'index']);
     Route::get('/orders/{orderNumber}', [\App\Http\Controllers\Admin\AdminOrderController::class, 'show']);
+    Route::get('/orders/{orderNumber}/invoice', [\App\Http\Controllers\Admin\AdminOrderController::class, 'downloadInvoice']);
     Route::put('/orders/{orderNumber}/tracking', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateTracking']);
     Route::put('/orders/{orderNumber}/status', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateStatus']);
     Route::post('/orders/{orderNumber}/resend-email', [\App\Http\Controllers\Admin\AdminOrderController::class, 'resendEmail']);
     Route::post('/orders/{orderNumber}/assign-inventory', [\App\Http\Controllers\Admin\AdminOrderController::class, 'assignInventory']);
     Route::post('/orders/{orderNumber}/confirm-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmPayment']);
+    Route::post('/orders/{orderNumber}/confirm-stripe-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmStripePayment']);
     
     // Shipping rates
     Route::get('/shipping-rates', [AdminShippingController::class, 'index']);

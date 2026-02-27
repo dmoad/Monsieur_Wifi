@@ -191,8 +191,19 @@ async function viewOrder(orderNumber) {
             <table class="table">
                 <tr><td>Order Number:</td><td>${order.order_number}</td></tr>
                 <tr><td>Status:</td><td>${getStatusBadge(order.status)}</td></tr>
-                <tr><td>Total:</td><td>$${parseFloat(order.total).toFixed(2)}</td></tr>
+                <tr><td>${PAGE_LOCALE === 'fr' ? 'Méthode de paiement' : 'Payment Method'}:</td><td><span class="badge badge-${order.payment_method === 'stripe' ? 'primary' : 'secondary'}">${order.payment_method === 'stripe' ? 'Stripe' : (order.payment_method || 'N/A')}</span></td></tr>
+                <tr><td>${PAGE_LOCALE === 'fr' ? 'Statut du paiement' : 'Payment Status'}:</td><td><span class="badge badge-${order.payment_status === 'succeeded' ? 'success' : 'warning'}">${order.payment_status || 'pending'}</span></td></tr>
+                <tr><td>${PAGE_LOCALE === 'fr' ? 'Date de commande' : 'Order Date'}:</td><td>${new Date(order.created_at).toLocaleString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' })}</td></tr>
+                ${order.delivered_at ? `<tr><td>${PAGE_LOCALE === 'fr' ? 'Date de livraison' : 'Delivered Date'}:</td><td><strong class="text-success">${new Date(order.delivered_at).toLocaleString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' })}</strong></td></tr>` : ''}
                 <tr><td>Customer:</td><td>${order.user.name} (${order.user.email})</td></tr>
+            </table>
+            
+            <h6>${PAGE_LOCALE === 'fr' ? 'Résumé de la commande' : 'Order Summary'}</h6>
+            <table class="table">
+                <tr><td>${PAGE_LOCALE === 'fr' ? 'Sous-total' : 'Subtotal'}:</td><td>$${parseFloat(order.product_amount || 0).toFixed(2)}</td></tr>
+                <tr><td>${PAGE_LOCALE === 'fr' ? 'Frais de livraison' : 'Shipping Cost'}:</td><td>$${parseFloat(order.shipping_cost || 0).toFixed(2)}</td></tr>
+                <tr><td>${PAGE_LOCALE === 'fr' ? 'Taxe' : 'Tax'}:</td><td>$${parseFloat(order.tax_amount || 0).toFixed(2)}</td></tr>
+                <tr class="font-weight-bold"><td>${PAGE_LOCALE === 'fr' ? 'Total' : 'Total'}:</td><td>$${parseFloat(order.total).toFixed(2)}</td></tr>
             </table>
             
             <h6>Items</h6>
@@ -224,6 +235,14 @@ async function viewOrder(orderNumber) {
                     : `<span class="text-muted">${PAGE_LOCALE === 'fr' ? 'Pas encore ajouté' : 'Not yet added'}</span>`}
             </p>
             
+            ${order.payment_status === 'succeeded' ? `
+            <div class="mb-3">
+                <button class="btn btn-outline-primary btn-sm" onclick="downloadInvoice('${order.order_number}')">
+                    <i data-feather="download"></i> ${PAGE_LOCALE === 'fr' ? 'Télécharger la facture' : 'Download Invoice'}
+                </button>
+            </div>
+            ` : ''}
+            
             <div class="mt-3">
                 ${getOrderActionButtons(order)}
             </div>
@@ -239,6 +258,14 @@ async function viewOrder(orderNumber) {
         console.error('Error loading order:', error);
         toastr.error('Failed to load order details');
     }
+}
+
+function showTrackingModalFromOrderView(orderNumber) {
+    // Use Bootstrap modal event to wait for modal to fully hide before showing tracking form
+    $('#order-modal').one('hidden.bs.modal', function() {
+        showTrackingModal(orderNumber);
+    });
+    $('#order-modal').modal('hide');
 }
 
 function showTrackingModal(orderNumber) {
@@ -441,9 +468,10 @@ function getOrderActionButtons(order) {
     // Confirm Payment button - only for unpaid, non-cancelled orders
     if (!isPaid && !isCancelled) {
         console.log('Adding Confirm Payment button');
+        const isStripe = order.payment_method === 'stripe';
         buttons.push(`
-            <button class="btn btn-warning btn-sm" onclick="if(confirm('${PAGE_LOCALE === 'fr' ? 'Confirmer que le paiement a été reçu?' : 'Confirm payment has been received?'}')) markAsPaid('${order.order_number}')">
-                <i data-feather="check-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Confirmer le paiement' : 'Confirm Payment'}
+            <button class="btn btn-warning btn-sm" onclick="if(confirm('${PAGE_LOCALE === 'fr' ? 'Confirmer que le paiement a été reçu?' : 'Confirm payment has been received?'}')) markAsPaid('${order.order_number}', ${isStripe})">
+                <i data-feather="check-circle"></i> ${PAGE_LOCALE === 'fr' ? 'Confirmer le paiement' : 'Confirm Payment'}${isStripe ? ' (Stripe)' : ''}
             </button>
         `);
     } else {
@@ -457,7 +485,7 @@ function getOrderActionButtons(order) {
         );
         
         buttons.push(`
-            <button class="btn btn-secondary btn-sm" onclick="$('#order-modal').modal('hide'); setTimeout(() => showAssignInventoryModal('${order.order_number}'), 300);">
+            <button class="btn btn-secondary btn-sm" onclick="showAssignInventoryModalFromOrderView('${order.order_number}')">
                 <i data-feather="package"></i> ${hasInventoryAssigned 
                     ? (PAGE_LOCALE === 'fr' ? 'Mettre à jour l\'inventaire' : 'Update Inventory')
                     : (PAGE_LOCALE === 'fr' ? 'Assigner l\'inventaire' : 'Assign Inventory')
@@ -469,7 +497,7 @@ function getOrderActionButtons(order) {
     // Add/Update Tracking button - only for paid, non-cancelled, non-delivered orders
     if (isPaid && !isCancelled && !isDelivered) {
         buttons.push(`
-            <button class="btn btn-info btn-sm" onclick="$('#order-modal').modal('hide'); setTimeout(() => showTrackingModal('${order.order_number}'), 300);">
+            <button class="btn btn-info btn-sm" onclick="showTrackingModalFromOrderView('${order.order_number}')">
                 <i data-feather="truck"></i> ${hasTracking ? (PAGE_LOCALE === 'fr' ? 'Modifier le suivi' : 'Update Tracking') : (PAGE_LOCALE === 'fr' ? 'Ajouter le suivi' : 'Add Tracking')}
             </button>
         `);
@@ -519,11 +547,16 @@ function getOrderActionButtons(order) {
     return buttonsHtml;
 }
 
-async function markAsPaid(orderNumber) {
+async function markAsPaid(orderNumber, isStripe = false) {
     const token = UserManager.getToken();
     
+    // Use the appropriate endpoint based on payment method
+    const endpoint = isStripe 
+        ? `${APP_CONFIG.API.BASE_URL}/v1/admin/orders/${orderNumber}/confirm-stripe-payment`
+        : `${APP_CONFIG.API.BASE_URL}/v1/admin/orders/${orderNumber}/confirm-payment`;
+    
     try {
-        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/orders/${orderNumber}/confirm-payment`, {
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -541,7 +574,15 @@ async function markAsPaid(orderNumber) {
         const data = await response.json();
         
         if (response.ok) {
-            toastr.success(PAGE_LOCALE === 'fr' ? 'Paiement confirmé avec succès' : 'Payment confirmed successfully');
+            const message = isStripe
+                ? (PAGE_LOCALE === 'fr' ? 'Paiement Stripe confirmé avec succès' : 'Stripe payment confirmed successfully')
+                : (PAGE_LOCALE === 'fr' ? 'Paiement confirmé avec succès' : 'Payment confirmed successfully');
+            toastr.success(message);
+            
+            if (isStripe && data.payment_intent_id) {
+                console.log('Stripe payment intent ID:', data.payment_intent_id);
+            }
+            
             $('#order-modal').modal('hide');
             loadOrders();
         } else {
@@ -555,6 +596,14 @@ async function markAsPaid(orderNumber) {
 
 // Assign Inventory Functions
 let currentOrderForInventory = null;
+
+function showAssignInventoryModalFromOrderView(orderNumber) {
+    // Use Bootstrap modal event to wait for order modal to fully hide before showing inventory modal
+    $('#order-modal').one('hidden.bs.modal', function() {
+        showAssignInventoryModal(orderNumber);
+    });
+    $('#order-modal').modal('hide');
+}
 
 async function showAssignInventoryModal(orderNumber) {
     const token = UserManager.getToken();
@@ -702,5 +751,51 @@ async function assignInventoryToOrder() {
     } catch (error) {
         console.error('Error assigning inventory:', error);
         toastr.error(error.message || (PAGE_LOCALE === 'fr' ? 'Erreur lors de l\'assignation de l\'inventaire' : 'Error assigning inventory'));
+    }
+}
+
+async function downloadInvoice(orderNumber) {
+    const token = UserManager.getToken();
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/admin/orders/${orderNumber}/invoice`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/pdf'
+            }
+        });
+        
+        if (response.status === 401) {
+            toastr.error('Session expired. Please login again.');
+            UserManager.logout(true);
+            return;
+        }
+        
+        if (!response.ok) {
+            const error = await response.json();
+            toastr.error(error.message || (PAGE_LOCALE === 'fr' ? 'Échec du téléchargement de la facture' : 'Failed to download invoice'));
+            return;
+        }
+        
+        // Get the blob from response
+        const blob = await response.blob();
+        
+        // Create a download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice-${orderNumber}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        toastr.success(PAGE_LOCALE === 'fr' ? 'Facture téléchargée avec succès' : 'Invoice downloaded successfully');
+    } catch (error) {
+        console.error('Error downloading invoice:', error);
+        toastr.error(PAGE_LOCALE === 'fr' ? 'Échec du téléchargement de la facture' : 'Failed to download invoice');
     }
 }

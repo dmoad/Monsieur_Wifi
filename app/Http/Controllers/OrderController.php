@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 class OrderController extends Controller
 {
     /**
@@ -155,6 +156,10 @@ class OrderController extends Controller
             $shippingCost = $shippingRate->cost;
             $total = $productAmount + $taxAmount + $shippingCost;
 
+            // Get payment mode from settings
+            $settings = SystemSetting::first();
+            $paymentMode = $settings ? $settings->payment_mode : 'mock';
+            
             // Create order
             $order = Order::create([
                 'order_number' => Order::generateOrderNumber(),
@@ -166,7 +171,7 @@ class OrderController extends Controller
                 'shipping_cost' => $shippingCost,
                 'shipping_method' => $request->shipping_method,
                 'total' => $total,
-                'payment_method' => 'mock', // Will be 'stripe' when integrated
+                'payment_method' => $paymentMode,
                 'payment_status' => 'pending',
                 'shipping_address_id' => $request->shipping_address_id,
                 'billing_address_id' => $request->billing_address_id,
@@ -183,10 +188,6 @@ class OrderController extends Controller
                     'subtotal' => $cartItem->getSubtotal(),
                 ]);
             }
-
-            // Get payment mode from settings
-            $settings = SystemSetting::first();
-            $paymentMode = $settings ? $settings->payment_mode : 'mock';
             
             // NOTE: For mock payment mode, orders are created with payment_status = 'pending'
             // Admin will manually confirm payment via the admin panel
@@ -319,5 +320,63 @@ class OrderController extends Controller
         $path = $request->path();
         $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
         return view("order-success-{$locale}", ['orderNumber' => $orderNumber]);
+    }
+    
+    /**
+     * Generate and download invoice PDF for user's own order
+     */
+    public function downloadInvoice($orderNumber)
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Authentication required.',
+            ], 401);
+        }
+        
+        try {
+            // Get order belonging to authenticated user
+            $order = Order::with([
+                'user',
+                'items.productModel',
+                'shippingAddress',
+                'billingAddress'
+            ])
+            ->where('order_number', $orderNumber)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+            
+            // Only allow invoice download for paid orders
+            if ($order->payment_status !== 'succeeded') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invoice is only available for paid orders.',
+                ], 400);
+            }
+            
+            // Generate PDF
+            $pdf = Pdf::loadView('invoices.order-invoice', ['order' => $order]);
+            
+            // Set PDF options
+            $pdf->setPaper('a4', 'portrait');
+            
+            // Return PDF download
+            return $pdf->download("invoice-{$orderNumber}.pdf");
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to generate invoice for user', [
+                'order_number' => $orderNumber,
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate invoice.',
+            ], 500);
+        }
     }
 }

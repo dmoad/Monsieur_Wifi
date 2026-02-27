@@ -2,6 +2,85 @@
 
 @section('title', 'Commander - Monsieur WiFi')
 
+@push('styles')
+<style>
+    .payment-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.6);
+    }
+    .payment-modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .payment-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .payment-modal-close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        line-height: 1;
+    }
+    .payment-modal-close:hover,
+    .payment-modal-close:focus {
+        color: #000;
+    }
+    #card-element {
+        border: 1px solid #d8d6de;
+        border-radius: 4px;
+        padding: 12px;
+        margin-bottom: 1rem;
+        background: white;
+    }
+    #card-errors {
+        color: #ea5455;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        min-height: 20px;
+    }
+    .payment-summary {
+        background: #f8f8f8;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+    .payment-summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    .payment-summary-row.total {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #7367f0;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #d8d6de;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="content-header row">
     <div class="content-header-left col-12 mb-2">
@@ -200,10 +279,50 @@
             </div>
         </div>
     </div>
+    
+    <!-- Stripe Payment Modal -->
+    <div id="payment-modal" class="payment-modal">
+        <div class="payment-modal-content">
+            <div class="payment-modal-header">
+                <h4 class="mb-0">Finaliser le Paiement</h4>
+                <button class="payment-modal-close" onclick="closePaymentModal()">&times;</button>
+            </div>
+            
+            <div class="payment-summary">
+                <div class="payment-summary-row">
+                    <span>Numéro de Commande:</span>
+                    <strong id="payment-order-number"></strong>
+                </div>
+                <div class="payment-summary-row total">
+                    <span>Montant Total:</span>
+                    <strong id="payment-total-amount"></strong>
+                </div>
+            </div>
+            
+            <form id="payment-form">
+                <div class="form-group">
+                    <label for="card-element">Carte de Crédit ou Débit</label>
+                    <div id="card-element"></div>
+                    <div id="card-errors" role="alert"></div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block" id="submit-payment-btn">
+                    Payer Maintenant
+                </button>
+            </form>
+            
+            <div id="payment-processing" style="display: none; text-align: center; padding: 2rem;">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <p>Traitement de votre paiement...</p>
+                <p class="text-muted small">Veuillez ne pas fermer cette fenêtre</p>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
 @push('scripts')
+<script src="https://js.stripe.com/v3/"></script>
 <script src="/assets/js/checkout-fr.js?v=<?php echo time(); ?>"></script>
 @endpush
 

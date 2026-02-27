@@ -3,6 +3,9 @@ const LOCALE = 'fr';
 let cart = null;
 let shippingRates = [];
 let selectedShipping = null;
+let stripe = null;
+let cardElement = null;
+let currentOrderNumber = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     const token = UserManager.getToken();
@@ -247,18 +250,157 @@ async function handleSubmit(e) {
         const orderResult = await orderResponse.json();
         console.log('Order created successfully:', orderResult);
         console.log('Payment mode:', orderResult.payment_mode);
-        console.log('Redirecting to:', `/fr/commandes/${orderResult.order_number}`);
-        console.log('Token exists:', !!UserManager.getToken());
         
-        toastr.success('Commande passée avec succès! Votre commande est en attente de confirmation de paiement.');
+        currentOrderNumber = orderResult.order_number;
         
-        setTimeout(() => {
-            window.location.href = `/fr/commandes/${orderResult.order_number}`;
-        }, 500);
+        // Check payment mode
+        if (orderResult.payment_mode === 'stripe') {
+            // Initialize Stripe payment
+            await initializeStripePayment(orderResult.order_number);
+        } else {
+            // Mock payment mode - redirect to order page
+            toastr.success('Commande passée avec succès! Votre commande est en attente de confirmation de paiement.');
+            setTimeout(() => {
+                window.location.href = `/fr/commandes/${orderResult.order_number}`;
+            }, 500);
+        }
     } catch (error) {
         console.error('Error placing order:', error);
         toastr.error(error.message || 'Échec de la commande');
         document.getElementById('place-order-btn').disabled = false;
         document.getElementById('place-order-btn').innerHTML = 'Passer la Commande';
+    }
+}
+
+async function initializeStripePayment(orderNumber) {
+    try {
+        const token = UserManager.getToken();
+        
+        // Fetch payment intent
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/orders/${orderNumber}/payment-intent`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Échec de l\'initialisation du paiement');
+        }
+        
+        const data = await response.json();
+        
+        // Initialize Stripe
+        stripe = Stripe(data.publishable_key);
+        const elements = stripe.elements();
+        cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#ea5455'
+                }
+            }
+        });
+        
+        // Show payment modal
+        document.getElementById('payment-order-number').textContent = orderNumber;
+        document.getElementById('payment-total-amount').textContent = document.getElementById('order-total').textContent;
+        document.getElementById('payment-modal').style.display = 'block';
+        
+        // Mount card element
+        cardElement.mount('#card-element');
+        
+        // Handle card errors
+        cardElement.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+        
+        // Handle payment form submission
+        const paymentForm = document.getElementById('payment-form');
+        paymentForm.onsubmit = async (e) => {
+            e.preventDefault();
+            await handlePaymentSubmit(data.client_secret);
+        };
+        
+        // Re-enable place order button
+        document.getElementById('place-order-btn').disabled = false;
+        document.getElementById('place-order-btn').innerHTML = 'Passer la Commande';
+        
+    } catch (error) {
+        console.error('Error initializing Stripe payment:', error);
+        toastr.error('Échec de l\'initialisation du paiement. Veuillez réessayer.');
+        document.getElementById('place-order-btn').disabled = false;
+        document.getElementById('place-order-btn').innerHTML = 'Passer la Commande';
+    }
+}
+
+async function handlePaymentSubmit(clientSecret) {
+    const submitBtn = document.getElementById('submit-payment-btn');
+    const paymentForm = document.getElementById('payment-form');
+    const processingDiv = document.getElementById('payment-processing');
+    
+    // Show processing state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Traitement...';
+    
+    try {
+        const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: cardElement,
+            }
+        });
+        
+        if (error) {
+            // Show error
+            document.getElementById('card-errors').textContent = error.message;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Payer Maintenant';
+            toastr.error(error.message);
+        } else if (paymentIntent.status === 'succeeded') {
+            // Payment successful
+            paymentForm.style.display = 'none';
+            processingDiv.style.display = 'block';
+            
+            toastr.success('Paiement réussi! Traitement de votre commande...');
+            
+            // Wait a moment for webhook to process, then redirect
+            setTimeout(() => {
+                window.location.href = `/fr/commandes/${currentOrderNumber}`;
+            }, 2000);
+        } else {
+            // Handle other statuses
+            toastr.warning('Le paiement est en cours de traitement. Veuillez vérifier le statut de votre commande.');
+            setTimeout(() => {
+                window.location.href = `/fr/commandes/${currentOrderNumber}`;
+            }, 2000);
+        }
+    } catch (error) {
+        console.error('Payment error:', error);
+        toastr.error('Le paiement a échoué. Veuillez réessayer.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Payer Maintenant';
+    }
+}
+
+function closePaymentModal() {
+    if (confirm('Êtes-vous sûr de vouloir annuler le paiement? Votre commande restera en attente.')) {
+        document.getElementById('payment-modal').style.display = 'none';
+        if (currentOrderNumber) {
+            window.location.href = `/fr/commandes/${currentOrderNumber}`;
+        }
     }
 }

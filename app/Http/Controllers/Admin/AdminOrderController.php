@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminOrderController extends Controller
 {
@@ -440,6 +441,124 @@ class AdminOrderController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to confirm payment: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    
+    /**
+     * Confirm Stripe payment for an order (replicates webhook behavior)
+     */
+    public function confirmStripePayment($orderNumber)
+    {
+        try {
+            $order = Order::with('items.productModel.inventory')
+                ->where('order_number', $orderNumber)
+                ->firstOrFail();
+            
+            // Verify payment method is Stripe
+            if ($order->payment_method !== 'stripe') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This endpoint only works for Stripe payments. Use confirm-payment for other payment methods.',
+                ], 400);
+            }
+            
+            if ($order->payment_status === 'succeeded') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order is already marked as paid',
+                    'order' => $order->fresh(['user', 'items.productModel.images', 'items.inventoryItems.device', 'shippingAddress', 'billingAddress']),
+                ]);
+            }
+            
+            DB::beginTransaction();
+            
+            // Mark order as paid with manual payment intent ID (replicating webhook behavior)
+            $paymentIntentId = 'manual_admin_' . time() . '_' . auth()->id();
+            $order->markAsPaid($paymentIntentId);
+            
+            // Deduct inventory quantities (same as webhook)
+            foreach ($order->items as $item) {
+                if ($item->productModel && $item->productModel->inventory) {
+                    $item->productModel->inventory->deduct($item->quantity);
+                }
+            }
+            
+            DB::commit();
+            
+            \Illuminate\Support\Facades\Log::info('Stripe payment manually confirmed (webhook replicated)', [
+                'order_number' => $orderNumber,
+                'payment_intent_id' => $paymentIntentId,
+                'admin_id' => auth()->id(),
+                'total' => $order->total,
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Stripe payment confirmed successfully',
+                'order' => $order->fresh(['user', 'items.productModel.images', 'items.inventoryItems.device', 'shippingAddress', 'billingAddress']),
+                'payment_intent_id' => $paymentIntentId,
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            \Illuminate\Support\Facades\Log::error('Failed to confirm Stripe payment', [
+                'order_number' => $orderNumber,
+                'admin_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to confirm payment: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    
+    /**
+     * Generate and download invoice PDF for an order
+     */
+    public function downloadInvoice($orderNumber)
+    {
+        try {
+            $order = Order::with([
+                'user',
+                'items.productModel',
+                'shippingAddress',
+                'billingAddress'
+            ])
+            ->where('order_number', $orderNumber)
+            ->firstOrFail();
+            
+            // Only allow invoice download for paid orders
+            if ($order->payment_status !== 'succeeded') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invoice is only available for paid orders.',
+                ], 400);
+            }
+            
+            // Generate PDF
+            $pdf = Pdf::loadView('invoices.order-invoice', ['order' => $order]);
+            
+            // Set PDF options
+            $pdf->setPaper('a4', 'portrait');
+            
+            // Return PDF download
+            return $pdf->download("invoice-{$orderNumber}.pdf");
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to generate invoice', [
+                'order_number' => $orderNumber,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate invoice: ' . $e->getMessage(),
             ], 500);
         }
     }
