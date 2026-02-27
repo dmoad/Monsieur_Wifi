@@ -406,19 +406,77 @@
 #order-modal .modal-header .close {
     padding: 0.5rem;
     margin: 0;
-    color: white;
     text-shadow: 0 1px 3px rgba(0,0,0,0.2);
     opacity: 0.9;
 }
 
 #order-modal .modal-header .close:hover {
     opacity: 1;
-    color: white;
 }
 
 #order-modal .modal-footer {
     border-top: 1px solid #e9ecef;
     padding: 0.75rem 1.25rem;
+}
+
+/* Tracking Modal Styling */
+.tracking-modal-redesign {
+    padding: 0 !important;
+}
+
+.tracking-modal-redesign .tracking-hero-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tracking-modal-redesign .tracking-hero-header h5 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tracking-modal-redesign .tracking-form-content {
+    padding: 1.5rem;
+}
+
+.tracking-modal-redesign .form-label-modern {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #5e5873;
+    margin-bottom: 0.5rem;
+}
+
+.tracking-modal-redesign .form-control-modern {
+    border-radius: 6px;
+    border: 1px solid #d8d6de;
+    padding: 0.65rem 1rem;
+    transition: all 0.2s;
+}
+
+.tracking-modal-redesign .form-control-modern:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+}
+
+.tracking-modal-redesign .tracking-form-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.tracking-modal-redesign .tracking-form-actions .btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
 }
 </style>
 @endpush

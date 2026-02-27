@@ -84,13 +84,16 @@
         transition: all 0.3s ease;
         border: none;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
     .product-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(115, 103, 240, 0.3);
     }
-    .product-btn i {
-        vertical-align: middle;
+    .product-btn svg {
+        display: block;
     }
     .out-of-stock {
         opacity: 0.7;
@@ -122,6 +125,54 @@
     .badge-danger {
         background: linear-gradient(135deg, #ea5455 0%, #c72a2b 100%);
         color: white;
+    }
+    .cart-qty-badge {
+        position: absolute;
+        bottom: 12px;
+        left: 12px;
+        z-index: 10;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #7367f0 0%, #5e50ee 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(115, 103, 240, 0.3);
+    }
+    .qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 0.25rem;
+    }
+    .qty-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    .qty-btn:hover:not(:disabled) {
+        background: #7367f0;
+        border-color: #7367f0;
+        color: white;
+        transform: scale(1.05);
+    }
+    .qty-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    .qty-display {
+        min-width: 32px;
+        text-align: center;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1rem;
     }
 </style>
 @endpush
@@ -161,7 +212,7 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/shop-fr.js?v=<?php echo time() + 2; ?>"></script>
+<script src="/assets/js/shop-fr.js?v=<?php echo time(); ?>"></script>
 @endpush
 
 @php

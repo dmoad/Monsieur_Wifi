@@ -1,10 +1,53 @@
 // Shop listing page (English)
 const LOCALE = 'en';
+let currentCart = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadProducts();
+    loadCartData().then(() => {
+        loadProducts();
+    });
     updateCartCount();
 });
+
+async function loadCartData() {
+    const token = UserManager.getToken();
+    if (!token) {
+        currentCart = { items: [] };
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentCart = data.cart || data; // API returns {success, cart, total}, use cart object
+            console.log('Cart loaded:', currentCart);
+        } else {
+            currentCart = { items: [] };
+        }
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        currentCart = { items: [] };
+    }
+}
+
+function getCartQuantityForProduct(productId) {
+    if (!currentCart || !currentCart.items) return 0;
+    const item = currentCart.items.find(item => item.product_id === productId || item.product_model_id === productId);
+    return item ? item.quantity : 0;
+}
+
+function getCartItemForProduct(productId) {
+    if (!currentCart || !currentCart.items) return null;
+    return currentCart.items.find(item => item.product_id === productId || item.product_model_id === productId);
+}
 
 async function loadProducts() {
     try {
@@ -44,7 +87,15 @@ function displayProducts(products) {
         return;
     }
     
-    grid.innerHTML = products.map(product => `
+    grid.innerHTML = products.map(product => {
+        const cartQty = getCartQuantityForProduct(product.id);
+        const availableInventory = (product.inventory && product.inventory.available_quantity) || 0;
+        const totalAvailable = availableInventory + cartQty; // Total including what's already reserved
+        const canAddMore = product.is_in_stock && cartQty < totalAvailable;
+        
+        console.log(`Product ${product.id}: cartQty=${cartQty}, available=${availableInventory}, total=${totalAvailable}, canAddMore=${canAddMore}`);
+        
+        return `
         <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
             <div class="product-card ${!product.is_in_stock ? 'out-of-stock' : ''}">
                 <div class="product-image-wrapper">
@@ -52,8 +103,11 @@ function displayProducts(products) {
                          alt="${product.name}" 
                          class="product-image">
                     ${product.is_in_stock 
-                        ? '<span class="stock-badge badge-success">In Stock</span>' 
+                        ? `<span class="stock-badge badge-success">In Stock</span>` 
                         : '<span class="stock-badge badge-danger">Out of Stock</span>'}
+                    ${cartQty > 0 
+                        ? `<span class="cart-qty-badge">${cartQty} in cart</span>` 
+                        : ''}
                 </div>
                 <div class="product-body">
                     <h5 class="product-title">${product.name}</h5>
@@ -61,11 +115,22 @@ function displayProducts(products) {
                     <div class="product-footer">
                         <h3 class="product-price">€${parseFloat(product.price).toFixed(2)}</h3>
                         <div class="product-actions">
-                            ${product.is_in_stock 
-                                ? `<button onclick="addToCart(${product.id})" class="btn btn-success btn-sm product-btn mr-1" title="Add to Cart">
-                                    <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
-                                </button>` 
-                                : ''}
+                            ${cartQty > 0 
+                                ? `<div class="qty-controls">
+                                    <button onclick="decreaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" title="Decrease quantity">
+                                        <i data-feather="minus" style="width: 14px; height: 14px;"></i>
+                                    </button>
+                                    <span class="qty-display">${cartQty}</span>
+                                    <button onclick="increaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" 
+                                        ${!canAddMore ? 'disabled title="Maximum quantity reached"' : 'title="Increase quantity"'}>
+                                        <i data-feather="plus" style="width: 14px; height: 14px;"></i>
+                                    </button>
+                                </div>`
+                                : (product.is_in_stock 
+                                    ? `<button onclick="addToCart(${product.id})" class="btn btn-success btn-sm product-btn mr-1" title="Add to Cart">
+                                        <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
+                                    </button>` 
+                                    : '')}
                             <a href="/en/shop/${product.slug}" class="btn btn-primary btn-sm product-btn" title="View Details">
                                 <i data-feather="eye" style="width: 14px; height: 14px;"></i>
                             </a>
@@ -74,7 +139,8 @@ function displayProducts(products) {
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
     
     // Re-initialize feather icons for the new content
     if (typeof feather !== 'undefined') {
@@ -114,6 +180,9 @@ async function addToCart(productId) {
             if (typeof loadNavbarCart === 'function') {
                 loadNavbarCart();
             }
+            // Reload cart data and products to update UI
+            await loadCartData();
+            await loadProducts();
         } else {
             // Show validation errors if present
             if (data.errors) {
@@ -130,10 +199,102 @@ async function addToCart(productId) {
     }
 }
 
+async function increaseCartQuantity(productId) {
+    const currentQty = getCartQuantityForProduct(productId);
+    await updateCartItemQuantity(productId, currentQty + 1);
+}
+
+async function decreaseCartQuantity(productId) {
+    const currentQty = getCartQuantityForProduct(productId);
+    if (currentQty > 1) {
+        await updateCartItemQuantity(productId, currentQty - 1);
+    } else {
+        await removeFromCart(productId);
+    }
+}
+
+async function updateCartItemQuantity(productId, newQuantity) {
+    const token = UserManager.getToken();
+    if (!token) return;
+    
+    const cartItem = getCartItemForProduct(productId);
+    if (!cartItem) return;
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart/items/${cartItem.id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                quantity: newQuantity
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            toastr.success('Cart updated!');
+            updateCartCount();
+            if (typeof loadNavbarCart === 'function') {
+                loadNavbarCart();
+            }
+            await loadCartData();
+            await loadProducts();
+        } else {
+            toastr.error(data.message || 'Failed to update cart');
+        }
+    } catch (error) {
+        console.error('Error updating cart:', error);
+        toastr.error('Failed to update cart');
+    }
+}
+
+async function removeFromCart(productId) {
+    const token = UserManager.getToken();
+    if (!token) return;
+    
+    const cartItem = getCartItemForProduct(productId);
+    if (!cartItem) return;
+    
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart/items/${cartItem.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            toastr.success('Item removed from cart');
+            updateCartCount();
+            if (typeof loadNavbarCart === 'function') {
+                loadNavbarCart();
+            }
+            await loadCartData();
+            await loadProducts();
+        } else {
+            const data = await response.json();
+            toastr.error(data.message || 'Failed to remove item');
+        }
+    } catch (error) {
+        console.error('Error removing item:', error);
+        toastr.error('Failed to remove item');
+    }
+}
+
 async function updateCartCount() {
     const token = UserManager.getToken();
     if (!token) {
         return;
+    }
+    
+    const cartCountElement = document.getElementById('cart-count');
+    if (!cartCountElement) {
+        return; // Element doesn't exist, skip update
     }
     
     try {
@@ -148,7 +309,7 @@ async function updateCartCount() {
         if (response.ok) {
             const cart = await response.json();
             const count = cart.items ? cart.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
-            document.getElementById('cart-count').textContent = count;
+            cartCountElement.textContent = count;
         }
     } catch (error) {
         console.error('Error loading cart count:', error);

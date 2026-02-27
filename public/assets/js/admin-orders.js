@@ -336,50 +336,61 @@ function showTrackingModalFromOrderView(orderNumber) {
 
 function showTrackingModal(orderNumber) {
     document.getElementById('modal-content').innerHTML = `
-        <h5>${t.addShipping}</h5>
-        <form id="tracking-form">
-            <div class="form-group">
-                <label>${t.shippingProvider} *</label>
-                <select id="shipping-provider" class="form-control" required>
-                    <option value="">${t.selectProvider}</option>
-                    <optgroup label="${t.majorCarriers}">
-                        <option value="DHL Express">DHL Express</option>
-                        <option value="DPD">DPD (Dynamic Parcel Distribution)</option>
-                        <option value="UPS">UPS (United Parcel Service)</option>
-                        <option value="FedEx">FedEx</option>
-                        <option value="TNT">TNT Express</option>
-                        <option value="GLS">GLS (General Logistics Systems)</option>
-                        <option value="Hermes">Hermes</option>
-                        <option value="DHL Parcel">DHL Parcel</option>
-                        <option value="PostNL">PostNL</option>
-                        <option value="Colissimo">Colissimo (La Poste)</option>
-                        <option value="Chronopost">Chronopost</option>
-                        <option value="Royal Mail">Royal Mail</option>
-                        <option value="Parcelforce">Parcelforce</option>
-                        <option value="Deutsche Post">Deutsche Post</option>
-                        <option value="DB Schenker">DB Schenker</option>
-                    </optgroup>
-                    <optgroup label="${t.otherProviders}">
-                        <option value="Other">${t.otherProviders}</option>
-                    </optgroup>
-                </select>
+        <div class="tracking-modal-redesign">
+            <!-- Hero Header -->
+            <div class="tracking-hero-header">
+                <h5 class="mb-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                    ${t.addShipping}
+                </h5>
             </div>
-            
-            <div class="form-group" id="other-provider-group" style="display: none;">
-                <label>${t.otherProviderName} *</label>
-                <input type="text" id="other-provider" class="form-control" placeholder="${t.enterProvider}">
+
+            <div class="tracking-form-content">
+                <form id="tracking-form">
+                    <div class="form-group">
+                        <label class="form-label-modern">${t.shippingProvider} <span class="text-danger">*</span></label>
+                        <select id="shipping-provider" class="form-control form-control-modern" required>
+                            <option value="">${t.selectProvider}</option>
+                            <optgroup label="${t.majorCarriers}">
+                                <option value="DHL Express">DHL Express</option>
+                                <option value="DPD">DPD (Dynamic Parcel Distribution)</option>
+                                <option value="UPS">UPS (United Parcel Service)</option>
+                                <option value="FedEx">FedEx</option>
+                                <option value="TNT">TNT Express</option>
+                                <option value="GLS">GLS (General Logistics Systems)</option>
+                                <option value="Hermes">Hermes</option>
+                                <option value="DHL Parcel">DHL Parcel</option>
+                                <option value="PostNL">PostNL</option>
+                                <option value="Colissimo">Colissimo (La Poste)</option>
+                                <option value="Chronopost">Chronopost</option>
+                                <option value="Royal Mail">Royal Mail</option>
+                                <option value="Parcelforce">Parcelforce</option>
+                                <option value="Deutsche Post">Deutsche Post</option>
+                                <option value="DB Schenker">DB Schenker</option>
+                            </optgroup>
+                            <optgroup label="${t.otherProviders}">
+                                <option value="Other">${t.otherProviders}</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="other-provider-group" style="display: none;">
+                        <label class="form-label-modern">${t.otherProviderName} <span class="text-danger">*</span></label>
+                        <input type="text" id="other-provider" class="form-control form-control-modern" placeholder="${t.enterProvider}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label-modern">${t.trackingId} <span class="text-danger">*</span></label>
+                        <input type="text" id="tracking-id" class="form-control form-control-modern" required placeholder="${t.enterTracking}">
+                    </div>
+                    
+                    <div class="tracking-form-actions">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">${t.cancel}</button>
+                        <button type="button" class="btn btn-primary" onclick="submitTracking('${orderNumber}')">${t.saveTracking}</button>
+                    </div>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label>${t.trackingId} *</label>
-                <input type="text" id="tracking-id" class="form-control" required placeholder="${t.enterTracking}">
-            </div>
-            
-            <div class="text-right">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">${t.cancel}</button>
-                <button type="button" class="btn btn-primary" onclick="submitTracking('${orderNumber}')">${t.saveTracking}</button>
-            </div>
-        </form>
+        </div>
     `;
     
     // Show/hide other provider input
@@ -506,8 +517,15 @@ function getStatusBadge(order) {
             : '<span class="badge badge-warning">Awaiting payment</span>';
     }
     
-    // If shipped or delivered, show shipped
-    if (status === 'shipped' || status === 'delivered') {
+    // If delivered, show delivered
+    if (status === 'delivered') {
+        return PAGE_LOCALE === 'fr'
+            ? '<span class="badge badge-success">Livrée</span>'
+            : '<span class="badge badge-success">Delivered</span>';
+    }
+    
+    // If shipped, show shipped
+    if (status === 'shipped') {
         return PAGE_LOCALE === 'fr'
             ? '<span class="badge badge-primary">Expédiée</span>'
             : '<span class="badge badge-primary">Shipped</span>';
@@ -515,8 +533,8 @@ function getStatusBadge(order) {
     
     // Otherwise, payment received (paid but not shipped)
     return PAGE_LOCALE === 'fr'
-        ? '<span class="badge badge-success">Paiement reçu</span>'
-        : '<span class="badge badge-success">Payment received</span>';
+        ? '<span class="badge badge-info">Paiement reçu</span>'
+        : '<span class="badge badge-info">Payment received</span>';
 }
 
 function getOrderActionButtons(order) {
@@ -549,8 +567,8 @@ function getOrderActionButtons(order) {
         buttons.push(`
             <button class="btn btn-info btn-sm" onclick="showAssignInventoryModalFromOrderView('${order.order_number}')">
                 <i data-feather="package"></i> ${hasInventoryAssigned 
-                    ? (PAGE_LOCALE === 'fr' ? 'Inventaire' : 'Inventory')
-                    : (PAGE_LOCALE === 'fr' ? 'Assigner' : 'Assign')
+                    ? (PAGE_LOCALE === 'fr' ? 'Modifier inventaire' : 'Update Inventory')
+                    : (PAGE_LOCALE === 'fr' ? 'Assigner inventaire' : 'Assign items from Inventory')
                 }
             </button>
         `);

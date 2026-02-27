@@ -1416,11 +1416,11 @@ class LocationController extends Controller
                 }
                 
                 // Save the settings
-                Log::info('=== SAVING LOCATION SETTINGS ===');
-                Log::info('Location settings before save: ' . json_encode($locationSettings->toArray()));
+                // Log::info('=== SAVING LOCATION SETTINGS ===');
+                // Log::info('Location settings before save: ' . json_encode($locationSettings->toArray()));
                 $locationSettings->save();
-                Log::info('Location settings saved successfully');
-                Log::info('Location settings after save: ' . json_encode($locationSettings->fresh()->toArray()));
+                // Log::info('Location settings saved successfully');
+                // Log::info('Location settings after save: ' . json_encode($locationSettings->fresh()->toArray()));
                 
                 return response()->json([
                     'success' => true,
@@ -1541,8 +1541,8 @@ class LocationController extends Controller
 
     public function updateGeneral(Request $request, $location_id)
     {
-        Log::info('Update general location information received');
-        Log::info($request->all());
+        // Log::info('Update general location information received');
+        // Log::info($request->all());
         
         try {
             $location = Location::find($location_id);
@@ -1558,11 +1558,11 @@ class LocationController extends Controller
             if ($request->has('owner_id')) {
                 $currentUser = Auth::guard('api')->user();
                 if (!$currentUser || $currentUser->role !== 'admin') {
-                    Log::warning('Non-admin user attempted to change location owner via updateGeneral', [
-                        'user_id' => $currentUser ? $currentUser->id : null,
-                        'user_role' => $currentUser ? $currentUser->role : null,
-                        'location_id' => $location_id
-                    ]);
+                    // Log::warning('Non-admin user attempted to change location owner via updateGeneral', [
+                    //     'user_id' => $currentUser ? $currentUser->id : null,
+                    //     'user_role' => $currentUser ? $currentUser->role : null,
+                    //     'location_id' => $location_id
+                    // ]);
                     return response()->json([
                         'success' => false,
                         'message' => 'Only administrators can change location ownership'
@@ -1587,8 +1587,8 @@ class LocationController extends Controller
                 'status' => 'sometimes|nullable|string|in:active,inactive,maintenance',
                 'owner_id' => 'sometimes|nullable|exists:users,id',
             ]);
-            Log::info('Validated data: ');
-            Log::info($validated);
+            // Log::info('Validated data: ');
+            // Log::info($validated);
             
             // Geocode address if address fields have actually changed and lat/lng not provided
             $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
@@ -1668,8 +1668,8 @@ class LocationController extends Controller
      */
     public function updateFirmware(Request $request, $id)
     {
-        Log::info('Update firmware request received for location: ' . $id);
-        Log::info($request->all());
+        // Log::info('Update firmware request received for location: ' . $id);
+        // Log::info($request->all());
         
         try {
             $request->validate([
@@ -1816,8 +1816,8 @@ class LocationController extends Controller
      */
     public function updateSettings(Request $request, $id)
     {
-        Log::info('Update location settings request received for location: ' . $id);
-        Log::info($request->all());
+        // Log::info('Update location settings request received for location: ' . $id);
+        // Log::info($request->all());
         
         try {
             $location = Location::find($id);
@@ -2116,11 +2116,11 @@ class LocationController extends Controller
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
                     $increment_version = 1;
                     $routerSettingsChanged = true;
-                    Log::info('Captive portal MAC filter list updated (no config version increment)', [
-                        'old_list' => $currentMacList,
-                        'new_list' => $normalizedMacList,
-                        'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
-                    ]);
+                    // Log::info('Captive portal MAC filter list updated (no config version increment)', [
+                    //     'old_list' => $currentMacList,
+                    //     'new_list' => $normalizedMacList,
+                    //     'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
+                    // ]);
                     
                     // Update the captive portal MAC filter list first
                     // This includes mac, type, and scope fields for each entry
@@ -2142,11 +2142,11 @@ class LocationController extends Controller
                 $currentMacList = $settings->secured_mac_filter_list ?: [];
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
                     $increment_version = 1;
-                    Log::info('Secured WiFi MAC filter list updated (config version increment)', [
-                        'old_list' => $currentMacList,
-                        'new_list' => $normalizedMacList,
-                        'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
-                    ]);
+                    // Log::info('Secured WiFi MAC filter list updated (config version increment)', [
+                    //     'old_list' => $currentMacList,
+                    //     'new_list' => $normalizedMacList,
+                    //     'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
+                    // ]);
                     
                     // Update the secured WiFi MAC filter list (no radcheck records for secured WiFi)
                     // This includes mac, type, and scope fields for each entry
@@ -2164,10 +2164,10 @@ class LocationController extends Controller
                 // Check if MAC filter list changed
                 $currentMacList = $settings->mac_filter_list ?: [];
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
-                    Log::info('Legacy MAC filter list updated (treated as captive portal)', [
-                        'old_list' => $currentMacList,
-                        'new_list' => $normalizedMacList
-                    ]);
+                    // Log::info('Legacy MAC filter list updated (treated as captive portal)', [
+                    //     'old_list' => $currentMacList,
+                    //     'new_list' => $normalizedMacList
+                    // ]);
                     
                     // Update the MAC filter list and handle radcheck records
                     $settings->mac_filter_list = $normalizedMacList;
@@ -2312,12 +2312,12 @@ class LocationController extends Controller
             $device->mac_address = $newMacAddress;
             $device->save();
 
-            Log::info('MAC address updated successfully', [
-                'location_id' => $id,
-                'device_id' => $device->id,
-                'old_mac_address' => $oldMacAddress,
-                'new_mac_address' => $newMacAddress
-            ]);
+            // Log::info('MAC address updated successfully', [
+            //     'location_id' => $id,
+            //     'device_id' => $device->id,
+            //     'old_mac_address' => $oldMacAddress,
+            //     'new_mac_address' => $newMacAddress
+            // ]);
 
             return response()->json([
                 'success' => true,
@@ -2355,11 +2355,11 @@ class LocationController extends Controller
      */
     private function updateRadcheckForMacFiltering($settings, $oldMacList, $newMacList)
     {
-        Log::info('Updating radcheck records for MAC filtering', [
-            'location_id' => $settings->location_id,
-            'old_count' => count($oldMacList),
-            'new_count' => count($newMacList)
-        ]);
+        // Log::info('Updating radcheck records for MAC filtering', [
+        //     'location_id' => $settings->location_id,
+        //     'old_count' => count($oldMacList),
+        //     'new_count' => count($newMacList)
+        // ]);
 
         // Convert arrays to associative arrays for easier comparison
         // Store both type and scope for comparison
@@ -2423,14 +2423,14 @@ class LocationController extends Controller
             $scopeChanged = !$isNew && ($oldMacMap[$macAddress]['scope'] ?? 'all') !== $scope;
             
             if ($isNew || $typeChanged || $scopeChanged) {
-                Log::info('Adding/updating MAC address in radcheck', [
-                    'mac' => $normalizedMac,
-                    'access_control' => $accessControl,
-                    'scope' => $scope,
-                    'is_new' => $isNew,
-                    'type_changed' => $typeChanged,
-                    'scope_changed' => $scopeChanged
-                ]);
+                // Log::info('Adding/updating MAC address in radcheck', [
+                //     'mac' => $normalizedMac,
+                //     'access_control' => $accessControl,
+                //     'scope' => $scope,
+                //     'is_new' => $isNew,
+                //     'type_changed' => $typeChanged,
+                //     'scope_changed' => $scopeChanged
+                // ]);
                 
                 \App\Models\Radcheck::updateOrCreateRecord(
                     $normalizedMac,
@@ -2591,10 +2591,10 @@ class LocationController extends Controller
                 }
             }
             
-            Log::info('Synced MAC addresses to radcheck', [
-                'location_id' => $locationId,
-                'synced_count' => $synced
-            ]);
+            // Log::info('Synced MAC addresses to radcheck', [
+            //     'location_id' => $locationId,
+            //     'synced_count' => $synced
+            // ]);
             
             return response()->json([
                 'success' => true,

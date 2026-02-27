@@ -21,12 +21,24 @@ class Inventory extends Model
         'is_in_stock' => 'boolean',
     ];
 
+    protected $appends = [
+        'available_quantity',
+    ];
+
     /**
      * Get the product that owns the inventory.
      */
     public function productModel()
     {
         return $this->belongsTo(ProductModel::class);
+    }
+
+    /**
+     * Get available quantity attribute for JSON serialization.
+     */
+    public function getAvailableQuantityAttribute()
+    {
+        return $this->getAvailableQuantity();
     }
 
     /**

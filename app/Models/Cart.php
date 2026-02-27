@@ -53,15 +53,23 @@ class Cart extends Model
         
         if ($existingItem) {
             $newQuantity = $existingItem->quantity + $quantity;
-            if ($product->inventory->getAvailableQuantity() < $newQuantity - $existingItem->quantity) {
+            // Check if total available (including what's already reserved for this item) can accommodate new quantity
+            $totalAvailable = $product->inventory->getAvailableQuantity() + $existingItem->quantity;
+            if ($totalAvailable < $newQuantity) {
                 return false;
             }
             // Release old reservation and reserve new
             $product->inventory->release($existingItem->quantity);
-            $product->inventory->reserve($newQuantity);
+            if (!$product->inventory->reserve($newQuantity)) {
+                // If reserve fails, restore old reservation
+                $product->inventory->reserve($existingItem->quantity);
+                return false;
+            }
             $existingItem->update(['quantity' => $newQuantity]);
         } else {
-            $product->inventory->reserve($quantity);
+            if (!$product->inventory->reserve($quantity)) {
+                return false;
+            }
             $this->items()->create([
                 'product_model_id' => $productId,
                 'quantity' => $quantity,

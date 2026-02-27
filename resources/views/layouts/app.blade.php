@@ -189,8 +189,8 @@
                                     </div>
                                     <div class="media-body">
                                         <h6 class="cart-item-title">${product.name}</h6>
-                                        <small class="notification-text">${locale === 'fr' ? 'Qté' : 'Qty'}: ${item.quantity} × $${parseFloat(item.price_at_add).toFixed(2)}</small>
-                                        <div><small class="font-weight-bold text-primary">$${subtotal}</small></div>
+                                        <small class="notification-text">${locale === 'fr' ? 'Qté' : 'Qty'}: ${item.quantity} × €${parseFloat(item.price_at_add).toFixed(2)}</small>
+                                        <div><small class="font-weight-bold text-primary">€${subtotal}</small></div>
                                     </div>
                                 </div>
                             </a>

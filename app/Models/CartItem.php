@@ -20,12 +20,24 @@ class CartItem extends Model
         'price_at_add' => 'decimal:2',
     ];
 
+    protected $appends = [
+        'product_id',
+    ];
+
     /**
      * Get the cart that owns the item.
      */
     public function cart()
     {
         return $this->belongsTo(Cart::class);
+    }
+
+    /**
+     * Alias for product_model_id to maintain API consistency.
+     */
+    public function getProductIdAttribute()
+    {
+        return $this->product_model_id;
     }
 
     /**
