@@ -49,7 +49,7 @@ class DashboardController extends Controller
         }
         try {
             // Get all locations with their devices$locations = Location::with('device')->get();
-            if ($user->role == 'admin') {
+            if (in_array($user->role, ['admin', 'superadmin'])) {
                 $locations = Location::with('device')->get();
             } else {
                 $locations = Location::with('device')->where('owner_id', $user->id)->get();
@@ -169,7 +169,7 @@ class DashboardController extends Controller
             }
             
             
-            if ($user->role == 'admin') {
+            if (in_array($user->role, ['admin', 'superadmin'])) {
                 $locations = Location::with('device')->get();
             } else {
                 $locations = Location::with('device')->where('owner_id', $user->id)->get();
@@ -265,7 +265,7 @@ class DashboardController extends Controller
                 default:
                     $startDate = Carbon::now()->subDays(6);
             }
-            if ($user->role == 'admin') {
+            if (in_array($user->role, ['admin', 'superadmin'])) {
                 $locations = Location::all();
             } else {
                 $locations = Location::where('owner_id', $user->id)->get();

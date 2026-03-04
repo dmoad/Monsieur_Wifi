@@ -45,7 +45,7 @@ class LocationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->role == 'admin') {
+        if (in_array($user->role, ['admin', 'superadmin'])) {
             // Get locations with their associated devices and zones
             $locations = Location::with(['device', 'zone'])->get();
         } else {
@@ -285,7 +285,7 @@ class LocationController extends Controller
                 'message' => 'User not authenticated'
             ], 401);
         }
-        if ($user->role == 'admin') {
+        if (in_array($user->role, ['admin', 'superadmin'])) {
             $location = Location::with(['device', 'zone', 'settings'])->find($id);
         } else {
             $location = Location::with(['device', 'zone', 'settings'])->where('owner_id', $user->id)->find($id);

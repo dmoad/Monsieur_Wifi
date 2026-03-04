@@ -30,7 +30,7 @@ class CaptivePortalDesignController extends Controller
         $user = auth()->user();
         
         // Get designs based on user role
-        if ($user->role == 'admin') {
+        if (in_array($user->role, ['admin', 'superadmin'])) {
             // Admin sees all designs with owner information
             $designs = CaptivePortalDesign::with(['user', 'owner'])->latest()->get();
         } else {
@@ -45,7 +45,7 @@ class CaptivePortalDesignController extends Controller
             }
             
             // Include owner information for admin users
-            if (auth()->user()->role == 'admin') {
+            if (in_array(auth()->user()->role, ['admin', 'superadmin'])) {
                 $design->creator_name = $design->user->name ?? 'Unknown';
                 $design->owner_name = $design->owner->name ?? $design->user->name ?? 'Unknown';
                 $design->current_owner_id = $design->owner_id ?? $design->user_id;
@@ -57,7 +57,7 @@ class CaptivePortalDesignController extends Controller
         return response()->json([
             'success' => true,
             'data' => $designs,
-            'is_admin' => $user->role == 'admin',
+            'is_admin' => in_array($user->role, ['admin', 'superadmin']),
             'debug' => [
                 'user_id' => $user->id,
                 'user_role' => $user->role,

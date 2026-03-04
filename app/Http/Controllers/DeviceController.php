@@ -1026,24 +1026,32 @@ class DeviceController extends Controller
     public function getAvailableForLocation(Request $request)
     {
         $user = auth()->user();
-        
+        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+
         // Get unassigned devices
         $unassignedQuery = Device::with('owner')
             ->whereDoesntHave('location');
-        
+
         // Get assigned devices
         $assignedQuery = Device::with(['owner', 'location'])
             ->whereHas('location');
-        
-        // If not admin, filter by ownership
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+
+        if ($isAdmin) {
+            // Admin can pass owner_id to filter devices by a specific user
+            if ($request->filled('owner_id')) {
+                $unassignedQuery->where('owner_id', $request->owner_id);
+                $assignedQuery->where('owner_id', $request->owner_id);
+            }
+            // Without owner_id, admin sees all devices
+        } else {
+            // Regular users only see their own devices
             $unassignedQuery->where('owner_id', $user->id);
             $assignedQuery->where('owner_id', $user->id);
         }
-        
+
         $unassignedDevices = $unassignedQuery->orderBy('serial_number')->get();
         $assignedDevices = $assignedQuery->orderBy('serial_number')->get();
-        
+
         return response()->json([
             'success' => true,
             'unassigned' => $unassignedDevices,

@@ -263,7 +263,7 @@
                         <select class="form-control" id="owner-select">
                             <option value="">Loading users...</option>
                         </select>
-                        <small class="form-text text-muted">Select the owner for this location.</small>
+                        <small class="form-text text-muted">Select the owner for this location. Devices will load after selection.</small>
                     </div>
                     <div class="form-group">
                         <label for="location-name">Location Name <span class="text-danger">*</span></label>
@@ -276,9 +276,9 @@
                     <div class="form-group">
                         <label for="device-select">Select Device <span class="text-danger">*</span></label>
                         <select class="form-control" id="device-select" required>
-                            <option value="">Loading devices...</option>
+                            <option value="">— select a device —</option>
                         </select>
-                        <small class="form-text text-muted">Select an existing device to assign to this location.</small>
+                        <small class="form-text text-muted" id="device-select-hint">Select an existing device to assign to this location.</small>
                     </div>
                     <div class="form-group">
                         <label for="location-notes">Description</label>
@@ -523,63 +523,56 @@ $('#status-filter').on('change', function() {
 });
 
 async function loadUsers() {
-    console.log('loadUsers called');
-    console.log('isAdminOrAbove:', UserManager.isAdminOrAbove());
-    
-    if (!UserManager.isAdminOrAbove()) {
-        console.log('User is not admin, skipping user load');
-        return;
-    }
-    
+    if (!UserManager.isAdminOrAbove()) return;
+
     const token = UserManager.getToken();
-    
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
-            }
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
-        
+
         if (!response.ok) throw new Error('Failed to load users');
-        
+
         const data = await response.json();
-        console.log('Users loaded:', data.users.length);
         const select = $('#owner-select');
-        
-        let options = '<option value="">Select owner...</option>';
-        data.users.forEach(user => {
-            options += `<option value="${user.id}">${user.name} (${user.email})</option>`;
+
+        let options = '<option value="">Select owner first...</option>';
+        data.users.forEach(u => {
+            options += `<option value="${u.id}">${u.name} (${u.email})</option>`;
         });
-        
+
         select.html(options);
-        console.log('Showing owner-select-group');
         $('#owner-select-group').show();
-        console.log('owner-select-group display:', $('#owner-select-group').css('display'));
+
+        // Disable device select until an owner is chosen
+        $('#device-select').html('<option value="">Select an owner above first</option>').prop('disabled', true);
+        $('#device-select-hint').text('Please select an owner first — devices will load automatically.');
     } catch (error) {
         console.error('Error loading users:', error);
     }
 }
 
-async function loadAvailableDevices() {
+async function loadAvailableDevices(ownerId = null) {
     const token = UserManager.getToken();
-    
+
+    $('#device-select').html('<option value="">Loading devices...</option>').prop('disabled', true);
+
+    let url = `${APP_CONFIG.API.BASE_URL}/v1/devices/available-for-location`;
+    if (ownerId) url += `?owner_id=${ownerId}`;
+
     try {
-        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/devices/available-for-location`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
-            }
+        const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
-        
+
         if (!response.ok) throw new Error('Failed to load devices');
-        
+
         const data = await response.json();
         const select = $('#device-select');
-        
+
         let options = '<option value="">Select a device...</option>';
-        
-        // Unassigned devices first
+
         if (data.unassigned && data.unassigned.length > 0) {
             options += '<optgroup label="Available Devices">';
             data.unassigned.forEach(device => {
@@ -587,8 +580,7 @@ async function loadAvailableDevices() {
             });
             options += '</optgroup>';
         }
-        
-        // Assigned devices second
+
         if (data.assigned && data.assigned.length > 0) {
             options += '<optgroup label="Devices Assigned to Other Locations">';
             data.assigned.forEach(device => {
@@ -597,22 +589,36 @@ async function loadAvailableDevices() {
             });
             options += '</optgroup>';
         }
-        
-        if (data.unassigned.length === 0 && data.assigned.length === 0) {
-            options = '<option value="">No devices available</option>';
+
+        if ((!data.unassigned || data.unassigned.length === 0) && (!data.assigned || data.assigned.length === 0)) {
+            options = '<option value="">No devices found</option>';
         }
-        
-        select.html(options);
+
+        select.html(options).prop('disabled', false);
+        $('#device-select-hint').text('Select an existing device to assign to this location.');
     } catch (error) {
         console.error('Error loading devices:', error);
-        $('#device-select').html('<option value="">Error loading devices</option>');
+        $('#device-select').html('<option value="">Error loading devices</option>').prop('disabled', false);
     }
 }
 
-// Load devices and users when modal is shown
+// When modal opens: load users (admin) or load devices directly (non-admin)
 $('#add-location-modal').on('show.bs.modal', function() {
-    loadAvailableDevices();
-    loadUsers();
+    if (UserManager.isAdminOrAbove()) {
+        loadUsers();
+    } else {
+        loadAvailableDevices();
+    }
+});
+
+// When admin changes owner selection, reload devices for that owner
+$('#owner-select').on('change', function() {
+    const ownerId = $(this).val();
+    if (ownerId) {
+        loadAvailableDevices(ownerId);
+    } else {
+        $('#device-select').html('<option value="">Select an owner above first</option>').prop('disabled', true);
+    }
 });
 </script>
 @endpush

@@ -7645,13 +7645,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (location.owner_id) {
                                 console.log('Location has owner_id:', location.owner_id);
                                 // Reload the owner dropdown with the correct selected value
-                                if (UserManager.hasRole('admin')) {
+                                if (UserManager.isAdminOrAbove()) {
                                     loadUsersForOwnerDropdown(location.owner_id);
                                 }
                             } else {
                                 console.log('Location has no owner assigned');
                                 // Still reload to ensure dropdown is populated
-                                if (UserManager.hasRole('admin')) {
+                                if (UserManager.isAdminOrAbove()) {
                                     loadUsersForOwnerDropdown();
                                 }
                             }
@@ -8017,8 +8017,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     description: $('#location-description').val(),
                 };
 
-                // Only include owner_id if user is admin
-                if (UserManager.hasRole('admin')) {
+                // Only include owner_id if user is admin or above
+                if (UserManager.isAdminOrAbove()) {
                     locationData.owner_id = $('#location-owner').val() || null;
                 }
 
