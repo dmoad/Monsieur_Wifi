@@ -69,11 +69,17 @@ class OrderController extends Controller
             'user_id' => $user->id,
             'user_email' => $user->email
         ]);
-        
-        $order = Order::with(['items.productModel.images', 'shippingAddress', 'billingAddress'])
-            ->where('order_number', $orderNumber)
-            ->where('user_id', $user->id)
-            ->firstOrFail();
+
+        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+
+        $query = Order::with(['items.productModel.images', 'shippingAddress', 'billingAddress'])
+            ->where('order_number', $orderNumber);
+
+        if (!$isAdmin) {
+            $query->where('user_id', $user->id);
+        }
+
+        $order = $query->firstOrFail();
 
         Log::info('Order Controller :: show - Order loaded successfully', [
             'order_id' => $order->id,
@@ -233,7 +239,7 @@ class OrderController extends Controller
         Log::info($orderNumber);
         
         $user = Auth::user();
-        $isAdmin = $user && $user->role === 'admin';
+        $isAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
         
         // Admin can process any order, regular users can only process their own
         $query = Order::with([

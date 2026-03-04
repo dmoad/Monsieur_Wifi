@@ -16,7 +16,7 @@
         <div class="header"><h1>✓ Order Delivered!</h1></div>
         <div class="content">
             <p>Hello {{ $order->user->name }},</p>
-            <p>Your order <strong>#{{ $order->order_number }}</strong> has been successfully delivered!</p>
+            <p>Your order <strong><a href="{{ url('/en/orders/' . $order->order_number) }}">#{{ $order->order_number }}</a></strong> has been successfully delivered!</p>
             <p>We hope you enjoy your purchase. If you have any questions or concerns, please don't hesitate to contact us.</p>
             <p>Thank you for choosing Monsieur WiFi!</p>
         </div>
