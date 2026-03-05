@@ -17,6 +17,7 @@ use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\LocationNetworkController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -130,6 +131,14 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::post('/{id}/captive-portal/hourly-schedule/{dayOfWeek}/{hour}/toggle', [CaptivePortalHourlyScheduleController::class, 'toggleHour']);
     Route::post('/{id}/captive-portal/hourly-schedule/initialize', [CaptivePortalHourlyScheduleController::class, 'initializeFromWorkingHours']);
     Route::get('/{id}/captive-portal/hourly-schedule/status', [CaptivePortalHourlyScheduleController::class, 'checkCurrentStatus']);
+
+    // Location networks (flexible multi-network support)
+    Route::get('/{location_id}/networks', [LocationNetworkController::class, 'index']);
+    Route::post('/{location_id}/networks', [LocationNetworkController::class, 'store']);
+    Route::put('/{location_id}/networks/reorder', [LocationNetworkController::class, 'reorder']);
+    Route::get('/{location_id}/networks/{network_id}', [LocationNetworkController::class, 'show']);
+    Route::put('/{location_id}/networks/{network_id}', [LocationNetworkController::class, 'update']);
+    Route::delete('/{location_id}/networks/{network_id}', [LocationNetworkController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], function () {

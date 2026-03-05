@@ -145,10 +145,15 @@
                 }
             })
             .then(response => {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
                 if (!response.ok) throw new Error('Failed to load cart');
                 return response.json();
             })
             .then(data => {
+                console.log('Data:', data);
                 const cart = data.cart || {};
                 const items = cart.items || [];
                 const itemCount = data.item_count || 0;

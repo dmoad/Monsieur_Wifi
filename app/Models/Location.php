@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\LocationSettings;
+use App\Models\LocationNetwork;
 use App\Models\Radacct;
 class Location extends Model
 {
@@ -53,6 +54,11 @@ class Location extends Model
     public function settings()
     {
         return $this->hasOne(LocationSettings::class);
+    }
+
+    public function networks()
+    {
+        return $this->hasMany(LocationNetwork::class)->orderBy('sort_order');
     }
 
     /**

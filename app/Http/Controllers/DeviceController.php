@@ -16,6 +16,7 @@ use App\Models\BlockedDomain;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\CaptivePortalWorkingHour;
+use App\Models\LocationNetwork;
 
 class DeviceController extends Controller
 {
@@ -266,11 +267,46 @@ class DeviceController extends Controller
             'hash' => $firmware_hash,
         ];
 
+        // Load flexible networks from location_networks table.
+        // Legacy flat fields in $settings remain for backward-compatible firmware.
+        $networks = LocationNetwork::where('location_id', $location->id)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Keep legacy wifi_name / wifi_password aliases pointing to the first
+        // password-type network so older firmware still works.
+        $firstPasswordNetwork = $networks->firstWhere('type', 'password');
+        if ($firstPasswordNetwork) {
+            $settings->wifi_name     = $firstPasswordNetwork->ssid;
+            $settings->wifi_password = $firstPasswordNetwork->password;
+        }
+
+        // Update captive whitelist based on new networks table if flat settings
+        // are not set (new locations will use networks table only).
+        if ($networks->isNotEmpty()) {
+            $captiveNetwork = $networks->firstWhere('type', 'captive_portal');
+            if ($captiveNetwork && $captiveNetwork->auth_method === 'social') {
+                $socialMethod = $captiveNetwork->social_auth_method;
+                if ($socialMethod === 'google') {
+                    $whitelist_domains .= ',' . env('GOOGLE_WHITELIST_DOMAINS', '');
+                    $whitelist_servers  .= ',' . env('GOOGLE_WHITELIST_SERVERS', '');
+                } elseif ($socialMethod === 'facebook') {
+                    $whitelist_domains .= ',' . env('FACEBOOK_WHITELIST_DOMAINS', '');
+                    $whitelist_servers  .= ',' . env('FACEBOOK_WHITELIST_SERVERS', '');
+                }
+                $whitelist_domains = rtrim($whitelist_domains, ',');
+                $whitelist_servers = rtrim($whitelist_servers, ',');
+                $guest_settings['whitelist_domains'] = $whitelist_domains;
+                $guest_settings['whitelist_servers'] = $whitelist_servers;
+            }
+        }
+
         return response()->json(
             [
                 'status' => 'success',
                 'location' => $location,
                 'settings' => $settings,
+                'networks' => $networks,
                 'radius_settings' => $radius_settings,
                 'guest_settings' => $guest_settings,
                 'firmware' => $firmware
