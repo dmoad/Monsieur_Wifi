@@ -75,11 +75,13 @@ Route::prefix('en')->name('en.')->group(function () {
     })->name('locations');
     
     Route::get('/locations/{location}', function ($location) {
-        return view('location-details-en', compact('location'));
+        $locale = 'en';
+        return view('location-details-en', compact('location', 'locale'));
     })->name('location-details');
 
-    Route::get('/locations/{location}/networks', function () {
-        return view('location-networks-v5');
+    Route::get('/locations/{location}/networks', function ($location) {
+        $locale = 'en';
+        return view('location-networks-v5', compact('location', 'locale'));
     })->name('location-networks');
     
     Route::get('/v2/locations/{location}', function ($location) {
@@ -162,11 +164,13 @@ Route::prefix('fr')->name('fr.')->group(function () {
     })->name('locations');
     
     Route::get('/locations/{location}', function ($location) {
-        return view('location-details-fr', compact('location'));
+        $locale = 'fr';
+        return view('location-details-fr', compact('location', 'locale'));
     })->name('location-details');
 
     Route::get('/locations/{location}/networks', function ($location) {
-        return view('location-networks-fr', compact('location'));
+        $locale = 'fr';
+        return view('location-networks-fr', compact('location', 'locale'));
     })->name('location-networks');
     
     Route::get('/locations/{location}/guests', function ($location) {

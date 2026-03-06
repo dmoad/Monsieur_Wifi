@@ -34,7 +34,10 @@ const MSG = Object.assign({
     savingSchedule:    'Saving…',
 }, window.APP_CONFIG_V5?.messages || {});
 
-const TYPE_LABELS = { password: 'Password WiFi', captive_portal: 'Captive Portal', open: 'Open ESSID' };
+const TYPE_LABELS = Object.assign(
+    { password: 'Password WiFi', captive_portal: 'Captive Portal', open: 'Open ESSID' },
+    window.APP_CONFIG_V5?.typeLabels || {}
+);
 
 // ============================================================================
 // UTILITY
