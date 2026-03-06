@@ -81,7 +81,7 @@ Route::prefix('en')->name('en.')->group(function () {
 
     Route::get('/locations/{location}/networks', function ($location) {
         $locale = 'en';
-        return view('location-networks-v5', compact('location', 'locale'));
+        return view('location-networks-en', compact('location', 'locale'));
     })->name('location-networks');
     
     Route::get('/v2/locations/{location}', function ($location) {
