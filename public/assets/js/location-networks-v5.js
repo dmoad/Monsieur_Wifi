@@ -17,9 +17,22 @@ let location_id = null;
 let locationData = null;
 let networks = [];
 let captivePortalDesigns = [];
+const schedulers = {}; // netId → InteractiveScheduler instance
 
 const API = window.APP_CONFIG_V5?.apiBase || '/api';
 const MAX_NETWORKS = window.APP_CONFIG_V5?.maxNetworks || 4;
+
+// i18n: falls back to English defaults if no messages object provided
+const MSG = Object.assign({
+    networkSaved:      'Network settings saved.',
+    routerReconfigure: 'Router configuration updated — device will reconfigure shortly.',
+    workingHoursSaved: 'Working hours saved.',
+    macFilterSaved:    'MAC filter settings saved.',
+    networkAdded:      'Network added.',
+    networkDeleted:    'Network deleted.',
+    invalidMac:        'Invalid MAC address format.',
+    savingSchedule:    'Saving…',
+}, window.APP_CONFIG_V5?.messages || {});
 
 const TYPE_LABELS = { password: 'Password WiFi', captive_portal: 'Captive Portal', open: 'Open ESSID' };
 
@@ -179,9 +192,6 @@ function buildTabHtml(net, isActive) {
                 <span class="network-tab-label">${escapeHtml(net.ssid || 'Network')}</span>
                 <span class="network-type-badge network-type-${net.type}">${typeLabel}</span>
             </a>
-            <button class="btn btn-sm btn-link text-danger p-0 ml-1 network-delete-btn" data-network-id="${net.id}" title="Delete" style="line-height:1;vertical-align:middle;">
-                <i data-feather="x-circle"></i>
-            </button>
         </li>`;
 }
 
@@ -218,6 +228,7 @@ function populatePaneData(nets) {
         $pane.find('.network-enabled').prop('checked', !!net.enabled);
 
         showTypeSections($pane, net.type);
+        syncTypePills($pane, net.type);
 
         // Password fields
         $pane.find('.network-password').val(net.password || '');
@@ -260,6 +271,52 @@ function populatePaneData(nets) {
         // MAC filter
         renderMacList($pane, net.mac_filter_list || []);
         $pane.find('.network-mac-filter-mode').val(net.mac_filter_mode || 'allow-all');
+
+        // Working hours scheduler (captive portal only)
+        if (net.type === 'captive_portal') {
+            initScheduler(net.id, net.working_hours || []);
+        }
+    });
+}
+
+function initScheduler(netId, scheduleData) {
+    const wrapperId = `schedule-wrapper-${netId}`;
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper || typeof InteractiveScheduler === 'undefined') return;
+
+    // Destroy any existing instance
+    if (schedulers[netId]) {
+        schedulers[netId].destroy();
+        delete schedulers[netId];
+    }
+
+    wrapper.innerHTML = '';
+    const innerDiv = document.createElement('div');
+    innerDiv.id = `schedule-container-${netId}`;
+    wrapper.appendChild(innerDiv);
+
+    schedulers[netId] = new InteractiveScheduler({
+        container: `#schedule-container-${netId}`,
+        initialData: scheduleData || [],
+        labels: window.APP_CONFIG_V5?.schedulerLabels || {},
+        onSave: async (data) => {
+            const $btn = $(`#schedule-wrapper-${netId}`).find('[data-action="save"]');
+            const origHtml = $btn.html();
+            $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${MSG.savingSchedule}`);
+            try {
+                await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ working_hours: data }),
+                });
+                const net = networks.find(n => n.id == netId);
+                if (net) net.working_hours = data;
+                toastr.success(MSG.workingHoursSaved);
+            } catch (err) {
+                handleApiError(err, 'saveSchedule');
+            } finally {
+                $btn.prop('disabled', false).html(origHtml);
+            }
+        },
     });
 }
 
@@ -271,6 +328,13 @@ function showTypeSections($pane, type) {
         .removeClass('network-type-password network-type-captive_portal network-type-open')
         .addClass(`network-type-${type}`)
         .text(TYPE_LABELS[type] || type);
+}
+
+function syncTypePills($pane, type) {
+    $pane.find('.network-type-pill')
+        .removeClass('active-password active-captive_portal active-open')
+        .filter(`[data-type="${type}"]`)
+        .addClass(`active-${type}`);
 }
 
 function showAuthSubFields($pane, method) {
@@ -339,6 +403,7 @@ function getFormData(netId, $pane) {
         data.portal_design_id = $pane.find('.network-portal-design-id').val() || null;
         data.download_limit = parseInt($pane.find('.network-download-limit').val()) || null;
         data.upload_limit = parseInt($pane.find('.network-upload-limit').val()) || null;
+        data.working_hours = schedulers[netId] ? schedulers[netId].getScheduleData() : [];
     }
 
     return data;
@@ -365,9 +430,9 @@ async function saveNetwork(netId) {
         const idx = networks.findIndex(n => n.id == netId);
         if (idx >= 0) networks[idx] = res.data.network;
 
-        toastr.success('Network settings saved.');
+        toastr.success(MSG.networkSaved);
         if (res.data.config_version_incremented) {
-            toastr.info('Router configuration updated — device will reconfigure shortly.', '', { timeOut: 5000 });
+            toastr.info(MSG.routerReconfigure, '', { timeOut: 5000 });
         }
 
         // Update tab label
@@ -395,7 +460,7 @@ async function saveMacFilter(netId, $pane) {
                 mac_filter_list: net?.mac_filter_list || [],
             }),
         });
-        toastr.success('MAC filter settings saved.');
+        toastr.success(MSG.macFilterSaved);
     } catch (err) {
         handleApiError(err, 'saveMacFilter');
     } finally {
@@ -422,7 +487,7 @@ async function addNetwork() {
                 dhcp_end: `192.168.${ipOctet}.200`,
             }),
         });
-        toastr.success('Network added.');
+        toastr.success(MSG.networkAdded);
         await loadNetworks();
         const newNetId = res.data.network.id;
         $(`#network-tab-${newNetId}`).tab('show');
@@ -438,7 +503,7 @@ async function deleteNetwork(netId) {
     if (!confirm('Delete this network? This cannot be undone and will reconfigure the router.')) return;
     try {
         await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, { method: 'DELETE' });
-        toastr.success('Network deleted.');
+        toastr.success(MSG.networkDeleted);
         await loadNetworks();
     } catch (err) {
         handleApiError(err, 'deleteNetwork');
@@ -450,12 +515,26 @@ async function deleteNetwork(netId) {
 // ============================================================================
 
 function bindPaneEvents() {
-    // Network type change
+    // Network type pill click → sync hidden select → trigger type change
+    $(document).off('click.nmgr', '.network-type-pill').on('click.nmgr', '.network-type-pill', function () {
+        const $pane = $(this).closest('.tab-pane');
+        const type = $(this).data('type');
+        $pane.find('.network-type-select').val(type).trigger('change.nmgr');
+        syncTypePills($pane, type);
+    });
+
+    // Network type change (from hidden select)
     $(document).off('change.nmgr', '.network-type-select').on('change.nmgr', '.network-type-select', function () {
         const $pane = $(this).closest('.tab-pane');
-        showTypeSections($pane, $(this).val());
+        const type = $(this).val();
+        showTypeSections($pane, type);
+        syncTypePills($pane, type);
         const netId = $pane.data('network-id');
         $(`#network-tab-${netId} .network-tab-label`).text($pane.find('.network-ssid').val() || 'Network');
+        if (type === 'captive_portal' && !schedulers[netId]) {
+            const net = networks.find(n => n.id == netId);
+            initScheduler(netId, net?.working_hours || []);
+        }
     });
 
     // Auth method change
@@ -474,9 +553,35 @@ function bindPaneEvents() {
         await saveNetwork($(this).data('network-id'));
     });
 
-    // Delete network (tab button)
+    // Delete network (pane header button)
     $(document).off('click.nmgr', '.network-delete-btn').on('click.nmgr', '.network-delete-btn', async function () {
         await deleteNetwork($(this).data('network-id'));
+    });
+
+    // Collapsible section toggle
+    $(document).off('click.nmgr', '.collapsible-section-header').on('click.nmgr', '.collapsible-section-header', function () {
+        const targetId = $(this).data('target');
+        const $section = $(this).closest('.collapsible-section');
+        const $body = $('#' + targetId);
+        const isOpen = $section.hasClass('is-open');
+        if (isOpen) {
+            $body.slideUp(200);
+            $section.removeClass('is-open');
+        } else {
+            $body.slideDown(200, function () {
+                // After slide-down completes, refresh the scheduler if this is a Working Hours section
+                if (targetId && targetId.startsWith('working-hours-')) {
+                    const netId = targetId.replace('working-hours-', '');
+                    const scheduler = schedulers[netId];
+                    if (scheduler) {
+                        scheduler.calculateCellWidth();
+                        scheduler.refresh();
+                    }
+                }
+                reRenderFeather();
+            });
+            $section.addClass('is-open');
+        }
     });
 
     // Toggle password visibility
@@ -493,7 +598,7 @@ function bindPaneEvents() {
         const $pane = $(this).closest('.tab-pane');
         const mac = $pane.find('.network-mac-input').val().trim();
         if (!/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac)) {
-            toastr.warning('Invalid MAC address format.');
+            toastr.warning(MSG.invalidMac);
             return;
         }
         const netId = $pane.data('network-id');

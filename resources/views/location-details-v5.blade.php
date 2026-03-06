@@ -57,11 +57,60 @@
         .stat-label { color: #6c757d; font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         .form-control { border: 2px solid #e9ecef; border-radius: 8px; padding: 12px 16px; font-size: 0.95rem; transition: all 0.3s ease; }
         .form-control:focus { border-color: #7367f0; box-shadow: 0 0 0 0.2rem rgba(115,103,240,0.15); outline: none; }
+        input.form-control { height: 50px; }
         select.form-control { height: 50px; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 12px center; background-repeat: no-repeat; background-size: 16px 12px; padding-right: 40px; }
-        textarea.form-control { display: block; resize: vertical; min-height: 80px; }
-        .form-group { margin-bottom: 1.5rem; }
+        textarea.form-control { height: auto !important; display: block; resize: vertical; min-height: 80px; }
+        .form-group { margin-bottom: 1.25rem; }
         .form-group label { font-weight: 600; color: #495057; margin-bottom: 8px; font-size: 0.9rem; display: block; }
         .btn { border-radius: 8px; padding: 10px 20px; font-weight: 500; transition: all 0.3s ease; border: none; }
+
+        /* ── Shared panel design system (mirrors location-networks-v5) ── */
+        .loc-panel { border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 1rem; overflow: hidden; }
+        .loc-panel-header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid #e9ecef; }
+        .loc-panel-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .loc-panel-title { font-size: 0.9rem; font-weight: 700; margin: 0; letter-spacing: 0.01em; }
+        .loc-panel-body { padding: 1.25rem; }
+        .loc-panel-body .form-group { margin-bottom: 1rem; }
+        .loc-panel-body .form-group:last-child { margin-bottom: 0; }
+        .panel-sub-section { border-top: 1px solid #f1f3f4; padding-top: 1rem; margin-top: 1rem; }
+        .panel-sub-label { font-size: 0.75rem; font-weight: 700; color: #adb5bd; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+
+        /* Location info panel — purple */
+        .panel-location { border-color: rgba(115,103,240,0.25); }
+        .panel-location .loc-panel-header { background: rgba(115,103,240,0.05); border-bottom-color: rgba(115,103,240,0.15); }
+        .panel-location .loc-panel-icon { background: rgba(115,103,240,0.12); }
+        .panel-location .loc-panel-title { color: #7367f0; }
+
+        /* Contact panel — teal */
+        .panel-contact { border-color: rgba(23,162,184,0.25); }
+        .panel-contact .loc-panel-header { background: rgba(23,162,184,0.05); border-bottom-color: rgba(23,162,184,0.15); }
+        .panel-contact .loc-panel-icon { background: rgba(23,162,184,0.12); }
+        .panel-contact .loc-panel-title { color: #17a2b8; }
+
+        /* Settings panel — green */
+        .panel-settings { border-color: rgba(40,199,111,0.25); }
+        .panel-settings .loc-panel-header { background: rgba(40,199,111,0.05); border-bottom-color: rgba(40,199,111,0.15); }
+        .panel-settings .loc-panel-icon { background: rgba(40,199,111,0.12); }
+        .panel-settings .loc-panel-title { color: #28c76f; }
+
+        /* Form action bar */
+        .form-action-bar { display: flex; align-items: center; gap: 8px; background: #f8f9fa; border-radius: 10px; padding: 14px 18px; margin-top: 1.25rem; border: 1px solid #e9ecef; }
+
+        /* Dark mode */
+        .dark-layout .loc-panel { border-color: #3b4253; }
+        .dark-layout .loc-panel-header { border-bottom-color: #3b4253; }
+        .dark-layout .panel-location .loc-panel-header { background: rgba(115,103,240,0.08); }
+        .dark-layout .panel-contact .loc-panel-header { background: rgba(23,162,184,0.08); }
+        .dark-layout .panel-settings .loc-panel-header { background: rgba(40,199,111,0.08); }
+        .dark-layout .panel-sub-section { border-top-color: #3b4253; }
+        .dark-layout .form-action-bar { background: #1e2a3c; border-color: #3b4253; }
+        .semi-dark-layout .loc-panel { border-color: #3b4253; }
+        .semi-dark-layout .loc-panel-header { border-bottom-color: #3b4253; }
+        .semi-dark-layout .panel-location .loc-panel-header { background: rgba(115,103,240,0.08); }
+        .semi-dark-layout .panel-contact .loc-panel-header { background: rgba(23,162,184,0.08); }
+        .semi-dark-layout .panel-settings .loc-panel-header { background: rgba(40,199,111,0.08); }
+        .semi-dark-layout .panel-sub-section { border-top-color: #3b4253; }
+        .semi-dark-layout .form-action-bar { background: #1e2a3c; border-color: #3b4253; }
         .custom-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(115,103,240,0.4) !important; }
         .nav-tabs { border: none; background: #f8f9fa; border-radius: 12px; padding: 8px; margin-bottom: 2rem; }
         .nav-tabs .nav-item { margin-bottom: 0; }
@@ -135,7 +184,11 @@
         .networks-shortcut-card p { color: rgba(255,255,255,0.85); margin-bottom: 1.5rem; }
         .networks-shortcut-card .btn-light { background: white; color: #764ba2; font-weight: 600; border: none; }
         .networks-shortcut-card .btn-light:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
-        .network-summary-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 14px; font-size: 0.85rem; font-weight: 600; margin-right: 8px; margin-bottom: 8px; }
+        .network-summary-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.35); border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; font-weight: 600; margin-right: 8px; margin-bottom: 8px; }
+        .network-summary-badge.badge-password { background: rgba(255,255,255,0.95); color: #7367f0; border-color: rgba(255,255,255,0.9); }
+        .network-summary-badge.badge-captive { background: rgba(40,199,111,0.85); color: #fff; border-color: rgba(40,199,111,0.6); }
+        .network-summary-badge.badge-open { background: rgba(255,159,67,0.9); color: #fff; border-color: rgba(255,159,67,0.6); }
+        .network-summary-badge.badge-disabled { opacity: 0.65; }
 
         /* Dark/semi-dark fixes */
         .dark-layout .nav-tabs { background-color: #283046 !important; }
@@ -467,35 +520,37 @@
 
                                     <!-- ── Location Details Tab ── -->
                                     <div class="tab-pane active show" id="location-settings" role="tabpanel">
-                                        <div class="card">
-                                            <div class="card-header"><h4 class="card-title">Location Information</h4></div>
-                                            <div class="card-body">
-                                                <form id="location-info-form" novalidate>
+                                        <form id="location-info-form" novalidate>
+
+                                            <!-- Panel 1: Identity & Address -->
+                                            <div class="loc-panel panel-location">
+                                                <div class="loc-panel-header">
+                                                    <span class="loc-panel-icon">
+                                                        <i data-feather="map-pin" style="color:#7367f0;width:16px;height:16px;"></i>
+                                                    </span>
+                                                    <h6 class="loc-panel-title">Location Identity &amp; Address</h6>
+                                                </div>
+                                                <div class="loc-panel-body">
+                                                    <div class="panel-sub-label">Identity</div>
                                                     <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group"><label for="location-name" class="required">Location Name</label><input type="text" class="form-control" id="location-name" placeholder="Enter location name" required><div class="invalid-feedback"></div></div>
-                                                            <div class="form-group"><label for="location-address">Address</label><input type="text" class="form-control" id="location-address" placeholder="Street address"></div>
-                                                            <div class="form-group"><label for="location-city">City</label><input type="text" class="form-control" id="location-city" placeholder="City"></div>
-                                                            <div class="form-group"><label for="location-state">State/Province</label><input type="text" class="form-control" id="location-state" placeholder="State/Province"></div>
+                                                        <div class="col-md-5">
+                                                            <div class="form-group">
+                                                                <label for="location-name">Location Name <span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" id="location-name" placeholder="e.g. Downtown Café" required>
+                                                                <div class="invalid-feedback"></div>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group"><label for="location-postal-code">Postal Code</label><input type="text" class="form-control" id="location-postal-code" placeholder="Postal code"></div>
-                                                            <div class="form-group"><label for="location-country">Country</label><input type="text" class="form-control" id="location-country" placeholder="Country"></div>
+                                                        <div class="col-md-3">
                                                             <div class="form-group">
                                                                 <label for="router-model-select">Router Model</label>
                                                                 <select class="form-control" id="router-model-select">
-                                                                    <option value="">Select Router Model</option>
+                                                                    <option value="">Select Model</option>
                                                                     <option value="820AX">820AX</option>
                                                                     <option value="835AX">835AX</option>
                                                                 </select>
                                                             </div>
-                                                            <div class="form-group"><label for="location-manager">Manager Name</label><input type="text" class="form-control" id="location-manager" placeholder="Manager name"></div>
-                                                            <div class="form-group"><label for="location-contact-email">Contact Email</label><input type="email" class="form-control" id="location-contact-email" placeholder="Contact email"><div class="invalid-feedback"></div></div>
                                                         </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group"><label for="location-contact-phone">Contact Phone</label><input type="tel" class="form-control" id="location-contact-phone" placeholder="Contact phone"></div>
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 <label for="location-status">Status</label>
                                                                 <select class="form-control" id="location-status">
@@ -504,27 +559,113 @@
                                                                     <option value="maintenance">Maintenance</option>
                                                                 </select>
                                                             </div>
-                                                            <div class="form-group" id="location-owner-group" data-admin-only="true">
-                                                                <label for="location-owner">Location Owner</label>
-                                                                <select class="form-control" id="location-owner"><option value="">Select Owner</option></select>
-                                                                <small class="form-text text-muted">Only administrators can assign location owners</small>
-                                                            </div>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="location-description">Description</label>
-                                                                <textarea class="form-control" id="location-description" rows="3" placeholder="Location description" maxlength="500"></textarea>
-                                                                <small class="form-text text-muted"><span id="description-counter">0</span>/500 characters</small>
+                                                    </div>
+
+                                                    <div class="panel-sub-section">
+                                                        <div class="panel-sub-label">Address</div>
+                                                        <div class="row">
+                                                            <div class="col-md-5">
+                                                                <div class="form-group">
+                                                                    <label for="location-address">Street Address</label>
+                                                                    <input type="text" class="form-control" id="location-address" placeholder="123 Main St">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label for="location-city">City</label>
+                                                                    <input type="text" class="form-control" id="location-city" placeholder="City">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="form-group">
+                                                                    <label for="location-state">State / Province</label>
+                                                                    <input type="text" class="form-control" id="location-state" placeholder="State">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                    <label for="location-postal-code">Postal</label>
+                                                                    <input type="text" class="form-control" id="location-postal-code" placeholder="Code">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                    <label for="location-country">Country</label>
+                                                                    <input type="text" class="form-control" id="location-country" placeholder="Country">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="form-actions">
-                                                        <button type="button" id="save-location-info" class="btn custom-btn"><i data-feather="save" class="mr-1"></i>Save Location Information</button>
-                                                        <button type="button" class="btn btn-outline-secondary ml-2" onclick="resetLocationForm()"><i data-feather="refresh-ccw" class="mr-1"></i>Reset</button>
+
+                                                    <div class="panel-sub-section">
+                                                        <div class="panel-sub-label">Notes</div>
+                                                        <div class="row">
+                                                            <div class="col-md-8">
+                                                                <div class="form-group">
+                                                                    <label for="location-description">Description <small class="text-muted font-weight-normal">(optional)</small></label>
+                                                                    <textarea class="form-control" id="location-description" rows="2" placeholder="Brief description of this location…" maxlength="500"></textarea>
+                                                                    <small class="text-muted"><span id="description-counter">0</span>/500 characters</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </form>
+                                                </div>
                                             </div>
-                                        </div>
+
+                                            <!-- Panel 2: Contact -->
+                                            <div class="loc-panel panel-contact">
+                                                <div class="loc-panel-header">
+                                                    <span class="loc-panel-icon">
+                                                        <i data-feather="user" style="color:#17a2b8;width:16px;height:16px;"></i>
+                                                    </span>
+                                                    <h6 class="loc-panel-title">Contact &amp; Ownership</h6>
+                                                </div>
+                                                <div class="loc-panel-body">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="location-manager">Manager Name</label>
+                                                                <input type="text" class="form-control" id="location-manager" placeholder="Full name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="location-contact-email">Email</label>
+                                                                <input type="email" class="form-control" id="location-contact-email" placeholder="contact@example.com">
+                                                                <div class="invalid-feedback"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="location-contact-phone">Phone</label>
+                                                                <input type="tel" class="form-control" id="location-contact-phone" placeholder="+1 555 000 0000">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3" id="location-owner-group" data-admin-only="true">
+                                                            <div class="form-group">
+                                                                <label for="location-owner">
+                                                                    Owner
+                                                                    <span style="font-size:0.7rem;background:rgba(115,103,240,0.12);color:#7367f0;border-radius:10px;padding:1px 7px;font-weight:600;margin-left:4px;">Admin</span>
+                                                                </label>
+                                                                <select class="form-control" id="location-owner"><option value="">Select Owner</option></select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Action bar -->
+                                            <div class="form-action-bar">
+                                                <button type="button" id="save-location-info" class="btn custom-btn">
+                                                    <i data-feather="save" class="mr-1"></i> Save Location Information
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary" onclick="resetLocationForm()">
+                                                    <i data-feather="refresh-ccw" class="mr-1"></i> Reset
+                                                </button>
+                                            </div>
+
+                                        </form>
                                     </div>
 
                                     <!-- ── Router Settings Tab ── -->

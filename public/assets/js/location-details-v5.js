@@ -423,21 +423,22 @@ async function loadNetworkSummary() {
             return;
         }
 
-        const TYPE_COLORS = {
-            password: 'rgba(115,103,240,0.25)',
-            captive_portal: 'rgba(40,199,111,0.25)',
-            open: 'rgba(255,159,67,0.25)',
+        const TYPE_BADGE_CLASS = {
+            password:       'badge-password',
+            captive_portal: 'badge-captive',
+            open:           'badge-open',
         };
         const TYPE_LABELS = { password: 'Password', captive_portal: 'Captive Portal', open: 'Open' };
 
         networks.forEach(net => {
-            const color = TYPE_COLORS[net.type] || 'rgba(255,255,255,0.2)';
+            const badgeClass = TYPE_BADGE_CLASS[net.type] || '';
+            const disabledClass = net.enabled ? '' : ' badge-disabled';
             const label = TYPE_LABELS[net.type] || net.type;
-            const enabled = net.enabled ? '' : ' <small style="opacity:0.7;">(disabled)</small>';
+            const disabledTag = net.enabled ? '' : ' <small>(off)</small>';
             $container.append(`
-                <span class="network-summary-badge" style="background:${color};">
+                <span class="network-summary-badge ${badgeClass}${disabledClass}">
                     <i data-feather="wifi" style="width:12px;height:12px;"></i>
-                    ${escapeHtml(net.ssid || 'Network')} &mdash; ${label}${enabled}
+                    ${escapeHtml(net.ssid || 'Network')} &mdash; ${label}${disabledTag}
                 </span>`);
         });
 

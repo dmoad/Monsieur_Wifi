@@ -32,6 +32,7 @@ class LocationNetwork extends Model
         'portal_design_id',
         'download_limit',
         'upload_limit',
+        'working_hours',
 
         // Shared IP / DHCP fields
         'ip_mode',
@@ -54,6 +55,7 @@ class LocationNetwork extends Model
         'visible'       => 'boolean',
         'dhcp_enabled'  => 'boolean',
         'mac_filter_list' => 'array',
+        'working_hours'   => 'array',
         'vlan_id'       => 'integer',
         'session_timeout' => 'integer',
         'idle_timeout'  => 'integer',

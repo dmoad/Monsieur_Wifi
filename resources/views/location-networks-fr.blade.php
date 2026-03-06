@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="fr" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <title>Network Settings - monsieur-wifi Controller</title>
+    <title>Paramètres réseau - Contrôleur monsieur-wifi</title>
     <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -242,9 +242,9 @@
                         <span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.jpg" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-user">
-                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profile</a>
+                        <a class="dropdown-item" href="/profile"><i class="mr-50" data-feather="user"></i> Profil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Logout</a>
+                        <a class="dropdown-item" href="/logout"><i class="mr-50" data-feather="power"></i> Déconnexion</a>
                     </div>
                 </li>
             </ul>
@@ -273,18 +273,18 @@
         <div class="shadow-bottom"></div>
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-                <li class="navigation-header"><span>Management</span></li>
-                <li class="nav-item"><a class="d-flex align-items-center" href="/dashboard"><i data-feather="home"></i><span class="menu-title text-truncate">Dashboard</span></a></li>
-                <li class="nav-item active"><a class="d-flex align-items-center" href="/locations"><i data-feather="map-pin"></i><span class="menu-title text-truncate">Locations</span></a></li>
-                <li class="nav-item"><a class="d-flex align-items-center" href="/captive-portals"><i data-feather="layout"></i><span class="menu-title text-truncate">Captive Portals</span></a></li>
-                <li class="navigation-header only_admin hidden"><span>For Admin</span></li>
-                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/accounts"><i data-feather="users"></i><span class="menu-title text-truncate">Accounts</span></a></li>
-                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/domain-blocking"><i data-feather="slash"></i><span class="menu-title text-truncate">Domain Blocking</span></a></li>
-                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/firmware"><i data-feather="download"></i><span class="menu-title text-truncate">Firmware</span></a></li>
-                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/system-settings"><i data-feather="settings"></i><span class="menu-title text-truncate">System Settings</span></a></li>
-                <li class="navigation-header"><span>Account</span></li>
-                <li class="nav-item"><a class="d-flex align-items-center" href="/profile"><i data-feather="user"></i><span class="menu-title text-truncate">Profile</span></a></li>
-                <li class="nav-item"><a class="d-flex align-items-center" href="/logout"><i data-feather="power"></i><span class="menu-title text-truncate">Logout</span></a></li>
+                <li class="navigation-header"><span>Gestion</span></li>
+                <li class="nav-item"><a class="d-flex align-items-center" href="/dashboard"><i data-feather="home"></i><span class="menu-title text-truncate">Tableau de bord</span></a></li>
+                <li class="nav-item active"><a class="d-flex align-items-center" href="/locations"><i data-feather="map-pin"></i><span class="menu-title text-truncate">Emplacements</span></a></li>
+                <li class="nav-item"><a class="d-flex align-items-center" href="/captive-portals"><i data-feather="layout"></i><span class="menu-title text-truncate">Portails captifs</span></a></li>
+                <li class="navigation-header only_admin hidden"><span>Administration</span></li>
+                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/accounts"><i data-feather="users"></i><span class="menu-title text-truncate">Comptes</span></a></li>
+                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/domain-blocking"><i data-feather="slash"></i><span class="menu-title text-truncate">Blocage de domaines</span></a></li>
+                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/firmware"><i data-feather="download"></i><span class="menu-title text-truncate">Micrologiciel</span></a></li>
+                <li class="nav-item only_admin hidden"><a class="d-flex align-items-center" href="/system-settings"><i data-feather="settings"></i><span class="menu-title text-truncate">Paramètres système</span></a></li>
+                <li class="navigation-header"><span>Compte</span></li>
+                <li class="nav-item"><a class="d-flex align-items-center" href="/profile"><i data-feather="user"></i><span class="menu-title text-truncate">Profil</span></a></li>
+                <li class="nav-item"><a class="d-flex align-items-center" href="/logout"><i data-feather="power"></i><span class="menu-title text-truncate">Déconnexion</span></a></li>
             </ul>
         </div>
     </div>
@@ -300,13 +300,13 @@
                 <div class="content-header-left col-md-9 col-12 mb-2">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-left mb-0">Network Settings</h2>
+                            <h2 class="content-header-title float-left mb-0">Paramètres réseau</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                                    <li class="breadcrumb-item"><a href="/locations">Locations</a></li>
-                                    <li class="breadcrumb-item"><a id="breadcrumb-location-link" href="#">Loading...</a></li>
-                                    <li class="breadcrumb-item active">Networks</li>
+                                    <li class="breadcrumb-item"><a href="/dashboard">Accueil</a></li>
+                                    <li class="breadcrumb-item"><a href="/locations">Emplacements</a></li>
+                                    <li class="breadcrumb-item"><a id="breadcrumb-location-link" href="#">Chargement...</a></li>
+                                    <li class="breadcrumb-item active">Réseaux</li>
                                 </ol>
                             </div>
                         </div>
@@ -314,7 +314,7 @@
                 </div>
                 <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
                     <a id="back-to-location-btn" href="#" class="btn btn-outline-secondary">
-                        <i data-feather="arrow-left" class="mr-1"></i> Back to Location
+                        <i data-feather="arrow-left" class="mr-1"></i> Retour à l'emplacement
                     </a>
                 </div>
             </div>
@@ -329,7 +329,7 @@
                                 <i data-feather="map-pin" style="color:white;width:20px;height:20px;"></i>
                             </div>
                             <div>
-                                <h5 class="mb-0 location_name" style="font-weight:700; padding-left:10px;">Loading...</h5>
+                                <h5 class="mb-0 location_name" style="font-weight:700; padding-left:10px;">Chargement...</h5>
                                 <small class="text-muted location_address" style="padding-left:10px;"></small>
                             </div>
                         </div>
@@ -337,14 +337,14 @@
                             <!-- VLAN global toggle -->
                             <div class="d-flex align-items-center" style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:6px 14px;gap:10px;">
                                 <i data-feather="layers" style="width:14px;height:14px;color:#7367f0;flex-shrink:0;"></i>
-                                <span style="font-size:0.85rem;font-weight:600;color:#495057;white-space:nowrap;">VLAN Support</span>
+                                <span style="font-size:0.85rem;font-weight:600;color:#495057;white-space:nowrap;">Support VLAN</span>
                                 <div class="custom-control custom-switch mb-0">
                                     <input type="checkbox" class="custom-control-input" id="vlan-enabled">
                                     <label class="custom-control-label" for="vlan-enabled"></label>
                                 </div>
                             </div>
                             <button class="btn custom-btn btn-sm" id="add-network-btn" disabled style="height:36px;white-space:nowrap;">
-                                <i data-feather="plus" class="mr-1"></i> Add Network
+                                <i data-feather="plus" class="mr-1"></i> Ajouter un réseau
                             </button>
                         </div>
                     </div>
@@ -353,7 +353,7 @@
                 <!-- Network tabs nav -->
                 <ul class="nav nav-tabs" role="tablist" id="network-tabs-nav">
                     <li class="nav-item" id="network-tabs-loading">
-                        <span class="nav-link disabled"><i class="fas fa-spinner fa-spin mr-1"></i>Loading networks…</span>
+                        <span class="nav-link disabled"><i class="fas fa-spinner fa-spin mr-1"></i>Chargement des réseaux…</span>
                     </li>
                 </ul>
 
@@ -376,7 +376,7 @@
         <li class="nav-item" data-network-id="__ID__">
             <a class="nav-link" id="network-tab-__ID__" data-toggle="tab" href="#network-pane-__ID__" role="tab">
                 <i data-feather="wifi" class="mr-1"></i>
-                <span class="network-tab-label">Network</span>
+                <span class="network-tab-label">Réseau</span>
                 <span class="network-type-badge network-type-__TYPE__">__TYPE_LABEL__</span>
             </a>
         </li>
@@ -387,13 +387,13 @@
         <div class="tab-pane fade" id="network-pane-__ID__" role="tabpanel" data-network-id="__ID__">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title mb-0"><span class="network-pane-title">Network</span></h4>
+                    <h4 class="card-title mb-0"><span class="network-pane-title">Réseau</span></h4>
                     <div class="d-flex align-items-center gap-2" style="gap:0.5rem;">
                         <button class="btn btn-outline-danger btn-sm network-delete-btn" data-network-id="__ID__">
-                            <i data-feather="trash-2" class="mr-1"></i> Delete Network
+                            <i data-feather="trash-2" class="mr-1"></i> Supprimer le réseau
                         </button>
                         <button class="btn custom-btn network-save-btn" data-network-id="__ID__">
-                            <i data-feather="save" class="mr-1"></i> Save Settings
+                            <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                         </button>
                     </div>
                 </div>
@@ -403,35 +403,35 @@
                     <div class="network-identity-bar mt-1">
                         <!-- Hidden select keeps existing JS logic intact -->
                         <select class="network-type-select d-none" data-network-id="__ID__">
-                            <option value="password">Password WiFi</option>
-                            <option value="captive_portal">Captive Portal</option>
-                            <option value="open">Open ESSID</option>
+                            <option value="password">WiFi avec mot de passe</option>
+                            <option value="captive_portal">Portail captif</option>
+                            <option value="open">ESSID ouvert</option>
                         </select>
                         <!-- Visual type pill switcher -->
                         <div class="network-type-pill-group">
                             <button type="button" class="network-type-pill" data-type="password">
-                                <i data-feather="lock" style="width:13px;height:13px;"></i> Password
+                                <i data-feather="lock" style="width:13px;height:13px;"></i> Mot de passe
                             </button>
                             <button type="button" class="network-type-pill" data-type="captive_portal">
-                                <i data-feather="layout" style="width:13px;height:13px;"></i> Captive Portal
+                                <i data-feather="layout" style="width:13px;height:13px;"></i> Portail captif
                             </button>
                             <button type="button" class="network-type-pill" data-type="open">
-                                <i data-feather="wifi" style="width:13px;height:13px;"></i> Open
+                                <i data-feather="wifi" style="width:13px;height:13px;"></i> Ouvert
                             </button>
                         </div>
                         <div class="network-identity-divider mx-1"></div>
                         <!-- SSID -->
                         <div class="network-ssid-wrap">
                             <i data-feather="wifi" class="ssid-icon" style="width:15px;height:15px;"></i>
-                            <input type="text" class="form-control network-ssid" placeholder="Network name (SSID)">
+                            <input type="text" class="form-control network-ssid" placeholder="Nom du réseau (SSID)">
                         </div>
                         <div class="network-identity-divider mx-1"></div>
                         <!-- Visibility -->
                         <div class="network-visibility-wrap">
                             <i data-feather="eye" style="width:14px;height:14px;color:#adb5bd;flex-shrink:0;"></i>
                             <select class="network-visible">
-                                <option value="1">Broadcast SSID</option>
-                                <option value="0">Hidden SSID</option>
+                                <option value="1">Diffuser le SSID</option>
+                                <option value="0">SSID masqué</option>
                             </select>
                         </div>
                         <div class="network-identity-divider mx-1"></div>
@@ -439,7 +439,7 @@
                         <div class="network-enabled-wrap">
                             <div class="custom-control custom-switch mb-0">
                                 <input type="checkbox" class="custom-control-input network-enabled" id="network-enabled-__ID__" checked>
-                                <label class="custom-control-label" for="network-enabled-__ID__">Enabled</label>
+                                <label class="custom-control-label" for="network-enabled-__ID__">Activé</label>
                             </div>
                         </div>
                     </div>
@@ -451,15 +451,15 @@
                                 <span class="network-type-panel-icon">
                                     <i data-feather="lock" style="color:#7367f0;width:16px;height:16px;"></i>
                                 </span>
-                                <h6 class="network-type-panel-title">Security &amp; Encryption</h6>
+                                <h6 class="network-type-panel-title">Sécurité &amp; Chiffrement</h6>
                             </div>
                             <div class="network-type-panel-body">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
-                                            <label>WiFi Password</label>
+                                            <label>Mot de passe WiFi</label>
                                             <div class="input-group">
-                                                <input type="password" class="form-control network-password" placeholder="Minimum 8 characters">
+                                                <input type="password" class="form-control network-password" placeholder="Minimum 8 caractères">
                                                 <div class="input-group-append">
                                                     <button class="btn btn-outline-secondary network-toggle-password" type="button"><i data-feather="eye"></i></button>
                                                 </div>
@@ -468,18 +468,18 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>Security Protocol</label>
+                                            <label>Protocole de sécurité</label>
                                             <select class="form-control network-security">
-                                                <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
-                                                <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
-                                                <option value="wpa3-psk">WPA3-PSK (Most Secure)</option>
-                                                <option value="wep">WEP (Legacy)</option>
+                                                <option value="wpa2-psk" selected>WPA2-PSK (Recommandé)</option>
+                                                <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixte</option>
+                                                <option value="wpa3-psk">WPA3-PSK (Plus sécurisé)</option>
+                                                <option value="wep">WEP (Hérité)</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label>Cipher Suites</label>
+                                            <label>Suites de chiffrement</label>
                                             <select class="form-control network-cipher-suites">
                                                 <option value="CCMP" selected>CCMP</option>
                                                 <option value="TKIP">TKIP</option>
@@ -499,24 +499,24 @@
                                 <span class="network-type-panel-icon">
                                     <i data-feather="layout" style="color:#28c76f;width:16px;height:16px;"></i>
                                 </span>
-                                <h6 class="network-type-panel-title">Captive Portal Configuration</h6>
+                                <h6 class="network-type-panel-title">Configuration du portail captif</h6>
                             </div>
                             <div class="network-type-panel-body">
-                                <div class="panel-sub-label">Authentication</div>
+                                <div class="panel-sub-label">Authentification</div>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>Method</label>
+                                            <label>Méthode</label>
                                             <select class="form-control network-auth-method">
-                                                <option value="click-through" selected>Click-through (No Auth)</option>
-                                                <option value="password">Password-based</option>
-                                                <option value="sms">SMS Verification</option>
-                                                <option value="email">Email Verification</option>
-                                                <option value="social">Social Media Login</option>
+                                                <option value="click-through" selected>Clic (sans authentification)</option>
+                                                <option value="password">Authentification par mot de passe</option>
+                                                <option value="sms">Vérification par SMS</option>
+                                                <option value="email">Vérification par e-mail</option>
+                                                <option value="social">Connexion via les réseaux sociaux</option>
                                             </select>
                                         </div>
                                         <div class="form-group network-captive-password-group" style="display:none;">
-                                            <label>Shared Password</label>
+                                            <label>Mot de passe partagé</label>
                                             <div class="input-group">
                                                 <input type="password" class="form-control network-portal-password">
                                                 <div class="input-group-append">
@@ -525,7 +525,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group network-social-group" style="display:none;">
-                                            <label>Social Provider</label>
+                                            <label>Réseau social</label>
                                             <select class="form-control network-social-method">
                                                 <option value="facebook">Facebook</option>
                                                 <option value="google">Google</option>
@@ -534,49 +534,49 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>Portal Design</label>
+                                            <label>Design du portail</label>
                                             <select class="form-control network-portal-design-id">
-                                                <option value="">Default Design</option>
+                                                <option value="">Design par défaut</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label>Redirect URL <small class="text-muted font-weight-normal">(optional)</small></label>
-                                            <input type="url" class="form-control network-redirect-url" placeholder="https://example.com">
+                                            <label>URL de redirection <small class="text-muted font-weight-normal">(optionnel)</small></label>
+                                            <input type="url" class="form-control network-redirect-url" placeholder="https://exemple.com">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>Session Timeout</label>
+                                            <label>Délai de session</label>
                                             <select class="form-control network-session-timeout">
-                                                <option value="60">1 Hour</option><option value="120">2 Hours</option><option value="180">3 Hours</option>
-                                                <option value="240">4 Hours</option><option value="300">5 Hours</option><option value="360">6 Hours</option>
-                                                <option value="720">12 Hours</option><option value="1440">1 Day</option><option value="10080">1 Week</option>
-                                                <option value="43200">3 Months</option><option value="172800">1 Year</option>
+                                                <option value="60">1 Heure</option><option value="120">2 Heures</option><option value="180">3 Heures</option>
+                                                <option value="240">4 Heures</option><option value="300">5 Heures</option><option value="360">6 Heures</option>
+                                                <option value="720">12 Heures</option><option value="1440">1 Jour</option><option value="10080">1 Semaine</option>
+                                                <option value="43200">3 Mois</option><option value="172800">1 An</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label>Idle Timeout</label>
+                                            <label>Délai d'inactivité</label>
                                             <select class="form-control network-idle-timeout">
                                                 <option value="15">15 Minutes</option><option value="30">30 Minutes</option><option value="45">45 Minutes</option>
-                                                <option value="60">1 Hour</option><option value="120">2 Hours</option><option value="240">4 Hours</option>
-                                                <option value="720">12 Hours</option><option value="1440">1 Day</option>
+                                                <option value="60">1 Heure</option><option value="120">2 Heures</option><option value="240">4 Heures</option>
+                                                <option value="720">12 Heures</option><option value="1440">1 Jour</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="panel-sub-section">
-                                    <div class="panel-sub-label">Bandwidth Limits</div>
+                                    <div class="panel-sub-label">Limites de bande passante</div>
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <label><i data-feather="download" style="width:13px;height:13px;margin-right:4px;"></i>Download (Mbps)</label>
-                                                <input type="number" class="form-control network-download-limit" placeholder="Unlimited" min="0">
+                                                <label><i data-feather="download" style="width:13px;height:13px;margin-right:4px;"></i>Téléchargement (Mbps)</label>
+                                                <input type="number" class="form-control network-download-limit" placeholder="Illimité" min="0">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <label><i data-feather="upload" style="width:13px;height:13px;margin-right:4px;"></i>Upload (Mbps)</label>
-                                                <input type="number" class="form-control network-upload-limit" placeholder="Unlimited" min="0">
+                                                <label><i data-feather="upload" style="width:13px;height:13px;margin-right:4px;"></i>Envoi (Mbps)</label>
+                                                <input type="number" class="form-control network-upload-limit" placeholder="Illimité" min="0">
                                             </div>
                                         </div>
                                     </div>
@@ -592,7 +592,7 @@
                                 <span class="section-icon" style="background:rgba(40,199,111,0.12);">
                                     <i data-feather="clock" style="color:#28c76f;width:14px;height:14px;"></i>
                                 </span>
-                                Working Hours
+                                Heures de travail
                             </h6>
                             <i data-feather="chevron-down" class="collapsible-chevron" style="width:18px;height:18px;"></i>
                         </div>
@@ -608,14 +608,14 @@
                                 <span class="network-type-panel-icon">
                                     <i data-feather="wifi" style="color:#ff9f43;width:16px;height:16px;"></i>
                                 </span>
-                                <h6 class="network-type-panel-title">Open Network</h6>
+                                <h6 class="network-type-panel-title">Réseau ouvert</h6>
                             </div>
                             <div class="network-type-panel-body">
                                 <div class="d-flex align-items-start" style="gap:12px;">
                                     <i data-feather="alert-triangle" style="width:20px;height:20px;color:#ff9f43;flex-shrink:0;margin-top:1px;"></i>
                                     <div>
-                                        <p class="mb-1" style="font-weight:600;color:#ff9f43;font-size:0.95rem;">No authentication required</p>
-                                        <p class="mb-0 text-muted" style="font-size:0.88rem;">Anyone within range can connect without a password or portal. Use only in trusted environments.</p>
+                                        <p class="mb-1" style="font-weight:600;color:#ff9f43;font-size:0.95rem;">Aucune authentification requise</p>
+                                        <p class="mb-0 text-muted" style="font-size:0.88rem;">Toute personne à portée peut se connecter sans mot de passe ni portail. À utiliser uniquement dans des environnements de confiance.</p>
                                     </div>
                                 </div>
                             </div>
@@ -629,7 +629,7 @@
                                 <span class="section-icon" style="background:rgba(23,162,184,0.12);">
                                     <i data-feather="server" style="color:#17a2b8;width:14px;height:14px;"></i>
                                 </span>
-                                IP &amp; DHCP Settings
+                                Paramètres IP &amp; DHCP
                             </h6>
                             <i data-feather="chevron-down" class="collapsible-chevron" style="width:18px;height:18px;"></i>
                         </div>
@@ -639,54 +639,54 @@
                                     <span class="network-type-panel-icon">
                                         <i data-feather="globe" style="color:#17a2b8;width:16px;height:16px;"></i>
                                     </span>
-                                    <h6 class="network-type-panel-title">IP Configuration</h6>
+                                    <h6 class="network-type-panel-title">Configuration IP</h6>
                                 </div>
                                 <div class="network-type-panel-body">
-                                    <div class="panel-sub-label">Addressing</div>
+                                    <div class="panel-sub-label">Adressage</div>
                                     <div class="row">
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label>IP Mode</label>
+                                                <label>Mode IP</label>
                                                 <select class="form-control network-ip-mode">
-                                                    <option value="static">Static IP</option>
-                                                    <option value="dhcp">DHCP Client</option>
+                                                    <option value="static">IP statique</option>
+                                                    <option value="dhcp">Client DHCP</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <label>IP Address</label>
+                                                <label>Adresse IP</label>
                                                 <input type="text" class="form-control network-ip-address" placeholder="192.168.x.1">
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label>Netmask</label>
+                                                <label>Masque de sous-réseau</label>
                                                 <input type="text" class="form-control network-netmask" placeholder="255.255.255.0" value="255.255.255.0">
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label>Gateway</label>
+                                                <label>Passerelle</label>
                                                 <input type="text" class="form-control network-gateway" placeholder="Auto">
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label>Primary DNS</label>
+                                                <label>DNS primaire</label>
                                                 <input type="text" class="form-control network-dns1" placeholder="8.8.8.8" value="8.8.8.8">
                                             </div>
                                         </div>
                                         <div class="col-md-1">
                                             <div class="form-group">
-                                                <label>Alt DNS</label>
+                                                <label>DNS alt.</label>
                                                 <input type="text" class="form-control network-dns2" placeholder="8.8.4.4" value="8.8.4.4">
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="panel-sub-section">
-                                        <div class="panel-sub-label">DHCP Server</div>
+                                        <div class="panel-sub-label">Serveur DHCP</div>
                                         <div class="row align-items-end">
                                             <div class="col-md-2">
                                                 <div class="form-group">
@@ -694,14 +694,14 @@
                                                     <div class="d-flex align-items-center" style="height:50px;">
                                                         <div class="custom-control custom-switch mb-0">
                                                             <input type="checkbox" class="custom-control-input network-dhcp-enabled" id="network-dhcp-__ID__" checked>
-                                                            <label class="custom-control-label" for="network-dhcp-__ID__">Enable DHCP</label>
+                                                            <label class="custom-control-label" for="network-dhcp-__ID__">Activer le DHCP</label>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-5">
                                                 <div class="form-group">
-                                                    <label>DHCP Range</label>
+                                                    <label>Plage DHCP</label>
                                                     <div class="input-group">
                                                         <input type="text" class="form-control network-dhcp-start" placeholder="x.x.x.100">
                                                         <div class="input-group-prepend input-group-append"><span class="input-group-text">–</span></div>
@@ -717,17 +717,17 @@
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <div class="form-group">
-                                                    <label>VLAN ID <small class="text-muted font-weight-normal">(1–4094)</small></label>
-                                                    <input type="number" class="form-control network-vlan-id" placeholder="None" min="1" max="4094" disabled>
+                                                    <label>ID VLAN <small class="text-muted font-weight-normal">(1–4094)</small></label>
+                                                    <input type="number" class="form-control network-vlan-id" placeholder="Aucun" min="1" max="4094" disabled>
                                                 </div>
                                             </div>
                                             <div class="col-md-2">
                                                 <div class="form-group">
-                                                    <label>Tagging</label>
+                                                    <label>Marquage</label>
                                                     <select class="form-control network-vlan-tagging" disabled>
-                                                        <option value="disabled">Disabled</option>
-                                                        <option value="tagged">Tagged</option>
-                                                        <option value="untagged">Untagged</option>
+                                                        <option value="disabled">Désactivé</option>
+                                                        <option value="tagged">Marqué</option>
+                                                        <option value="untagged">Non marqué</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -745,7 +745,7 @@
                                 <span class="section-icon" style="background:rgba(234,84,85,0.12);">
                                     <i data-feather="shield" style="color:#ea5455;width:14px;height:14px;"></i>
                                 </span>
-                                MAC Address Filtering
+                                Filtrage des adresses MAC
                             </h6>
                             <i data-feather="chevron-down" class="collapsible-chevron" style="width:18px;height:18px;"></i>
                         </div>
@@ -755,28 +755,28 @@
                                     <span class="network-type-panel-icon">
                                         <i data-feather="shield" style="color:#ea5455;width:16px;height:16px;"></i>
                                     </span>
-                                    <h6 class="network-type-panel-title">MAC Address Filtering</h6>
+                                    <h6 class="network-type-panel-title">Filtrage des adresses MAC</h6>
                                 </div>
                                 <div class="network-type-panel-body">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div class="panel-sub-label">Filter Mode</div>
+                                            <div class="panel-sub-label">Mode de filtrage</div>
                                             <div class="form-group">
                                                 <select class="form-control network-mac-filter-mode">
-                                                    <option value="allow-all">Allow All Devices</option>
-                                                    <option value="allow-listed">Allow Listed Only</option>
-                                                    <option value="block-listed">Block Listed Devices</option>
+                                                    <option value="allow-all">Autoriser tous les appareils</option>
+                                                    <option value="allow-listed">Autoriser uniquement la liste</option>
+                                                    <option value="block-listed">Bloquer les appareils listés</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-8">
-                                            <div class="panel-sub-label">MAC Address List</div>
+                                            <div class="panel-sub-label">Liste des adresses MAC</div>
                                             <div class="form-group mb-2">
                                                 <div class="input-group">
                                                     <input type="text" class="form-control network-mac-input" placeholder="00:11:22:33:44:55">
                                                     <div class="input-group-append">
                                                         <button class="btn btn-outline-primary network-mac-add-btn" type="button">
-                                                            <i data-feather="plus" style="width:14px;height:14px;"></i> Add
+                                                            <i data-feather="plus" style="width:14px;height:14px;"></i> Ajouter
                                                         </button>
                                                     </div>
                                                 </div>
@@ -785,12 +785,12 @@
                                                 <div class="network-mac-list"></div>
                                                 <div class="text-center text-muted p-3 network-mac-empty">
                                                     <i data-feather="inbox" style="width:18px;height:18px;margin-bottom:4px;display:block;margin-left:auto;margin-right:auto;"></i>
-                                                    <small>No MAC addresses added</small>
+                                                    <small>Aucune adresse MAC ajoutée</small>
                                                 </div>
                                             </div>
                                             <div class="mt-2">
                                                 <button class="btn btn-sm btn-success network-mac-save-btn" type="button">
-                                                    <i data-feather="save" class="mr-1"></i> Save MAC Filter
+                                                    <i data-feather="save" class="mr-1"></i> Enregistrer le filtrage MAC
                                                 </button>
                                             </div>
                                         </div>
@@ -828,7 +828,41 @@
     <script>
         window.APP_CONFIG_V5 = {
             maxNetworks: {{ (int) env('MAX_NETWORKS_PER_LOCATION', 4) }},
-            apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
+            apiBase: '{{ rtrim(config("app.url"), "/") }}/api',
+            messages: {
+                networkSaved:       'Paramètres réseau enregistrés.',
+                routerReconfigure:  'Configuration du routeur mise à jour — l\'appareil va se reconfigurer.',
+                workingHoursSaved:  'Heures de travail enregistrées.',
+                macFilterSaved:     'Paramètres de filtrage MAC enregistrés.',
+                networkAdded:       'Réseau ajouté.',
+                networkDeleted:     'Réseau supprimé.',
+                invalidMac:         'Format d\'adresse MAC invalide.',
+                savingSchedule:     'Enregistrement…',
+            },
+            schedulerLabels: {
+                title:              'Heures de travail',
+                subtitle:           'Horaires d\'accès au portail captif',
+                quickSet:           'Accès rapide :',
+                businessHours:      'Heures ouvrables',
+                clearAll:           'Tout effacer',
+                saveSchedule:       'Enregistrer l\'horaire',
+                hint:               'Cliquez sur une cellule vide pour créer un créneau. Glissez pour déplacer, redimensionnez avec les poignées, survolez pour supprimer.',
+                days: {
+                    monday:    'Lundi',
+                    tuesday:   'Mardi',
+                    wednesday: 'Mercredi',
+                    thursday:  'Jeudi',
+                    friday:    'Vendredi',
+                    saturday:  'Samedi',
+                    sunday:    'Dimanche',
+                },
+                msgOverlap:         'Impossible de créer le créneau : chevauchement avec un créneau existant.',
+                msgInvalidMove:     'Position invalide : le créneau chevaucherait ou dépasserait les limites.',
+                msgInvalidResize:   'Redimensionnement invalide : chevaucherait ou dépasserait les limites.',
+                msgBusinessApplied: 'Heures ouvrables appliquées.',
+                msgCleared:         'Tous les créneaux effacés.',
+                msgSaved:           'Horaire enregistré !',
+            },
         };
     </script>
 
