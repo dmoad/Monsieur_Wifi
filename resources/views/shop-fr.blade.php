@@ -4,6 +4,16 @@
 
 @push('styles')
 <style>
+    .product-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+    .product-card-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
     .product-card {
         border: none;
         border-radius: 12px;

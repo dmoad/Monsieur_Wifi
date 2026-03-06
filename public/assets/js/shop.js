@@ -15,7 +15,7 @@ async function loadCartData() {
         currentCart = { items: [] };
         return;
     }
-    
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart`, {
             headers: {
@@ -24,7 +24,7 @@ async function loadCartData() {
                 'Accept': 'application/json'
             }
         });
-        
+
         if (response.ok) {
             const data = await response.json();
             currentCart = data.cart || data; // API returns {success, cart, total}, use cart object
@@ -57,11 +57,11 @@ async function loadProducts() {
                 'Accept': 'application/json'
             }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to load products');
         }
-        
+
         const data = await response.json();
         const products = data.products.data || data.products || [];
         displayProducts(products);
@@ -77,7 +77,7 @@ async function loadProducts() {
 
 function displayProducts(products) {
     const grid = document.getElementById('products-grid');
-    
+
     if (products.length === 0) {
         grid.innerHTML = `
             <div class="col-12 text-center py-5">
@@ -86,64 +86,63 @@ function displayProducts(products) {
         `;
         return;
     }
-    
+
     grid.innerHTML = products.map(product => {
         const cartQty = getCartQuantityForProduct(product.id);
         const availableInventory = (product.inventory && product.inventory.available_quantity) || 0;
         const totalAvailable = availableInventory + cartQty; // Total including what's already reserved
         const canAddMore = product.is_in_stock && cartQty < totalAvailable;
-        
+
         console.log(`Product ${product.id}: cartQty=${cartQty}, available=${availableInventory}, total=${totalAvailable}, canAddMore=${canAddMore}`);
-        
+
         return `
         <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
-            <div class="product-card ${!product.is_in_stock ? 'out-of-stock' : ''}">
-                <div class="product-image-wrapper">
-                    <img src="${product.primary_image || '/app-assets/images/placeholder.png'}" 
-                         alt="${product.name}" 
-                         class="product-image">
-                    ${!product.is_in_stock 
-                        ? '<span class="stock-badge badge-danger">Out of Stock</span>'
-                        : (product.inventory && totalAvailable <= (product.inventory.low_stock_threshold || 0)
-                            ? `<span class="stock-badge badge-warning">Low Stock</span>`
-                            : `<span class="stock-badge badge-success">In Stock</span>`)}
-                    ${cartQty > 0 
-                        ? `<span class="cart-qty-badge">${cartQty} in cart</span>` 
-                        : ''}
-                </div>
-                <div class="product-body">
-                    <h5 class="product-title">${product.name}</h5>
-                    <p class="product-description">${product.description_en || 'High-quality WiFi equipment for your network needs.'}</p>
-                    <div class="product-footer">
-                        <h3 class="product-price">€${parseFloat(product.price).toFixed(2)}</h3>
-                        <div class="product-actions">
-                            ${cartQty > 0 
-                                ? `<div class="qty-controls">
-                                    <button onclick="decreaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" title="Decrease quantity">
-                                        <i data-feather="minus" style="width: 14px; height: 14px;"></i>
-                                    </button>
-                                    <span class="qty-display">${cartQty}</span>
-                                    <button onclick="increaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" 
-                                        ${!canAddMore ? 'disabled title="Maximum quantity reached"' : 'title="Increase quantity"'}>
-                                        <i data-feather="plus" style="width: 14px; height: 14px;"></i>
-                                    </button>
-                                </div>`
-                                : (product.is_in_stock 
-                                    ? `<button onclick="addToCart(${product.id})" class="btn btn-success btn-sm product-btn mr-1" title="Add to Cart">
-                                        <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
-                                    </button>` 
-                                    : '')}
-                            <a href="/en/shop/${product.slug}" class="btn btn-primary btn-sm product-btn" title="View Details">
-                                <i data-feather="eye" style="width: 14px; height: 14px;"></i>
-                            </a>
+            <a href="/en/shop/${product.slug}" class="product-card-link">
+                <div class="product-card ${!product.is_in_stock ? 'out-of-stock' : ''}">
+                    <div class="product-image-wrapper">
+                        <img src="${product.primary_image || '/app-assets/images/placeholder.png'}"
+                             alt="${product.name}"
+                             class="product-image">
+                        ${!product.is_in_stock
+                            ? '<span class="stock-badge badge-danger">Out of Stock</span>'
+                            : (product.inventory && totalAvailable <= (product.inventory.low_stock_threshold || 0)
+                                ? `<span class="stock-badge badge-warning">Low Stock</span>`
+                                : `<span class="stock-badge badge-success">In Stock</span>`)}
+                        ${cartQty > 0
+                            ? `<span class="cart-qty-badge">${cartQty} in cart</span>`
+                            : ''}
+                    </div>
+                    <div class="product-body">
+                        <h5 class="product-title">${product.name}</h5>
+                        <p class="product-description">${product.description_en || 'High-quality WiFi equipment for your network needs.'}</p>
+                        <div class="product-footer">
+                            <h3 class="product-price">€${parseFloat(product.price).toFixed(2)}</h3>
+                            <div class="product-actions">
+                                ${cartQty > 0
+                                    ? `<div class="qty-controls" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <button onclick="event.preventDefault(); event.stopPropagation(); decreaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" title="Decrease quantity">
+                                            <i data-feather="minus" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                        <span class="qty-display">${cartQty}</span>
+                                        <button onclick="event.preventDefault(); event.stopPropagation(); increaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn"
+                                            ${!canAddMore ? 'disabled title="Maximum quantity reached"' : 'title="Increase quantity"'}>
+                                            <i data-feather="plus" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>`
+                                    : (product.is_in_stock
+                                        ? `<button onclick="event.preventDefault(); event.stopPropagation(); addToCart(${product.id})" class="btn btn-success btn-sm product-btn" title="Add to Cart">
+                                            <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
+                                        </button>`
+                                        : '')}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
     `;
     }).join('');
-    
+
     // Re-initialize feather icons for the new content
     if (typeof feather !== 'undefined') {
         feather.replace();
@@ -152,13 +151,13 @@ function displayProducts(products) {
 
 async function addToCart(productId) {
     const token = UserManager.getToken();
-    
+
     if (!token) {
         toastr.warning('Please login to add items to cart');
         window.location.href = '/login';
         return;
     }
-    
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart/items`, {
             method: 'POST',
@@ -172,11 +171,11 @@ async function addToCart(productId) {
                 quantity: 1
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
-            toastr.success('Product added to cart!');
+            toastr.success('Product added to cart! <a href="/en/cart">View cart</a>');
             updateCartCount();
             // Refresh navbar cart if function exists
             if (typeof loadNavbarCart === 'function') {
@@ -218,10 +217,10 @@ async function decreaseCartQuantity(productId) {
 async function updateCartItemQuantity(productId, newQuantity) {
     const token = UserManager.getToken();
     if (!token) return;
-    
+
     const cartItem = getCartItemForProduct(productId);
     if (!cartItem) return;
-    
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart/items/${cartItem.id}`, {
             method: 'PUT',
@@ -234,9 +233,9 @@ async function updateCartItemQuantity(productId, newQuantity) {
                 quantity: newQuantity
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             toastr.success('Cart updated!');
             updateCartCount();
@@ -257,10 +256,10 @@ async function updateCartItemQuantity(productId, newQuantity) {
 async function removeFromCart(productId) {
     const token = UserManager.getToken();
     if (!token) return;
-    
+
     const cartItem = getCartItemForProduct(productId);
     if (!cartItem) return;
-    
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart/items/${cartItem.id}`, {
             method: 'DELETE',
@@ -269,7 +268,7 @@ async function removeFromCart(productId) {
                 'Accept': 'application/json'
             }
         });
-        
+
         if (response.ok) {
             toastr.success('Item removed from cart');
             updateCartCount();
@@ -293,12 +292,12 @@ async function updateCartCount() {
     if (!token) {
         return;
     }
-    
+
     const cartCountElement = document.getElementById('cart-count');
     if (!cartCountElement) {
         return; // Element doesn't exist, skip update
     }
-    
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart`, {
             headers: {
@@ -307,7 +306,7 @@ async function updateCartCount() {
                 'Accept': 'application/json'
             }
         });
-        
+
         if (response.ok) {
             const cart = await response.json();
             const count = cart.items ? cart.items.reduce((sum, item) => sum + item.quantity, 0) : 0;

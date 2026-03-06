@@ -27,6 +27,19 @@
     .quantity-input {
         max-width: 120px;
     }
+    .product-actions-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .product-actions-row .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .product-actions-row .btn svg {
+        flex-shrink: 0;
+    }
 </style>
 @endpush
 
@@ -69,7 +82,7 @@
                 <label for="quantity" class="form-label"><strong>Quantité:</strong></label>
                 <input type="number" id="quantity" class="form-control quantity-input" value="1" min="1">
             </div>
-            <div class="d-flex gap-2">
+            <div class="product-actions-row">
                 <button id="add-to-cart-btn" class="btn btn-primary btn-lg">
                     <i data-feather="shopping-cart"></i> Ajouter au Panier
                 </button>

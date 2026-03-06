@@ -7,7 +7,7 @@
     <title>@yield('title', 'Monsieur WiFi')</title>
     <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="/app-assets/vendors/css/vendors.min.css">
     <link rel="stylesheet" href="/app-assets/css/bootstrap.css">
     <link rel="stylesheet" href="/app-assets/css/bootstrap-extended.css">
@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" href="/app-assets/vendors/css/extensions/toastr.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-    
+
     <style>
         .dropdown-cart .dropdown-menu-media {
             max-height: 400px;
@@ -57,8 +57,33 @@
             justify-content: center;
             font-size: 0.7rem;
         }
+        /* Toastr overrides - fully opaque */
+        .toast {
+            opacity: 1 !important;
+        }
+        .toast-success {
+            background-color: #28c76f !important;
+        }
+        .toast-error {
+            background-color: #ea5455 !important;
+        }
+        .toast-warning {
+            background-color: #ff9f43 !important;
+        }
+        .toast-info {
+            background-color: #00cfe8 !important;
+        }
+        .toast a {
+            color: #fff;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        .toast a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
     </style>
-    
+
     @stack('styles')
 </head>
 <body class="vertical-layout vertical-menu-modern navbar-floating footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
@@ -92,32 +117,45 @@
     <script src="/app-assets/js/core/app-menu.js"></script>
     <script src="/app-assets/js/core/app.js"></script>
     <script src="/assets/js/config.js"></script>
-    
+
     @stack('scripts')
-    
+
     <script>
+        // Global toastr configuration - opaque, no transparency
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            timeOut: 4000,
+            extendedTimeOut: 2000,
+            showEasing: 'swing',
+            hideEasing: 'linear',
+            showMethod: 'fadeIn',
+            hideMethod: 'fadeOut'
+        };
+
         if (typeof feather !== 'undefined') feather.replace();
-        
+
         // Authentication check and user display
         $(document).ready(function() {
             const user = UserManager.getUser();
             const token = UserManager.getToken();
-            
+
             if (!token || !user) {
                 window.location.href = '/';
                 return;
             }
-            
+
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
             var profile_picture = localStorage.getItem('profile_picture');
             $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
-            
+
             $('.logout-button').on('click', function(e) {
                 e.preventDefault();
                 UserManager.logout(true);
             });
-            
+
             // Show menu items based on user role
             if (UserManager.isSuperAdmin()) {
                 // Superadmin sees everything
@@ -127,16 +165,16 @@
                 // Admin sees admin_and_above items only
                 $('.admin_and_above').removeClass('hidden');
             }
-            
+
             // Load cart preview in navbar
             loadNavbarCart();
         });
-        
+
         // Function to load cart preview in navbar
         function loadNavbarCart() {
             const token = UserManager.getToken();
             if (!token) return;
-            
+
             fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -152,7 +190,7 @@
                 const cart = data.cart || {};
                 const items = cart.items || [];
                 const itemCount = data.item_count || 0;
-                
+
                 // Update cart count badges
                 $('.cart-item-count').text(itemCount);
                 if (itemCount > 0) {
@@ -160,11 +198,11 @@
                 } else {
                     $('.badge-up.cart-item-count').hide();
                 }
-                
+
                 // Update cart dropdown
                 const cartDropdown = $('#cart-dropdown-items');
                 const locale = document.documentElement.lang || 'en';
-                
+
                 if (items.length === 0) {
                     cartDropdown.html(`
                         <div class="text-center p-2">
@@ -178,7 +216,7 @@
                         const product = item.product_model;
                         const imageUrl = product.primary_image || '/assets/images/product-placeholder.png';
                         const subtotal = (item.price_at_add * item.quantity).toFixed(2);
-                        
+
                         html += `
                             <a class="d-flex" href="/${locale === 'fr' ? 'fr/boutique' : 'en/shop'}/${product.slug}">
                                 <div class="media d-flex align-items-start">
@@ -196,17 +234,17 @@
                             </a>
                         `;
                     });
-                    
+
                     cartDropdown.html(html);
                 }
-                
+
                 if (typeof feather !== 'undefined') feather.replace();
             })
             .catch(error => {
                 console.error('Error loading cart:', error);
             });
         }
-        
+
         // Refresh cart when returning to page
         $(document).on('visibilitychange', function() {
             if (!document.hidden) {
