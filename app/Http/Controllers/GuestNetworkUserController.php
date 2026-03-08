@@ -278,10 +278,12 @@ class GuestNetworkUserController extends Controller
         $user->save();
 
         // ── Write radcheck record ────────────────────────────────────────────
+        // Read bandwidth directly from the network to avoid any stale/null
+        // values that may still be on the $user object from a previous session.
         Radcheck::updateOrCreateRecord($macAddress, 'Cleartext-Password', $macAddress, '==', [
             'network_id'         => $networkId,
-            'download_bandwidth' => $user->download_bandwidth,
-            'upload_bandwidth'   => $user->upload_bandwidth,
+            'download_bandwidth' => $network->download_limit,
+            'upload_bandwidth'   => $network->upload_limit,
             'expiration_time'    => $user->expiration_time,
             'idle_timeout'       => $network->idle_timeout ?? 0,
         ]);
