@@ -221,7 +221,7 @@ class CategoryController extends Controller
             // config_version of their devices.
             Log::info('Searching for category:', ['category_id' => $category->id, 'category_id_string' => (string)$category->id]);
             
-            $locationSettings = \App\Models\LocationSettings::where('web_filter_enabled', true)
+            $locationSettings = \App\Models\LocationSettingsV2::where('web_filter_enabled', true)
                 ->whereJsonContains('web_filter_categories', (string)$category->id)
                 ->with(['location.device'])
                 ->get();

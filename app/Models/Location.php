@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\LocationSettings;
+use App\Models\LocationSettingsV2;
 use App\Models\LocationNetwork;
 use App\Models\Radacct;
 class Location extends Model
@@ -53,7 +53,7 @@ class Location extends Model
 
     public function settings()
     {
-        return $this->hasOne(LocationSettings::class);
+        return $this->hasOne(LocationSettingsV2::class);
     }
 
     public function networks()

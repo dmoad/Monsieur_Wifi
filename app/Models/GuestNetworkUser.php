@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GuestNetworkUser extends Model
 {
@@ -10,21 +11,27 @@ class GuestNetworkUser extends Model
         'name',
         'mac_address',
         'location_id',
+        'network_id',
         'expiration_time',
         'download_bandwidth',
         'upload_bandwidth',
         'blocked',
         'email',
-        'phone'
+        'phone',
     ];
-    
+
     protected $casts = [
         'expiration_time' => 'datetime',
-        'blocked' => 'boolean',
+        'blocked'         => 'boolean',
     ];
-    
-    public function location()
+
+    public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    public function network(): BelongsTo
+    {
+        return $this->belongsTo(LocationNetwork::class);
     }
 }

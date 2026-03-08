@@ -11,58 +11,47 @@ class OtpVerification extends Model
         'phone',
         'otp',
         'location_id',
+        'network_id',
         'mac_address',
         'expires_at',
-        'verified_at'
+        'verified_at',
     ];
 
     protected $casts = [
-        'expires_at' => 'datetime',
+        'expires_at'  => 'datetime',
         'verified_at' => 'datetime',
     ];
 
     /**
-     * Generate a new OTP for the given phone number
-     *
-     * @param string $phone
-     * @param int $locationId
-     * @param string|null $macAddress
-     * @return \App\Models\OtpVerification
+     * Generate a new OTP for the given phone number, scoped to a network.
      */
-    public static function generateOtp(string $phone, int $locationId, string $macAddress = null)
+    public static function generateOtp(string $phone, int $networkId, string $macAddress = null): self
     {
-        // Invalidate any existing OTPs for this phone/location combo
+        // Invalidate any existing unverified OTPs for this phone/network combo
         self::where('phone', $phone)
-            ->where('location_id', $locationId)
+            ->where('network_id', $networkId)
             ->whereNull('verified_at')
             ->update(['expires_at' => now()]);
 
-        // Generate a new 6-digit OTP
         $otp = (string) random_int(1000, 9999);
-        
-        // Create and return the new OTP record
+
         return self::create([
-            'phone' => $phone,
-            'otp' => $otp,
-            'location_id' => $locationId,
+            'phone'      => $phone,
+            'otp'        => $otp,
+            'network_id' => $networkId,
             'mac_address' => $macAddress,
             'expires_at' => now()->addMinutes(5),
         ]);
     }
 
     /**
-     * Verify an OTP for the given phone number
-     *
-     * @param string $phone
-     * @param string $otp
-     * @param int $locationId
-     * @return bool
+     * Verify an OTP for the given phone number and network.
      */
-    public static function verifyOtp(string $phone, string $otp, int $locationId)
+    public static function verifyOtp(string $phone, string $otp, int $networkId): bool
     {
         $otpRecord = self::where('phone', $phone)
             ->where('otp', $otp)
-            ->where('location_id', $locationId)
+            ->where('network_id', $networkId)
             ->whereNull('verified_at')
             ->where('expires_at', '>', now())
             ->first();
@@ -71,7 +60,6 @@ class OtpVerification extends Model
             return false;
         }
 
-        // Mark as verified
         $otpRecord->verified_at = now();
         $otpRecord->save();
 
@@ -79,19 +67,15 @@ class OtpVerification extends Model
     }
 
     /**
-     * Get the most recent verified OTP for a phone and location
-     *
-     * @param string $phone
-     * @param int $locationId
-     * @return \App\Models\OtpVerification|null
+     * Get the most recent verified OTP for a phone and network.
      */
-    public static function getVerifiedOtp(string $phone, int $locationId)
+    public static function getVerifiedOtp(string $phone, int $networkId): ?self
     {
         return self::where('phone', $phone)
-            ->where('location_id', $locationId)
+            ->where('network_id', $networkId)
             ->whereNotNull('verified_at')
             ->where('verified_at', '>', now()->subMinutes(30))
             ->latest('verified_at')
             ->first();
     }
-} 
+}

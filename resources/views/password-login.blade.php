@@ -430,7 +430,7 @@
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
-            const locationId = getPathParameter('location');
+            const networkId = getPathParameter('location');
             // Set focus to password input
             $('#password').focus();
             // Apply design settings
@@ -474,7 +474,7 @@
                 
                 // Prepare login data for password method
                 var login_data = {
-                    location_id: locationId,
+                    network_id: networkId,
                     mac_address: macAddress,
                     login_method: 'password',
                     password: password,
@@ -669,8 +669,8 @@
                 return '';
             }
             
-            // If location_id or mac_address is missing, show error
-            if (!locationId || !macAddress) {
+            // If network_id or mac_address is missing, show error
+            if (!networkId || !macAddress) {
                 const lang = getLanguage();
                 $('.portal-container').html(`
                     <div class="text-center">
@@ -684,7 +684,7 @@
             
             // Get location information
             $.ajax({
-                url: `/api/captive-portal/${locationId}/info`,
+                url: `/api/captive-portal/${networkId}/info`,
                 type: 'GET',
                 data: { mac_address: macAddress },
                 headers: { 'Accept': 'application/json' },

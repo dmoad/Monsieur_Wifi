@@ -102,10 +102,10 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0"><span class="network-pane-title">Réseau</span></h4>
                 <div class="d-flex align-items-center gap-2" style="gap:0.5rem;">
-                    <button class="btn btn-outline-danger btn-sm network-delete-btn" data-network-id="__ID__">
+                    <button type="button" class="btn btn-outline-danger btn-sm network-delete-btn" data-network-id="__ID__">
                         <i data-feather="trash-2" class="mr-1"></i> Supprimer le réseau
                     </button>
-                    <button class="btn custom-btn network-save-btn" data-network-id="__ID__">
+                    <button type="button" class="btn custom-btn network-save-btn" data-network-id="__ID__">
                         <i data-feather="save" class="mr-1"></i> Enregistrer les paramètres
                     </button>
                 </div>
@@ -133,7 +133,7 @@
                     <div class="network-identity-divider mx-1"></div>
                     <div class="network-ssid-wrap">
                         <i data-feather="wifi" class="ssid-icon" style="width:15px;height:15px;"></i>
-                        <input type="text" class="form-control network-ssid" placeholder="Nom du réseau (SSID)">
+                        <input type="text" class="form-control network-ssid" placeholder="Nom du réseau (SSID)" maxlength="32">
                     </div>
                     <div class="network-identity-divider mx-1"></div>
                     <div class="network-visibility-wrap">
@@ -531,6 +531,8 @@
             networkAdded:       'Réseau ajouté.',
             networkDeleted:     'Réseau supprimé.',
             invalidMac:         'Format d\'adresse MAC invalide.',
+            invalidSsid:        'Le SSID ne peut pas être vide.',
+            ssidTooLong:        'Le SSID doit contenir 32 caractères maximum (limite 802.11).',
             savingSchedule:     'Enregistrement…',
         },
         schedulerLabels: {

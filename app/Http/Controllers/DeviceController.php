@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\SystemSetting;
-use App\Models\LocationSettings;
+use App\Models\LocationSettingsV2;
 use App\Models\ScanResult;
 use App\Models\OnlineNetworkUser;
 use Illuminate\Http\Request;
@@ -168,7 +168,7 @@ class DeviceController extends Controller
             return response()->json(['error' => 'Location not found'], 404);
         }
 
-        $settings = LocationSettings::where('location_id', $location->id)->first();
+        $settings = LocationSettingsV2::where('location_id', $location->id)->first();
         if (!$settings) {
             return response()->json(['error' => 'Settings not found'], 404);
         }
@@ -373,7 +373,7 @@ class DeviceController extends Controller
             return response()->json(['error' => 'Location not found'], 404);
         }
 
-        $settings = LocationSettings::where('location_id', $location->id)->first();
+        $settings = LocationSettingsV2::where('location_id', $location->id)->first();
 
         // Check if captive portal should be enabled based on working hours
         $captivePortalEnabled = $this->isCaptivePortalEnabledAtCurrentTime($location->id);
@@ -387,6 +387,119 @@ class DeviceController extends Controller
             'firmware_version' => $firmware_version, 
             'scan_counter' => $device->scan_counter,
             'captive_portal_enabled' => $captivePortalEnabled
+        ]);
+    }
+
+    public function getSettingsV2($device_key, $device_secret)
+    {
+        Log::info('Get settings v2 request: '.$device_key.' '.$device_secret);
+        // ── Authenticate device ──────────────────────────────────────────────
+        $device = Device::where('device_key', $device_key)
+            ->where('device_secret', $device_secret)
+            ->first();
+
+        if (!$device) {
+            return response()->json(['error' => 'Invalid device credentials'], 401);
+        }
+
+        Log::info('Device: ');
+        Log::info($device);
+
+        $location = Location::where('device_id', $device->id)->first();
+        if (!$location) {
+            return response()->json(['error' => 'Location not found'], 404);
+        }
+
+        // ── Router-level settings (v2) ───────────────────────────────────────
+        $settings = LocationSettingsV2::where('location_id', $location->id)->first();
+        if (!$settings) {
+            return response()->json(['error' => 'Settings not found'], 404);
+        }
+
+        // ── Web content filtering (router-wide) ─────────────────────────────
+        $blockedDomains = collect();
+        if ($settings->web_filter_enabled && !empty($settings->web_filter_categories)) {
+            $enabledCategoryIds = Category::whereIn('id', $settings->web_filter_categories)
+                ->where('is_enabled', true)
+                ->pluck('id');
+
+            $blockedDomains = BlockedDomain::select('domain')
+                ->whereIn('category_id', $enabledCategoryIds)
+                ->get()
+                ->unique('domain')
+                ->filter(fn($d) => !empty($d->domain))
+                ->values();
+        }
+
+        // ── System-level radius (shared fallback) ────────────────────────────
+        $systemSettings  = SystemSetting::first();
+        $systemRadius = [
+            'radius_ip'       => $systemSettings->radius_ip,
+            'radius_port'     => $systemSettings->radius_port,
+            'radius_secret'   => $systemSettings->radius_secret,
+            'accounting_port' => $systemSettings->accounting_port,
+        ];
+
+        // ── Networks — each captive portal carries its own radius +
+        //    guest_settings so future networks can differ independently. ──────
+        $networks = LocationNetwork::where('location_id', $location->id)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function (LocationNetwork $network) use ($systemRadius) {
+                $networkData = $network->toArray();
+
+                if ($network->type === 'captive_portal') {
+                    // Walled-garden: start from env base, extend by social method.
+                    $whitelistDomains = env('GUEST_WHITELIST_DOMAINS', '');
+                    $whitelistServers = env('GUEST_WHITELIST_SERVERS', '');
+
+                    if ($network->auth_method === 'social') {
+                        match ($network->social_auth_method) {
+                            'google'   => [
+                                $whitelistDomains .= ',' . env('GOOGLE_WHITELIST_DOMAINS', ''),
+                                $whitelistServers  .= ',' . env('GOOGLE_WHITELIST_SERVERS', ''),
+                            ],
+                            'facebook' => [
+                                $whitelistDomains .= ',' . env('FACEBOOK_WHITELIST_DOMAINS', ''),
+                                $whitelistServers  .= ',' . env('FACEBOOK_WHITELIST_SERVERS', ''),
+                            ],
+                            default => null,
+                        };
+                    }
+
+                    $networkData['guest_settings'] = [
+                        'login_url'         => env('GUEST_LOGIN_URL'),
+                        'whitelist_domains' => rtrim($whitelistDomains, ','),
+                        'whitelist_servers' => rtrim($whitelistServers, ','),
+                    ];
+
+                    // Each captive network uses the system radius for now;
+                    // a per-network override column can be added later.
+                    $networkData['radius_settings'] = $systemRadius;
+                }
+
+                return $networkData;
+            });
+
+        // ── Firmware ─────────────────────────────────────────────────────────
+        $firmwareInfo = ($device->firmware_id && $device->firmware_id > 0)
+            ? Firmware::find($device->firmware_id)
+            : null;
+
+        $firmware = [
+            'version'   => $firmwareInfo ? $firmwareInfo->id : 0,
+            'file_name' => $firmwareInfo ? basename($firmwareInfo->file_path) : null,
+            'file_path' => $firmwareInfo ? Storage::disk('public')->url($firmwareInfo->file_path) : null,
+            'hash'      => $firmwareInfo ? $firmwareInfo->md5sum : null,
+        ];
+
+        return response()->json([
+            'status'          => 'success',
+            'location'        => $location,
+            'settings'        => $settings,
+            'networks'        => $networks,
+            'blocked_domains' => $blockedDomains,
+            'firmware'        => $firmware,
         ]);
     }
 

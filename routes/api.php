@@ -75,6 +75,7 @@ Route::group(['prefix' => 'devices'], function () {
 });
 
 Route::get('/devices/{device_key}/{device_secret}/settings', [DeviceController::class, 'getSettings']);
+Route::get('/devices/{device_key}/{device_secret}/v2-settings', [DeviceController::class, 'getSettingsV2']);
 Route::get('/devices/{device_key}/{device_secret}/heartbeat', [DeviceController::class, 'heartbeat']);
 Route::get('/devices/{device_key}/{device_secret}/firmware', [FirmwareController::class, 'getDeviceFirmware']);
 Route::post('/devices/{device_key}/{device_secret}/clients', [DeviceController::class, 'updateClientList']);
@@ -210,8 +211,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'dashboard'], function () 
     Route::get('/data-usage-trends', [DashboardController::class, 'getDataUsageTrends']);
 });
 
-Route::post('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
-Route::get('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
+Route::post('/captive-portal/{network_id}/info', [GuestNetworkUserController::class, 'info']);
+Route::get('/captive-portal/{network_id}/info', [GuestNetworkUserController::class, 'info']);
 Route::post('/captive-portal/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/captive-portal/twitter-login', [GuestNetworkUserController::class, 'twitterLogin']);
 
@@ -224,7 +225,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
 Route::resource('/guest-users', GuestNetworkUserController::class);
 
 // Guest Network User routes
-Route::post('/location/{location_id}/guest/info', [GuestNetworkUserController::class, 'info']);
+Route::post('/network/{network_id}/guest/info', [GuestNetworkUserController::class, 'info']);
 Route::post('/guest/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/guest/request-otp', [GuestNetworkUserController::class, 'requestOtp']);
 

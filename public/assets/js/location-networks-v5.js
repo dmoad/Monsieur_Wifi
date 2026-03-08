@@ -31,6 +31,8 @@ const MSG = Object.assign({
     networkAdded:      'Network added.',
     networkDeleted:    'Network deleted.',
     invalidMac:        'Invalid MAC address format.',
+    invalidSsid:       'SSID cannot be empty.',
+    ssidTooLong:       'SSID must be 32 characters or fewer (802.11 limit).',
     savingSchedule:    'Saving…',
 }, window.APP_CONFIG_V5?.messages || {});
 
@@ -417,6 +419,7 @@ function getFormData(netId, $pane) {
 // ============================================================================
 
 async function saveNetwork(netId) {
+    if (!netId) { console.error('saveNetwork called without a valid netId'); return; }
     const $pane = $(`#network-pane-${netId}`);
     const $btn = $pane.find('.network-save-btn');
     const origHtml = $btn.html();
@@ -424,6 +427,20 @@ async function saveNetwork(netId) {
 
     try {
         const data = getFormData(netId, $pane);
+
+        if (!data.ssid) {
+            toastr.warning(MSG.invalidSsid);
+            $btn.prop('disabled', false).html(origHtml);
+            $pane.find('.network-ssid').focus();
+            return;
+        }
+        if (data.ssid.length > 32) {
+            toastr.warning(MSG.ssidTooLong);
+            $btn.prop('disabled', false).html(origHtml);
+            $pane.find('.network-ssid').focus();
+            return;
+        }
+
         const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
             method: 'PUT',
             body: JSON.stringify(data),
@@ -545,10 +562,13 @@ function bindPaneEvents() {
         showAuthSubFields($(this).closest('.tab-pane'), $(this).val());
     });
 
-    // SSID input → update tab label live
+    // SSID input → update tab label live; block Enter to avoid accidental saves
     $(document).off('input.nmgr', '.network-ssid').on('input.nmgr', '.network-ssid', function () {
         const $pane = $(this).closest('.tab-pane');
         $(`#network-tab-${$pane.data('network-id')} .network-tab-label`).text($(this).val() || 'Network');
+    });
+    $(document).off('keydown.nmgr', '.network-ssid').on('keydown.nmgr', '.network-ssid', function (e) {
+        if (e.key === 'Enter') e.preventDefault();
     });
 
     // Save network

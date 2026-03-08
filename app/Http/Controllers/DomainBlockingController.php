@@ -396,7 +396,7 @@ class DomainBlockingController extends Controller
 
             // Find all locations which have that category enabled and increment 
             // config_version of their devices.
-            $locationSettings = \App\Models\LocationSettings::where('web_filter_enabled', true)
+            $locationSettings = \App\Models\LocationSettingsV2::where('web_filter_enabled', true)
                 ->whereJsonContains('web_filter_categories', (string)$category->id)
                 ->with(['location.device'])
                 ->get();
