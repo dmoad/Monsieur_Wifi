@@ -498,7 +498,7 @@
                                 </div>
 
                                 <h4 class="card-title mb-1">Welcome to monsieur-wifi! 👋</h4>
-                                <p class="card-text mb-2">Please sign-in to access your <span class="typing-text"></span></p>
+                                <p class="card-text mb-2" id="sign-in-prompt">Please sign-in to access your network management dashboard</p>
 
                                 <!-- Alert for showing login messages -->
                                 <div id="login-alert" class="alert alert-danger mt-1" style="display: none;"></div>
@@ -588,8 +588,7 @@
                 pageTitle: 'Login - Monsieur WiFi',
                 metaDescription: 'monsieur-wifi - WiFi network management system for administrators and network owners',
                 welcome: 'Welcome to monsieur-wifi! 👋',
-                signInPrompt: 'Please sign-in to access your',
-                typingStrings: ['network management dashboard', 'WiFi control center', 'analytics platform'],
+                signInPrompt: 'Please sign-in to access your network management dashboard',
                 emailLabel: 'Email',
                 emailPlaceholder: 'admin@mrwifi.com',
                 passwordLabel: 'Password',
@@ -597,9 +596,9 @@
                 rememberMe: 'Remember Me',
                 signIn: 'Sign in',
                 signingIn: 'Signing in...',
-                forgotPassword: 'Forgot your password?',
+                forgotPassword: 'Forgot your password ?',
                 resetPassword: 'Reset Password',
-                noAccount: "Don't have an account?",
+                noAccount: "Don't have an account ?",
                 signUp: 'Sign up',
                 loginSuccessful: 'Login successful!',
                 loginError: 'An error occurred during login.',
@@ -610,8 +609,7 @@
                 pageTitle: 'Connexion - Monsieur WiFi',
                 metaDescription: 'monsieur-wifi - Système de gestion de réseaux WiFi pour administrateurs et propriétaires de réseaux',
                 welcome: 'Bienvenue sur monsieur-wifi! 👋',
-                signInPrompt: 'Veuillez vous connecter pour accéder à votre',
-                typingStrings: ['tableau de bord de gestion réseau', 'centre de contrôle WiFi', 'plateforme d\'analytique'],
+                signInPrompt: 'Veuillez vous connecter pour accéder à votre tableau de bord de gestion réseau',
                 emailLabel: 'Email',
                 emailPlaceholder: 'admin@mrwifi.com',
                 passwordLabel: 'Mot de passe',
@@ -619,7 +617,7 @@
                 rememberMe: 'Se souvenir de moi',
                 signIn: 'Se connecter',
                 signingIn: 'Connexion en cours...',
-                forgotPassword: 'Mot de passe oublié?',
+                forgotPassword: 'Mot de passe oublié ?',
                 resetPassword: 'Réinitialiser le mot de passe',
                 noAccount: 'Pas de compte ?',
                 signUp: 'S\'inscrire',
@@ -653,7 +651,7 @@
             
             // Update static text elements
             $('.card-title').text(t.welcome);
-            $('.card-text').html(t.signInPrompt + ' <span class="typing-text"></span>');
+            $('#sign-in-prompt').text(t.signInPrompt);
             $('label[for="login-email"]').text(t.emailLabel);
             $('#login-email').attr('placeholder', t.emailPlaceholder);
             $('label[for="login-password"]').text(t.passwordLabel);
@@ -679,18 +677,6 @@
 
         function switchLanguage(newLang) {
             applyTranslations(newLang);
-            
-            // Reinitialize typing animation with new language strings
-            if (window.typed) {
-                window.typed.destroy();
-            }
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
         }
 
         // Initialize language on page load
@@ -711,15 +697,6 @@
                 $('#tablet-icon').html(feather.icons['tablet'].toSvg({ width: 22, height: 22 }));
                 $('#router-icon').html(feather.icons['wifi'].toSvg({ width: 26, height: 26 }));
             }
-            
-            // Initialize typing animation with translated strings
-            window.typed = new Typed('.typing-text', {
-                strings: window.currentTranslations.typingStrings,
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                loop: true
-            });
             
             // Language dropdown event handlers
             $('.language-option').on('click', function(e) {
