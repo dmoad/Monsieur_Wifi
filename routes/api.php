@@ -30,8 +30,9 @@ Route::post('auth/resend-verification', [AuthController::class, 'resendVerificat
 Route::post('temp-captive-portal-designs', [TempCaptivePortalDesignController::class, 'store']);
 Route::get('temp-captive-portal-designs/{id}', [TempCaptivePortalDesignController::class, 'index']);
 
-// Stripe webhook endpoint (public, no CSRF protection)
+// Stripe webhook endpoints (public, no CSRF protection)
 Route::post('payment-notifications', [PaymentController::class, 'handleWebhook']);
+Route::post('stripe/webhook', [SubscriptionController::class, 'handleWebhook']);
 
 // Webhook test endpoint (for debugging)
 Route::get('webhook-test', function() {
@@ -242,6 +243,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'subscription'], function 
     Route::post('/payment-intent', [SubscriptionController::class, 'createPaymentIntent']);
     Route::post('/cancel', [SubscriptionController::class, 'cancel']);
     Route::post('/resume', [SubscriptionController::class, 'resume']);
+    Route::post('/confirm', [SubscriptionController::class, 'confirm']);
     Route::get('/billing-portal', [SubscriptionController::class, 'billingPortal']);
 });
 

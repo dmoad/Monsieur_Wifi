@@ -261,6 +261,34 @@
 
         // Create another wave of confetti after 2 seconds
         setTimeout(createConfetti, 2000);
+
+        // Confirm subscription with backend
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            const token = localStorage.getItem('mrwifi_auth_token');
+
+            if (sessionId && token) {
+                fetch('/api/subscription/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ session_id: sessionId })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Subscription confirmed');
+                    } else {
+                        console.error('Subscription confirmation failed:', data.error);
+                    }
+                })
+                .catch(err => console.error('Error confirming subscription:', err));
+            }
+        })();
     </script>
 </body>
 </html>
