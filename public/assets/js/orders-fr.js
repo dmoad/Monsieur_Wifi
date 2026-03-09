@@ -65,9 +65,9 @@ function displayOrders(orders) {
                         <p class="mb-0"><strong>€${parseFloat(order.total).toFixed(2)}</strong></p>
                         ${order.tax_amount ? `<small class="text-muted">(Taxe: €${parseFloat(order.tax_amount).toFixed(2)})</small>` : ''}
                     </div>
-                    <div class="col-md-3 text-right">
+                    <div class="col-md-3 d-flex align-items-center justify-content-end" style="gap: 0.5rem;">
                         <a href="/fr/commandes/${order.order_number}" class="btn btn-primary btn-sm">Voir Détails</a>
-                        ${order.payment_status === 'succeeded' ? `<button onclick="downloadInvoice('${order.order_number}')" class="btn btn-outline-secondary btn-sm mt-1"><i data-feather="download" style="width: 14px; height: 14px;"></i> Facture</button>` : ''}
+                        ${order.payment_status === 'succeeded' ? `<button onclick="downloadInvoice('${order.order_number}')" class="btn btn-outline-secondary btn-sm"><i data-feather="download" style="width: 14px; height: 14px;"></i> Facture</button>` : ''}
                     </div>
                 </div>
                 ${order.tracking_id ? `
