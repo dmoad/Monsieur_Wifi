@@ -18,7 +18,7 @@
             </div>
         </div>
     </div>
-    <div class="content-header-right col-md-3 col-12">
+    <div class="content-header-right col-md-3 col-12 text-right">
         <a href="/en/shop" class="btn btn-outline-primary">
             <i data-feather="arrow-left"></i> Continue Shopping
         </a>

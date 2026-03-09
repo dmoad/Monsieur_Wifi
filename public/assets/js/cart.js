@@ -59,10 +59,10 @@ function displayCart(data) {
                 <p class="text-muted mb-0">€${parseFloat(item.price_at_add).toFixed(2)} each</p>
             </div>
             <div class="d-flex align-items-center">
-                <input type="number" class="form-control" style="width: 80px;" 
+                <input type="number" class="form-control" style="width: 80px;"
                        value="${item.quantity}" min="1" max="${item.product_model.available_quantity}"
                        onchange="updateQuantity(${item.id}, this.value)">
-                <button class="btn btn-sm btn-danger ml-2" onclick="removeItem(${item.id})">
+                <button class="btn btn-danger ml-2 d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0;" onclick="removeItem(${item.id})">
                     <i data-feather="trash-2"></i>
                 </button>
             </div>
