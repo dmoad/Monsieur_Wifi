@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Location;
 use App\Models\Device;
-use App\Models\LocationSettings;
+use App\Models\LocationSettingsV2;
 use App\Models\SystemSetting;
 use App\Models\Radacct;
 use App\Models\Radcheck;
@@ -45,7 +45,7 @@ class LocationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->role == 'admin') {
+        if (in_array($user->role, ['admin', 'superadmin'])) {
             // Get locations with their associated devices and zones
             $locations = Location::with(['device', 'zone'])->get();
         } else {
@@ -86,7 +86,7 @@ class LocationController extends Controller
             $locationData['data_usage_gb'] = $dataUsage['total_gb']; // In GB
             $locationData['total_sessions'] = $dataUsage['total_sessions'];
             $locationData['active_sessions'] = $activeSessions->count();
-            $locationData['settings'] = LocationSettings::where('location_id', $location->id)->first();
+            $locationData['settings'] = LocationSettingsV2::where('location_id', $location->id)->first();
             return $locationData;
         });
 
@@ -229,25 +229,9 @@ class LocationController extends Controller
         $location->owner_id = $ownerId; // Owner of the location
         $location->save();
 
-        // Create the location settings
-        $locationSettings = new LocationSettings();
+        // Create the location settings (v2 — router-level only)
+        $locationSettings = new LocationSettingsV2();
         $locationSettings->location_id = $location->id;
-        // Get values from system settings and set default values
-        $systemSettings = SystemSetting::first();
-        $locationSettings->captive_portal_enabled = true;
-        $locationSettings->wifi_name = $systemSettings->default_essid;
-        $locationSettings->wifi_password = $systemSettings->default_password;
-        $locationSettings->captive_portal_ssid = 'Mr WiFi Guest';
-        $locationSettings->wifi_security_type = 'WPA2';
-        // $locationSettings->wifi_channel = 1;
-        // $locationSettings->wifi_bandwidth = '20MHz';
-        // $locationSettings->wifi_channel_width = '20MHz';
-        // $locationSettings->wifi_channel_width_5g = '20MHz';
-        
-        
-        $locationSettings->captive_portal_visible = true;
-        $locationSettings->captive_portal_enabled = true;
-        $locationSettings->welcome_message = 'Welcome to MrWiFi Network';
         $locationSettings->save();
 
         // create the working hours for whole week with all day active 
@@ -285,7 +269,7 @@ class LocationController extends Controller
                 'message' => 'User not authenticated'
             ], 401);
         }
-        if ($user->role == 'admin') {
+        if (in_array($user->role, ['admin', 'superadmin'])) {
             $location = Location::with(['device', 'zone', 'settings'])->find($id);
         } else {
             $location = Location::with(['device', 'zone', 'settings'])->where('owner_id', $user->id)->find($id);
@@ -299,7 +283,7 @@ class LocationController extends Controller
         }
         
         $device = Device::find($location->device_id);
-        $locationSettings = LocationSettings::where('location_id', $id)->first();
+        $locationSettings = LocationSettingsV2::where('location_id', $id)->first();
         
         $locationData = $location->toArray();
         $locationData['settings'] = $locationSettings;
@@ -513,7 +497,7 @@ class LocationController extends Controller
             }
 
             // Get period from request, default to 7 days
-            $period = $request->get('period', 7);
+            $period = (int) $request->get('period', 7);
 
             // Calculate date range - ensure we include today's data
             $endDate = Carbon::today()->endOfDay();
@@ -610,21 +594,12 @@ class LocationController extends Controller
             
             try {
                 // Find the location settings
-                $locationSettings = LocationSettings::where('location_id', $location_id)->first();
+                $locationSettings = LocationSettingsV2::where('location_id', $location_id)->first();
                 
                 // If settings don't exist, create them
                 if (!$locationSettings) {
-                    $locationSettings = new LocationSettings();
+                    $locationSettings = new LocationSettingsV2();
                     $locationSettings->location_id = $location_id;
-                    
-                    // Set required default values to prevent DB errors
-                    $locationSettings->welcome_message = 'Welcome to MrWiFi Network';
-                    $locationSettings->wifi_name = 'MrWiFi Network';
-                    $locationSettings->wifi_password = 'password123';
-                    $locationSettings->captive_portal_ssid = 'MrWiFi Guest';
-                    $locationSettings->wifi_security_type = 'WPA2';
-                    $locationSettings->captive_portal_visible = true;
-                    $locationSettings->captive_portal_enabled = true;
                 }
 
                 Log::info("settingsType :: ");
@@ -1641,7 +1616,7 @@ class LocationController extends Controller
             
             // Get associated data
             $device = Device::find($location->device_id);
-            $locationSettings = LocationSettings::where('location_id', $location_id)->first();
+            $locationSettings = LocationSettingsV2::where('location_id', $location_id)->first();
             
             // Prepare response data
             $locationData = $location->toArray();
@@ -1782,11 +1757,11 @@ class LocationController extends Controller
                 ], 404);
             }
             
-            $settings = LocationSettings::where('location_id', $id)->first();
+            $settings = LocationSettingsV2::where('location_id', $id)->first();
             
             if (!$settings) {
                 // Create default settings if none exist
-                $settings = new LocationSettings([
+                $settings = new LocationSettingsV2([
                     'location_id' => $id,
                     'web_filter_enabled' => false,
                     'web_filter_categories' => [],
@@ -1829,11 +1804,11 @@ class LocationController extends Controller
                 ], 404);
             }
             
-            $settings = LocationSettings::where('location_id', $id)->first();
+            $settings = LocationSettingsV2::where('location_id', $id)->first();
             
             if (!$settings) {
                 // Create new settings if none exist
-                $settings = new LocationSettings(['location_id' => $id]);
+                $settings = new LocationSettingsV2(['location_id' => $id]);
             }
             
             // Get the device for config version increment
@@ -1842,54 +1817,32 @@ class LocationController extends Controller
             
             // Store original values for comparison
             $originalSettings = [
-                'country_code' => $settings->country_code,
-                'transmit_power_2g' => $settings->transmit_power_2g,
-                'transmit_power_5g' => $settings->transmit_power_5g,
-                'channel_2g' => $settings->channel_2g,
-                'channel_5g' => $settings->channel_5g,
-                'channel_width_2g' => $settings->channel_width_2g,
-                'channel_width_5g' => $settings->channel_width_5g,
-                'password_wifi_vlan' => $settings->password_wifi_vlan,
-                'captive_portal_vlan' => $settings->captive_portal_vlan,
-                'captive_portal_vlan_tagging' => $settings->captive_portal_vlan_tagging,
-                'password_wifi_vlan_tagging' => $settings->password_wifi_vlan_tagging,
-                'vlan_enabled' => $settings->vlan_enabled,
-                'wan_connection_type' => $settings->wan_connection_type,
-                'wan_ip_address' => $settings->wan_ip_address,
-                'wan_netmask' => $settings->wan_netmask,
-                'wan_gateway' => $settings->wan_gateway,
-                'wan_primary_dns' => $settings->wan_primary_dns,
-                'wan_secondary_dns' => $settings->wan_secondary_dns,
-                'wan_pppoe_username' => $settings->wan_pppoe_username,
-                'wan_pppoe_password' => $settings->wan_pppoe_password,
-                'wan_pppoe_service_name' => $settings->wan_pppoe_service_name,
-                'wan_enabled' => $settings->wan_enabled,
-                'wan_mac_address' => $settings->wan_mac_address,
-                'wan_mtu' => $settings->wan_mtu,
-                'wan_nat_enabled' => $settings->wan_nat_enabled,
-                'web_filter_categories' => $settings->web_filter_categories,
+                'country_code'       => $settings->country_code,
+                'transmit_power_2g'  => $settings->transmit_power_2g,
+                'transmit_power_5g'  => $settings->transmit_power_5g,
+                'channel_2g'         => $settings->channel_2g,
+                'channel_5g'         => $settings->channel_5g,
+                'channel_width_2g'   => $settings->channel_width_2g,
+                'channel_width_5g'   => $settings->channel_width_5g,
+                'vlan_enabled'            => $settings->vlan_enabled,
+                'wan_connection_type'     => $settings->wan_connection_type,
+                'wan_ip_address'          => $settings->wan_ip_address,
+                'wan_netmask'             => $settings->wan_netmask,
+                'wan_gateway'             => $settings->wan_gateway,
+                'wan_primary_dns'         => $settings->wan_primary_dns,
+                'wan_secondary_dns'       => $settings->wan_secondary_dns,
+                'wan_pppoe_username'      => $settings->wan_pppoe_username,
+                'wan_pppoe_password'      => $settings->wan_pppoe_password,
+                'wan_pppoe_service_name'  => $settings->wan_pppoe_service_name,
+                'wan_enabled'             => $settings->wan_enabled,
+                'wan_mac_address'         => $settings->wan_mac_address,
+                'wan_mtu'                 => $settings->wan_mtu,
+                'wan_nat_enabled'         => $settings->wan_nat_enabled,
+                'web_filter_categories'   => $settings->web_filter_categories,
             ];
             
-            // Update settings with provided data
+            // Only accept fields that exist in location_settings_v2
             $settingsData = $request->only([
-                'web_filter_enabled',
-                'web_filter_categories',
-                'web_filter_domains',
-                // Add other settings fields as needed
-                'wifi_name',
-                'wifi_password',
-                'wifi_visible',
-                'wifi_security_type',
-                'captive_portal_enabled',
-                'captive_portal_ssid',
-                'captive_portal_visible',
-                'captive_auth_method',
-                'captive_portal_password',
-                'session_timeout',
-                'idle_timeout',
-                'bandwidth_limit',
-                'download_limit',
-                'upload_limit',
                 'country_code',
                 'transmit_power_2g',
                 'transmit_power_5g',
@@ -1897,16 +1850,8 @@ class LocationController extends Controller
                 'channel_5g',
                 'channel_width_2g',
                 'channel_width_5g',
-                'mac_filter_list',
-                'captive_mac_filter_list',
-                'secured_mac_filter_list',
-                // New VLAN and redirect fields
-                'password_wifi_vlan',
-                'captive_portal_vlan',
-                'captive_portal_redirect',
-                'captive_portal_vlan_tagging',
-                'password_wifi_vlan_tagging',
                 'vlan_enabled',
+                'wan_enabled',
                 'wan_connection_type',
                 'wan_ip_address',
                 'wan_netmask',
@@ -1916,10 +1861,12 @@ class LocationController extends Controller
                 'wan_pppoe_username',
                 'wan_pppoe_password',
                 'wan_pppoe_service_name',
-                'wan_enabled',
                 'wan_mac_address',
                 'wan_mtu',
                 'wan_nat_enabled',
+                'web_filter_enabled',
+                'web_filter_domains',
+                'web_filter_categories',
             ]);
             
             // Check for router setting changes that require config version increment
@@ -1969,32 +1916,6 @@ class LocationController extends Controller
                 $increment_version = 1;
                 $routerSettingsChanged = true;
                 Log::info('Channel width 5G updated from "' . $originalSettings['channel_width_5g'] . '" to "' . $settingsData['channel_width_5g'] . '"');
-            }
-            
-            // VLAN changes
-            if (isset($settingsData['password_wifi_vlan']) && $settingsData['password_wifi_vlan'] !== $originalSettings['password_wifi_vlan']) {
-                $increment_version = 1;
-                $routerSettingsChanged = true;
-                Log::info('Password WiFi VLAN updated from "' . $originalSettings['password_wifi_vlan'] . '" to "' . $settingsData['password_wifi_vlan'] . '"');
-            }
-            
-            if (isset($settingsData['captive_portal_vlan']) && $settingsData['captive_portal_vlan'] !== $originalSettings['captive_portal_vlan']) {
-                $increment_version = 1;
-                $routerSettingsChanged = true;
-                Log::info('Captive portal VLAN updated from "' . $originalSettings['captive_portal_vlan'] . '" to "' . $settingsData['captive_portal_vlan'] . '"');
-            }
-            
-            // VLAN tagging changes
-            if (isset($settingsData['password_wifi_vlan_tagging']) && $settingsData['password_wifi_vlan_tagging'] !== $originalSettings['password_wifi_vlan_tagging']) {
-                $increment_version = 1;
-                $routerSettingsChanged = true;
-                Log::info('Password WiFi VLAN tagging updated from "' . $originalSettings['password_wifi_vlan_tagging'] . '" to "' . $settingsData['password_wifi_vlan_tagging'] . '"');
-            }
-            
-            if (isset($settingsData['captive_portal_vlan_tagging']) && $settingsData['captive_portal_vlan_tagging'] !== $originalSettings['captive_portal_vlan_tagging']) {
-                $increment_version = 1;
-                $routerSettingsChanged = true;
-                Log::info('Captive portal VLAN tagging updated from "' . $originalSettings['captive_portal_vlan_tagging'] . '" to "' . $settingsData['captive_portal_vlan_tagging'] . '"');
             }
             
             // Global VLAN enable/disable changes
@@ -2127,7 +2048,7 @@ class LocationController extends Controller
                     $settings->captive_mac_filter_list = $normalizedMacList;
                     
                     // Handle radcheck records for captive portal MAC address filtering
-                    // Note: scope is stored in LocationSettings JSON, not in radcheck table
+                    // Note: MAC filter scope is now stored per LocationNetwork, not in radcheck table
                     // $this->updateRadcheckForMacFiltering($settings, $currentMacList, $normalizedMacList);
                 }
                 
@@ -2169,9 +2090,15 @@ class LocationController extends Controller
                     //     'new_list' => $normalizedMacList
                     // ]);
                     
-                    // Update the MAC filter list and handle radcheck records
+                    // Update the MAC filter list and handle radcheck records.
+                    // Use the first captive portal network for this location as the network scope.
                     $settings->mac_filter_list = $normalizedMacList;
-                    $this->updateRadcheckForMacFiltering($settings, $currentMacList, $normalizedMacList);
+                    $captiveNet = \App\Models\LocationNetwork::where('location_id', $settings->location_id)
+                        ->where('type', 'captive_portal')
+                        ->first();
+                    if ($captiveNet) {
+                        $this->updateRadcheckForMacFiltering($captiveNet->id, $currentMacList, $normalizedMacList);
+                    }
                 }
                 
                 unset($settingsData['mac_filter_list']);
@@ -2348,65 +2275,47 @@ class LocationController extends Controller
     /**
      * Update radcheck records for MAC address filtering
      *
-     * @param \App\Models\LocationSettings $settings
+     * @param \App\Models\LocationSettingsV2 $settings
      * @param array $oldMacList
      * @param array $newMacList
      * @return void
      */
-    private function updateRadcheckForMacFiltering($settings, $oldMacList, $newMacList)
+    /**
+     * Sync radcheck MAC filter records for a specific network.
+     *
+     * @param int   $networkId   The LocationNetwork id to scope radcheck records
+     * @param array $oldMacList
+     * @param array $newMacList
+     */
+    private function updateRadcheckForMacFiltering(int $networkId, array $oldMacList, array $newMacList): void
     {
-        // Log::info('Updating radcheck records for MAC filtering', [
-        //     'location_id' => $settings->location_id,
-        //     'old_count' => count($oldMacList),
-        //     'new_count' => count($newMacList)
-        // ]);
-
-        // Convert arrays to associative arrays for easier comparison
-        // Store both type and scope for comparison
-        $oldMacMap = [];
-        foreach ($oldMacList as $macItem) {
-            if (is_string($macItem)) {
-                $oldMacMap[$macItem] = ['type' => 'blacklist', 'scope' => 'all'];
-            } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
-                $oldMacMap[$macItem['mac']] = [
-                    'type' => $macItem['type'],
-                    'scope' => $macItem['scope'] ?? 'all'
-                ];
+        $toMap = function (array $list): array {
+            $map = [];
+            foreach ($list as $item) {
+                if (is_string($item)) {
+                    $map[$item] = ['type' => 'blacklist', 'scope' => 'all'];
+                } elseif (is_array($item) && isset($item['mac'], $item['type'])) {
+                    $map[$item['mac']] = ['type' => $item['type'], 'scope' => $item['scope'] ?? 'all'];
+                }
             }
-        }
+            return $map;
+        };
 
-        $newMacMap = [];
-        foreach ($newMacList as $macItem) {
-            if (is_string($macItem)) {
-                $newMacMap[$macItem] = ['type' => 'blacklist', 'scope' => 'all'];
-            } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
-                $newMacMap[$macItem['mac']] = [
-                    'type' => $macItem['type'],
-                    'scope' => $macItem['scope'] ?? 'all'
-                ];
-            }
-        }
+        $oldMacMap = $toMap($oldMacList);
+        $newMacMap = $toMap($newMacList);
 
-        // Find MAC addresses that were removed
-        $removedMacs = array_diff_key($oldMacMap, $newMacMap);
-        foreach ($removedMacs as $macAddress => $macData) {
-            Log::info('Removing MAC address from radcheck', [
-                'mac' => $macAddress,
-                'type' => $macData['type'],
-                'scope' => $macData['scope']
-            ]);
-            
-            // Normalize MAC address to dash format
+        // Remove deleted MACs
+        foreach (array_diff_key($oldMacMap, $newMacMap) as $macAddress => $macData) {
             $normalizedMac = $this->normalizeMacAddress($macAddress);
             if ($normalizedMac) {
                 \App\Models\Radcheck::where('username', $normalizedMac)
                     ->where('attribute', 'Cleartext-Password')
-                    ->where('location_id', $settings->location_id)
+                    ->where('network_id', $networkId)
                     ->delete();
             }
         }
 
-        // Find MAC addresses that were added or changed
+        // Upsert added / changed MACs
         foreach ($newMacMap as $macAddress => $macData) {
             $normalizedMac = $this->normalizeMacAddress($macAddress);
             if (!$normalizedMac) {
@@ -2415,34 +2324,19 @@ class LocationController extends Controller
             }
 
             $accessControl = $macData['type'] === 'whitelist' ? 'whitelisted' : 'blacklisted';
-            $scope = $macData['scope'] ?? 'all';
-            
-            // Check if this is a new MAC address or if the type/scope changed
-            $isNew = !isset($oldMacMap[$macAddress]);
-            $typeChanged = !$isNew && $oldMacMap[$macAddress]['type'] !== $macData['type'];
+            $scope         = $macData['scope'] ?? 'all';
+
+            $isNew        = !isset($oldMacMap[$macAddress]);
+            $typeChanged  = !$isNew && $oldMacMap[$macAddress]['type'] !== $macData['type'];
             $scopeChanged = !$isNew && ($oldMacMap[$macAddress]['scope'] ?? 'all') !== $scope;
-            
+
             if ($isNew || $typeChanged || $scopeChanged) {
-                // Log::info('Adding/updating MAC address in radcheck', [
-                //     'mac' => $normalizedMac,
-                //     'access_control' => $accessControl,
-                //     'scope' => $scope,
-                //     'is_new' => $isNew,
-                //     'type_changed' => $typeChanged,
-                //     'scope_changed' => $scopeChanged
-                // ]);
-                
                 \App\Models\Radcheck::updateOrCreateRecord(
                     $normalizedMac,
                     'Cleartext-Password',
                     $normalizedMac,
                     '==',
-                    [
-                        'location_id' => $settings->location_id,
-                        'access_control' => $accessControl
-                        // Note: scope is stored in LocationSettings JSON, not in radcheck table
-                        // The scope will be used when applying MAC filter rules on the device/router
-                    ]
+                    ['network_id' => $networkId, 'access_control' => $accessControl]
                 );
             }
         }
@@ -2548,7 +2442,7 @@ class LocationController extends Controller
                 ], 404);
             }
             
-            $settings = LocationSettings::where('location_id', $locationId)->first();
+            $settings = LocationSettingsV2::where('location_id', $locationId)->first();
             
             if (!$settings) {
                 return response()->json([
@@ -2557,7 +2451,8 @@ class LocationController extends Controller
                 ], 404);
             }
             
-            $macList = $settings->mac_filter_list ?: [];
+            // MAC filter list is now managed per-network via LocationNetwork
+            $macList = [];
             $synced = 0;
             
             foreach ($macList as $macItem) {
@@ -2575,19 +2470,22 @@ class LocationController extends Controller
                 
                 if ($macAddress) {
                     $accessControl = $type === 'whitelist' ? 'whitelisted' : 'blacklisted';
-                    
-                    \App\Models\Radcheck::updateOrCreateRecord(
-                        $macAddress,
-                        'Cleartext-Password',
-                        $macAddress,
-                        '==',
-                        [
-                            'location_id' => $locationId,
-                            'access_control' => $accessControl
-                        ]
-                    );
-                    
-                    $synced++;
+
+                    // Scope to the first captive portal network for this location.
+                    $captiveNet = \App\Models\LocationNetwork::where('location_id', $locationId)
+                        ->where('type', 'captive_portal')
+                        ->first();
+
+                    if ($captiveNet) {
+                        \App\Models\Radcheck::updateOrCreateRecord(
+                            $macAddress,
+                            'Cleartext-Password',
+                            $macAddress,
+                            '==',
+                            ['network_id' => $captiveNet->id, 'access_control' => $accessControl]
+                        );
+                        $synced++;
+                    }
                 }
             }
             

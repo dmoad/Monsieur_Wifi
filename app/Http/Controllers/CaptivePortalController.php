@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Location;
-use App\Models\LocationSettings;
+use App\Models\LocationSettingsV2;
 use App\Models\CaptivePortalDesign;
 use Illuminate\Support\Facades\Log;
 
@@ -26,7 +26,7 @@ class CaptivePortalController extends Controller
         }
         
         // Get the location settings
-        $locationSettings = LocationSettings::where('location_id', $location_id)->first();
+        $locationSettings = LocationSettingsV2::where('location_id', $location_id)->first();
         
         if (!$locationSettings) {
             return response()->view('errors.500', ['message' => 'Location settings not found'], 500);

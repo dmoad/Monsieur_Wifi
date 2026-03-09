@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\SystemSetting;
-use App\Models\LocationSettings;
+use App\Models\LocationSettingsV2;
 use App\Models\ScanResult;
 use App\Models\OnlineNetworkUser;
 use Illuminate\Http\Request;
@@ -16,6 +16,7 @@ use App\Models\BlockedDomain;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\CaptivePortalWorkingHour;
+use App\Models\LocationNetwork;
 
 class DeviceController extends Controller
 {
@@ -167,7 +168,7 @@ class DeviceController extends Controller
             return response()->json(['error' => 'Location not found'], 404);
         }
 
-        $settings = LocationSettings::where('location_id', $location->id)->first();
+        $settings = LocationSettingsV2::where('location_id', $location->id)->first();
         if (!$settings) {
             return response()->json(['error' => 'Settings not found'], 404);
         }
@@ -266,11 +267,46 @@ class DeviceController extends Controller
             'hash' => $firmware_hash,
         ];
 
+        // Load flexible networks from location_networks table.
+        // Legacy flat fields in $settings remain for backward-compatible firmware.
+        $networks = LocationNetwork::where('location_id', $location->id)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Keep legacy wifi_name / wifi_password aliases pointing to the first
+        // password-type network so older firmware still works.
+        $firstPasswordNetwork = $networks->firstWhere('type', 'password');
+        if ($firstPasswordNetwork) {
+            $settings->wifi_name     = $firstPasswordNetwork->ssid;
+            $settings->wifi_password = $firstPasswordNetwork->password;
+        }
+
+        // Update captive whitelist based on new networks table if flat settings
+        // are not set (new locations will use networks table only).
+        if ($networks->isNotEmpty()) {
+            $captiveNetwork = $networks->firstWhere('type', 'captive_portal');
+            if ($captiveNetwork && $captiveNetwork->auth_method === 'social') {
+                $socialMethod = $captiveNetwork->social_auth_method;
+                if ($socialMethod === 'google') {
+                    $whitelist_domains .= ',' . env('GOOGLE_WHITELIST_DOMAINS', '');
+                    $whitelist_servers  .= ',' . env('GOOGLE_WHITELIST_SERVERS', '');
+                } elseif ($socialMethod === 'facebook') {
+                    $whitelist_domains .= ',' . env('FACEBOOK_WHITELIST_DOMAINS', '');
+                    $whitelist_servers  .= ',' . env('FACEBOOK_WHITELIST_SERVERS', '');
+                }
+                $whitelist_domains = rtrim($whitelist_domains, ',');
+                $whitelist_servers = rtrim($whitelist_servers, ',');
+                $guest_settings['whitelist_domains'] = $whitelist_domains;
+                $guest_settings['whitelist_servers'] = $whitelist_servers;
+            }
+        }
+
         return response()->json(
             [
                 'status' => 'success',
                 'location' => $location,
                 'settings' => $settings,
+                'networks' => $networks,
                 'radius_settings' => $radius_settings,
                 'guest_settings' => $guest_settings,
                 'firmware' => $firmware
@@ -337,7 +373,7 @@ class DeviceController extends Controller
             return response()->json(['error' => 'Location not found'], 404);
         }
 
-        $settings = LocationSettings::where('location_id', $location->id)->first();
+        $settings = LocationSettingsV2::where('location_id', $location->id)->first();
 
         // Check if captive portal should be enabled based on working hours
         $captivePortalEnabled = $this->isCaptivePortalEnabledAtCurrentTime($location->id);
@@ -351,6 +387,119 @@ class DeviceController extends Controller
             'firmware_version' => $firmware_version, 
             'scan_counter' => $device->scan_counter,
             'captive_portal_enabled' => $captivePortalEnabled
+        ]);
+    }
+
+    public function getSettingsV2($device_key, $device_secret)
+    {
+        Log::info('Get settings v2 request: '.$device_key.' '.$device_secret);
+        // ── Authenticate device ──────────────────────────────────────────────
+        $device = Device::where('device_key', $device_key)
+            ->where('device_secret', $device_secret)
+            ->first();
+
+        if (!$device) {
+            return response()->json(['error' => 'Invalid device credentials'], 401);
+        }
+
+        Log::info('Device: ');
+        Log::info($device);
+
+        $location = Location::where('device_id', $device->id)->first();
+        if (!$location) {
+            return response()->json(['error' => 'Location not found'], 404);
+        }
+
+        // ── Router-level settings (v2) ───────────────────────────────────────
+        $settings = LocationSettingsV2::where('location_id', $location->id)->first();
+        if (!$settings) {
+            return response()->json(['error' => 'Settings not found'], 404);
+        }
+
+        // ── Web content filtering (router-wide) ─────────────────────────────
+        $blockedDomains = collect();
+        if ($settings->web_filter_enabled && !empty($settings->web_filter_categories)) {
+            $enabledCategoryIds = Category::whereIn('id', $settings->web_filter_categories)
+                ->where('is_enabled', true)
+                ->pluck('id');
+
+            $blockedDomains = BlockedDomain::select('domain')
+                ->whereIn('category_id', $enabledCategoryIds)
+                ->get()
+                ->unique('domain')
+                ->filter(fn($d) => !empty($d->domain))
+                ->values();
+        }
+
+        // ── System-level radius (shared fallback) ────────────────────────────
+        $systemSettings  = SystemSetting::first();
+        $systemRadius = [
+            'radius_ip'       => $systemSettings->radius_ip,
+            'radius_port'     => $systemSettings->radius_port,
+            'radius_secret'   => $systemSettings->radius_secret,
+            'accounting_port' => $systemSettings->accounting_port,
+        ];
+
+        // ── Networks — each captive portal carries its own radius +
+        //    guest_settings so future networks can differ independently. ──────
+        $networks = LocationNetwork::where('location_id', $location->id)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function (LocationNetwork $network) use ($systemRadius) {
+                $networkData = $network->toArray();
+
+                if ($network->type === 'captive_portal') {
+                    // Walled-garden: start from env base, extend by social method.
+                    $whitelistDomains = env('GUEST_WHITELIST_DOMAINS', '');
+                    $whitelistServers = env('GUEST_WHITELIST_SERVERS', '');
+
+                    if ($network->auth_method === 'social') {
+                        match ($network->social_auth_method) {
+                            'google'   => [
+                                $whitelistDomains .= ',' . env('GOOGLE_WHITELIST_DOMAINS', ''),
+                                $whitelistServers  .= ',' . env('GOOGLE_WHITELIST_SERVERS', ''),
+                            ],
+                            'facebook' => [
+                                $whitelistDomains .= ',' . env('FACEBOOK_WHITELIST_DOMAINS', ''),
+                                $whitelistServers  .= ',' . env('FACEBOOK_WHITELIST_SERVERS', ''),
+                            ],
+                            default => null,
+                        };
+                    }
+
+                    $networkData['guest_settings'] = [
+                        'login_url'         => env('GUEST_LOGIN_URL'),
+                        'whitelist_domains' => rtrim($whitelistDomains, ','),
+                        'whitelist_servers' => rtrim($whitelistServers, ','),
+                    ];
+
+                    // Each captive network uses the system radius for now;
+                    // a per-network override column can be added later.
+                    $networkData['radius_settings'] = $systemRadius;
+                }
+
+                return $networkData;
+            });
+
+        // ── Firmware ─────────────────────────────────────────────────────────
+        $firmwareInfo = ($device->firmware_id && $device->firmware_id > 0)
+            ? Firmware::find($device->firmware_id)
+            : null;
+
+        $firmware = [
+            'version'   => $firmwareInfo ? $firmwareInfo->id : 0,
+            'file_name' => $firmwareInfo ? basename($firmwareInfo->file_path) : null,
+            'file_path' => $firmwareInfo ? Storage::disk('public')->url($firmwareInfo->file_path) : null,
+            'hash'      => $firmwareInfo ? $firmwareInfo->md5sum : null,
+        ];
+
+        return response()->json([
+            'status'          => 'success',
+            'location'        => $location,
+            'settings'        => $settings,
+            'networks'        => $networks,
+            'blocked_domains' => $blockedDomains,
+            'firmware'        => $firmware,
         ]);
     }
 
@@ -1026,24 +1175,32 @@ class DeviceController extends Controller
     public function getAvailableForLocation(Request $request)
     {
         $user = auth()->user();
-        
+        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+
         // Get unassigned devices
         $unassignedQuery = Device::with('owner')
             ->whereDoesntHave('location');
-        
+
         // Get assigned devices
         $assignedQuery = Device::with(['owner', 'location'])
             ->whereHas('location');
-        
-        // If not admin, filter by ownership
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+
+        if ($isAdmin) {
+            // Admin can pass owner_id to filter devices by a specific user
+            if ($request->filled('owner_id')) {
+                $unassignedQuery->where('owner_id', $request->owner_id);
+                $assignedQuery->where('owner_id', $request->owner_id);
+            }
+            // Without owner_id, admin sees all devices
+        } else {
+            // Regular users only see their own devices
             $unassignedQuery->where('owner_id', $user->id);
             $assignedQuery->where('owner_id', $user->id);
         }
-        
+
         $unassignedDevices = $unassignedQuery->orderBy('serial_number')->get();
         $assignedDevices = $assignedQuery->orderBy('serial_number')->get();
-        
+
         return response()->json([
             'success' => true,
             'unassigned' => $unassignedDevices,

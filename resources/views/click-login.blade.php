@@ -401,7 +401,7 @@
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
-            const locationId = getPathParameter('location');
+            const networkId = getPathParameter('location');
             $('#terms-content').html(designData.terms_content);
             $('#privacy-content').html(designData.privacy_content);
             var button_text = designData.button_text || 'Connect to WiFi';
@@ -427,7 +427,7 @@
                     url: '/api/guest/login',
                     method: 'POST',
                     data: {
-                        location_id: locationId,
+                        network_id: networkId,
                         mac_address: macAddress,
                         login_method: 'click-through',
                         challenge: challenge,
@@ -623,7 +623,7 @@
             
             // Get location information including challenge and IP address
             $.ajax({
-                url: `/api/captive-portal/${locationId}/info`,
+                url: `/api/captive-portal/${networkId}/info`,
                 type: 'GET',
                 data: { mac_address: macAddress },
                 headers: { 'Accept': 'application/json' },
@@ -660,8 +660,8 @@
                 }
             });
             
-            // If location_id or mac_address is missing, show error
-            if (!locationId || !macAddress) {
+            // If network_id or mac_address is missing, show error
+            if (!networkId || !macAddress) {
                 const lang = getLanguage();
                 $('.portal-container').html(`
                     <div class="text-center">

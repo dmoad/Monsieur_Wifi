@@ -9,221 +9,117 @@ class Radcheck extends Model
 {
     use HasFactory;
 
-    /**
-     * The connection name for the model.
-     *
-     * @var string
-     */
     protected $connection = 'radius';
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'radcheck';
 
-    /**
-     * The primary key for the model.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id';
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
     public $timestamps = false;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'username',
         'attribute',
         'op',
         'value',
-        'location_id',
+        'network_id',
         'download_bandwidth',
         'upload_bandwidth',
         'expiration_time',
         'idle_timeout',
-        'access_control'
+        'access_control',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'expiration_time' => 'datetime',
     ];
 
-    /**
-     * Access control options
-     */
-    const ACCESS_CONTROL_NONE = 'none';
+    const ACCESS_CONTROL_NONE        = 'none';
     const ACCESS_CONTROL_WHITELISTED = 'whitelisted';
     const ACCESS_CONTROL_BLACKLISTED = 'blacklisted';
 
-    /**
-     * Get available access control options
-     *
-     * @return array
-     */
-    public static function getAccessControlOptions()
+    public static function getAccessControlOptions(): array
     {
         return [
-            self::ACCESS_CONTROL_NONE => 'None',
+            self::ACCESS_CONTROL_NONE        => 'None',
             self::ACCESS_CONTROL_WHITELISTED => 'Whitelisted',
-            self::ACCESS_CONTROL_BLACKLISTED => 'Blacklisted'
+            self::ACCESS_CONTROL_BLACKLISTED => 'Blacklisted',
         ];
     }
 
-    /**
-     * Check if the record is whitelisted
-     *
-     * @return bool
-     */
-    public function isWhitelisted()
+    public function isWhitelisted(): bool
     {
         return $this->access_control === self::ACCESS_CONTROL_WHITELISTED;
     }
 
-    /**
-     * Check if the record is blacklisted
-     *
-     * @return bool
-     */
-    public function isBlacklisted()
+    public function isBlacklisted(): bool
     {
         return $this->access_control === self::ACCESS_CONTROL_BLACKLISTED;
     }
 
-    /**
-     * Check if the record has no access control
-     *
-     * @return bool
-     */
-    public function hasNoAccessControl()
+    public function hasNoAccessControl(): bool
     {
         return $this->access_control === self::ACCESS_CONTROL_NONE;
     }
 
-    /**
-     * Scope to filter by access control type
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $accessControl
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeAccessControl($query, $accessControl)
+    public function scopeAccessControl($query, string $accessControl)
     {
         return $query->where('access_control', $accessControl);
     }
 
-    /**
-     * Scope to filter whitelisted records
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
     public function scopeWhitelisted($query)
     {
         return $query->accessControl(self::ACCESS_CONTROL_WHITELISTED);
     }
 
-    /**
-     * Scope to filter blacklisted records
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
     public function scopeBlacklisted($query)
     {
         return $query->accessControl(self::ACCESS_CONTROL_BLACKLISTED);
     }
 
-    /**
-     * Get records by username
-     *
-     * @param string $username
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
     public static function getByUsername(string $username)
     {
         return self::where('username', $username)->get();
     }
 
-    /**
-     * Get records by username and location_id
-     *
-     * @param string $username
-     * @param int $locationId
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public static function getByUsernameAndLocation(string $username, int $locationId)
+    public static function getByUsernameAndNetwork(string $username, int $networkId)
     {
         return self::where('username', $username)
-            ->where('location_id', $locationId)
+            ->where('network_id', $networkId)
             ->get();
     }
 
     /**
-     * Update or create a radcheck record
-     *
-     * @param string $username
-     * @param string $attribute
-     * @param string $value
-     * @param string $op
-     * @param array $additional
-     * @return \App\Models\Radcheck
+     * Update or create a radcheck record.
+     * Pass `network_id` in $additional to scope the upsert to a specific network.
      */
-    public static function updateOrCreateRecord(string $username, string $attribute, string $value, string $op = '==', array $additional = [])
-    {
-        $data = ['value' => $value, 'op' => $op];
-        
-        if (!empty($additional)) {
-            $data = array_merge($data, $additional);
-        }
-        
+    public static function updateOrCreateRecord(
+        string $username,
+        string $attribute,
+        string $value,
+        string $op = '==',
+        array $additional = []
+    ): self {
+        $data = array_merge(['value' => $value, 'op' => $op], $additional);
+
         $conditions = ['username' => $username, 'attribute' => $attribute];
-        
-        // Add location_id to the conditions if it exists in additional data
-        if (isset($additional['location_id'])) {
-            $conditions['location_id'] = $additional['location_id'];
+
+        if (isset($additional['network_id'])) {
+            $conditions['network_id'] = $additional['network_id'];
         }
-        
+
         return self::updateOrCreate($conditions, $data);
     }
 
-    /**
-     * Delete all records for a specific username
-     *
-     * @param string $username
-     * @return int
-     */
-    public static function deleteByUsername(string $username)
+    public static function deleteByUsername(string $username): int
     {
         return self::where('username', $username)->delete();
     }
-    
-    /**
-     * Delete records for a specific username and location
-     *
-     * @param string $username
-     * @param int $locationId
-     * @return int
-     */
-    public static function deleteByUsernameAndLocation(string $username, int $locationId)
+
+    public static function deleteByUsernameAndNetwork(string $username, int $networkId): int
     {
         return self::where('username', $username)
-            ->where('location_id', $locationId)
+            ->where('network_id', $networkId)
             ->delete();
     }
-} 
+}

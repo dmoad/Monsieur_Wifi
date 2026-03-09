@@ -15,8 +15,30 @@ class InteractiveScheduler {
                 "thursday",
                 "friday",
             ],
+            labels: {},
             ...options,
         };
+
+        // Merge provided labels over defaults
+        this.labels = Object.assign({
+            title:          'Working Hours',
+            subtitle:       'Captive Portal Access Schedule',
+            quickSet:       'Quick Set:',
+            businessHours:  'Business Hours',
+            clearAll:       'Clear All',
+            saveSchedule:   'Save Schedule',
+            hint:           'Click empty cells to create slots. Drag to move, resize with handles, hover for delete.',
+            days: {
+                monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday',
+                thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday',
+            },
+            msgOverlap:        'Cannot create slot: overlaps with existing slot',
+            msgInvalidMove:    'Invalid position: slot would overlap or exceed bounds',
+            msgInvalidResize:  'Invalid resize: would overlap or exceed bounds',
+            msgBusinessApplied:'Business hours applied',
+            msgCleared:        'All slots cleared',
+            msgSaved:          'Schedule saved!',
+        }, this.options.labels);
 
         this.slots = [];
         this.slotIdCounter = 0;
@@ -56,18 +78,19 @@ class InteractiveScheduler {
         ];
         const hours = Array.from({ length: 24 }, (_, i) => i);
 
+        const L = this.labels;
         this.container.innerHTML = `
             <div class="schedule-container">
                 <div class="schedule-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="mb-1">Working Hours</h5>
-                            <p class="mb-0 text-muted">Captive Portal Access Schedule</p>
+                            <h5 class="mb-1">${L.title}</h5>
+                            <p class="mb-0 text-muted">${L.subtitle}</p>
                         </div>
                         <div class="quick-actions">
-                            <small class="text-muted me-2">Quick Set:</small>
-                            <button class="btn btn-outline-primary btn-sm" data-action="business-hours">Business Hours</button>
-                            <button class="btn btn-outline-secondary btn-sm" data-action="clear-all">Clear All</button>
+                            <small class="text-muted me-2">${L.quickSet}</small>
+                            <button class="btn btn-outline-primary btn-sm" data-action="business-hours">${L.businessHours}</button>
+                            <button class="btn btn-outline-secondary btn-sm" data-action="clear-all">${L.clearAll}</button>
                         </div>
                     </div>
                 </div>
@@ -91,9 +114,7 @@ class InteractiveScheduler {
                             .map(
                                 (day) => `
                             <div class="day-row" data-day="${day}">
-                                <div class="day-label">${this.capitalize(
-                                    day
-                                )}</div>
+                                <div class="day-label">${L.days[day] || this.capitalize(day)}</div>
                                 ${hours
                                     .map(
                                         (hour) =>
@@ -112,10 +133,10 @@ class InteractiveScheduler {
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">
                             <i class="bi bi-info-circle me-1"></i>
-                            Click empty cells to create slots. Drag to move, resize with handles, hover for delete.
+                            ${L.hint}
                         </small>
                         <button class="btn btn-success btn-sm" data-action="save">
-                            <i class="bi bi-check-lg me-1"></i> Save Schedule
+                            <i class="bi bi-check-lg me-1"></i> ${L.saveSchedule}
                         </button>
                     </div>
                 </div>
@@ -165,10 +186,7 @@ class InteractiveScheduler {
         const hour = parseInt(cell.dataset.hour);
 
         if (this.hasOverlap(day, hour, hour + 1)) {
-            this.showMessage(
-                "Cannot create slot: overlaps with existing slot",
-                "error"
-            );
+            this.showMessage(this.labels.msgOverlap, "error");
             return;
         }
 
@@ -298,10 +316,7 @@ class InteractiveScheduler {
                 }
             } else {
                 this.resetSlotPosition(target);
-                this.showMessage(
-                    "Invalid position: slot would overlap or exceed bounds",
-                    "error"
-                );
+                this.showMessage(this.labels.msgInvalidMove, "error");
             }
         } else {
             this.resetSlotPosition(target);
@@ -369,10 +384,7 @@ class InteractiveScheduler {
             // Invalid resize, reset
             target.remove();
             this.renderSlot(slot);
-            this.showMessage(
-                "Invalid resize: would overlap or exceed bounds",
-                "error"
-            );
+            this.showMessage(this.labels.msgInvalidResize, "error");
         }
     }
 
@@ -465,7 +477,7 @@ class InteractiveScheduler {
             this.renderSlot(slot);
         });
 
-        this.showMessage("Business hours applied", "success");
+        this.showMessage(this.labels.msgBusinessApplied, "success");
     }
 
     clearAll() {
@@ -473,7 +485,7 @@ class InteractiveScheduler {
         this.container
             .querySelectorAll(".time-slot")
             .forEach((slot) => slot.remove());
-        this.showMessage("All slots cleared", "info");
+        this.showMessage(this.labels.msgCleared, "info");
     }
 
     saveSchedule() {
@@ -483,10 +495,7 @@ class InteractiveScheduler {
             this.options.onSave(scheduleData);
         } else {
             console.log("Schedule data:", scheduleData);
-            this.showMessage(
-                "Schedule saved! Check console for data.",
-                "success"
-            );
+            this.showMessage(this.labels.msgSaved, "success");
         }
     }
 

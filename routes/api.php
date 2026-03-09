@@ -17,6 +17,7 @@ use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\LocationNetworkController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -74,6 +75,7 @@ Route::group(['prefix' => 'devices'], function () {
 });
 
 Route::get('/devices/{device_key}/{device_secret}/settings', [DeviceController::class, 'getSettings']);
+Route::get('/devices/{device_key}/{device_secret}/v2-settings', [DeviceController::class, 'getSettingsV2']);
 Route::get('/devices/{device_key}/{device_secret}/heartbeat', [DeviceController::class, 'heartbeat']);
 Route::get('/devices/{device_key}/{device_secret}/firmware', [FirmwareController::class, 'getDeviceFirmware']);
 Route::post('/devices/{device_key}/{device_secret}/clients', [DeviceController::class, 'updateClientList']);
@@ -130,6 +132,14 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::post('/{id}/captive-portal/hourly-schedule/{dayOfWeek}/{hour}/toggle', [CaptivePortalHourlyScheduleController::class, 'toggleHour']);
     Route::post('/{id}/captive-portal/hourly-schedule/initialize', [CaptivePortalHourlyScheduleController::class, 'initializeFromWorkingHours']);
     Route::get('/{id}/captive-portal/hourly-schedule/status', [CaptivePortalHourlyScheduleController::class, 'checkCurrentStatus']);
+
+    // Location networks (flexible multi-network support)
+    Route::get('/{location_id}/networks', [LocationNetworkController::class, 'index']);
+    Route::post('/{location_id}/networks', [LocationNetworkController::class, 'store']);
+    Route::put('/{location_id}/networks/reorder', [LocationNetworkController::class, 'reorder']);
+    Route::get('/{location_id}/networks/{network_id}', [LocationNetworkController::class, 'show']);
+    Route::put('/{location_id}/networks/{network_id}', [LocationNetworkController::class, 'update']);
+    Route::delete('/{location_id}/networks/{network_id}', [LocationNetworkController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], function () {
@@ -201,8 +211,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'dashboard'], function () 
     Route::get('/data-usage-trends', [DashboardController::class, 'getDataUsageTrends']);
 });
 
-Route::post('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
-Route::get('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
+Route::post('/captive-portal/{network_id}/info', [GuestNetworkUserController::class, 'info']);
+Route::get('/captive-portal/{network_id}/info', [GuestNetworkUserController::class, 'info']);
 Route::post('/captive-portal/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/captive-portal/twitter-login', [GuestNetworkUserController::class, 'twitterLogin']);
 
@@ -215,7 +225,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
 Route::resource('/guest-users', GuestNetworkUserController::class);
 
 // Guest Network User routes
-Route::post('/location/{location_id}/guest/info', [GuestNetworkUserController::class, 'info']);
+Route::post('/network/{network_id}/guest/info', [GuestNetworkUserController::class, 'info']);
 Route::post('/guest/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/guest/request-otp', [GuestNetworkUserController::class, 'requestOtp']);
 

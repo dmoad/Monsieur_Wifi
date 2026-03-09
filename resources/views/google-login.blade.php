@@ -455,21 +455,21 @@
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
             let macAddress = urlParams.get('mac') || getPathParameter('mac_address');
-            let locationId = getPathParameter('location');
+            let networkId = getPathParameter('location');
             
             // Fallback: Extract location and MAC directly from URL path segments
-            if (!locationId || !macAddress) {
+            if (!networkId || !macAddress) {
                 const pathSegments = path.split('/').filter(segment => segment.length > 0);
                 console.log('Path segments:', pathSegments);
                 
                 // Special handling for social-login/google pattern
                 if (path.includes('social-login/google') && pathSegments.length >= 4) {
-                    locationId = locationId || pathSegments[2];
+                    networkId = networkId || pathSegments[2];
                     macAddress = macAddress || pathSegments[3];
-                    console.log('Detected social-login pattern. Location:', locationId, 'MAC:', macAddress);
+                    console.log('Detected social-login pattern. Location:', networkId, 'MAC:', macAddress);
                 } else if (pathSegments.length >= 2) {
                     // Typically the format would be /google-login/{location}/{mac}
-                    locationId = locationId || pathSegments[1];
+                    networkId = networkId || pathSegments[1];
                     macAddress = macAddress || pathSegments[2];
                 }
                 
@@ -481,7 +481,7 @@
                 }
             }
             
-            console.log('Location ID:', locationId);
+            console.log('Network ID:', networkId);
             console.log('MAC Address:', macAddress);
             
             // Apply design settings
@@ -492,9 +492,9 @@
                 console.log('Google login button clicked');
                 const lang = getLanguage();
 
-                if (!locationId || !macAddress) {
+                if (!networkId || !macAddress) {
                     showAlert(translations[lang].missingParams, 'danger');
-                    console.error('Missing parameters - Location ID:', locationId, 'MAC Address:', macAddress);
+                    console.error('Missing parameters - Network ID:', networkId, 'MAC Address:', macAddress);
                     return;
                 }
 
@@ -650,10 +650,10 @@
                 // Check for social-login/google pattern
                 if (path.includes('social-login/google')) {
                     if (param === 'location') {
-                        // URL pattern: /social-login/google/{location_id}/{mac_address}
+                        // URL pattern: /social-login/google/{network_id}/{mac_address}
                         return pathParts[3] || '';
                     } else if (param === 'mac_address') {
-                        // URL pattern: /social-login/google/{location_id}/{mac_address}
+                        // URL pattern: /social-login/google/{network_id}/{mac_address}
                         return pathParts[4] || '';
                     }
                 } else if (path.includes('google-login')) {
@@ -676,8 +676,8 @@
                 return '';
             }
             
-            // If location_id or mac_address is missing, show error
-            if (!locationId || !macAddress) {
+            // If network_id or mac_address is missing, show error
+            if (!networkId || !macAddress) {
                 const lang = getLanguage();
                 $('.portal-container').html(`
                     <div class="text-center">
@@ -691,7 +691,7 @@
             
             // Get location information
             $.ajax({
-                url: `/api/captive-portal/${locationId}/info`,
+                url: `/api/captive-portal/${networkId}/info`,
                 type: 'GET',
                 data: { mac_address: macAddress },
                 headers: { 'Accept': 'application/json' },
