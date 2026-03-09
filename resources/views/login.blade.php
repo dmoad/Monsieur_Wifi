@@ -543,6 +543,12 @@
                                         <span>Reset Password</span>
                                     </a>
                                 </p>
+                                <p class="text-center mt-1" id="signup-link">
+                                    <span id="no-account-text">Don't have an account?</span>
+                                    <a href="/register">
+                                        <span id="signup-text">Sign up</span>
+                                    </a>
+                                </p>
                             </div>
                         </div>
                         <!-- /Login v1 -->
@@ -593,6 +599,8 @@
                 signingIn: 'Signing in...',
                 forgotPassword: 'Forgot your password?',
                 resetPassword: 'Reset Password',
+                noAccount: "Don't have an account?",
+                signUp: 'Sign up',
                 loginSuccessful: 'Login successful!',
                 loginError: 'An error occurred during login.',
                 langCode: 'EN',
@@ -613,6 +621,8 @@
                 signingIn: 'Connexion en cours...',
                 forgotPassword: 'Mot de passe oublié?',
                 resetPassword: 'Réinitialiser le mot de passe',
+                noAccount: 'Pas de compte ?',
+                signUp: 'S\'inscrire',
                 loginSuccessful: 'Connexion réussie!',
                 loginError: 'Une erreur s\'est produite lors de la connexion.',
                 langCode: 'FR',
@@ -652,6 +662,8 @@
             $('#login-text').text(t.signIn);
             $('p.text-center.mt-2 > span').first().text(t.forgotPassword);
             $('a[href="forgot-password.html"] span').text(t.resetPassword);
+            $('#no-account-text').text(t.noAccount);
+            $('#signup-text').text(t.signUp);
             
             // Update language dropdown button
             $('#current-lang').text(t.langCode);
