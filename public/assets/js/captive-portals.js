@@ -319,36 +319,38 @@ function fetchDesignDetails(designId) {
     });
 }
 
-function checkUserDevices() {
+function checkUserSubscription() {
+    const ctaBannerHtml = `
+        <div class="alert alert-primary d-flex align-items-center justify-content-between mb-2" style="border-left: 4px solid #7367f0; background: linear-gradient(135deg, rgba(115,103,240,0.08), rgba(115,103,240,0.02)); border-radius: 8px; padding: 1.25rem 1.5rem;">
+            <div class="d-flex align-items-center">
+                <div style="background: rgba(115,103,240,0.15); border-radius: 50%; padding: 0.75rem; margin-right: 1rem;">
+                    <i data-feather="wifi" style="width: 24px; height: 24px; color: #7367f0;"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0" style="color: #7367f0;">${t.ctaTitle}</h5>
+                    <p class="mb-0 text-muted">${t.ctaText}</p>
+                </div>
+            </div>
+            <a href="/pricing" class="btn btn-primary ml-2 d-flex align-items-center" style="white-space: nowrap; padding: 0.6rem 1.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; gap: 0.4rem;">
+                <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.ctaButton}
+            </a>
+        </div>
+    `;
+
     $.ajax({
-        url: '/api/devices',
+        url: '/api/subscription/status',
         method: 'GET',
         headers: { 'Authorization': 'Bearer ' + token },
         success: function(response) {
-            const devices = response.data || response.devices || response;
-            const hasDevices = Array.isArray(devices) && devices.length > 0;
-            if (!hasDevices) {
-                $('#device-cta-banner').html(`
-                    <div class="alert alert-primary d-flex align-items-center justify-content-between mb-2" style="border-left: 4px solid #7367f0; background: linear-gradient(135deg, rgba(115,103,240,0.08), rgba(115,103,240,0.02)); border-radius: 8px; padding: 1.25rem 1.5rem;">
-                        <div class="d-flex align-items-center">
-                            <div style="background: rgba(115,103,240,0.15); border-radius: 50%; padding: 0.75rem; margin-right: 1rem;">
-                                <i data-feather="wifi" style="width: 24px; height: 24px; color: #7367f0;"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0" style="color: #7367f0;">${t.ctaTitle}</h5>
-                                <p class="mb-0 text-muted">${t.ctaText}</p>
-                            </div>
-                        </div>
-                        <a href="/pricing" class="btn btn-primary btn-sm ml-2" style="white-space: nowrap;">
-                            <i data-feather="shopping-bag" style="width: 14px; height: 14px;"></i> ${t.ctaButton}
-                        </a>
-                    </div>
-                `).show();
+            if (!response.has_subscription) {
+                $('#device-cta-banner').html(ctaBannerHtml).show();
                 if (typeof feather !== 'undefined') feather.replace();
             }
         },
         error: function() {
-            // Silently fail - don't block the page if device check fails
+            // If subscription check fails, show CTA as fallback
+            $('#device-cta-banner').html(ctaBannerHtml).show();
+            if (typeof feather !== 'undefined') feather.replace();
         }
     });
 }
@@ -656,7 +658,7 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const fromRegistration = urlParams.get('from') === 'registration';
     fetchDesigns(fromRegistration);
-    checkUserDevices();
+    checkUserSubscription();
 
     initializePreview();
     updatePreviewBackground();
