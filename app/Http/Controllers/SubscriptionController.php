@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use App\Mail\SubscriptionConfirmedMail;
+use App\Mail\NewSubscriptionAdminNotification;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Log;
 
@@ -399,6 +402,11 @@ class SubscriptionController extends Controller
                     'user_id' => $user->id,
                     'session_id' => $request->session_id,
                 ]);
+
+                // Send confirmation email (only if subscription was just created here, not already by webhook)
+                if (!is_string($stripeSubscription)) {
+                    $this->sendSubscriptionConfirmationEmail($user, $stripeSubscription, $session);
+                }
             }
 
             return response()->json([
@@ -499,6 +507,9 @@ class SubscriptionController extends Controller
                 'user_id' => $user->id,
                 'subscription_id' => $stripeSubscription->id,
             ]);
+
+            // Send confirmation email
+            $this->sendSubscriptionConfirmationEmail($user, $stripeSubscription);
         }
     }
 
@@ -527,6 +538,82 @@ class SubscriptionController extends Controller
             $dbSubscription->update([
                 'stripe_status' => $subscription->status,
                 'ends_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Send subscription confirmation email to user
+     */
+    protected function sendSubscriptionConfirmationEmail(User $user, $stripeSubscription, $session = null)
+    {
+        try {
+            // Get price details
+            $planName = 'Standard';
+            $amount = '';
+            $interval = '';
+
+            if (isset($stripeSubscription->items->data[0])) {
+                $priceObj = $stripeSubscription->items->data[0]->price;
+                $amount = number_format($priceObj->unit_amount / 100, 2) . ' ' . strtoupper($priceObj->currency);
+                $interval = $priceObj->recurring->interval === 'month' ? 'Mensuel / Monthly' : 'Annuel / Annual';
+
+                // Try to determine plan name from price ID
+                if ($priceObj->id === env('STRIPE_PRICE_PREMIUM')) {
+                    $planName = 'Premium';
+                } elseif ($priceObj->id === env('STRIPE_PRICE_STANDARD') || $priceObj->id === env('STRIPE_PRICE_STARTER')) {
+                    $planName = 'Standard';
+                } else {
+                    $planName = $priceObj->nickname ?? 'Standard';
+                }
+            }
+
+            $startDate = $stripeSubscription->current_period_start
+                ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->current_period_start)->format('d/m/Y')
+                : now()->format('d/m/Y');
+
+            // Extract shipping address from checkout session
+            $shippingAddress = null;
+            if ($session) {
+                // Try collected_information->shipping_details first, then customer_details
+                $shipping = $session->collected_information->shipping_details ?? null;
+                $address = $shipping->address ?? $session->customer_details->address ?? null;
+                $name = $shipping->name ?? $session->customer_details->name ?? $user->name;
+
+                if ($address && ($address->line1 ?? null)) {
+                    $shippingAddress = [
+                        'name' => $name,
+                        'line1' => $address->line1 ?? '',
+                        'line2' => $address->line2 ?? '',
+                        'city' => $address->city ?? '',
+                        'postal_code' => $address->postal_code ?? '',
+                        'state' => $address->state ?? '',
+                        'country' => $address->country ?? '',
+                    ];
+                }
+            }
+
+            $subscriptionData = [
+                'plan_name' => $planName,
+                'amount' => $amount,
+                'interval' => $interval,
+                'start_date' => $startDate,
+                'shipping_address' => $shippingAddress,
+            ];
+
+            // Detect user language preference (default to French)
+            $locale = 'fr';
+
+            Mail::to($user->email)->send(new SubscriptionConfirmedMail($user, $subscriptionData, $locale));
+
+            // Send admin notification
+            Mail::to('lmermet@citypassenger.com')->send(new NewSubscriptionAdminNotification($user, $subscriptionData));
+
+            Log::info('Subscription confirmation email sent', ['user_id' => $user->id, 'email' => $user->email]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send subscription confirmation email', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
             ]);
         }
     }
