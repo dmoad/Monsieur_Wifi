@@ -9,7 +9,16 @@ const TRANSLATIONS = {
         fileTooLarge: 'File size must be less than 2MB',
         profileUpdatedSuccess: 'Profile updated successfully!',
         failedUpdateProfile: 'Failed to update profile. Please try again.',
-        uploadingPhoto: 'Uploading Photo...'
+        uploadingPhoto: 'Uploading Photo...',
+        subscriptionActive: 'Active',
+        subscriptionCanceled: 'Cancelled',
+        subscriptionNone: 'No active subscription',
+        subscriptionPlan: 'Plan',
+        subscriptionStatus: 'Status',
+        subscriptionManage: 'Manage Subscription',
+        subscriptionSubscribe: 'Subscribe now',
+        subscriptionCancelConfirm: 'Are you sure you want to cancel your subscription?',
+        subscriptionOnGracePeriod: 'Your subscription is cancelled but active until'
     },
     fr: {
         savingChanges: 'Enregistrement des modifications...',
@@ -19,7 +28,16 @@ const TRANSLATIONS = {
         fileTooLarge: 'La taille du fichier doit être inférieure à 2 Mo',
         profileUpdatedSuccess: 'Profil mis à jour avec succès !',
         failedUpdateProfile: 'Échec de la mise à jour du profil. Veuillez réessayer.',
-        uploadingPhoto: 'Téléchargement de la photo...'
+        uploadingPhoto: 'Téléchargement de la photo...',
+        subscriptionActive: 'Actif',
+        subscriptionCanceled: 'Annulé',
+        subscriptionNone: 'Aucun abonnement actif',
+        subscriptionPlan: 'Plan',
+        subscriptionStatus: 'Statut',
+        subscriptionManage: 'Gérer l\'abonnement',
+        subscriptionSubscribe: 'S\'abonner',
+        subscriptionCancelConfirm: 'Êtes-vous sûr de vouloir annuler votre abonnement ?',
+        subscriptionOnGracePeriod: 'Votre abonnement est annulé mais actif jusqu\'au'
     }
 };
 
@@ -217,4 +235,97 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Load subscription status
+    loadSubscriptionStatus();
 });
+
+function loadSubscriptionStatus() {
+    const token = UserManager.getToken();
+    if (!token) return;
+
+    $.ajax({
+        url: '/api/subscription/status',
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(response) {
+            renderSubscription(response);
+        },
+        error: function() {
+            $('#subscription-section').html(`
+                <div class="d-flex align-items-center justify-content-between">
+                    <p class="mb-0 text-muted">${t.subscriptionNone}</p>
+                    <a href="/pricing" class="btn btn-primary">
+                        <i data-feather="shopping-bag"></i> ${t.subscriptionSubscribe}
+                    </a>
+                </div>
+            `);
+            if (typeof feather !== 'undefined') feather.replace();
+        }
+    });
+}
+
+function renderSubscription(data) {
+    const section = $('#subscription-section');
+
+    if (!data.has_subscription) {
+        section.html(`
+            <div class="d-flex align-items-center justify-content-between">
+                <p class="mb-0 text-muted">${t.subscriptionNone}</p>
+                <a href="/pricing" class="btn btn-primary d-flex align-items-center" style="gap: 0.4rem;">
+                    <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.subscriptionSubscribe}
+                </a>
+            </div>
+        `);
+    } else {
+        const sub = data.subscription;
+        const isActive = sub.stripe_status === 'active';
+        const statusBadge = isActive
+            ? `<span class="badge badge-light-success">${t.subscriptionActive}</span>`
+            : `<span class="badge badge-light-danger">${t.subscriptionCanceled}</span>`;
+
+        let graceNote = '';
+        if (sub.on_grace_period && sub.ends_at) {
+            const endDate = new Date(sub.ends_at).toLocaleDateString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US');
+            graceNote = `<p class="text-warning mt-1 mb-0"><i data-feather="alert-circle" style="width: 14px; height: 14px;"></i> ${t.subscriptionOnGracePeriod} ${endDate}</p>`;
+        }
+
+        section.html(`
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center mb-50" style="gap: 0.75rem;">
+                        <span class="font-weight-bold" style="font-size: 1.1rem;">${sub.name || 'Standard'}</span>
+                        ${statusBadge}
+                    </div>
+                    ${graceNote}
+                </div>
+                <button class="btn btn-outline-primary d-flex align-items-center" id="manage-subscription-btn" style="gap: 0.4rem;">
+                    <i data-feather="settings" style="width: 16px; height: 16px;"></i> ${t.subscriptionManage}
+                </button>
+            </div>
+        `);
+
+        $('#manage-subscription-btn').on('click', function() {
+            const $btn = $(this);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+            $.ajax({
+                url: '/api/subscription/billing-portal',
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + UserManager.getToken() },
+                success: function(response) {
+                    if (response.url) {
+                        window.location.href = response.url;
+                    }
+                },
+                error: function() {
+                    toastr.error('Failed to open billing portal');
+                    $btn.prop('disabled', false).html(`<i data-feather="settings" style="width: 16px; height: 16px;"></i> ${t.subscriptionManage}`);
+                    if (typeof feather !== 'undefined') feather.replace();
+                }
+            });
+        });
+    }
+
+    if (typeof feather !== 'undefined') feather.replace();
+}

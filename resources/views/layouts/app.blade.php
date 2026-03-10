@@ -60,6 +60,8 @@
         /* Toastr overrides - fully opaque */
         .toast {
             opacity: 1 !important;
+            color: #fff !important;
+            font-weight: 600;
         }
         .toast-success {
             background-color: #28c76f !important;

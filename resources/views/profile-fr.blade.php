@@ -114,6 +114,24 @@
                 </div>
             </div>
         </div>
+
+        <!-- Subscription Section -->
+        <div class="row mt-2">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title"><i data-feather="credit-card" class="mr-50"></i> Abonnement</h4>
+                    </div>
+                    <div class="card-body" id="subscription-section">
+                        <div class="text-center py-2">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Chargement...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 @endsection
