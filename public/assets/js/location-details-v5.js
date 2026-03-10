@@ -272,7 +272,7 @@ async function openCloneModal() {
         // Load users into the clone owner dropdown
         try {
             const res = await apiFetch(`${API}/accounts/users`);
-            const users = res.data || [];
+            const users = res.users || res.data || [];
             const $select = $('#clone-owner-select');
             $select.empty().append('<option value="">Assign to self</option>');
             users.forEach(u => {
@@ -324,7 +324,7 @@ async function cloneLocation() {
 async function loadOwnerDropdown(currentOwnerId) {
     try {
         const res = await apiFetch(`${API}/accounts/users`);
-        const users = res.data || [];
+        const users = res.users || res.data || [];
         const $select = $('#location-owner');
         $select.empty().append('<option value="">Select Owner</option>');
         users.forEach(u => {

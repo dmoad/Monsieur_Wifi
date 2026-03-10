@@ -148,43 +148,48 @@
                                 <input type="email" class="form-control" id="new-account-email" placeholder="Email" required />
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6">
+                        <div class="col-12">
                             <div class="form-group">
-                                <label for="new-account-password">Password <span class="text-danger">*</span></label>
-                                <div class="input-group form-password-toggle">
-                                    <input type="password" class="form-control" id="new-account-password" placeholder="Password" required />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text cursor-pointer">
-                                            <i data-feather="eye"></i>
-                                        </span>
-                                    </div>
+                                <label>Password Setup</label>
+                                <div class="btn-group btn-group-toggle w-100" data-toggle="buttons" id="password-method-toggle">
+                                    <label class="btn btn-outline-primary active">
+                                        <input type="radio" name="password-method" value="manual" checked> Set Password
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="radio" name="password-method" value="email"> Send Verification Email
+                                    </label>
                                 </div>
-                                <small class="form-text text-muted">Minimum 8 characters, must include letters, numbers and special characters</small>
+                                <small class="form-text text-muted mt-50">Choose "Send Verification Email" to let the user set their own password.</small>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="new-account-confirm-password">Confirm Password <span class="text-danger">*</span></label>
-                                <div class="input-group form-password-toggle">
-                                    <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirm Password" required />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text cursor-pointer">
-                                            <i data-feather="eye"></i>
-                                        </span>
+                        <div id="manual-password-fields" class="col-12 row px-0 mx-0">
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="new-account-password">Password <span class="text-danger">*</span></label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="new-account-password" placeholder="Password" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
                                     </div>
+                                    <small class="form-text text-muted">Minimum 8 characters</small>
                                 </div>
-                                <small class="form-text text-danger hidden" id="new-password-error-message">Passwords do not match</small>
                             </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="new-account-role">Role <span class="text-danger">*</span></label>
-                                <select class="form-control" id="new-account-role" required>
-                                    <option value="">Select Role</option>
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="superadmin" class="superadmin-only" style="display:none;">Super Admin</option>
-                                </select>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="new-account-confirm-password">Confirm Password <span class="text-danger">*</span></label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirm Password" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-danger hidden" id="new-password-error-message">Passwords do not match</small>
+                                </div>
                             </div>
                         </div>
                     </div>

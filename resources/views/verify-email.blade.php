@@ -150,6 +150,29 @@
                                     <p class="card-text mb-2" id="loading-text">Please wait while we verify your email address.</p>
                                 </div>
 
+                                <!-- Set Password State (admin-invite flow) -->
+                                <div id="set-password-state" style="display: none;">
+                                    <div class="status-icon" style="color:#7367f0;">&#128274;</div>
+                                    <h4 class="card-title mb-1" id="set-password-title">Set Your Password</h4>
+                                    <p class="card-text mb-2" id="set-password-subtitle">Choose a password to complete your account setup.</p>
+                                    <form id="set-password-form" class="text-left mt-2">
+                                        <div class="form-group">
+                                            <label id="label-new-password">New Password</label>
+                                            <input type="password" class="form-control" id="set-password-input" placeholder="Min. 8 characters" required minlength="8" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label id="label-confirm-password">Confirm Password</label>
+                                            <input type="password" class="form-control" id="set-password-confirm" placeholder="Repeat password" required minlength="8" />
+                                            <small class="text-danger d-none" id="set-password-mismatch">Passwords do not match.</small>
+                                        </div>
+                                        <div id="set-password-alert" class="alert alert-danger mt-1" style="display:none;"></div>
+                                        <button type="submit" class="btn btn-primary btn-block mt-1" id="set-password-btn">
+                                            <span class="spinner-border spinner-border-sm d-none mr-50" id="set-password-spinner"></span>
+                                            <span id="set-password-btn-text">Set Password &amp; Verify</span>
+                                        </button>
+                                    </form>
+                                </div>
+
                                 <!-- Success State -->
                                 <div id="success-state" style="display: none;">
                                     <div class="status-icon success-icon">&#10004;</div>
@@ -212,7 +235,14 @@
                 alreadyVerifiedText: 'Your email is already verified. You can login now.',
                 backToLogin: 'Back to login',
                 emailSent: 'Verification email sent! Please check your inbox.',
-                waitMessage: 'Please wait before requesting another email.'
+                waitMessage: 'Please wait before requesting another email.',
+                setPasswordTitle: 'Set Your Password',
+                setPasswordSubtitle: 'Choose a password to complete your account setup.',
+                labelNewPassword: 'New Password',
+                labelConfirmPassword: 'Confirm Password',
+                passwordMismatch: 'Passwords do not match.',
+                setPasswordBtn: 'Set Password & Verify',
+                sending: 'Setting password...',
             },
             fr: {
                 verifying: 'Vérification de votre email...',
@@ -227,7 +257,14 @@
                 alreadyVerifiedText: 'Votre email est déjà vérifié. Vous pouvez vous connecter.',
                 backToLogin: 'Retour à la connexion',
                 emailSent: 'Email de vérification envoyé ! Vérifiez votre boîte de réception.',
-                waitMessage: 'Veuillez patienter avant de demander un autre email.'
+                waitMessage: 'Veuillez patienter avant de demander un autre email.',
+                setPasswordTitle: 'Définir votre mot de passe',
+                setPasswordSubtitle: 'Choisissez un mot de passe pour finaliser la création de votre compte.',
+                labelNewPassword: 'Nouveau mot de passe',
+                labelConfirmPassword: 'Confirmer le mot de passe',
+                passwordMismatch: 'Les mots de passe ne correspondent pas.',
+                setPasswordBtn: 'Définir le mot de passe et vérifier',
+                sending: 'Enregistrement...',
             }
         };
 
@@ -247,6 +284,43 @@
         const t = translations[lang];
         const token = getUrlParameter('token');
         const email = getUrlParameter('email');
+        const setPassword = getUrlParameter('set_password') === '1';
+
+        function handleVerifySuccess(response) {
+            $('#loading-state').hide();
+            $('#set-password-state').hide();
+
+            if (response.already_verified) {
+                $('#already-verified-state').show();
+                setTimeout(() => window.location.href = '/login', 2000);
+            } else {
+                $('#success-state').show();
+                if (response.access_token) {
+                    localStorage.setItem('mrwifi_auth_token', response.access_token);
+                    localStorage.setItem('mrwifi_user', JSON.stringify(response.user));
+                }
+                setTimeout(() => {
+                    const redirectLang = lang === 'fr' ? 'fr' : 'en';
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const hasDesign = urlParams.get('has_design') === '1' || localStorage.getItem('pending_design_redirect') === 'true';
+                    localStorage.removeItem('pending_design_redirect');
+                    if (hasDesign) {
+                        window.location.href = '/' + redirectLang + '/captive-portals?from=registration';
+                    } else {
+                        window.location.href = '/' + redirectLang + '/dashboard';
+                    }
+                }, 2000);
+            }
+        }
+
+        function handleVerifyError(xhr) {
+            $('#loading-state').hide();
+            $('#set-password-state').hide();
+            $('#error-state').show();
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                $('#error-text').text(xhr.responseJSON.error);
+            }
+        }
 
         $(document).ready(function() {
             if (feather) feather.replace({ width: 14, height: 14 });
@@ -262,53 +336,81 @@
             $('#already-title').text(t.alreadyVerified);
             $('#already-text').text(t.alreadyVerifiedText);
             $('#back-to-login').text(t.backToLogin);
+            $('#set-password-title').text(t.setPasswordTitle);
+            $('#set-password-subtitle').text(t.setPasswordSubtitle);
+            $('#label-new-password').text(t.labelNewPassword);
+            $('#label-confirm-password').text(t.labelConfirmPassword);
+            $('#set-password-mismatch').text(t.passwordMismatch);
+            $('#set-password-btn-text').text(t.setPasswordBtn);
 
-            // Verify email
-            if (token && email) {
+            if (!token || !email) {
+                $('#loading-state').hide();
+                $('#error-state').show();
+                $('#error-text').text('Invalid verification link. Missing token or email.');
+                return;
+            }
+
+            if (setPassword) {
+                // Admin-invite flow: show password form first
+                $('#loading-state').hide();
+                $('#set-password-state').show();
+
+                $('#set-password-form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const password = $('#set-password-input').val();
+                    const confirm = $('#set-password-confirm').val();
+
+                    if (password !== confirm) {
+                        $('#set-password-mismatch').removeClass('d-none');
+                        return;
+                    }
+                    $('#set-password-mismatch').addClass('d-none');
+                    $('#set-password-alert').hide();
+
+                    const $btn = $('#set-password-btn');
+                    $('#set-password-spinner').removeClass('d-none');
+                    $('#set-password-btn-text').text(t.sending);
+                    $btn.prop('disabled', true);
+
+                    $.ajax({
+                        url: '/api/auth/verify-email',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            token: token,
+                            email: email,
+                            password: password,
+                            password_confirmation: confirm,
+                        },
+                        success: handleVerifySuccess,
+                        error: function(xhr) {
+                            $('#set-password-spinner').addClass('d-none');
+                            $('#set-password-btn-text').text(t.setPasswordBtn);
+                            $btn.prop('disabled', false);
+
+                            let msg = 'An error occurred. Please try again.';
+                            if (xhr.responseJSON) {
+                                if (xhr.responseJSON.password && xhr.responseJSON.password[0]) {
+                                    msg = xhr.responseJSON.password[0];
+                                } else if (xhr.responseJSON.error) {
+                                    msg = xhr.responseJSON.error;
+                                }
+                            }
+                            $('#set-password-alert').text(msg).show();
+                        }
+                    });
+                });
+            } else {
+                // Normal self-registration flow: auto-verify on page load
                 $.ajax({
                     url: '/api/auth/verify-email',
                     type: 'POST',
                     dataType: 'json',
                     data: { token: token, email: email },
-                    success: function(response) {
-                        $('#loading-state').hide();
-
-                        if (response.already_verified) {
-                            $('#already-verified-state').show();
-                            setTimeout(() => window.location.href = '/login', 2000);
-                        } else {
-                            $('#success-state').show();
-                            // Store token and redirect
-                            if (response.access_token) {
-                                localStorage.setItem('mrwifi_auth_token', response.access_token);
-                                localStorage.setItem('mrwifi_user', JSON.stringify(response.user));
-                            }
-                            setTimeout(() => {
-                                const redirectLang = lang === 'fr' ? 'fr' : 'en';
-                                const urlParams = new URLSearchParams(window.location.search);
-                                const hasDesign = urlParams.get('has_design') === '1' || localStorage.getItem('pending_design_redirect') === 'true';
-                                localStorage.removeItem('pending_design_redirect');
-                                if (hasDesign) {
-                                    window.location.href = '/' + redirectLang + '/captive-portals?from=registration';
-                                } else {
-                                    window.location.href = '/' + redirectLang + '/dashboard';
-                                }
-                            }, 2000);
-                        }
-                    },
-                    error: function(xhr) {
-                        $('#loading-state').hide();
-                        $('#error-state').show();
-
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            $('#error-text').text(xhr.responseJSON.error);
-                        }
-                    }
+                    success: handleVerifySuccess,
+                    error: handleVerifyError,
                 });
-            } else {
-                $('#loading-state').hide();
-                $('#error-state').show();
-                $('#error-text').text('Invalid verification link. Missing token or email.');
             }
 
             // Resend verification email
