@@ -533,6 +533,8 @@
             invalidMac:         'Format d\'adresse MAC invalide.',
             invalidSsid:        'Le SSID ne peut pas être vide.',
             ssidTooLong:        'Le SSID doit contenir 32 caractères maximum (limite 802.11).',
+            passwordRequired:   'Un mot de passe est requis pour les réseaux de type mot de passe.',
+            passwordTooShort:   'Le mot de passe doit contenir au moins 8 caractères.',
             savingSchedule:     'Enregistrement…',
         },
         schedulerLabels: {
@@ -566,5 +568,5 @@
         },
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=1"></script>
+<script src="/assets/js/location-networks-v5.js?v=5"></script>
 @endpush

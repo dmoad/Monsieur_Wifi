@@ -115,6 +115,11 @@ class LocationNetworkController extends Controller
             'mac_filter_list'   => 'nullable|array',
         ]);
 
+        // Set default password for password-type networks
+        if ($validated['type'] === 'password' && empty($validated['password'])) {
+            $validated['password'] = 'abcd1234';
+        }
+
         $sortOrder = $currentCount; // append at end
 
         $network = LocationNetwork::create(array_merge($validated, [
@@ -205,6 +210,31 @@ class LocationNetworkController extends Controller
             'mac_filter_mode'   => 'nullable|string',
             'mac_filter_list'   => 'nullable|array',
         ]);
+
+        // Check if updating to password type or if already password type
+        $newType = $validated['type'] ?? $network->type;
+        $isPasswordType = $newType === 'password';
+
+        if ($isPasswordType) {
+            $newPassword = $validated['password'] ?? null;
+
+            if (array_key_exists('password', $validated) && empty($newPassword)) {
+                // Caller explicitly sent an empty password — strip it from the update
+                // so the existing DB value is preserved instead of being wiped.
+                unset($validated['password']);
+            }
+
+            // After stripping, if there is still no password anywhere, reject
+            if (!array_key_exists('password', $validated) && empty($network->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Password is required for password-type networks.',
+                    'errors' => [
+                        'password' => ['Password is required for password-type networks.']
+                    ]
+                ], 422);
+            }
+        }
 
         // Determine if config version should be incremented
         $versionFields = [

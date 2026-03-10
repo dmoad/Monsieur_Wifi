@@ -33,6 +33,8 @@ const MSG = Object.assign({
     invalidMac:        'Invalid MAC address format.',
     invalidSsid:       'SSID cannot be empty.',
     ssidTooLong:       'SSID must be 32 characters or fewer (802.11 limit).',
+    passwordRequired:  'Password is required for password-type networks.',
+    passwordTooShort:  'Password must be at least 8 characters long.',
     savingSchedule:    'Saving…',
 }, window.APP_CONFIG_V5?.messages || {});
 
@@ -395,7 +397,10 @@ function getFormData(netId, $pane) {
     };
 
     if (type === 'password') {
-        data.password = $pane.find('.network-password').val();
+        const pwdVal = $pane.find('.network-password').val().trim();
+        data.password = pwdVal; // always include so saveNetwork validation can catch empty/short
+        // Backend strips empty password before fill() to avoid wiping the DB value,
+        // but frontend now blocks saving with an empty field entirely.
         data.security = $pane.find('.network-security').val();
         data.cipher_suites = $pane.find('.network-cipher-suites').val();
     } else if (type === 'captive_portal') {
@@ -439,6 +444,24 @@ async function saveNetwork(netId) {
             $btn.prop('disabled', false).html(origHtml);
             $pane.find('.network-ssid').focus();
             return;
+        }
+
+        // For password-type networks: validate the password field
+        if (data.type === 'password') {
+            if (data.password !== undefined && data.password.length < 8) {
+                // A value was typed but it's too short
+                toastr.warning(MSG.passwordTooShort);
+                $btn.prop('disabled', false).html(origHtml);
+                $pane.find('.network-password').focus();
+                return;
+            }
+            if (!data.password) {
+                // Field is empty — always block, password is required
+                toastr.warning(MSG.passwordRequired);
+                $btn.prop('disabled', false).html(origHtml);
+                $pane.find('.network-password').focus();
+                return;
+            }
         }
 
         const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {

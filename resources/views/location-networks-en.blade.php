@@ -525,5 +525,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=1"></script>
+<script src="/assets/js/location-networks-v5.js?v=3"></script>
 @endpush
