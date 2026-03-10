@@ -394,9 +394,7 @@
                                 <div class="form-group">
                                                 <label for="model">Device Model</label>
                                                 <select class="form-control" id="model">
-                                                    <option value="">Select Model</option>
-                                                    <option value="1">820AX</option>
-                                                    <option value="2">835AX</option>
+                                                    <option value="">Loading...</option>
                                                 </select>
                                 </div>
                             </div>
@@ -468,9 +466,7 @@
                                 <div class="form-group">
                                                 <label for="edit-model">Device Model</label>
                                                 <select class="form-control" id="edit-model">
-                                                    <option value="">Select Model</option>
-                                                    <option value="1" selected>820AX</option>
-                                                    <option value="2">835AX</option>
+                                                    <option value="">Loading...</option>
                                                 </select>
                                 </div>
                             </div>
@@ -714,6 +710,8 @@
             $('#add-new-firmware, #edit-firmware').on('shown.bs.modal', function() {
                 initializeSelect2();
             });
+
+            loadProductModels();
         });
 
         // API Functions
@@ -897,8 +895,9 @@
                 
                 // Set Select2 values with proper triggering
                 const statusValue = firmware.is_enabled ? '1' : '0';
-                const modelValue = getModelId(firmware.model);
-                
+                // firmware.model is already device_type ('820' or '835')
+                const modelValue = firmware.model || '';
+
                 $('#edit-status').val(statusValue).trigger('change.select2');
                 $('#edit-model').val(modelValue).trigger('change.select2');
                 
@@ -1027,29 +1026,39 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        function getModelId(modelName) {
-            // Handle both string and numeric model values
-            if (modelName === '1' || modelName === 1 || modelName === '820AX') {
-                return '1';
-            } else if (modelName === '2' || modelName === 2 || modelName === '835AX') {
-                return '2';
-            }
-            
-            // If no match found, return empty string
-            return '';
+        // productModels array loaded from /api/firmware/models
+        // Each entry: { id, name, device_type }
+        let productModels = [];
+
+        function loadProductModels() {
+            $.ajax({
+                url: '/api/firmware/models',
+                method: 'GET',
+                headers: getAuthHeaders(),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        productModels = response.data;
+                        populateModelDropdowns();
+                    }
+                },
+                error: function() {
+                    console.error('Failed to load device models');
+                }
+            });
         }
 
-        function getModelName(modelId) {
-            if (modelId === '835AX' || modelId === '820AX' || modelId === '820AX') {
-                return modelId;
-            }
-            const modelMap = {
-                '1': '820AX',
-                '2': '835AX',
-                1: '820AX',
-                2: '835AX'
-            };
-            return modelMap[modelId] || 'Not specified';
+        function populateModelDropdowns() {
+            const $selects = $('#model, #edit-model');
+            $selects.empty().append('<option value="">Select Model</option>');
+            productModels.forEach(function(pm) {
+                $selects.append(`<option value="${pm.device_type}">${pm.name}</option>`);
+            });
+            $selects.trigger('change');
+        }
+
+        function getModelName(deviceType) {
+            const pm = productModels.find(m => m.device_type === deviceType);
+            return pm ? pm.name : (deviceType || 'Not specified');
         }
 
         function showToast(message, type = 'info') {

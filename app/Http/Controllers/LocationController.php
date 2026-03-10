@@ -282,9 +282,9 @@ class LocationController extends Controller
             ], 200);
         }
         
-        $device = Device::find($location->device_id);
+        $device = Device::with('productModel')->find($location->device_id);
         $locationSettings = LocationSettingsV2::where('location_id', $id)->first();
-        
+
         $locationData = $location->toArray();
         $locationData['settings'] = $locationSettings;
         $locationData['device'] = $device;
@@ -1437,40 +1437,40 @@ class LocationController extends Controller
             
             try {
                 // Handle device model update
-                if (isset($deviceData['model'])) {
-                    $newModel = $deviceData['model'];
-                    $oldModel = $device->model;
-                    
-                    // Validate model (only allow 820AX and 835AX)
-                    if (!in_array($newModel, ['820AX', '835AX', ''])) {
+                if (isset($deviceData['product_model_id'])) {
+                    $newProductModelId = $deviceData['product_model_id'] ?: null;
+                    $oldProductModelId = $device->product_model_id;
+
+                    // Validate product_model_id exists
+                    if ($newProductModelId && !\App\Models\ProductModel::find($newProductModelId)) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'Invalid device model. Only 820AX and 835AX are supported.'
+                            'message' => 'Invalid device model selected.'
                         ], 400);
                     }
-                    
-                    Log::info("Updating device model from '{$oldModel}' to '{$newModel}' for device: " . $device->id);
-                    
-                    // Update the model
-                    $device->model = $newModel;
-                    
+
+                    Log::info("Updating device product_model_id from '{$oldProductModelId}' to '{$newProductModelId}' for device: " . $device->id);
+
+                    $device->product_model_id = $newProductModelId;
+
                     // If model changed, increment configuration version
-                    if ($oldModel !== $newModel) {
+                    if ($oldProductModelId !== $newProductModelId) {
                         $device->configuration_version = $device->configuration_version + 1;
                         Log::info('Device configuration version incremented to: ' . $device->configuration_version);
                     }
-                    
+
                     $device->save();
-                    
+                    $device->load('productModel');
+
                     Log::info('Device model updated successfully');
-                    
+
                     return response()->json([
                         'success' => true,
                         'message' => 'Device model updated successfully',
                         'data' => [
                             'device' => $device,
-                            'old_model' => $oldModel,
-                            'new_model' => $newModel
+                            'old_model' => $oldProductModelId,
+                            'new_model' => $newProductModelId
                         ]
                     ]);
                 }
@@ -1688,14 +1688,8 @@ class LocationController extends Controller
             }
             
             // Check if firmware is compatible with device model
-            $deviceModelCompatible = false;
-            if ($firmware->model == '1' || $firmware->model == '820AX') {
-                $deviceModelCompatible = ($device->model == '820AX' || $device->model == '1');
-            } elseif ($firmware->model == '2' || $firmware->model == '835AX') {
-                $deviceModelCompatible = ($device->model == '835AX' || $device->model == '2');
-            }
-            
-            if (!$deviceModelCompatible) {
+            $deviceType = $device->productModel?->device_type;
+            if ($deviceType && $firmware->model && $firmware->model !== $deviceType) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Firmware is not compatible with device model'

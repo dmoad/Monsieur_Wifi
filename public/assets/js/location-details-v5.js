@@ -102,6 +102,7 @@ $(window).on('load', function () {
 
 async function initPage() {
     try {
+        await loadRouterModels();
         await loadLocationDetails();
         loadCurrentUsage(currentUsagePeriod);
         loadOnlineUsers();
@@ -110,6 +111,39 @@ async function initPage() {
     } catch (err) {
         handleApiError(err, 'initPage');
     }
+}
+
+// ============================================================================
+// ROUTER MODELS
+// ============================================================================
+
+let routerModels = []; // [{id, name, device_type}]
+
+async function loadRouterModels() {
+    try {
+        const res = await apiFetch(`${API}/firmware/models`);
+        if (res.status === 'success') {
+            routerModels = res.data;
+            const $select = $('#router-model-select');
+            $select.empty().append('<option value="">Select Model</option>');
+            routerModels.forEach(pm => {
+                $select.append(`<option value="${pm.id}">${pm.name}</option>`);
+            });
+        }
+    } catch (err) {
+        console.error('Failed to load router models', err);
+    }
+
+    // Show the router model dropdown only for admins
+    if (UserManager.isAdminOrAbove()) {
+        $('.admin-only-field').show();
+    }
+}
+
+function getRouterModelName(productModelId) {
+    if (!productModelId) return 'Unknown';
+    const pm = routerModels.find(m => String(m.id) === String(productModelId));
+    return pm ? pm.name : productModelId;
 }
 
 // ============================================================================
@@ -144,7 +178,8 @@ async function loadLocationDetails() {
 
     // Device info
     const device = location.device || {};
-    $('.router_model, .router_model_updated').text(device.model || 'Unknown');
+    const modelName = device.product_model ? device.product_model.name : getRouterModelName(device.product_model_id);
+    $('.router_model, .router_model_updated').text(modelName || 'Unknown');
     const macFormatted = (device.mac_address || 'N/A').replace(/-/g, ':');
     $('.router_mac_address').text(macFormatted);
     $('.router_mac_address_header').text(macFormatted);
@@ -183,8 +218,8 @@ function populateLocationForm(location) {
     $('#location-status').val(location.status || 'active');
     $('#location-description').val(location.description || '');
     $('#description-counter').text((location.description || '').length);
-    if (location.device && location.device.model) {
-        $('#router-model-select').val(location.device.model);
+    if (location.device && location.device.product_model_id) {
+        $('#router-model-select').val(location.device.product_model_id);
     }
 }
 
@@ -213,7 +248,7 @@ async function saveLocationInfo() {
         };
         if (UserManager.isAdminOrAbove()) data.owner_id = $('#location-owner').val() || null;
         const modelVal = $('#router-model-select').val();
-        if (modelVal) data.model = modelVal;
+        if (modelVal) data.product_model_id = parseInt(modelVal, 10);
 
         await apiFetch(`${API}/locations/${location_id}/general`, {
             method: 'PUT',
@@ -619,16 +654,22 @@ async function saveMacAddress() {
 // ============================================================================
 
 async function loadFirmwareVersions() {
-    const model = currentDeviceData?.model;
-    if (!model) {
-        $('#firmware-version-select').html('<option value="">No device model found</option>');
+    const deviceType = currentDeviceData?.product_model?.device_type
+        || (currentDeviceData?.product_model_id
+            ? routerModels.find(m => String(m.id) === String(currentDeviceData.product_model_id))?.device_type
+            : null);
+    if (!deviceType) {
+        const noModelMsg = window.APP_CONFIG_V5?.locale === 'fr'
+            ? 'Aucun modèle d\'appareil trouvé'
+            : 'No device model found';
+        $('#firmware-version-select').html(`<option value="">${noModelMsg}</option>`);
         return;
     }
     try {
-        const res = await apiFetch(`/api/firmware/model/${model}`);
+        const res = await apiFetch(`/api/firmware/model/${deviceType}`);
         const versions = res.data || [];
         const $select = $('#firmware-version-select').empty().append('<option value="">Select version…</option>');
-        versions.forEach(v => $select.append(`<option value="${v.id}" data-description="${v.description || ''}">${v.version}</option>`));
+        versions.forEach(v => $select.append(`<option value="${v.id}" data-description="${v.description || ''}">${v.version || v.name || 'v' + v.id}</option>`));
         $select.on('change', function () {
             const desc = $(this).find(':selected').data('description') || 'No description.';
             $('#firmware-description').html(`<p class="mb-0">${desc}</p>`);

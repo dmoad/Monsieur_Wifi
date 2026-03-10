@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Firmware;
+use App\Models\ProductModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Device;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class FirmwareController extends Controller
 {
@@ -50,9 +52,11 @@ class FirmwareController extends Controller
      */
     public function store(Request $request)
     {
+        $allowedDeviceTypes = ProductModel::pluck('device_type')->toArray();
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'model' => 'nullable|in:1,2,820AX,835AX',
+            'model' => ['nullable', Rule::in($allowedDeviceTypes)],
             'version' => 'nullable|string|max:100',
             'description' => 'nullable|string|max:1000',
             'file' => 'required|file|mimes:gz,tar,tar.gz|max:102400', // Max 100MB
@@ -71,7 +75,7 @@ class FirmwareController extends Controller
         try {
             $file = $request->file('file');
             $originalName = $file->getClientOriginalName();
-            
+
             // Validate file extension for tar.gz files
             if (!$this->isValidTarGzFile($originalName)) {
                 return response()->json([
@@ -82,26 +86,22 @@ class FirmwareController extends Controller
 
             // Generate unique filename
             $filename = time() . '_' . Str::random(10) . '_' . $originalName;
-            
+
             // Create firmware directory if it doesn't exist
             $firmwarePath = 'firmware';
             if (!Storage::disk('public')->exists($firmwarePath)) {
                 Storage::disk('public')->makeDirectory($firmwarePath);
             }
-            
+
             // Store the file
             $filePath = $file->storeAs($firmwarePath, $filename, 'public');
-            
+
             // Get file info
             $fileSize = $file->getSize();
             $fullPath = Storage::disk('public')->path($filePath);
             $md5sum = md5_file($fullPath);
 
-            // Convert model ID to model name if needed
             $model = $request->model;
-            if (is_numeric($model)) {
-                $model = Firmware::getModelById((int)$model);
-            }
 
             // Create firmware record
             $firmware = Firmware::create([
@@ -146,24 +146,19 @@ class FirmwareController extends Controller
         ], 404);
        }
 
-       // Try to get the default firmware for the device model first
-       $firmware = Firmware::getDefaultForModel($device->model);
-       
-       // If no default firmware found, get the latest enabled firmware for the model
-       if (!$firmware) {
-           $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+       $deviceType = $device->productModel?->device_type;
+       $firmware = null;
+       if ($deviceType) {
+           $firmware = Firmware::getDefaultForModel($deviceType)
+               ?? Firmware::forModel($deviceType)->enabled()->orderBy('created_at', 'desc')->first()
+               ?? Firmware::forModel($deviceType)->orderBy('created_at', 'desc')->first();
        }
-       
-       // If still no firmware found, get the latest firmware for the model (even if disabled)
+
        if (!$firmware) {
-           $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
-       }
-       
-       if (!$firmware) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'No firmware found for model: ' . $device->model
-        ], 404);
+           return response()->json([
+               'status' => 'error',
+               'message' => 'No firmware found for device'
+           ], 404);
        }
 
        // Return download path for the firmware
@@ -203,9 +198,11 @@ class FirmwareController extends Controller
      */
     public function update(Request $request, Firmware $firmware)
     {
+        $allowedDeviceTypes = ProductModel::pluck('device_type')->toArray();
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'model' => 'nullable|in:1,2,820AX,835AX',
+            'model' => ['nullable', Rule::in($allowedDeviceTypes)],
             'version' => 'nullable|string|max:100',
             'description' => 'nullable|string|max:1000',
             'is_enabled' => 'nullable|boolean',
@@ -221,11 +218,7 @@ class FirmwareController extends Controller
         }
 
         try {
-            // Convert model ID to model name if needed
             $model = $request->model;
-            if (is_numeric($model)) {
-                $model = Firmware::getModelById((int)$model);
-            }
 
             $firmware->update([
                 'name' => $request->name,
@@ -346,19 +339,8 @@ class FirmwareController extends Controller
      */
     public function byModel($model)
     {
-        // Convert model ID to model name if needed
-        if (is_numeric($model)) {
-            $model = Firmware::getModelById((int)$model);
-            if (!$model) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Invalid model ID'
-                ], 400);
-            }
-        }
-
         $firmware = Firmware::forModel($model)->orderBy('created_at', 'desc')->get();
-        
+
         return response()->json([
             'status' => 'success',
             'data' => $firmware
@@ -366,13 +348,18 @@ class FirmwareController extends Controller
     }
 
     /**
-     * Get available device models.
+     * Get available device models from ProductModel table.
+     * Returns [{id, name, device_type}, ...].
      */
     public function models()
     {
+        $models = ProductModel::whereIn('device_type', ProductModel::$deviceTypes)
+            ->where('is_active', true)
+            ->get(['id', 'name', 'device_type']);
+
         return response()->json([
             'status' => 'success',
-            'data' => Firmware::getAvailableModels()
+            'data' => $models
         ]);
     }
 
@@ -382,14 +369,14 @@ class FirmwareController extends Controller
     public function getDefaults()
     {
         try {
-            $models = Firmware::getAvailableModels();
+            $deviceTypes = ProductModel::$deviceTypes;
             $defaults = [];
-            
-            foreach ($models as $id => $modelName) {
-                $defaultFirmware = Firmware::getDefaultForModel($modelName);
-                $defaults[$modelName] = $defaultFirmware;
+
+            foreach ($deviceTypes as $deviceType) {
+                $defaultFirmware = Firmware::getDefaultForModel($deviceType);
+                $defaults[$deviceType] = $defaultFirmware;
             }
-            
+
             return response()->json([
                 'status' => 'success',
                 'data' => $defaults

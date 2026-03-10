@@ -421,12 +421,10 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
+                                                <div class="form-group admin-only-field" style="display:none;">
                                                     <label for="router-model-select">Modèle du routeur</label>
                                                     <select class="form-control" id="router-model-select">
-                                                        <option value="">Sélectionner un modèle</option>
-                                                        <option value="820AX">820AX</option>
-                                                        <option value="835AX">835AX</option>
+                                                        <option value="">Chargement...</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -914,7 +912,8 @@
 <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
 <script>
     window.APP_CONFIG_V5 = {
-        apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
+        apiBase: '{{ rtrim(config("app.url"), "/") }}/api',
+        locale: 'fr'
     };
 </script>
 <script src="/assets/js/location-details-v5.js?v=1"></script>

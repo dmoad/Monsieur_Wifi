@@ -11,22 +11,11 @@ class Firmware extends Model
     use HasFactory;
 
     /**
-     * Available device models
-     */
-    const MODEL_820AX = '820AX';
-    const MODEL_835AX = '835AX';
-
-    /**
      * Status constants
      */
     const STATUS_ENABLED = true;
     const STATUS_DISABLED = false;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'model',
@@ -40,11 +29,6 @@ class Firmware extends Model
         'default_model_firmware',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'is_enabled' => 'boolean',
         'file_size' => 'integer',
@@ -53,25 +37,21 @@ class Firmware extends Model
 
     /**
      * Get the formatted file size
-     *
-     * @return string
      */
     public function getFormattedFileSizeAttribute()
     {
         $bytes = $this->file_size;
         $units = ['B', 'KB', 'MB', 'GB'];
-        
+
         for ($i = 0; $bytes > 1024; $i++) {
             $bytes /= 1024;
         }
-        
+
         return round($bytes, 2) . ' ' . $units[$i];
     }
 
     /**
      * Check if the file exists in storage
-     *
-     * @return bool
      */
     public function fileExists()
     {
@@ -80,8 +60,6 @@ class Firmware extends Model
 
     /**
      * Get the full file path
-     *
-     * @return string
      */
     public function getFullFilePathAttribute()
     {
@@ -90,8 +68,6 @@ class Firmware extends Model
 
     /**
      * Get the download URL
-     *
-     * @return string
      */
     public function getDownloadUrlAttribute()
     {
@@ -100,9 +76,6 @@ class Firmware extends Model
 
     /**
      * Scope to get only enabled firmware
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeEnabled($query)
     {
@@ -111,9 +84,6 @@ class Firmware extends Model
 
     /**
      * Scope to get only disabled firmware
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeDisabled($query)
     {
@@ -121,11 +91,7 @@ class Firmware extends Model
     }
 
     /**
-     * Scope to filter firmware by device model
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $model
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Scope to filter firmware by device_type string
      */
     public function scopeForModel($query, $model)
     {
@@ -134,9 +100,6 @@ class Firmware extends Model
 
     /**
      * Scope to get only default firmware
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeDefault($query)
     {
@@ -144,11 +107,7 @@ class Firmware extends Model
     }
 
     /**
-     * Scope to get default firmware for a specific model
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $model
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Scope to get default firmware for a specific device_type
      */
     public function scopeDefaultForModel($query, $model)
     {
@@ -156,10 +115,7 @@ class Firmware extends Model
     }
 
     /**
-     * Get the default firmware for a specific model
-     *
-     * @param string $model
-     * @return \App\Models\Firmware|null
+     * Get the default firmware for a specific device_type string
      */
     public static function getDefaultForModel($model)
     {
@@ -167,63 +123,32 @@ class Firmware extends Model
     }
 
     /**
-     * Set this firmware as default for its model
-     * This will unset any other default firmware for the same model
-     *
-     * @return bool
+     * Set this firmware as default for its model.
+     * Unsets any other default firmware for the same model first.
      */
     public function setAsDefault()
     {
-        // First, unset any existing default firmware for this model
         static::where('model', $this->model)
             ->where('default_model_firmware', true)
             ->update(['default_model_firmware' => false]);
 
-        // Then set this firmware as default
         return $this->update(['default_model_firmware' => true]);
     }
 
     /**
-     * Get available models
-     *
-     * @return array
+     * Get available models keyed by device_type, with ProductModel name as value.
+     * Returns ['820' => 'MR 820AX', '835' => 'MR 835AX'] (or whatever names are in DB).
      */
-    public static function getAvailableModels()
+    public static function getAvailableModels(): array
     {
-        return [
-            1 => self::MODEL_820AX,
-            2 => self::MODEL_835AX,
-        ];
-    }
-
-    /**
-     * Get model by ID
-     *
-     * @param int $id
-     * @return string|null
-     */
-    public static function getModelById($id)
-    {
-        $models = self::getAvailableModels();
-        return $models[$id] ?? null;
-    }
-
-    /**
-     * Get model ID by model name
-     *
-     * @param string $model
-     * @return int|null
-     */
-    public static function getModelId($model)
-    {
-        $models = array_flip(self::getAvailableModels());
-        return $models[$model] ?? null;
+        return ProductModel::whereIn('device_type', ProductModel::$deviceTypes)
+            ->where('is_active', true)
+            ->pluck('name', 'device_type')
+            ->toArray();
     }
 
     /**
      * Get status text
-     *
-     * @return string
      */
     public function getStatusTextAttribute()
     {

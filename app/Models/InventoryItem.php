@@ -140,10 +140,10 @@ class InventoryItem extends Model
     public function convertToDevice($ownerId)
     {
         $productModel = $this->productModel()->first();
-        
+
         $device = Device::create([
-            'name' => "{$productModel->device_type}-{$this->serial_number}",
-            'model' => $productModel->device_type,
+            'name' => "{$productModel->name}-{$this->serial_number}",
+            'product_model_id' => $productModel->id,
             'serial_number' => $this->serial_number,
             'mac_address' => $this->mac_address,
             'device_key' => \Illuminate\Support\Str::random(32),
@@ -152,23 +152,13 @@ class InventoryItem extends Model
             'configuration_version' => 1,
         ]);
 
-        // Auto-assign firmware based on model
-        $firmware = \App\Models\Firmware::getDefaultForModel($device->model);
-        
-        if (!$firmware) {
-            $firmware = \App\Models\Firmware::forModel($device->model)
-                ->enabled()
-                ->orderBy('created_at', 'desc')
-                ->first();
-        }
-        
-        if (!$firmware) {
-            $firmware = \App\Models\Firmware::forModel($device->model)
-                ->orderBy('created_at', 'desc')
-                ->first();
-        }
+        // Auto-assign firmware based on device_type (matches firmware.model column)
+        $deviceType = $productModel->device_type;
+        $firmware = \App\Models\Firmware::getDefaultForModel($deviceType)
+            ?? \App\Models\Firmware::forModel($deviceType)->enabled()->orderBy('created_at', 'desc')->first()
+            ?? \App\Models\Firmware::forModel($deviceType)->orderBy('created_at', 'desc')->first();
 
-        $device->firmware_id = $firmware ? $firmware->id : null;
+        $device->firmware_id = $firmware?->id;
         $device->save();
 
         return $device;

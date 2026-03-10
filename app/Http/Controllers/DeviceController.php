@@ -62,36 +62,29 @@ class DeviceController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'model' => 'nullable|string|max:255',
+            'product_model_id' => 'nullable|exists:product_models,id',
             'serial_number' => 'required|string|max:255|unique:devices',
             'mac_address' => 'required|string|max:255|unique:devices',
             'firmware_version' => 'nullable|string|max:255',
         ]);
 
         $device = new Device($request->all());
-        
+
         // Generate device key and secret
         $device->device_key = Str::random(32);
         $device->device_secret = Str::random(64);
-        
+
         $device->save();
 
-        // Try to get the default firmware for the device model
-        $firmware = Firmware::getDefaultForModel($device->model);
-        
-        // If no default firmware found, get the latest firmware for the model
-        if (!$firmware) {
-            $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+        // Auto-assign firmware based on product model device_type
+        $deviceType = $device->productModel?->device_type;
+        if ($deviceType) {
+            $firmware = Firmware::getDefaultForModel($deviceType)
+                ?? Firmware::forModel($deviceType)->enabled()->orderBy('created_at', 'desc')->first()
+                ?? Firmware::forModel($deviceType)->orderBy('created_at', 'desc')->first();
+            $device->firmware_id = $firmware?->id;
+            $device->save();
         }
-        
-        // If still no firmware found, just get the latest firmware for the model (even if disabled)
-        if (!$firmware) {
-            $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
-        }
-        
-        // Set firmware_id - either the found firmware ID or null if no firmware found
-        $device->firmware_id = $firmware ? $firmware->id : null;
-        $device->save();
 
         return redirect()->route('devices.index')
             ->with('success', 'Device created successfully.');
@@ -130,7 +123,7 @@ class DeviceController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'model' => 'nullable|string|max:255',
+            'product_model_id' => 'nullable|exists:product_models,id',
             'serial_number' => 'required|string|max:255|unique:devices,serial_number,' . $device->id,
             'mac_address' => 'required|string|max:255|unique:devices,mac_address,' . $device->id,
             'firmware_version' => 'nullable|string|max:255',
@@ -326,7 +319,7 @@ class DeviceController extends Controller
             $firmware = Firmware::where('id', $firmware_version)->first();
         }
 
-        $device = Device::where('device_key', $device_key)->where('device_secret', $device_secret)->first();
+        $device = Device::with('productModel')->where('device_key', $device_key)->where('device_secret', $device_secret)->first();
         if (!$device) {
             return response()->json(['error' => 'Invalid device credentials'], 401);
         }
@@ -350,19 +343,14 @@ class DeviceController extends Controller
 
         if($device->firmware_id == null) {
 
-            // Try to get the default firmware for the device model first
-            $firmware = Firmware::getDefaultForModel($device->model);
-
-            // If no default firmware found, get the latest enabled firmware for the model
-            if (!$firmware) {
-                $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+            $deviceType = $device->productModel?->device_type;
+            $firmware = null;
+            if ($deviceType) {
+                $firmware = Firmware::getDefaultForModel($deviceType)
+                    ?? Firmware::forModel($deviceType)->enabled()->orderBy('created_at', 'desc')->first()
+                    ?? Firmware::forModel($deviceType)->orderBy('created_at', 'desc')->first();
             }
 
-            // If still no firmware found, get the latest firmware for the model (even if disabled)
-            if (!$firmware) {
-                $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
-            }
- 
             $firmware_version = $firmware ? $firmware->id : 0;
         } else {
             $firmware_version = $device->firmware_id;
@@ -394,7 +382,8 @@ class DeviceController extends Controller
     {
         Log::info('Get settings v2 request: '.$device_key.' '.$device_secret);
         // ── Authenticate device ──────────────────────────────────────────────
-        $device = Device::where('device_key', $device_key)
+        $device = Device::with('productModel')
+            ->where('device_key', $device_key)
             ->where('device_secret', $device_secret)
             ->first();
 
@@ -482,9 +471,23 @@ class DeviceController extends Controller
             });
 
         // ── Firmware ─────────────────────────────────────────────────────────
-        $firmwareInfo = ($device->firmware_id && $device->firmware_id > 0)
-            ? Firmware::find($device->firmware_id)
-            : null;
+        if ($device->firmware_id && $device->firmware_id > 0) {
+            $firmwareInfo = Firmware::find($device->firmware_id);
+        } else {
+            // Fallback: find best firmware for device model
+            $deviceType = $device->productModel?->device_type;
+            $firmwareInfo = null;
+            if ($deviceType) {
+                $firmwareInfo = Firmware::getDefaultForModel($deviceType)
+                    ?? Firmware::forModel($deviceType)->enabled()->orderBy('created_at', 'desc')->first()
+                    ?? Firmware::forModel($deviceType)->orderBy('created_at', 'desc')->first();
+            }
+            // If firmware found, persist it on the device for next time
+            if ($firmwareInfo) {
+                $device->firmware_id = $firmwareInfo->id;
+                $device->save();
+            }
+        }
 
         $firmware = [
             'version'   => $firmwareInfo ? $firmwareInfo->id : 0,
@@ -1088,8 +1091,10 @@ class DeviceController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('serial_number', 'like', "%{$search}%")
                   ->orWhere('mac_address', 'like', "%{$search}%")
-                  ->orWhere('model', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%");
+                  ->orWhere('name', 'like', "%{$search}%")
+                  ->orWhereHas('productModel', function ($pm) use ($search) {
+                      $pm->where('name', 'like', "%{$search}%");
+                  });
             });
         }
         

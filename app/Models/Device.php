@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProductModel;
 
 class Device extends Model
 {
@@ -16,7 +17,7 @@ class Device extends Model
      */
     protected $fillable = [
         'name',
-        'model',
+        'product_model_id',
         'serial_number',
         'mac_address',
         'firmware_version',
@@ -30,6 +31,14 @@ class Device extends Model
         'scan_counter',
         'uptime',
     ];
+
+    /**
+     * Get the product model associated with this device.
+     */
+    public function productModel()
+    {
+        return $this->belongsTo(ProductModel::class);
+    }
 
     /**
      * Get the owner of the device.

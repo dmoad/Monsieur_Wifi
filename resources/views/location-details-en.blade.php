@@ -262,12 +262,10 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
+                                                <div class="form-group admin-only-field" style="display:none;">
                                                     <label for="router-model-select">Router Model</label>
                                                     <select class="form-control" id="router-model-select">
-                                                        <option value="">Select Model</option>
-                                                        <option value="820AX">820AX</option>
-                                                        <option value="835AX">835AX</option>
+                                                        <option value="">Loading...</option>
                                                     </select>
                                                 </div>
                                             </div>
