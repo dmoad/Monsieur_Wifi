@@ -579,6 +579,9 @@
 </div>
 
 <div class="content-body">
+    <!-- Device CTA Banner - hidden by default, shown via JS if user has no devices -->
+    <div id="device-cta-banner" style="display: none;"></div>
+
     <!-- Captive Portal Designs List -->
     <section id="captive-portal-designs-list">
         <div class="row">

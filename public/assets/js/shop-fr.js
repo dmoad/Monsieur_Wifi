@@ -97,49 +97,48 @@ function displayProducts(products) {
         
         return `
         <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
-            <div class="product-card ${!product.is_in_stock ? 'out-of-stock' : ''}">
-                <div class="product-image-wrapper">
-                    <img src="${product.primary_image || '/app-assets/images/placeholder.png'}" 
-                         alt="${product.name}" 
-                         class="product-image">
-                    ${!product.is_in_stock 
-                        ? '<span class="stock-badge badge-danger">En Rupture</span>'
-                        : (product.inventory && totalAvailable <= (product.inventory.low_stock_threshold || 0)
-                            ? `<span class="stock-badge badge-warning">Stock Faible</span>`
-                            : `<span class="stock-badge badge-success">En Stock</span>`)}
-                    ${cartQty > 0 
-                        ? `<span class="cart-qty-badge">${cartQty} au panier</span>` 
-                        : ''}
-                </div>
-                <div class="product-body">
-                    <h5 class="product-title">${product.name}</h5>
-                    <p class="product-description">${product.description_fr || 'Équipement WiFi de haute qualité pour vos besoins réseau.'}</p>
-                    <div class="product-footer">
-                        <h3 class="product-price">€${parseFloat(product.price).toFixed(2)}</h3>
-                        <div class="product-actions">
-                            ${cartQty > 0 
-                                ? `<div class="qty-controls">
-                                    <button onclick="decreaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" title="Diminuer la quantité">
-                                        <i data-feather="minus" style="width: 14px; height: 14px;"></i>
-                                    </button>
-                                    <span class="qty-display">${cartQty}</span>
-                                    <button onclick="increaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" 
-                                        ${!canAddMore ? 'disabled title="Quantité maximale atteinte"' : 'title="Augmenter la quantité"'}>
-                                        <i data-feather="plus" style="width: 14px; height: 14px;"></i>
-                                    </button>
-                                </div>`
-                                : (product.is_in_stock 
-                                    ? `<button onclick="addToCart(${product.id})" class="btn btn-success btn-sm product-btn mr-1" title="Ajouter au Panier">
-                                        <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
-                                    </button>` 
-                                    : '')}
-                            <a href="/fr/boutique/${product.slug}" class="btn btn-primary btn-sm product-btn" title="Voir Détails">
-                                <i data-feather="eye" style="width: 14px; height: 14px;"></i>
-                            </a>
+            <a href="/fr/boutique/${product.slug}" class="product-card-link">
+                <div class="product-card ${!product.is_in_stock ? 'out-of-stock' : ''}">
+                    <div class="product-image-wrapper">
+                        <img src="${product.primary_image || '/app-assets/images/placeholder.png'}"
+                             alt="${product.name}"
+                             class="product-image">
+                        ${!product.is_in_stock
+                            ? '<span class="stock-badge badge-danger">En Rupture</span>'
+                            : (product.inventory && totalAvailable <= (product.inventory.low_stock_threshold || 0)
+                                ? `<span class="stock-badge badge-warning">Stock Faible</span>`
+                                : `<span class="stock-badge badge-success">En Stock</span>`)}
+                        ${cartQty > 0
+                            ? `<span class="cart-qty-badge">${cartQty} au panier</span>`
+                            : ''}
+                    </div>
+                    <div class="product-body">
+                        <h5 class="product-title">${product.name}</h5>
+                        <p class="product-description">${product.description_fr || 'Équipement WiFi de haute qualité pour vos besoins réseau.'}</p>
+                        <div class="product-footer">
+                            <h3 class="product-price">€${parseFloat(product.price).toFixed(2)}</h3>
+                            <div class="product-actions">
+                                ${cartQty > 0
+                                    ? `<div class="qty-controls" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <button onclick="event.preventDefault(); event.stopPropagation(); decreaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" title="Diminuer la quantité">
+                                            <i data-feather="minus" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                        <span class="qty-display">${cartQty}</span>
+                                        <button onclick="event.preventDefault(); event.stopPropagation(); increaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn"
+                                            ${!canAddMore ? 'disabled title="Quantité maximale atteinte"' : 'title="Augmenter la quantité"'}>
+                                            <i data-feather="plus" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>`
+                                    : (product.is_in_stock
+                                        ? `<button onclick="event.preventDefault(); event.stopPropagation(); addToCart(${product.id})" class="btn btn-success btn-sm product-btn" title="Ajouter au Panier">
+                                            <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
+                                        </button>`
+                                        : '')}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
     `;
     }).join('');
@@ -176,7 +175,7 @@ async function addToCart(productId) {
         const data = await response.json();
         
         if (response.ok) {
-            toastr.success('Produit ajouté au panier!');
+            toastr.success('Produit ajouté au panier! <a href="/fr/panier">Voir le panier</a>');
             updateCartCount();
             // Refresh navbar cart if function exists
             if (typeof loadNavbarCart === 'function') {
