@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Mail\SubscriptionConfirmedMail;
+use App\Mail\NewSubscriptionAdminNotification;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Log;
 
@@ -604,6 +605,9 @@ class SubscriptionController extends Controller
             $locale = 'fr';
 
             Mail::to($user->email)->send(new SubscriptionConfirmedMail($user, $subscriptionData, $locale));
+
+            // Send admin notification
+            Mail::to('lmermet@citypassenger.com')->send(new NewSubscriptionAdminNotification($user, $subscriptionData));
 
             Log::info('Subscription confirmation email sent', ['user_id' => $user->id, 'email' => $user->email]);
         } catch (\Exception $e) {
