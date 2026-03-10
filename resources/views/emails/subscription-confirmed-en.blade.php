@@ -51,6 +51,20 @@
                 </table>
             </div>
 
+            @if(!empty($subscriptionData['shipping_address']))
+            <div class="subscription-details">
+                <h3 style="margin-top: 0; color: #7367f0;">Shipping Address</h3>
+                <p style="color: #333; font-size: 14px; line-height: 1.8; margin: 0;">
+                    {{ $subscriptionData['shipping_address']['name'] }}<br>
+                    {{ $subscriptionData['shipping_address']['line1'] }}
+                    @if($subscriptionData['shipping_address']['line2'])<br>{{ $subscriptionData['shipping_address']['line2'] }}@endif
+                    <br>{{ $subscriptionData['shipping_address']['postal_code'] }} {{ $subscriptionData['shipping_address']['city'] }}
+                    @if($subscriptionData['shipping_address']['state']), {{ $subscriptionData['shipping_address']['state'] }}@endif
+                    <br>{{ $subscriptionData['shipping_address']['country'] }}
+                </p>
+            </div>
+            @endif
+
             <p class="info-text">You can manage your subscription at any time from your account dashboard.</p>
 
             <div style="text-align: center;">

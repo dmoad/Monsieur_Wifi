@@ -404,7 +404,7 @@ class SubscriptionController extends Controller
 
                 // Send confirmation email (only if subscription was just created here, not already by webhook)
                 if (!is_string($stripeSubscription)) {
-                    $this->sendSubscriptionConfirmationEmail($user, $stripeSubscription);
+                    $this->sendSubscriptionConfirmationEmail($user, $stripeSubscription, $session);
                 }
             }
 
@@ -544,13 +544,10 @@ class SubscriptionController extends Controller
     /**
      * Send subscription confirmation email to user
      */
-    protected function sendSubscriptionConfirmationEmail(User $user, $stripeSubscription)
+    protected function sendSubscriptionConfirmationEmail(User $user, $stripeSubscription, $session = null)
     {
         try {
-            $stripe = new \Stripe\StripeClient(config('cashier.secret'));
-
             // Get price details
-            $price = null;
             $planName = 'Standard';
             $amount = '';
             $interval = '';
@@ -574,11 +571,33 @@ class SubscriptionController extends Controller
                 ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->current_period_start)->format('d/m/Y')
                 : now()->format('d/m/Y');
 
+            // Extract shipping address from checkout session
+            $shippingAddress = null;
+            if ($session) {
+                // Try collected_information->shipping_details first, then customer_details
+                $shipping = $session->collected_information->shipping_details ?? null;
+                $address = $shipping->address ?? $session->customer_details->address ?? null;
+                $name = $shipping->name ?? $session->customer_details->name ?? $user->name;
+
+                if ($address && ($address->line1 ?? null)) {
+                    $shippingAddress = [
+                        'name' => $name,
+                        'line1' => $address->line1 ?? '',
+                        'line2' => $address->line2 ?? '',
+                        'city' => $address->city ?? '',
+                        'postal_code' => $address->postal_code ?? '',
+                        'state' => $address->state ?? '',
+                        'country' => $address->country ?? '',
+                    ];
+                }
+            }
+
             $subscriptionData = [
                 'plan_name' => $planName,
                 'amount' => $amount,
                 'interval' => $interval,
                 'start_date' => $startDate,
+                'shipping_address' => $shippingAddress,
             ];
 
             // Detect user language preference (default to French)
