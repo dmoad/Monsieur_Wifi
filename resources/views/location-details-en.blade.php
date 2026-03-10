@@ -35,10 +35,10 @@
     <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
         <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end" style="gap:8px;">
             <button id="clone-location-btn" class="btn btn-outline-secondary">
-                <i data-feather="copy" class="mr-1"></i> Clone Location
+                <i data-feather="copy" class="mr-1"></i>Clone
             </button>
             <a id="manage-networks-header-btn" href="#" class="btn custom-btn">
-                <i data-feather="wifi" class="mr-1"></i> Manage Networks
+                <i data-feather="wifi" class="mr-1"></i>Networks
             </a>
         </div>
     </div>
