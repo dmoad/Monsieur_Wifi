@@ -547,7 +547,7 @@ class DeviceController extends Controller
         if (!$device) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized device'
+                'message' => 'Unauthorized device',
             ], 401);
         }
         
