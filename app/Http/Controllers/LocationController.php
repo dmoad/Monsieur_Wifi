@@ -253,7 +253,76 @@ class LocationController extends Controller
         ]);
     }
 
-    
+    /**
+     * Clone an existing location (with its settings and networks) to a new owner.
+     */
+    public function clone(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
+        }
+
+        // Load source location with settings and networks
+        $source = Location::with(['settings', 'networks'])->find($id);
+
+        if (!$source) {
+            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+        }
+
+        // Only allow cloning own location (or any location for admins)
+        if (!in_array($user->role, ['admin', 'superadmin']) && $source->owner_id !== $user->id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // Determine owner for the cloned location
+        $ownerId = $user->id;
+        if (in_array($user->role, ['admin', 'superadmin']) && $request->filled('owner_id')) {
+            $request->validate(['owner_id' => 'exists:users,id']);
+            $ownerId = $request->owner_id;
+        }
+
+        // Create the cloned location (no device_id — must be assigned separately)
+        $cloned = new Location($source->only([
+            'address', 'city', 'state', 'country', 'postal_code',
+            'latitude', 'longitude', 'description',
+            'manager_name', 'contact_email', 'contact_phone', 'status',
+        ]));
+        $cloned->name      = $source->name . ' (Copy)';
+        $cloned->user_id   = $ownerId;
+        $cloned->owner_id  = $ownerId;
+        $cloned->device_id = null;
+        $cloned->save();
+
+        // Clone LocationSettingsV2
+        if ($source->settings) {
+            $settingsData = $source->settings->toArray();
+            unset($settingsData['id'], $settingsData['location_id'], $settingsData['created_at'], $settingsData['updated_at']);
+            $clonedSettings = new LocationSettingsV2($settingsData);
+            $clonedSettings->location_id = $cloned->id;
+            $clonedSettings->save();
+        } else {
+            $clonedSettings = new LocationSettingsV2(['location_id' => $cloned->id]);
+            $clonedSettings->save();
+        }
+
+        // Clone all networks
+        foreach ($source->networks as $network) {
+            $networkData = $network->toArray();
+            unset($networkData['id'], $networkData['location_id'], $networkData['created_at'], $networkData['updated_at']);
+            $clonedNetwork = new \App\Models\LocationNetwork($networkData);
+            $clonedNetwork->location_id = $cloned->id;
+            $clonedNetwork->save();
+        }
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Location cloned successfully.',
+            'location' => $cloned->load('settings'),
+        ]);
+    }
+
     /**
      * Display the specified location.
      *
@@ -580,6 +649,7 @@ class LocationController extends Controller
     {
         Log::info('Update location request received');
         Log::info($request->all());
+        
 
         // Check if it's a settings update
         if ($request->has('settings') && $request->has('settings_type')) {

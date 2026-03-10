@@ -263,6 +263,64 @@ async function saveLocationInfo() {
     }
 }
 
+// ============================================================================
+// CLONE LOCATION
+// ============================================================================
+
+async function openCloneModal() {
+    if (UserManager.isAdminOrAbove()) {
+        // Load users into the clone owner dropdown
+        try {
+            const res = await apiFetch(`${API}/accounts/users`);
+            const users = res.data || [];
+            const $select = $('#clone-owner-select');
+            $select.empty().append('<option value="">Assign to self</option>');
+            users.forEach(u => {
+                $select.append(`<option value="${u.id}">${u.name} (${u.email})</option>`);
+            });
+        } catch (err) {
+            console.error('Error loading user list for clone:', err);
+        }
+        $('#clone-owner-group').show();
+    } else {
+        $('#clone-owner-group').hide();
+    }
+    $('#clone-location-modal').modal('show');
+}
+
+async function cloneLocation() {
+    const $btn = $('#confirm-clone-btn');
+    const origHtml = $btn.html();
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-1"></span> Cloning…');
+
+    try {
+        const body = {};
+        if (UserManager.isAdminOrAbove()) {
+            const ownerId = $('#clone-owner-select').val();
+            if (ownerId) body.owner_id = ownerId;
+        }
+
+        const res = await apiFetch(`${API}/locations/${location_id}/clone`, {
+            method: 'POST',
+            body: JSON.stringify(body),
+        });
+
+        if (res.success) {
+            $('#clone-location-modal').modal('hide');
+            toastr.success('Location cloned successfully. Redirecting…');
+            const parts = window.location.pathname.split('/');
+            const lang = ['en', 'fr'].includes(parts[1]) ? parts[1] : 'en';
+            setTimeout(() => {
+                window.location.href = `/${lang}/locations/${res.location.id}`;
+            }, 1200);
+        }
+    } catch (err) {
+        handleApiError(err, 'cloneLocation');
+    } finally {
+        $btn.prop('disabled', false).html(origHtml);
+    }
+}
+
 async function loadOwnerDropdown(currentOwnerId) {
     try {
         const res = await apiFetch(`${API}/accounts/users`);
@@ -921,6 +979,13 @@ function initEventHandlers() {
     $('#next-page').on('click', function () {
         const total = Math.ceil(allOnlineUsers.length / USERS_PER_PAGE);
         if (onlineUsersPage < total) { onlineUsersPage++; renderOnlineUsers(); }
+    });
+
+    // Clone location
+    $('#clone-location-btn').on('click', openCloneModal);
+    $('#confirm-clone-btn').on('click', cloneLocation);
+    $('#clone-location-modal').on('hidden.bs.modal', function () {
+        $('#clone-owner-select').empty();
     });
 
     // User dropdown (navbar)

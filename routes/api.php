@@ -97,6 +97,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::get('/{id}', [LocationController::class, 'show']);
     Route::put('/{id}', [LocationController::class, 'update']);
     Route::delete('/{id}', [LocationController::class, 'destroy']);
+    Route::post('/{id}/clone', [LocationController::class, 'clone']);
     Route::put('/{location_id}/general', [LocationController::class, 'updateGeneral']);
     // Location settings routes
     Route::get('/{id}/settings', [LocationController::class, 'getSettings']);

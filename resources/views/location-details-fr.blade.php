@@ -192,7 +192,10 @@
         </div>
     </div>
     <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
-        <div class="form-group breadcrumb-right">
+        <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end" style="gap:8px;">
+            <button id="clone-location-btn" class="btn btn-outline-secondary">
+                <i data-feather="copy" class="mr-1"></i> Cloner l'emplacement
+            </button>
             <a id="manage-networks-header-btn" href="#" class="btn custom-btn">
                 <i data-feather="wifi" class="mr-1"></i> Gérer les réseaux
             </a>
@@ -875,6 +878,38 @@
                         <button class="btn btn-outline-primary" id="back-to-scan-btn"><i data-feather="refresh-cw" class="mr-1"></i> Analyser à nouveau</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clone Location Modal -->
+<div class="modal fade" id="clone-location-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i data-feather="copy" class="mr-2"></i>Cloner l'emplacement</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info mb-3">
+                    <div class="alert-body"><i data-feather="info" class="mr-2"></i>Ceci créera une copie de cet emplacement avec tous ses paramètres et réseaux. L'emplacement cloné n'aura pas d'appareil assigné.</div>
+                </div>
+                <div id="clone-owner-group" style="display:none;">
+                    <div class="form-group">
+                        <label for="clone-owner-select">Assigner à l'utilisateur</label>
+                        <select class="form-control" id="clone-owner-select">
+                            <option value="">Assigner à moi-même</option>
+                        </select>
+                        <small class="text-muted">Laissez vide pour vous assigner à vous-même.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn custom-btn" id="confirm-clone-btn">
+                    <i data-feather="copy" class="mr-1"></i><span>Cloner l'emplacement</span>
+                </button>
             </div>
         </div>
     </div>

@@ -261,7 +261,9 @@ function populatePaneData(nets) {
         });
 
         // IP / DHCP
-        $pane.find('.network-ip-mode').val(net.ip_mode || 'static');
+        const loadedIpMode = net.ip_mode || 'static';
+        $pane.find('.network-ip-mode').val(loadedIpMode);
+        toggleBridgeFields($pane, loadedIpMode === 'bridge');
         $pane.find('.network-ip-address').val(net.ip_address || '');
         $pane.find('.network-netmask').val(net.netmask || '255.255.255.0');
         $pane.find('.network-gateway').val(net.gateway || '');
@@ -335,6 +337,36 @@ function showTypeSections($pane, type) {
         .removeClass('network-type-password network-type-captive_portal network-type-open')
         .addClass(`network-type-${type}`)
         .text(TYPE_LABELS[type] || type);
+
+    // Bridge to WAN is not available for captive portal networks
+    const $ipModeSelect = $pane.find('.network-ip-mode');
+    const $bridgeOption = $ipModeSelect.find('option[value="bridge"]');
+    if (type === 'captive_portal') {
+        if ($ipModeSelect.val() === 'bridge') {
+            $ipModeSelect.val('static');
+        }
+        $bridgeOption.hide().prop('disabled', true);
+        toggleBridgeFields($pane, false);
+    } else {
+        $bridgeOption.show().prop('disabled', false);
+        // Restore bridge field visibility based on current ip_mode selection
+        toggleBridgeFields($pane, $ipModeSelect.val() === 'bridge');
+    }
+}
+
+function toggleBridgeFields($pane, isBridge) {
+    // IP address / network fields row
+    $pane.find('.network-ip-address, .network-netmask, .network-gateway, .network-dns1, .network-dns2')
+        .closest('.form-group')
+        .toggle(!isBridge);
+    // DHCP server section
+    $pane.find('.network-dhcp-enabled').closest('.form-group').toggle(!isBridge);
+    $pane.find('.network-dhcp-start, .network-dhcp-end')
+        .closest('.form-group')
+        .toggle(!isBridge);
+    if (isBridge) {
+        $pane.find('.network-dhcp-enabled').prop('checked', false);
+    }
 }
 
 function syncTypePills($pane, type) {
@@ -377,20 +409,23 @@ function renderMacList($pane, list) {
 
 function getFormData(netId, $pane) {
     const type = $pane.find('.network-type-select').val();
+    const ipMode = $pane.find('.network-ip-mode').val();
+    const isBridge = ipMode === 'bridge';
+
     const data = {
         type,
         ssid: $pane.find('.network-ssid').val().trim(),
         visible: $pane.find('.network-visible').val() === '1',
         enabled: $pane.find('.network-enabled').is(':checked'),
-        ip_mode: $pane.find('.network-ip-mode').val(),
-        ip_address: $pane.find('.network-ip-address').val().trim(),
-        netmask: $pane.find('.network-netmask').val().trim(),
-        gateway: $pane.find('.network-gateway').val().trim() || null,
-        dns1: $pane.find('.network-dns1').val().trim(),
-        dns2: $pane.find('.network-dns2').val().trim(),
-        dhcp_enabled: $pane.find('.network-dhcp-enabled').is(':checked'),
-        dhcp_start: $pane.find('.network-dhcp-start').val().trim() || null,
-        dhcp_end: $pane.find('.network-dhcp-end').val().trim() || null,
+        ip_mode: ipMode,
+        ip_address: isBridge ? null : ($pane.find('.network-ip-address').val().trim() || null),
+        netmask: isBridge ? null : ($pane.find('.network-netmask').val().trim() || null),
+        gateway: isBridge ? null : ($pane.find('.network-gateway').val().trim() || null),
+        dns1: isBridge ? null : ($pane.find('.network-dns1').val().trim() || null),
+        dns2: isBridge ? null : ($pane.find('.network-dns2').val().trim() || null),
+        dhcp_enabled: isBridge ? false : $pane.find('.network-dhcp-enabled').is(':checked'),
+        dhcp_start: isBridge ? null : ($pane.find('.network-dhcp-start').val().trim() || null),
+        dhcp_end: isBridge ? null : ($pane.find('.network-dhcp-end').val().trim() || null),
         vlan_id: parseInt($pane.find('.network-vlan-id').val()) || null,
         vlan_tagging: $pane.find('.network-vlan-tagging').val(),
         mac_filter_mode: $pane.find('.network-mac-filter-mode').val(),
@@ -578,6 +613,11 @@ function bindPaneEvents() {
             const net = networks.find(n => n.id == netId);
             initScheduler(netId, net?.working_hours || []);
         }
+    });
+
+    // IP mode change → toggle bridge fields
+    $(document).off('change.nmgr', '.network-ip-mode').on('change.nmgr', '.network-ip-mode', function () {
+        toggleBridgeFields($(this).closest('.tab-pane'), $(this).val() === 'bridge');
     });
 
     // Auth method change

@@ -120,6 +120,14 @@ class LocationNetworkController extends Controller
             $validated['password'] = 'abcd1234';
         }
 
+        // For Bridge to WAN mode, remove null IP/DHCP fields to avoid NOT NULL column errors
+        if (($validated['ip_mode'] ?? null) === 'bridge') {
+            foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
+                unset($validated[$f]);
+            }
+            $validated['dhcp_enabled'] = false;
+        }
+
         $sortOrder = $currentCount; // append at end
 
         $network = LocationNetwork::create(array_merge($validated, [
@@ -164,7 +172,8 @@ class LocationNetworkController extends Controller
     public function update(Request $request, int $locationId, int $networkId)
     {
         $location = $this->authorizeLocation($locationId);
-
+        # Throw and error for test purpose
+        // return response()->json(['success' => false, 'message' => 'Network settings not updated'], 400);
         if (!$location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
@@ -234,6 +243,15 @@ class LocationNetworkController extends Controller
                     ]
                 ], 422);
             }
+        }
+
+        // For Bridge to WAN mode, null out IP/DHCP fields so they are not written
+        // (those columns may have NOT NULL constraints; bridge mode doesn't use them)
+        if (($validated['ip_mode'] ?? $network->ip_mode) === 'bridge') {
+            foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
+                unset($validated[$f]);
+            }
+            $validated['dhcp_enabled'] = false;
         }
 
         // Determine if config version should be incremented

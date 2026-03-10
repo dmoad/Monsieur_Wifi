@@ -358,6 +358,7 @@
                                             <select class="form-control network-ip-mode">
                                                 <option value="static">IP statique</option>
                                                 <option value="dhcp">Client DHCP</option>
+                                                <option value="bridge">Pont vers WAN</option>
                                             </select>
                                         </div>
                                     </div>
