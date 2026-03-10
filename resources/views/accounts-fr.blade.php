@@ -148,43 +148,48 @@
                                 <input type="email" class="form-control" id="new-account-email" placeholder="Email" required />
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6">
+                        <div class="col-12">
                             <div class="form-group">
-                                <label for="new-account-password">Mot de passe <span class="text-danger">*</span></label>
-                                <div class="input-group form-password-toggle">
-                                    <input type="password" class="form-control" id="new-account-password" placeholder="Mot de passe" required />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text cursor-pointer">
-                                            <i data-feather="eye"></i>
-                                        </span>
-                                    </div>
+                                <label>Configuration du mot de passe</label>
+                                <div class="btn-group btn-group-toggle w-100" data-toggle="buttons" id="password-method-toggle">
+                                    <label class="btn btn-outline-primary active">
+                                        <input type="radio" name="password-method" value="manual" checked> Définir le mot de passe
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="radio" name="password-method" value="email"> Envoyer un e-mail de vérification
+                                    </label>
                                 </div>
-                                <small class="form-text text-muted">Minimum 8 caractères, doit inclure des lettres, des chiffres et des caractères spéciaux</small>
+                                <small class="form-text text-muted mt-50">Choisissez "Envoyer un e-mail de vérification" pour laisser l'utilisateur définir son propre mot de passe.</small>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="new-account-confirm-password">Confirmer le mot de passe <span class="text-danger">*</span></label>
-                                <div class="input-group form-password-toggle">
-                                    <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirmer le mot de passe" required />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text cursor-pointer">
-                                            <i data-feather="eye"></i>
-                                        </span>
+                        <div id="manual-password-fields" class="col-12 row px-0 mx-0">
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="new-account-password">Mot de passe <span class="text-danger">*</span></label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="new-account-password" placeholder="Mot de passe" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
                                     </div>
+                                    <small class="form-text text-muted">Minimum 8 caractères</small>
                                 </div>
-                                <small class="form-text text-danger hidden" id="new-password-error-message">Les mots de passe ne correspondent pas</small>
                             </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="form-group">
-                                <label for="new-account-role">Rôle <span class="text-danger">*</span></label>
-                                <select class="form-control" id="new-account-role" required>
-                                    <option value="">Sélectionner un rôle</option>
-                                    <option value="user">Utilisateur</option>
-                                    <option value="admin">Administrateur</option>
-                                    <option value="superadmin" class="superadmin-only" style="display:none;">Super Administrateur</option>
-                                </select>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="new-account-confirm-password">Confirmer le mot de passe <span class="text-danger">*</span></label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirmer le mot de passe" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-danger hidden" id="new-password-error-message">Les mots de passe ne correspondent pas</small>
+                                </div>
                             </div>
                         </div>
                     </div>

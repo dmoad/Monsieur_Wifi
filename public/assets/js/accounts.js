@@ -10,6 +10,7 @@ const TRANSLATIONS = {
         creating: 'Creating...',
         updating: 'Updating...',
         accountCreatedSuccess: 'Account created successfully!',
+        accountCreatedVerificationSent: 'Account created. Verification email sent.',
         accountUpdatedSuccess: 'User account updated successfully!',
         accountDeletedSuccess: 'has been deleted successfully!',
         failedFetchUsers: 'Failed to fetch users',
@@ -33,6 +34,7 @@ const TRANSLATIONS = {
         creating: 'Création...',
         updating: 'Mise à jour...',
         accountCreatedSuccess: 'Compte créé avec succès !',
+        accountCreatedVerificationSent: 'Compte créé. E-mail de vérification envoyé.',
         accountUpdatedSuccess: 'Compte utilisateur mis à jour avec succès !',
         accountDeletedSuccess: 'a été supprimé avec succès !',
         failedFetchUsers: 'Échec de la récupération des utilisateurs',
@@ -184,12 +186,15 @@ $(document).ready(function() {
                         }
                         
                         const userId = users[i].id;
+                        const canDelete = user.role === 'superadmin';
+                        const deleteBtn = canDelete
+                            ? `<button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}" data-user-name="${name}" data-user-role="${role}">
+                                  <i data-feather="trash-2"></i> ${t.delete}
+                               </button>`
+                            : '';
                         const actions = `<button class="btn btn-sm btn-primary edit-user-btn" data-user-id="${userId}" data-name="${name}" data-email="${email}" data-role="${role}" data-profile-picture="${profile_picture_path}">
                                           <i data-feather="edit-2"></i> ${t.edit}
-                                       </button> 
-                                       <button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}" data-user-name="${name}" data-user-role="${role}">
-                                          <i data-feather="trash-2"></i> ${t.delete}
-                                       </button>`;
+                                       </button> ${deleteBtn}`;
                         
                         table.row.add([id, name, email, roleBadge, profile_picture, actions]).draw();
                     }
@@ -230,44 +235,68 @@ $(document).ready(function() {
         }
     });
 
+    // Password method toggle: show/hide manual password fields
+    $(document).on('change', 'input[name="password-method"]', function() {
+        const method = $(this).val();
+        if (method === 'email') {
+            $('#manual-password-fields').hide();
+            $('#new-account-password, #new-account-confirm-password').removeAttr('required');
+        } else {
+            $('#manual-password-fields').show();
+            $('#new-account-password, #new-account-confirm-password').attr('required', true);
+        }
+    });
+
+    // Reset modal state when closed
+    $('#add-new-account').on('hidden.bs.modal', function() {
+        $('input[name="password-method"][value="manual"]').prop('checked', true)
+            .closest('label').addClass('active')
+            .siblings('label').removeClass('active');
+        $('#manual-password-fields').show();
+        $('#new-account-password, #new-account-confirm-password').attr('required', true);
+        $('#new-password-error-message').addClass('hidden');
+    });
+
     $('#add-account-form').on('submit', function(e) {
         e.preventDefault();
-        
-        const name = $('#new-account-name').val();
-        const email = $('#new-account-email').val();
-        const password = $('#new-account-password').val();
-        const confirmPassword = $('#new-account-confirm-password').val();
-        const role = $('#new-account-role').val();
-        
-        if (!name || !email || !password || !confirmPassword || !role) {
+
+        const name = $('#new-account-name').val().trim();
+        const email = $('#new-account-email').val().trim();
+        const sendVerification = $('input[name="password-method"]:checked').val() === 'email';
+
+        if (!name || !email) {
             toastr.error(t.validationError, 'Validation Error');
             return;
         }
-        
-        if (password !== confirmPassword) {
-            $('#new-password-error-message').removeClass('hidden');
-            setTimeout(function() {
-                $('#new-password-error-message').addClass('hidden');
-            }, 3000);
-            return;
-        } else {
+
+        let userData = { name, email, send_verification: sendVerification };
+
+        if (!sendVerification) {
+            const password = $('#new-account-password').val();
+            const confirmPassword = $('#new-account-confirm-password').val();
+
+            if (!password || !confirmPassword) {
+                toastr.error(t.validationError, 'Validation Error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                $('#new-password-error-message').removeClass('hidden');
+                setTimeout(function() { $('#new-password-error-message').addClass('hidden'); }, 3000);
+                return;
+            }
             $('#new-password-error-message').addClass('hidden');
+
+            userData.password = password;
+            userData.password_confirmation = confirmPassword;
         }
-        
+
         const $button = $('#create-account-btn');
         const originalText = $button.html();
         $button.html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${t.creating}`).prop('disabled', true);
-        
-        const userData = {
-            name: name,
-            email: email,
-            password: password,
-            password_confirmation: confirmPassword,
-            role: role
-        };
-        
+
         $.ajax({
-            url: '/api/auth/register',
+            url: '/api/accounts/users',
             type: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -275,43 +304,35 @@ $(document).ready(function() {
             },
             data: JSON.stringify(userData),
             success: function(response) {
-                console.log('User created successfully:', response);
-                
                 const profileFile = $('#new-account-upload').prop('files')[0];
                 if (profileFile && response.user) {
                     const formData = new FormData();
                     formData.append('file', profileFile);
                     formData.append('user_id', response.user.id);
-                    
+
                     $.ajax({
                         url: '/api/auth/upload-profile-picture',
                         type: 'POST',
                         data: formData,
-                        headers: {
-                            'Authorization': 'Bearer ' + response.access_token
-                        },
+                        headers: { 'Authorization': 'Bearer ' + token },
                         processData: false,
                         contentType: false,
-                        success: function() {
-                            console.log('Profile picture uploaded successfully');
-                        },
                         error: function(xhr, status, error) {
                             console.error('Error uploading profile picture:', error);
                         }
                     });
                 }
-                
+
                 $('#add-account-form')[0].reset();
                 $('#new-account-upload-img').attr('src', '/assets/avatar-default.jpg');
                 $('#add-new-account').modal('hide');
-                
-                toastr.success(t.accountCreatedSuccess, 'Success');
+
+                const successMsg = sendVerification ? t.accountCreatedVerificationSent : t.accountCreatedSuccess;
+                toastr.success(successMsg, 'Success');
                 loadUsersData();
             },
-            error: function(xhr, status, error) {
-                console.error('Error creating user:', error);
+            error: function(xhr) {
                 let errorMessage = t.failedCreateAccount;
-                
                 if (xhr.responseJSON) {
                     if (xhr.responseJSON.email && xhr.responseJSON.email[0]) {
                         errorMessage = xhr.responseJSON.email[0];
@@ -319,7 +340,6 @@ $(document).ready(function() {
                         errorMessage = xhr.responseJSON.message;
                     }
                 }
-                
                 toastr.error(errorMessage, 'Error');
             },
             complete: function() {
@@ -351,10 +371,12 @@ $(document).ready(function() {
         $('#edit-user-password').val('');
         $('#edit-user-confirm-password').val('');
         
-        // Show/hide superadmin option based on current user role
+        // Show Role field only for superadmin; show/hide superadmin option accordingly
         if (currentUser.role === 'superadmin') {
+            $('#edit-user-role').closest('.form-group').show();
             $('#edit-user-role option.superadmin-only').show();
         } else {
+            $('#edit-user-role').closest('.form-group').hide();
             $('#edit-user-role option.superadmin-only').hide();
         }
         
@@ -434,8 +456,12 @@ $(document).ready(function() {
         const userData = {
             name: name,
             email: email,
-            role: role
         };
+
+        // Only superadmin may change roles
+        if (currentUser.role === 'superadmin') {
+            userData.role = role;
+        }
         
         if (password && password.trim() !== '') {
             userData.password = password;
@@ -509,10 +535,10 @@ $(document).ready(function() {
         const userName = $(this).data('user-name');
         const userRole = $(this).data('user-role');
         
-        // Check if current user can delete this account
+        // Only superadmin can delete accounts
         const currentUser = UserManager.getUser();
-        if (userRole === 'superadmin' && currentUser.role !== 'superadmin') {
-            toastr.error('Only Super Admin can delete Super Admin accounts', 'Permission Denied');
+        if (currentUser.role !== 'superadmin') {
+            toastr.error('Only Super Admin can delete accounts', 'Permission Denied');
             return;
         }
         

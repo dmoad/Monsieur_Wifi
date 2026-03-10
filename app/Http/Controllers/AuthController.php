@@ -337,9 +337,11 @@ class AuthController extends Controller
         if($request->has('email')) {
             $targetUser->email = $request->email;
         }
-        if($request->has('role') && ($user->role == 'admin' || $user->role == 'superadmin')) {
-            // Only superadmin can assign superadmin role
-            if($request->role === 'superadmin' && $user->role !== 'superadmin') {
+        if ($request->has('role')) {
+            if ($user->role !== 'superadmin') {
+                return response()->json(['error' => 'Only superadmin can change user roles'], 403);
+            }
+            if ($request->role === 'superadmin' && $user->role !== 'superadmin') {
                 return response()->json(['error' => 'Only superadmin can assign superadmin role'], 403);
             }
             $targetUser->role = $request->role;
@@ -362,43 +364,51 @@ class AuthController extends Controller
     public function createUser(Request $request)
     {
         $user = Auth::guard('api')->user();
-        if(!$user) {
+        if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Validate role based on current user permissions
-        $allowedRoles = ['user', 'admin'];
-        if ($user->role === 'superadmin') {
-            $allowedRoles[] = 'superadmin';
+        $sendVerification = (bool) $request->input('send_verification', false);
+
+        $rules = [
+            'name'  => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+        ];
+
+        if (!$sendVerification) {
+            $rules['password'] = 'required|string|min:8|confirmed';
         }
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:' . implode(',', $allowedRoles),
-        ]);
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        // Additional check: only superadmin can create superadmin accounts
-        if ($request->role === 'superadmin' && $user->role !== 'superadmin') {
-            return response()->json(['error' => 'Only superadmin can create superadmin accounts'], 403);
+        if ($sendVerification) {
+            // Create account with a random temporary password; user sets their own via email
+            $newUser = User::create([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => Hash::make(Str::random(32)),
+                'role'     => 'user',
+                // email_verified_at left null — verified when user clicks the link
+            ]);
+            $this->sendVerificationEmail($newUser, false, true);
+        } else {
+            // Admin sets the password directly; mark account as verified immediately
+            $newUser = User::create([
+                'name'              => $request->name,
+                'email'             => $request->email,
+                'password'          => Hash::make($request->password),
+                'role'              => 'user',
+                'email_verified_at' => now(),
+            ]);
         }
-
-        $newUser = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'email_verified_at' => now(), // Auto-verify admin-created accounts
-        ]);
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $newUser->only(['id', 'name', 'email', 'role'])
+            'user'    => $newUser->only(['id', 'name', 'email', 'role']),
         ], 201);
     }
 
@@ -424,7 +434,12 @@ class AuthController extends Controller
         if($targetUser->id === $currentUser->id) {
             return response()->json(['error' => 'You cannot delete your own account'], 400);
         }
-        
+
+        // Only superadmin can delete accounts
+        if ($currentUser->role !== 'superadmin') {
+            return response()->json(['error' => 'Only superadmin can delete accounts'], 403);
+        }
+
         $targetUser->delete();
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
@@ -666,7 +681,7 @@ class AuthController extends Controller
      * @param  User  $user
      * @return void
      */
-    protected function sendVerificationEmail(User $user, bool $hasDesign = false)
+    protected function sendVerificationEmail(User $user, bool $hasDesign = false, bool $setPassword = false)
     {
         // Delete any existing tokens
         DB::table('email_verification_tokens')
@@ -689,6 +704,9 @@ class AuthController extends Controller
         $verificationUrl = url('/verify-email?token=' . $token . '&email=' . urlencode($user->email));
         if ($hasDesign) {
             $verificationUrl .= '&has_design=1';
+        }
+        if ($setPassword) {
+            $verificationUrl .= '&set_password=1';
         }
 
         // Send email
@@ -714,8 +732,10 @@ class AuthController extends Controller
         Log::info('=== Email Verification Request ===');
 
         $validator = Validator::make($request->all(), [
-            'token' => 'required|string',
-            'email' => 'required|email',
+            'token'                 => 'required|string',
+            'email'                 => 'required|email',
+            'password'              => 'sometimes|required|string|min:8|confirmed',
+            'password_confirmation' => 'sometimes|required_with:password|string',
         ]);
 
         if ($validator->fails()) {
@@ -765,6 +785,11 @@ class AuthController extends Controller
             return response()->json([
                 'error' => 'Invalid verification link.'
             ], 400);
+        }
+
+        // Set password if provided (admin-invite flow)
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
         }
 
         // Mark email as verified
