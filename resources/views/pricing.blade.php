@@ -457,8 +457,14 @@
         <p id="header-subtitle">Des solutions WiFi adaptées à vos besoins</p>
     </div>
 
+    <!-- Loading Spinner -->
+    <div id="pricing-loader" style="display:none; text-align:center; padding:80px 20px;">
+        <div style="display:inline-block; width:40px; height:40px; border:3px solid rgba(115,103,240,0.2); border-top-color:#7367f0; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+        <p style="margin-top:15px; color:#888; font-size:0.95rem;" id="loader-text">Chargement...</p>
+    </div>
+
     <!-- Pricing Cards -->
-    <div class="pricing-container" id="pricing-cards">
+    <div class="pricing-container" id="pricing-cards" style="opacity: 0; transition: opacity 0.3s ease;">
         <!-- Standard Plan -->
         <div class="pricing-card" data-plan="standard">
             <h3 class="plan-name">Standard</h3>
@@ -637,8 +643,57 @@
         if (token) {
             backLabel.textContent = t.backDashboard;
             backLink.href = '/' + lang + '/dashboard';
+
+            // Show loader while checking subscription
+            const loader = document.getElementById('pricing-loader');
+            loader.style.display = 'block';
+            document.getElementById('loader-text').textContent = lang === 'fr' ? 'Chargement...' : 'Loading...';
+
+            // Check if user already has a subscription
+            fetch('/api/subscription/status', {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById('pricing-cards');
+                if (data.success && data.has_subscription) {
+                    // User already subscribed — replace pricing cards with message
+                    const alreadyMsg = lang === 'fr'
+                        ? {
+                            title: 'Vous êtes déjà abonné',
+                            text: 'Vous avez déjà un abonnement actif. Vous pouvez gérer votre abonnement depuis votre profil.',
+                            btn: 'Aller au profil'
+                          }
+                        : {
+                            title: 'You are already subscribed',
+                            text: 'You already have an active subscription. You can manage your subscription from your profile.',
+                            btn: 'Go to profile'
+                          };
+                    container.innerHTML = `
+                        <div style="text-align:center; max-width:500px; background:rgba(255,255,255,0.95); border-radius:20px; padding:50px 40px; box-shadow:0 8px 32px rgba(31,38,135,0.12);">
+                            <div style="width:80px;height:80px;background:linear-gradient(135deg,#28a745,#20c997);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 25px;">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <h2 style="font-size:1.6rem;font-weight:700;color:#333;margin-bottom:12px;">${alreadyMsg.title}</h2>
+                            <p style="font-size:1rem;color:#666;margin-bottom:30px;line-height:1.6;">${alreadyMsg.text}</p>
+                            <a href="/${lang}/profile" style="display:inline-block;background:linear-gradient(135deg,#7367f0,#9e95f5);color:white;padding:14px 35px;border-radius:10px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 4px 15px rgba(115,103,240,0.35);">${alreadyMsg.btn}</a>
+                        </div>
+                    `;
+                }
+                loader.style.display = 'none';
+                container.style.opacity = '1';
+            })
+            .catch(err => {
+                console.error('Error checking subscription:', err);
+                document.getElementById('pricing-loader').style.display = 'none';
+                document.getElementById('pricing-cards').style.opacity = '1';
+            });
         } else {
             backLabel.textContent = t.back;
+            document.getElementById('pricing-cards').style.opacity = '1';
         }
 
         // Animate dots

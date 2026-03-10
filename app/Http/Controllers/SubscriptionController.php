@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use App\Mail\SubscriptionConfirmedMail;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Log;
 
@@ -399,6 +401,11 @@ class SubscriptionController extends Controller
                     'user_id' => $user->id,
                     'session_id' => $request->session_id,
                 ]);
+
+                // Send confirmation email (only if subscription was just created here, not already by webhook)
+                if (!is_string($stripeSubscription)) {
+                    $this->sendSubscriptionConfirmationEmail($user, $stripeSubscription);
+                }
             }
 
             return response()->json([
@@ -499,6 +506,9 @@ class SubscriptionController extends Controller
                 'user_id' => $user->id,
                 'subscription_id' => $stripeSubscription->id,
             ]);
+
+            // Send confirmation email
+            $this->sendSubscriptionConfirmationEmail($user, $stripeSubscription);
         }
     }
 
@@ -527,6 +537,60 @@ class SubscriptionController extends Controller
             $dbSubscription->update([
                 'stripe_status' => $subscription->status,
                 'ends_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Send subscription confirmation email to user
+     */
+    protected function sendSubscriptionConfirmationEmail(User $user, $stripeSubscription)
+    {
+        try {
+            $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+
+            // Get price details
+            $price = null;
+            $planName = 'Standard';
+            $amount = '';
+            $interval = '';
+
+            if (isset($stripeSubscription->items->data[0])) {
+                $priceObj = $stripeSubscription->items->data[0]->price;
+                $amount = number_format($priceObj->unit_amount / 100, 2) . ' ' . strtoupper($priceObj->currency);
+                $interval = $priceObj->recurring->interval === 'month' ? 'Mensuel / Monthly' : 'Annuel / Annual';
+
+                // Try to determine plan name from price ID
+                if ($priceObj->id === env('STRIPE_PRICE_PREMIUM')) {
+                    $planName = 'Premium';
+                } elseif ($priceObj->id === env('STRIPE_PRICE_STANDARD') || $priceObj->id === env('STRIPE_PRICE_STARTER')) {
+                    $planName = 'Standard';
+                } else {
+                    $planName = $priceObj->nickname ?? 'Standard';
+                }
+            }
+
+            $startDate = $stripeSubscription->current_period_start
+                ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->current_period_start)->format('d/m/Y')
+                : now()->format('d/m/Y');
+
+            $subscriptionData = [
+                'plan_name' => $planName,
+                'amount' => $amount,
+                'interval' => $interval,
+                'start_date' => $startDate,
+            ];
+
+            // Detect user language preference (default to French)
+            $locale = 'fr';
+
+            Mail::to($user->email)->send(new SubscriptionConfirmedMail($user, $subscriptionData, $locale));
+
+            Log::info('Subscription confirmation email sent', ['user_id' => $user->id, 'email' => $user->email]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send subscription confirmation email', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
             ]);
         }
     }
