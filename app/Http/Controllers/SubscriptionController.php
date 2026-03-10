@@ -194,6 +194,28 @@ class SubscriptionController extends Controller
 
         $subscription = $user->subscription('default');
 
+        // Sync subscription status with Stripe if subscription exists
+        if ($subscription && $user->stripe_id) {
+            try {
+                $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+                $stripeSubscription = $stripe->subscriptions->retrieve($subscription->stripe_id);
+
+                $endsAt = null;
+                if ($stripeSubscription->cancel_at) {
+                    $endsAt = \Carbon\Carbon::createFromTimestamp($stripeSubscription->cancel_at);
+                }
+
+                $subscription->update([
+                    'stripe_status' => $stripeSubscription->status,
+                    'ends_at' => $endsAt,
+                ]);
+
+                $subscription->refresh();
+            } catch (\Exception $e) {
+                Log::error('Failed to sync subscription status', ['error' => $e->getMessage()]);
+            }
+        }
+
         return response()->json([
             'success' => true,
             'has_subscription' => $user->subscribed('default'),
@@ -293,7 +315,7 @@ class SubscriptionController extends Controller
         }
 
         try {
-            $url = $user->billingPortalUrl(url('/subscription'));
+            $url = $user->billingPortalUrl(url('/en/profile'));
 
             return response()->json([
                 'success' => true,
