@@ -151,7 +151,12 @@
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
             var profile_picture = localStorage.getItem('profile_picture');
-            $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
+            if (!profile_picture || profile_picture === 'null') {
+                profile_picture = '/assets/avatar-default.png';
+            }else{
+                profile_picture = '/uploads/profile_pictures/' + profile_picture;
+            }
+            $('.user-profile-picture').attr('src', profile_picture);
 
             $('.logout-button').on('click', function(e) {
                 e.preventDefault();

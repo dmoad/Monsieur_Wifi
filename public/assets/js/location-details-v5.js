@@ -167,10 +167,9 @@ async function loadLocationDetails() {
     // Manage networks links
     const netUrl = networksPageUrl();
     $('#manage-networks-btn, #manage-networks-header-btn').attr('href', netUrl);
-
+    console.log("location:::::", location.device);
     // Status badge
-    const isOnline = location.device && location.device.last_seen &&
-        (new Date() - new Date(location.device.last_seen)) < 5 * 60 * 1000;
+    const isOnline = location.device && location.device.is_online;
     const $badge = $('.status-badge');
     $badge.removeClass('status-online status-offline status-warning')
         .addClass(isOnline ? 'status-online' : 'status-offline')

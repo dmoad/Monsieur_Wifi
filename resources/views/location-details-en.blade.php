@@ -791,5 +791,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=1"></script>
+<script src="/assets/js/location-details-v5.js?v=2"></script>
 @endpush
