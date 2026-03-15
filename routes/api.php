@@ -18,6 +18,7 @@ use App\Http\Controllers\TempCaptivePortalDesignController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\LocationNetworkController;
+use App\Http\Controllers\QosController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -135,6 +136,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::post('/{id}/captive-portal/hourly-schedule/initialize', [CaptivePortalHourlyScheduleController::class, 'initializeFromWorkingHours']);
     Route::get('/{id}/captive-portal/hourly-schedule/status', [CaptivePortalHourlyScheduleController::class, 'checkCurrentStatus']);
 
+    // Location QoS toggle
+    Route::put('/{id}/settings/qos', [LocationController::class, 'updateQosSettings']);
+
     // Location networks (flexible multi-network support)
     Route::get('/{location_id}/networks', [LocationNetworkController::class, 'index']);
     Route::post('/{location_id}/networks', [LocationNetworkController::class, 'store']);
@@ -176,6 +180,16 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'firmware'], function () {
     Route::post('/{firmware}/toggle-status', [FirmwareController::class, 'toggleStatus']);
     Route::post('/{firmware}/set-default', [FirmwareController::class, 'setDefault']);
     Route::post('/{firmware}/verify', [FirmwareController::class, 'verify']);
+});
+
+// QoS class routes (protected with auth)
+// GET index + show: all authenticated users (admin/user get read-only view of classes + domains)
+// POST/DELETE domains: SuperAdmin only (enforced inside QosController)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'qos'], function () {
+    Route::get('/classes', [QosController::class, 'index']);
+    Route::get('/classes/{classId}', [QosController::class, 'show']);
+    Route::post('/classes/{classId}/domains', [QosController::class, 'addDomain']);
+    Route::delete('/classes/{classId}/domains/{domain}', [QosController::class, 'removeDomain']);
 });
 
 // Category routes (protected with auth)

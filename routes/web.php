@@ -142,6 +142,12 @@ Route::prefix('en')->name('en.')->group(function () {
     Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
     Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
     Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+
+    // QoS Settings (SuperAdmin only — enforced in view/JS)
+    Route::get('/qos-settings', function () {
+        $locale = 'en';
+        return view('qos-settings-en', compact('locale'));
+    })->name('qos-settings');
 });
 
 // French language routes group
@@ -226,6 +232,12 @@ Route::prefix('fr')->name('fr.')->group(function () {
     Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
     Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
     Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+
+    // QoS Settings (SuperAdmin only — enforced in view/JS)
+    Route::get('/parametres-qos', function () {
+        $locale = 'fr';
+        return view('qos-settings-fr', compact('locale'));
+    })->name('qos-settings');
 });
 
 // Static pages (language agnostic)

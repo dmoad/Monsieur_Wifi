@@ -46,6 +46,9 @@
             <li class="nav-item admin_and_above hidden {{ request()->is('*/domain-blocking') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/domain-blocking"><i data-feather="slash"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Blocage de Domaine' : 'Domain Blocking' }}</span></a>
             </li>
+            <li class="nav-item only_superadmin hidden {{ request()->is('*/qos-settings', '*/parametres-qos') ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/parametres-qos' : 'en/qos-settings' }}"><i data-feather="sliders"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Priorité du trafic' : 'Traffic Priority' }}</span></a>
+            </li>
             <li class="nav-item admin_and_above hidden {{ request()->is('*/admin/models', '*/admin/modeles') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/admin/modeles' : 'en/admin/models' }}"><i data-feather="cpu"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Gérer les Modèles' : 'Manage Models' }}</span></a>
             </li>

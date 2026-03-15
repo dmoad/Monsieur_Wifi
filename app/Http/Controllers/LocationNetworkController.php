@@ -113,6 +113,7 @@ class LocationNetworkController extends Controller
             'dhcp_end'          => 'nullable|ip',
             'mac_filter_mode'   => 'nullable|string',
             'mac_filter_list'   => 'nullable|array',
+            'qos_policy'        => 'nullable|string|in:full,scavenger',
         ]);
 
         // Set default password for password-type networks
@@ -218,6 +219,7 @@ class LocationNetworkController extends Controller
             'dhcp_end'          => 'nullable|ip',
             'mac_filter_mode'   => 'nullable|string',
             'mac_filter_list'   => 'nullable|array',
+            'qos_policy'        => 'nullable|string|in:full,scavenger',
         ]);
 
         // Check if updating to password type or if already password type

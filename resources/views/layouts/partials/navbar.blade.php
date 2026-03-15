@@ -21,12 +21,15 @@
                         
                         // Translation map for route segments
                         $frToEn = [
-                            'boutique' => 'shop',
-                            'panier' => 'cart',
-                            'commander' => 'checkout',
-                            'commandes' => 'orders',
-                            'inventaire' => 'inventory',
-                            'modeles' => 'models',
+                            'boutique'      => 'shop',
+                            'panier'        => 'cart',
+                            'commander'     => 'checkout',
+                            'commandes'     => 'orders',
+                            'inventaire'    => 'inventory',
+                            'modeles'       => 'models',
+                            'parametres-qos' => 'qos-settings',
+                            'appareils'     => 'devices',
+                            'emplacements'  => 'locations',
                         ];
                         $enToFr = array_flip($frToEn);
                         

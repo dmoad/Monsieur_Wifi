@@ -48,6 +48,9 @@ class LocationNetwork extends Model
         // MAC filtering
         'mac_filter_mode',
         'mac_filter_list',
+
+        // QoS
+        'qos_policy',
     ];
 
     protected $casts = [
@@ -68,6 +71,15 @@ class LocationNetwork extends Model
      * Valid network types.
      */
     const TYPES = ['password', 'captive_portal', 'open'];
+
+    /**
+     * QoS policy options.
+     * full      — SNI inspect + honour client DSCP (trusted/home networks)
+     * scavenger — blanket CS1 deprioritization (guest/IoT networks)
+     */
+    const QOS_POLICY_FULL      = 'full';
+    const QOS_POLICY_SCAVENGER = 'scavenger';
+    const QOS_POLICIES         = ['full', 'scavenger'];
 
     public function location(): BelongsTo
     {

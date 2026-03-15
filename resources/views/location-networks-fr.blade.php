@@ -150,6 +150,13 @@
                             <label class="custom-control-label" for="network-enabled-__ID__">Activé</label>
                         </div>
                     </div>
+                    <div class="network-identity-divider mx-1"></div>
+                    <div class="network-qos-wrap">
+                        <div class="custom-control custom-switch mb-0">
+                            <input type="checkbox" class="custom-control-input network-qos-policy" id="network-qos-__ID__">
+                            <label class="custom-control-label" for="network-qos-__ID__">QoS complet</label>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- ── PASSWORD section ── -->

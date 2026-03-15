@@ -233,6 +233,7 @@ function populatePaneData(nets) {
         $pane.find('.network-ssid').val(net.ssid || '');
         $pane.find('.network-visible').val(net.visible ? '1' : '0');
         $pane.find('.network-enabled').prop('checked', !!net.enabled);
+        $pane.find('.network-qos-policy').prop('checked', (net.qos_policy || 'scavenger') === 'full');
 
         showTypeSections($pane, net.type);
         syncTypePills($pane, net.type);
@@ -429,6 +430,7 @@ function getFormData(netId, $pane) {
         vlan_id: parseInt($pane.find('.network-vlan-id').val()) || null,
         vlan_tagging: $pane.find('.network-vlan-tagging').val(),
         mac_filter_mode: $pane.find('.network-mac-filter-mode').val(),
+        qos_policy: $pane.find('.network-qos-policy').is(':checked') ? 'full' : 'scavenger',
     };
 
     if (type === 'password') {

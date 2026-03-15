@@ -47,6 +47,9 @@ class LocationSettingsV2 extends Model
         'web_filter_enabled',
         'web_filter_domains',
         'web_filter_categories',
+
+        // QoS
+        'qos_enabled',
     ];
 
     protected $casts = [
@@ -55,6 +58,7 @@ class LocationSettingsV2 extends Model
         'wan_nat_enabled'    => 'boolean',
         'vlan_enabled'       => 'boolean',
         'web_filter_enabled' => 'boolean',
+        'qos_enabled'        => 'boolean',
 
         // Integers
         'transmit_power_2g'  => 'integer',

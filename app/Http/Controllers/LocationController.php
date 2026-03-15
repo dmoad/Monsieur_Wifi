@@ -1809,6 +1809,40 @@ class LocationController extends Controller
     /**
      * Get location settings
      */
+    /**
+     * Enable or disable QoS for a location.
+     * PUT /api/v1/locations/{id}/settings/qos
+     * Body: { "enabled": true|false }
+     */
+    public function updateQosSettings(Request $request, $id)
+    {
+        try {
+            $location = Location::find($id);
+            if (!$location) {
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+            }
+
+            $validated = $request->validate(['enabled' => 'required|boolean']);
+
+            $settings = LocationSettingsV2::firstOrCreate(
+                ['location_id' => $id],
+                ['web_filter_enabled' => false, 'web_filter_categories' => [], 'qos_enabled' => false]
+            );
+
+            $settings->qos_enabled = $validated['enabled'];
+            $settings->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'QoS ' . ($validated['enabled'] ? 'enabled' : 'disabled') . '.',
+                'data'    => ['qos_enabled' => $settings->qos_enabled],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating QoS settings: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error updating QoS settings: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function getSettings($id)
     {
         try {
@@ -1931,6 +1965,7 @@ class LocationController extends Controller
                 'web_filter_enabled',
                 'web_filter_domains',
                 'web_filter_categories',
+                'qos_enabled',
             ]);
             
             // Check for router setting changes that require config version increment

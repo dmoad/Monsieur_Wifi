@@ -515,6 +515,36 @@
                                 </div>
                             </div>
 
+                            <!-- Traffic Prioritization (QoS) -->
+                            <div class="content-section">
+                                <div class="section-header d-flex justify-content-between align-items-center">
+                                    <h5 class="section-title">Traffic Prioritization (QoS)</h5>
+                                    <button class="btn custom-btn" id="save-qos-settings"><i data-feather="save" class="mr-2"></i>Save QoS Settings</button>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <label class="mb-0">Enable Traffic Prioritization</label>
+                                                <div class="custom-control custom-switch custom-control-primary">
+                                                    <input type="checkbox" class="custom-control-input" id="qos-enabled">
+                                                    <label class="custom-control-label" for="qos-enabled"></label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">Classify traffic by hostname (SNI) and prioritize using DSCP marking. Requires compatible router firmware.</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Active Priority Classes <small class="text-muted font-weight-normal">(managed globally by SuperAdmin)</small></label>
+                                            <div id="qos-classes-preview">
+                                                <span class="text-muted" style="font-size:0.85rem;">Loading…</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Web Filter -->
                             <div class="content-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">

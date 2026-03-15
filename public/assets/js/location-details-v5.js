@@ -384,6 +384,10 @@ async function loadLocationSettings() {
         $('#global-web-filter').prop('checked', !!s.web_filter_enabled);
         loadWebFilterCategories(s.web_filter_categories || []);
 
+        // QoS
+        $('#qos-enabled').prop('checked', !!s.qos_enabled);
+        loadQosClassesPreview();
+
         reRenderFeather();
     } catch (err) {
         handleApiError(err, 'loadLocationSettings');
@@ -495,6 +499,58 @@ async function saveWebFilterSettings() {
     } finally {
         $btn.prop('disabled', false).html(origHtml);
         reRenderFeather();
+    }
+}
+
+async function saveQosSettings() {
+    const $btn = $('#save-qos-settings');
+    const origHtml = $btn.html();
+    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+
+    try {
+        await apiFetch(`${API}/locations/${location_id}/settings/qos`, {
+            method: 'PUT',
+            body: JSON.stringify({ enabled: $('#qos-enabled').is(':checked') }),
+        });
+        toastr.success('QoS settings saved.');
+    } catch (err) {
+        handleApiError(err, 'saveQosSettings');
+    } finally {
+        $btn.prop('disabled', false).html(origHtml);
+        reRenderFeather();
+    }
+}
+
+const CLASS_BADGE_COLORS = {
+    EF:   'rgba(234,84,85,0.12)',
+    AF41: 'rgba(255,159,67,0.12)',
+    BE:   'rgba(40,199,111,0.12)',
+    CS1:  'rgba(130,128,255,0.12)',
+};
+const CLASS_TEXT_COLORS = {
+    EF:   '#ea5455',
+    AF41: '#ff9f43',
+    BE:   '#28c76f',
+    CS1:  '#7367f0',
+};
+
+async function loadQosClassesPreview() {
+    const $preview = $('#qos-classes-preview');
+    try {
+        const res = await apiFetch('/api/qos/classes');
+        const classes = res.data || [];
+        $preview.empty();
+        classes.forEach(cls => {
+            const bg   = CLASS_BADGE_COLORS[cls.id] || 'rgba(100,100,100,0.1)';
+            const text = CLASS_TEXT_COLORS[cls.id]  || '#555';
+            const count = cls.domains ? cls.domains.length : 0;
+            const pill = `<span class="badge mr-1 mb-1" style="background:${bg};color:${text};font-size:0.75rem;padding:4px 8px;border-radius:12px;">
+                ${cls.id} — ${cls.label}${cls.id !== 'BE' ? ` (${count} domain${count !== 1 ? 's' : ''})` : ''}
+            </span>`;
+            $preview.append(pill);
+        });
+    } catch (err) {
+        $preview.html('<span class="text-muted" style="font-size:0.85rem;">Unable to load classes.</span>');
     }
 }
 
@@ -932,6 +988,9 @@ function initEventHandlers() {
 
     // Save web filter
     $('#save-web-filter-settings').on('click', saveWebFilterSettings);
+
+    // Save QoS
+    $('#save-qos-settings').on('click', saveQosSettings);
 
     // Save WAN
     $(document).on('click', '.save-wan-settings', saveWanSettings);

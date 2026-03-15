@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\CaptivePortalWorkingHour;
 use App\Models\LocationNetwork;
+use App\Models\QosClass;
 
 class DeviceController extends Controller
 {
@@ -496,6 +497,48 @@ class DeviceController extends Controller
             'hash'      => $firmwareInfo ? $firmwareInfo->md5sum : null,
         ];
 
+        // ── QoS block ────────────────────────────────────────────────────────
+        // When disabled the router receives { enabled: false } and flushes rules.
+        // When enabled, the compiled rules + per-network policies are included
+        // so the router can generate nftables + mqprio config locally.
+        if ($settings->qos_enabled) {
+            $qosClasses = QosClass::with('domains')->orderBy('priority')->get();
+
+            $rules = $qosClasses
+                ->filter(fn (QosClass $c) => $c->id !== QosClass::BE) // BE = catch-all, no rules needed
+                ->values()
+                ->map(fn (QosClass $c) => [
+                    'id'         => 'rule_' . strtolower($c->id),
+                    'dscp_class' => $c->id,
+                    'nft_mark'   => $c->nft_mark,
+                    'domains'    => $c->domains->pluck('domain')->values(),
+                ]);
+
+            // Build per-network policy map keyed by bridge name (derived from SSID slug)
+            $networkPolicies = [];
+            foreach ($networks as $net) {
+                $bridgeName = 'br-' . \Illuminate\Support\Str::slug($net['ssid'] ?? 'net', '-');
+                $policy     = $net['qos_policy'] ?? 'scavenger';
+                $networkPolicies[$bridgeName] = [
+                    'policy'            => $policy,
+                    'trust_client_dscp' => $policy === 'full',
+                ];
+            }
+
+            // config_version: md5 of serialized domain lists — router skips re-apply when unchanged
+            $domainSnapshot  = $qosClasses->map(fn ($c) => [$c->id => $c->domains->pluck('domain')->sort()->values()])->toJson();
+            $configVersion   = md5($domainSnapshot);
+
+            $qosBlock = [
+                'enabled'        => true,
+                'config_version' => $configVersion,
+                'networks'       => $networkPolicies,
+                'rules'          => $rules,
+            ];
+        } else {
+            $qosBlock = ['enabled' => false];
+        }
+
         return response()->json([
             'status'          => 'success',
             'location'        => $location,
@@ -503,6 +546,7 @@ class DeviceController extends Controller
             'networks'        => $networks,
             'blocked_domains' => $blockedDomains,
             'firmware'        => $firmware,
+            'qos'             => $qosBlock,
         ]);
     }
 
