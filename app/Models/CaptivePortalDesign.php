@@ -14,6 +14,7 @@ class CaptivePortalDesign extends Model
     protected $fillable = [
         'user_id',
         'owner_id',
+        'organization_id',
         'name',
         'description',
         'theme_color',
@@ -43,6 +44,11 @@ class CaptivePortalDesign extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
     }
     
     /**

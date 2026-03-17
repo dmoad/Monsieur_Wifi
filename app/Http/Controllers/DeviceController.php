@@ -75,6 +75,12 @@ class DeviceController extends Controller
         $device->device_key = Str::random(32);
         $device->device_secret = Str::random(64);
 
+        // Assign to current organization
+        $user = auth()->user();
+        if ($user && $user->current_organization_id) {
+            $device->organization_id = $user->current_organization_id;
+        }
+
         $device->save();
 
         // Auto-assign firmware based on product model device_type
@@ -191,12 +197,12 @@ class DeviceController extends Controller
         unset($settings->web_filter_categories);
         $settings->blocked_domains = $domain_blocked;
 
-        $system_settings = SystemSetting::first();
+        $system_settings = SystemSetting::getSettings($location->organization_id);
         $radius_settings = [
-            'radius_ip' => $system_settings->radius_ip,
-            'radius_port' => $system_settings->radius_port,
-            'radius_secret' => $system_settings->radius_secret,
-            'accounting_port' => $system_settings->accounting_port,
+            'radius_ip' => $system_settings['radius_ip'] ?? null,
+            'radius_port' => $system_settings['radius_port'] ?? null,
+            'radius_secret' => $system_settings['radius_secret'] ?? null,
+            'accounting_port' => $system_settings['accounting_port'] ?? null,
         ];
 
         $whitelist_domains = env('GUEST_WHITELIST_DOMAINS');
@@ -421,13 +427,13 @@ class DeviceController extends Controller
                 ->values();
         }
 
-        // ── System-level radius (shared fallback) ────────────────────────────
-        $systemSettings  = SystemSetting::first();
+        // ── System-level radius (shared fallback, org-aware) ─────────────────
+        $systemSettings  = SystemSetting::getSettings($location->organization_id);
         $systemRadius = [
-            'radius_ip'       => $systemSettings->radius_ip,
-            'radius_port'     => $systemSettings->radius_port,
-            'radius_secret'   => $systemSettings->radius_secret,
-            'accounting_port' => $systemSettings->accounting_port,
+            'radius_ip'       => $systemSettings['radius_ip'] ?? null,
+            'radius_port'     => $systemSettings['radius_port'] ?? null,
+            'radius_secret'   => $systemSettings['radius_secret'] ?? null,
+            'accounting_port' => $systemSettings['accounting_port'] ?? null,
         ];
 
         // ── Networks — each captive portal carries its own radius +
@@ -1107,11 +1113,14 @@ class DeviceController extends Controller
     public function apiIndex(Request $request)
     {
         $user = auth()->user();
-        
+        $orgId = $user->current_organization_id;
+
         $query = Device::with(['owner', 'location', 'inventoryItem']);
-        
-        // Admin/superadmin sees all devices, regular users see only their own
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+
+        // Scope to current organization
+        if ($orgId) {
+            $query->where('organization_id', $orgId);
+        } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
             $query->where('owner_id', $user->id);
         }
         
@@ -1156,22 +1165,22 @@ class DeviceController extends Controller
     public function apiShow($id)
     {
         $user = auth()->user();
-        
+        $orgId = $user->current_organization_id;
+
         $device = Device::with(['owner', 'location', 'inventoryItem'])->find($id);
-        
+
         if (!$device) {
             return response()->json([
                 'success' => false,
                 'message' => 'Device not found'
             ], 404);
         }
-        
-        // Check permission: owner can see their device, admin/superadmin can see all
-        if ($device->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
+
+        // Check permission: must belong to current org, or be the owner, or be admin
+        if ($orgId && $device->organization_id != $orgId) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        } elseif (!$orgId && $device->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
         
         return response()->json([
@@ -1224,7 +1233,7 @@ class DeviceController extends Controller
     public function getAvailableForLocation(Request $request)
     {
         $user = auth()->user();
-        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+        $orgId = $user->current_organization_id;
 
         // Get unassigned devices
         $unassignedQuery = Device::with('owner')
@@ -1234,15 +1243,11 @@ class DeviceController extends Controller
         $assignedQuery = Device::with(['owner', 'location'])
             ->whereHas('location');
 
-        if ($isAdmin) {
-            // Admin can pass owner_id to filter devices by a specific user
-            if ($request->filled('owner_id')) {
-                $unassignedQuery->where('owner_id', $request->owner_id);
-                $assignedQuery->where('owner_id', $request->owner_id);
-            }
-            // Without owner_id, admin sees all devices
-        } else {
-            // Regular users only see their own devices
+        // Scope to current organization
+        if ($orgId) {
+            $unassignedQuery->where('organization_id', $orgId);
+            $assignedQuery->where('organization_id', $orgId);
+        } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
             $unassignedQuery->where('owner_id', $user->id);
             $assignedQuery->where('owner_id', $user->id);
         }

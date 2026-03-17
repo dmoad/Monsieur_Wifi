@@ -6,10 +6,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laravel\Cashier\Billable;
 
-class User extends Authenticatable implements JWTSubject, MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, Billable;
@@ -23,9 +22,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'name',
         'email',
         'password',
+        'zitadel_sub',
         'profile_picture',
         'role',
         'email_verified_at',
+        'current_organization_id',
     ];
 
     /**
@@ -49,26 +50,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
-     */
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
-    public function getJWTCustomClaims()
-    {
-        return [];
     }
 
     /**
@@ -96,49 +77,28 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    public function devices()
+    {
+        return $this->hasMany(Device::class, 'owner_id');
+    }
+
+    public function locations()
+    {
+        return $this->hasMany(Location::class, 'owner_id');
+    }
+
     public function ownedLocations()
     {
         return $this->hasMany(Location::class, 'owner_id');
     }
 
-    /**
-     * Check if user is a superadmin
-     *
-     * @return bool
-     */
-    public function isSuperAdmin(): bool
+    public function currentOrganization()
     {
-        return $this->role === 'superadmin';
+        return $this->belongsTo(Organization::class, 'current_organization_id');
     }
 
-    /**
-     * Check if user is an admin
-     *
-     * @return bool
-     */
-    public function isAdmin(): bool
+    public function ownedOrganizations()
     {
-        return $this->role === 'admin';
-    }
-
-    /**
-     * Check if user is admin or superadmin
-     *
-     * @return bool
-     */
-    public function isAdminOrAbove(): bool
-    {
-        return in_array($this->role, ['admin', 'superadmin']);
-    }
-
-    /**
-     * Check if user has a specific role
-     *
-     * @param string $role
-     * @return bool
-     */
-    public function hasRole(string $role): bool
-    {
-        return $this->role === $role;
+        return $this->hasMany(Organization::class, 'owner_id');
     }
 }

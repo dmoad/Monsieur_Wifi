@@ -137,9 +137,15 @@ class InventoryItem extends Model
     /**
      * Convert this inventory item to a Device.
      */
-    public function convertToDevice($ownerId)
+    public function convertToDevice($ownerId, $organizationId = null)
     {
         $productModel = $this->productModel()->first();
+
+        // If no org specified, use the owner's current org
+        if (!$organizationId) {
+            $owner = \App\Models\User::find($ownerId);
+            $organizationId = $owner?->current_organization_id;
+        }
 
         $device = Device::create([
             'name' => "{$productModel->name}-{$this->serial_number}",
@@ -149,6 +155,7 @@ class InventoryItem extends Model
             'device_key' => \Illuminate\Support\Str::random(32),
             'device_secret' => \Illuminate\Support\Str::random(64),
             'owner_id' => $ownerId,
+            'organization_id' => $organizationId,
             'configuration_version' => 1,
         ]);
 

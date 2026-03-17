@@ -21,7 +21,14 @@ class FirmwareController extends Controller
      */
     public function __construct()
     {
-        // Middleware will be defined in routes files instead
+        // Firmware is a global Digilan-managed resource — superadmin only
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (! $user || ! in_array($user->role, ['admin', 'superadmin'])) {
+                return response()->json(['success' => false, 'message' => 'Forbidden — platform admin only'], 403);
+            }
+            return $next($request);
+        });
     }
 
     /**

@@ -149,7 +149,7 @@
             }
 
             $('.user-name').text(user.name);
-            $('.user-status').text(user.role);
+            $('.user-status').text('');
             var profile_picture = localStorage.getItem('profile_picture');
             if (!profile_picture || profile_picture === 'null') {
                 profile_picture = '/assets/avatar-default.png';
@@ -163,14 +163,38 @@
                 UserManager.logout(true);
             });
 
-            // Show menu items based on user role
-            if (UserManager.isSuperAdmin()) {
-                // Superadmin sees everything
-                $('.only_superadmin').removeClass('hidden');
-                $('.admin_and_above').removeClass('hidden');
-            } else if (UserManager.isAdmin()) {
-                // Admin sees admin_and_above items only
-                $('.admin_and_above').removeClass('hidden');
+            // Show/hide sidebar items based on user's features
+            function applyFeatureVisibility() {
+                $('[data-feature]').each(function() {
+                    const feature = $(this).data('feature');
+                    if (UserManager.hasFeature(feature)) {
+                        $(this).removeClass('hidden');
+                    }
+                });
+            }
+
+            // Apply immediately with cached features
+            applyFeatureVisibility();
+
+            // Refresh from /me to get latest role + features
+            if (token) {
+                fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
+                })
+                .then(function(r) { return r.ok ? r.json() : null; })
+                .then(function(me) {
+                    if (!me) return;
+                    const user = UserManager.getUser();
+                    if (user) {
+                        user.role = me.role;
+                        user.platform_role = me.platform_role;
+                        user.features = me.features || [];
+                        user.entitlements = me.entitlements || null;
+                        localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(user));
+                        applyFeatureVisibility();
+                    }
+                })
+                .catch(function() {});
             }
 
             // Load cart preview in navbar

@@ -33,6 +33,8 @@ class Location extends Model
         'device_id',
         'user_id',
         'owner_id',
+        'organization_id',
+        'zone_id',
     ];
 
     /**
@@ -90,6 +92,11 @@ class Location extends Model
     /**
      * Get the zone this location belongs to.
      */
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
     public function zone()
     {
         return $this->belongsTo(Zone::class);

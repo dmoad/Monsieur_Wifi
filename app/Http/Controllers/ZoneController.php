@@ -12,24 +12,51 @@ use Illuminate\Support\Facades\Log;
 class ZoneController extends Controller
 {
     /**
-     * Get all zones for the authenticated user (or all zones for admin/superadmin).
+     * Find a zone scoped to the current user's organization.
+     */
+    private function findScopedZone($id, array $with = [])
+    {
+        $user = Auth::user();
+        $orgId = $user->current_organization_id;
+
+        $query = Zone::query();
+        if (!empty($with)) {
+            $query->with($with);
+        }
+
+        $zone = $query->find($id);
+        if (!$zone) {
+            return null;
+        }
+
+        if ($orgId) {
+            return $zone->organization_id == $orgId ? $zone : null;
+        }
+
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            return $zone;
+        }
+
+        return $zone->owner_id == $user->id ? $zone : null;
+    }
+
+    /**
+     * Get all zones for the current organization.
      */
     public function index(Request $request)
     {
         $user = Auth::user();
+        $orgId = $user->current_organization_id;
 
-        if (in_array($user->role, ['admin', 'superadmin'])) {
-            // Admin can see all zones
-            $zones = Zone::with(['owner', 'locations', 'primaryLocation'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } else {
-            // Regular users see only their own zones
-            $zones = Zone::with(['locations', 'primaryLocation'])
-                ->where('owner_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
+        $query = Zone::with(['owner', 'locations', 'primaryLocation']);
+
+        if ($orgId) {
+            $query->where('organization_id', $orgId);
+        } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
+            $query->where('owner_id', $user->id);
         }
+
+        $zones = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'success' => true,
@@ -47,7 +74,7 @@ class ZoneController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'owner_id' => 'nullable|exists:users,id', // For admin to create zones for other users
+            'owner_id' => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -57,14 +84,10 @@ class ZoneController extends Controller
             ], 422);
         }
 
-        // Determine the owner_id
         $ownerId = $request->owner_id;
-        
-        // If not admin, force owner_id to be the current user
         if (!in_array($user->role, ['admin', 'superadmin'])) {
             $ownerId = $user->id;
         } else if (!$ownerId) {
-            // If admin doesn't specify owner_id, use current user
             $ownerId = $user->id;
         }
 
@@ -72,6 +95,7 @@ class ZoneController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'owner_id' => $ownerId,
+            'organization_id' => $user->current_organization_id,
             'is_active' => true,
         ]);
 
@@ -89,22 +113,13 @@ class ZoneController extends Controller
      */
     public function show($id)
     {
-        $user = Auth::user();
-        $zone = Zone::with(['owner', 'locations.settings', 'primaryLocation.settings'])->find($id);
+        $zone = $this->findScopedZone($id, ['owner', 'locations.settings', 'primaryLocation.settings']);
 
         if (!$zone) {
             return response()->json([
                 'success' => false,
                 'message' => 'Zone not found'
             ], 404);
-        }
-
-        // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
         }
 
         return response()->json([
@@ -119,21 +134,13 @@ class ZoneController extends Controller
     public function update(Request $request, $id)
     {
         $user = Auth::user();
-        $zone = Zone::find($id);
+        $zone = $this->findScopedZone($id);
 
         if (!$zone) {
             return response()->json([
                 'success' => false,
                 'message' => 'Zone not found'
             ], 404);
-        }
-
-        // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -166,21 +173,13 @@ class ZoneController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        $zone = Zone::with('locations')->find($id);
+        $zone = $this->findScopedZone($id, ['locations']);
 
         if (!$zone) {
             return response()->json([
                 'success' => false,
                 'message' => 'Zone not found'
             ], 404);
-        }
-
-        // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
         }
 
         // Decouple all locations first
@@ -205,36 +204,22 @@ class ZoneController extends Controller
     public function addLocation(Request $request, $zoneId, $locationId)
     {
         $user = Auth::user();
-        $zone = Zone::find($zoneId);
-        $location = Location::find($locationId);
+        $zone = $this->findScopedZone($zoneId);
 
         if (!$zone) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Zone not found'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
         }
 
+        $location = Location::find($locationId);
         if (!$location) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Location not found'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
-        // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        // Location must belong to the same org as the zone
+        if ($location->organization_id != $zone->organization_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
-        // Validate that location belongs to the same owner as the zone
-        if ($location->owner_id !== $zone->owner_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Location must belong to the same owner as the zone'
+                'message' => 'Location must belong to the same organization as the zone'
             ], 422);
         }
 
@@ -275,29 +260,15 @@ class ZoneController extends Controller
     public function removeLocation(Request $request, $zoneId, $locationId)
     {
         $user = Auth::user();
-        $zone = Zone::find($zoneId);
-        $location = Location::find($locationId);
+        $zone = $this->findScopedZone($zoneId);
 
         if (!$zone) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Zone not found'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
         }
 
+        $location = Location::find($locationId);
         if (!$location) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Location not found'
-            ], 404);
-        }
-
-        // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
+            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
         // Check if location is in this zone
@@ -311,10 +282,10 @@ class ZoneController extends Controller
         // If this location is primary and there are other locations, require new_primary_id
         $isPrimary = $zone->primary_location_id == $locationId;
         $remainingLocations = $zone->locations()->where('id', '!=', $locationId)->get();
-        
+
         if ($isPrimary && $remainingLocations->count() > 0) {
             $newPrimaryId = $request->input('new_primary_id');
-            
+
             if (!$newPrimaryId) {
                 return response()->json([
                     'success' => false,
@@ -323,7 +294,7 @@ class ZoneController extends Controller
                     'remaining_locations' => $remainingLocations
                 ], 422);
             }
-            
+
             // Validate new primary is in the zone
             $newPrimary = Location::find($newPrimaryId);
             if (!$newPrimary || $newPrimary->zone_id != $zoneId) {
@@ -332,14 +303,13 @@ class ZoneController extends Controller
                     'message' => 'Invalid new primary location'
                 ], 422);
             }
-            
+
             // Set new primary
             $zone->primary_location_id = $newPrimaryId;
         } else if ($isPrimary) {
-            // No other locations, just clear primary
             $zone->primary_location_id = null;
         }
-        
+
         $zone->save();
 
         // Remove location from zone
@@ -365,29 +335,15 @@ class ZoneController extends Controller
     public function setPrimaryLocation(Request $request, $zoneId, $locationId)
     {
         $user = Auth::user();
-        $zone = Zone::find($zoneId);
-        $location = Location::find($locationId);
+        $zone = $this->findScopedZone($zoneId);
 
         if (!$zone) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Zone not found'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
         }
 
+        $location = Location::find($locationId);
         if (!$location) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Location not found'
-            ], 404);
-        }
-
-        // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
+            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
         // Validate that location is in this zone
@@ -398,7 +354,6 @@ class ZoneController extends Controller
             ], 422);
         }
 
-        // Set as primary
         $zone->primary_location_id = $locationId;
         $zone->save();
 
@@ -416,37 +371,30 @@ class ZoneController extends Controller
     }
 
     /**
-     * Get available locations (not in any zone) for a specific zone owner.
+     * Get available locations (not in any zone) for the current organization.
      */
     public function getAvailableLocations(Request $request, $zoneId)
     {
         $user = Auth::user();
-        $zone = Zone::find($zoneId);
+        $zone = $this->findScopedZone($zoneId);
 
         if (!$zone) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Zone not found'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
         }
 
-        // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
+        // Get locations in the same org that are not in any zone
+        $orgId = $user->current_organization_id;
+        $query = Location::whereNull('zone_id')->orderBy('name');
 
-        // Get locations owned by the zone's owner that are not in any zone
-        $availableLocations = Location::where('owner_id', $zone->owner_id)
-            ->whereNull('zone_id')
-            ->orderBy('name')
-            ->get();
+        if ($orgId) {
+            $query->where('organization_id', $orgId);
+        } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
+            $query->where('owner_id', $user->id);
+        }
 
         return response()->json([
             'success' => true,
-            'locations' => $availableLocations
+            'locations' => $query->get()
         ]);
     }
 }

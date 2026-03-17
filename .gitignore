@@ -25,3 +25,8 @@ yarn-error.log
 # user uploads
 public/uploads/
 public/uploads/**
+
+# Local dev
+docker-compose.yml
+docker/
+package-lock.json
