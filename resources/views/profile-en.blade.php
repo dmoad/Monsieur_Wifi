@@ -76,35 +76,17 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="col-12 col-sm-6">
-                                            <div class="form-group">
-                                                <label for="account-new-password1">New Password</label>
-                                                <div class="input-group form-password-toggle input-group-merge">
-                                                    <input type="password" id="account-new-password1" name="new-password1" class="form-control" placeholder="New Password" />
-                                                    <div class="input-group-append">
-                                                        <div class="input-group-text cursor-pointer">
-                                                            <i data-feather="eye"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <small class="form-text text-bold">Leave blank if you don't want to change your password</small>
-                                                <small class="form-text text-muted">Minimum 8 characters, must include letters, numbers, and special characters</small>
-                                                <small class="form-text text-danger hidden" id="password-error-message">Passwords do not match</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-sm-6">
-                                            <div class="form-group">
-                                                <label for="account-retype-new-password1">Confirm New Password</label>
-                                                <div class="input-group form-password-toggle input-group-merge">
-                                                    <input type="password" class="form-control" id="account-retype-new-password1" name="confirm-new-password1" placeholder="Confirm New Password" />
-                                                    <div class="input-group-append">
-                                                        <div class="input-group-text cursor-pointer"><i data-feather="eye"></i></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-primary mt-1 mr-1" id="save-profile-btn">Save Changes</button>
+                                            <small class="form-text text-muted">Name and email are managed by your identity provider.</small>
+                                        </div>
+
+                                        <div class="col-12 mt-2">
+                                            <a href="{{ config('zitadel.issuer') }}/ui/console/users/me" target="_blank" class="btn btn-outline-primary mr-1">
+                                                <i data-feather="external-link" class="mr-50"></i> Manage Account
+                                            </a>
+                                            <a href="/auth/switch" class="btn btn-outline-secondary">
+                                                <i data-feather="repeat" class="mr-50"></i> Switch Account
+                                            </a>
                                         </div>
                                     </div>
                                 </form>

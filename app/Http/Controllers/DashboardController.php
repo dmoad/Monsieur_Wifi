@@ -48,12 +48,16 @@ class DashboardController extends Controller
             ], 401);
         }
         try {
-            // Get all locations with their devices$locations = Location::with('device')->get();
-            if (in_array($user->role, ['admin', 'superadmin'])) {
-                $locations = Location::with('device')->get();
-            } else {
-                $locations = Location::with('device')->where('owner_id', $user->id)->get();
+            $orgId = $user->current_organization_id;
+            $query = Location::with('device');
+
+            if ($orgId) {
+                $query->where('organization_id', $orgId);
+            } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
+                $query->where('owner_id', $user->id);
             }
+
+            $locations = $query->get();
             // Calculate location statistics
             $totalLocations = $locations->count();
             $onlineLocations = 0;
@@ -169,12 +173,17 @@ class DashboardController extends Controller
             }
             
             
-            if (in_array($user->role, ['admin', 'superadmin'])) {
-                $locations = Location::with('device')->get();
-            } else {
-                $locations = Location::with('device')->where('owner_id', $user->id)->get();
+            $orgId = $user->current_organization_id;
+            $query = Location::with('device');
+
+            if ($orgId) {
+                $query->where('organization_id', $orgId);
+            } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
+                $query->where('owner_id', $user->id);
             }
-            
+
+            $locations = $query->get();
+
             $analyticsStats = [
                 'total_users' => 0,
                 'total_data_gb' => 0,
@@ -265,11 +274,16 @@ class DashboardController extends Controller
                 default:
                     $startDate = Carbon::now()->subDays(6);
             }
-            if (in_array($user->role, ['admin', 'superadmin'])) {
-                $locations = Location::all();
-            } else {
-                $locations = Location::where('owner_id', $user->id)->get();
+            $orgId = $user->current_organization_id;
+            $query = Location::query();
+
+            if ($orgId) {
+                $query->where('organization_id', $orgId);
+            } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
+                $query->where('owner_id', $user->id);
             }
+
+            $locations = $query->get();
             
             // Initialize daily usage array
             $dailyUsage = [];

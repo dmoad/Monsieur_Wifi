@@ -156,15 +156,15 @@ class OrderController extends Controller
         try {
             // Calculate amounts
             $productAmount = $cart->getTotal();
-            $settings = SystemSetting::first();
-            $taxRate = $settings ? $settings->tax_rate : 0.13;
+            $orgId = $user->current_organization_id;
+            $settings = SystemSetting::getSettings($orgId);
+            $taxRate = $settings['tax_rate'] ?? 0.13;
             $taxAmount = round($productAmount * $taxRate, 2);
             $shippingCost = $shippingRate->cost;
             $total = $productAmount + $taxAmount + $shippingCost;
 
             // Get payment mode from settings
-            $settings = SystemSetting::first();
-            $paymentMode = $settings ? $settings->payment_mode : 'mock';
+            $paymentMode = $settings['payment_mode'] ?? 'mock';
             
             // Create order
             $order = Order::create([

@@ -43,4 +43,8 @@ return [
         ],
     ],
 
+    'internal' => [
+        'key' => env('MRWIFI_INTERNAL_KEY'),
+    ],
+
 ];
