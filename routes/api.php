@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DeviceController;
-use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\GuestNetworkUserController;
 use App\Http\Controllers\CaptivePortalDesignController;
@@ -19,23 +19,21 @@ use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\LocationNetworkController;
 use App\Http\Controllers\QosController;
-use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\InternalController;
-
-// Internal service-to-service routes (Nexus → mrwifi, authenticated via shared API key)
-Route::middleware('internal')->prefix('internal')->group(function () {
-    Route::post('/claim-device', [InternalController::class, 'claimDevice']);
-    Route::post('/detach-device', [InternalController::class, 'detachDevice']);
-    Route::get('/device-by-mac/{mac}', [InternalController::class, 'deviceByMac']);
-});
 
 // Public routes (no auth required)
+Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/register', [AuthController::class, 'register']);
+Route::post('auth/register-with-design', [AuthController::class, 'register_with_design']);
+Route::post('auth/password-reset', [AuthController::class, 'sendPasswordResetLink']);
+Route::post('auth/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('auth/verify-email', [AuthController::class, 'verifyEmail']);
+Route::post('auth/resend-verification', [AuthController::class, 'resendVerificationEmail']);
 Route::post('temp-captive-portal-designs', [TempCaptivePortalDesignController::class, 'store']);
 Route::get('temp-captive-portal-designs/{id}', [TempCaptivePortalDesignController::class, 'index']);
 
 // Stripe webhook endpoints (public, no CSRF protection)
 Route::post('payment-notifications', [PaymentController::class, 'handleWebhook']);
-Route::post('stripe/webhook', [\App\Http\Controllers\SubscriptionController::class, 'handleWebhook']);
+Route::post('stripe/webhook', [SubscriptionController::class, 'handleWebhook']);
 
 // Webhook test endpoint (for debugging)
 Route::get('webhook-test', function() {
@@ -49,46 +47,33 @@ Route::get('webhook-test', function() {
     ]);
 });
 
-// Authenticated user routes (Zitadel JWT)
+// Protected routes (auth required)
 Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
-    Route::get('me', [AccountController::class, 'me']);
-    Route::post('upload-profile-picture', [AccountController::class, 'uploadProfilePicture']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::get('me', [AuthController::class, 'me']);
+    Route::put('me', [AuthController::class, 'update']);
+    Route::post('upload-profile-picture', [AuthController::class, 'uploadProfilePicture']);
 });
 
-// Organization management (authenticated, no specific org role needed for listing)
-Route::group(['middleware' => 'auth:api', 'prefix' => 'organizations'], function () {
-    Route::get('/', [OrganizationController::class, 'index']);
-    Route::post('/', [OrganizationController::class, 'store']);
-    Route::post('/switch', [OrganizationController::class, 'switch']);
-    Route::put('/current', [OrganizationController::class, 'update'])->middleware('authz:mrwifi:org,manage');
-    Route::put('/{id}', [OrganizationController::class, 'rename']);
-});
-
-// Account & permission management (org-level manage)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:org,manage'], 'prefix' => 'accounts'], function () {
-    Route::get('roles', [AccountController::class, 'roles']);
-    Route::get('users', [AccountController::class, 'listUsers']);
-    Route::get('permissions', [AccountController::class, 'listPermissions']);
-    Route::post('invite', [AccountController::class, 'invite']);
-    Route::post('link', [AccountController::class, 'link']);
-    Route::get('search', [AccountController::class, 'searchZitadelUser']);
-    Route::get('users/{subjectId}/permissions', [AccountController::class, 'userPermissions']);
-    Route::post('users/{subjectId}/roles', [AccountController::class, 'assignRole']);
-    Route::delete('users/{subjectId}/roles', [AccountController::class, 'revokeRole']);
+Route::group(['middleware' => 'auth:api', 'prefix' => 'accounts'], function () {
+    Route::get('users', [AuthController::class, 'getUsers']);
+    Route::put('users/{user}', [AuthController::class, 'updateUser']);
+    Route::delete('users/{user}', [AuthController::class, 'deleteUser']);
+    Route::post('users', [AuthController::class, 'createUser']);
 });
 
 Route::get('/test', function () {
     return response()->json(['message' => 'Hello, World!']);
 });
 
-// Device CRUD routes (authenticated — legacy web-style routes)
-Route::group(['middleware' => 'auth:api', 'prefix' => 'devices'], function () {
+Route::group(['prefix' => 'devices'], function () {
     Route::get('/', [DeviceController::class, 'index']);
     Route::post('/', [DeviceController::class, 'store']);
     Route::get('/{device}', [DeviceController::class, 'show']);
     Route::put('/{device}', [DeviceController::class, 'update']);
     Route::delete('/{device}', [DeviceController::class, 'destroy']);
-    Route::post('/{device}/reboot', [DeviceController::class, 'reboot']);
+    Route::post('/{device}/reboot', [DeviceController::class, 'reboot'])->middleware('auth:api');
 });
 
 Route::get('/devices/{device_key}/{device_secret}/settings', [DeviceController::class, 'getSettings']);
@@ -103,10 +88,11 @@ Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/2g-results', [
 Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/5g-results', [DeviceController::class, 'update5GScanResults']);
 Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/failed', [DeviceController::class, 'markScanFailed']);
 
-Route::get('/devices/{mac_address}/{verification_code}/verify', [DeviceController::class, 'verify']);
+// Route::get('/devices/{mac_address}/{verification_code}/info', [DeviceController::class, 'info']);
 
-// Locations (hierarchical: org > zone > location)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefix' => 'locations'], function () {
+Route::get('/devices/{mac_address}/{verification_code}/verify', [DeviceController::class, 'verify']);   
+
+Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () {
     Route::get('/', [LocationController::class, 'index']);
     Route::post('/', [LocationController::class, 'store']);
     Route::get('/{id}', [LocationController::class, 'show']);
@@ -162,15 +148,13 @@ Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefi
     Route::delete('/{location_id}/networks/{network_id}', [LocationNetworkController::class, 'destroy']);
 });
 
-// System settings (org-level manage)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:org,manage'], 'prefix' => 'system-settings'], function () {
+Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], function () {
     Route::get('/', [SystemSettingController::class, 'index']);
     Route::post('/', [SystemSettingController::class, 'update']);
     Route::post('/test-email', [SystemSettingController::class, 'testEmail']);
 });
 
-// Captive portal designs (location-level read/write)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefix' => 'captive-portal-designs'], function () {
+Route::group(['middleware' => 'auth:api', 'prefix' => 'captive-portal-designs'], function () {
     Route::post('/', [CaptivePortalDesignController::class, 'get_all']);
     Route::get('/', [CaptivePortalDesignController::class, 'get_all']);
     Route::get('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'show']);
@@ -181,8 +165,8 @@ Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefi
     Route::post('/{captivePortalDesign}/change-owner', [CaptivePortalDesignController::class, 'changeOwner']);
 });
 
-// Firmware routes (org-level write — only admins/owners manage firmware)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:org,write'], 'prefix' => 'firmware'], function () {
+// Firmware routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'firmware'], function () {
     Route::get('/', [FirmwareController::class, 'index']);
     Route::post('/', [FirmwareController::class, 'store']);
     Route::get('/enabled', [FirmwareController::class, 'enabled']);
@@ -198,16 +182,18 @@ Route::group(['middleware' => ['auth:api', 'authz:mrwifi:org,write'], 'prefix' =
     Route::post('/{firmware}/verify', [FirmwareController::class, 'verify']);
 });
 
-// QoS class routes (org-level read, write enforced in controller)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:org,read'], 'prefix' => 'qos'], function () {
+// QoS class routes (protected with auth)
+// GET index + show: all authenticated users (admin/user get read-only view of classes + domains)
+// POST/DELETE domains: SuperAdmin only (enforced inside QosController)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'qos'], function () {
     Route::get('/classes', [QosController::class, 'index']);
     Route::get('/classes/{classId}', [QosController::class, 'show']);
     Route::post('/classes/{classId}/domains', [QosController::class, 'addDomain']);
     Route::delete('/classes/{classId}/domains/{domain}', [QosController::class, 'removeDomain']);
 });
 
-// Category routes (location-level read)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefix' => 'categories'], function () {
+// Category routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'categories'], function () {
     Route::get('/', [CategoryController::class, 'index']);
     Route::get('/enabled', [CategoryController::class, 'enabled']);
     Route::post('/{category}/toggle', [CategoryController::class, 'toggle'])->name('categories.toggle');
@@ -215,8 +201,8 @@ Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefi
     Route::get('/{category}/stats', [CategoryController::class, 'stats'])->name('categories.stats');
 });
 
-// Domain Blocking API routes (location-level read)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefix' => 'blocked-domains'], function () {
+// Domain Blocking API routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'blocked-domains'], function () {
     Route::get('/', [DomainBlockingController::class, 'index']);
     Route::post('/', [DomainBlockingController::class, 'store']);
     Route::get('/{domain}', [DomainBlockingController::class, 'show']);
@@ -234,8 +220,8 @@ Route::prefix('domain-blocking')->group(function () {
     Route::post('/check-domain', [DomainBlockingController::class, 'checkDomain'])->name('domain-blocking.check-domain');
 });
 
-// Dashboard routes (org-level read — any role can see dashboard)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:org,read'], 'prefix' => 'dashboard'], function () {
+// Dashboard routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'dashboard'], function () {
     Route::get('/overview', [DashboardController::class, 'getOverview']);
     Route::get('/analytics', [DashboardController::class, 'getAnalytics']);
     Route::get('/data-usage-trends', [DashboardController::class, 'getDataUsageTrends']);
@@ -246,8 +232,8 @@ Route::get('/captive-portal/{network_id}/info', [GuestNetworkUserController::cla
 Route::post('/captive-portal/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/captive-portal/twitter-login', [GuestNetworkUserController::class, 'twitterLogin']);
 
-// Guest Network User routes (location-level read)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:location,read'], 'prefix' => 'locations'], function () {
+// Guest Network User routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () {
     Route::get('/{location}/guest-users', [GuestNetworkUserController::class, 'index']);
     Route::get('/{location}/guest-users/export', [GuestNetworkUserController::class, 'export']);
 });
@@ -265,8 +251,8 @@ use App\Http\Controllers\SubscriptionController;
 // Public subscription routes
 Route::get('/subscription/plans', [SubscriptionController::class, 'plans']);
 
-// Protected subscription routes (org-level read)
-Route::group(['middleware' => ['auth:api', 'authz:mrwifi:org,read'], 'prefix' => 'subscription'], function () {
+// Protected subscription routes
+Route::group(['middleware' => 'auth:api', 'prefix' => 'subscription'], function () {
     Route::get('/status', [SubscriptionController::class, 'status']);
     Route::post('/checkout', [SubscriptionController::class, 'createCheckoutSession']);
     Route::post('/payment-intent', [SubscriptionController::class, 'createPaymentIntent']);
@@ -293,15 +279,15 @@ Route::prefix('v1/shop')->group(function () {
     Route::get('/shipping-rates', [ShopController::class, 'getShippingRates']);
 });
 
-// Protected shop + resource endpoints (org-level read)
-Route::middleware(['auth:api', 'authz:mrwifi:org,read'])->prefix('v1')->group(function () {
+// Protected shop endpoints
+Route::middleware('auth:api')->prefix('v1')->group(function () {
     // Cart
     Route::get('/cart', [CartController::class, 'show']);
     Route::post('/cart/items', [CartController::class, 'addItem']);
     Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
     Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
     Route::delete('/cart', [CartController::class, 'clear']);
-
+    
     // Orders
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show']);
@@ -309,18 +295,18 @@ Route::middleware(['auth:api', 'authz:mrwifi:org,read'])->prefix('v1')->group(fu
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{orderNumber}/payment-intent', [PaymentController::class, 'createPaymentIntent']);
     Route::post('/orders/{orderNumber}/verify-payment', [PaymentController::class, 'verifyAndConfirmPayment']);
-
+    
     // Addresses
     Route::get('/addresses', [AddressController::class, 'index']);
     Route::post('/addresses', [AddressController::class, 'store']);
     Route::put('/addresses/{id}', [AddressController::class, 'update']);
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy']);
     Route::post('/addresses/{id}/set-default', [AddressController::class, 'setDefault']);
-
-    // Payment success endpoint
+    
+    // Payment success endpoint (accessible by authenticated users)
     Route::get('/orders/{orderNumber}/success', [OrderController::class, 'success']);
-
-    // Zones management (zone-level read, hierarchy resolves up to org)
+    
+    // Zones management
     Route::prefix('zones')->group(function () {
         Route::get('/', [ZoneController::class, 'index']);
         Route::post('/', [ZoneController::class, 'store']);
@@ -332,7 +318,7 @@ Route::middleware(['auth:api', 'authz:mrwifi:org,read'])->prefix('v1')->group(fu
         Route::delete('/{zone}/locations/{location}', [ZoneController::class, 'removeLocation']);
         Route::put('/{zone}/primary/{location}', [ZoneController::class, 'setPrimaryLocation']);
     });
-
+    
     // Device management
     Route::prefix('devices')->group(function () {
         Route::get('/', [DeviceController::class, 'apiIndex']);
@@ -342,24 +328,24 @@ Route::middleware(['auth:api', 'authz:mrwifi:org,read'])->prefix('v1')->group(fu
     });
 });
 
-// Admin-only endpoints (org-level manage)
-Route::middleware(['auth:api', 'authz:mrwifi:org,manage'])->prefix('v1/admin')->group(function () {
+// Admin-only endpoints
+Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     // Orders
-    Route::get('/orders', [AdminOrderController::class, 'index']);
-    Route::get('/orders/{orderNumber}', [AdminOrderController::class, 'show']);
-    Route::get('/orders/{orderNumber}/invoice', [AdminOrderController::class, 'downloadInvoice']);
-    Route::put('/orders/{orderNumber}/tracking', [AdminOrderController::class, 'updateTracking']);
-    Route::put('/orders/{orderNumber}/status', [AdminOrderController::class, 'updateStatus']);
-    Route::post('/orders/{orderNumber}/resend-email', [AdminOrderController::class, 'resendEmail']);
-    Route::post('/orders/{orderNumber}/assign-inventory', [AdminOrderController::class, 'assignInventory']);
-    Route::post('/orders/{orderNumber}/confirm-payment', [AdminOrderController::class, 'confirmPayment']);
-    Route::post('/orders/{orderNumber}/confirm-stripe-payment', [AdminOrderController::class, 'confirmStripePayment']);
-
+    Route::get('/orders', [\App\Http\Controllers\Admin\AdminOrderController::class, 'index']);
+    Route::get('/orders/{orderNumber}', [\App\Http\Controllers\Admin\AdminOrderController::class, 'show']);
+    Route::get('/orders/{orderNumber}/invoice', [\App\Http\Controllers\Admin\AdminOrderController::class, 'downloadInvoice']);
+    Route::put('/orders/{orderNumber}/tracking', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateTracking']);
+    Route::put('/orders/{orderNumber}/status', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateStatus']);
+    Route::post('/orders/{orderNumber}/resend-email', [\App\Http\Controllers\Admin\AdminOrderController::class, 'resendEmail']);
+    Route::post('/orders/{orderNumber}/assign-inventory', [\App\Http\Controllers\Admin\AdminOrderController::class, 'assignInventory']);
+    Route::post('/orders/{orderNumber}/confirm-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmPayment']);
+    Route::post('/orders/{orderNumber}/confirm-stripe-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmStripePayment']);
+    
     // Shipping rates
     Route::get('/shipping-rates', [AdminShippingController::class, 'index']);
     Route::put('/shipping-rates/{id}', [AdminShippingController::class, 'update']);
     Route::post('/shipping-rates/{id}/toggle', [AdminShippingController::class, 'toggle']);
-
+    
     // Inventory management
     Route::get('/inventory', [AdminInventoryController::class, 'index']);
     Route::get('/inventory/summary', [AdminInventoryController::class, 'summary']);
@@ -367,14 +353,14 @@ Route::middleware(['auth:api', 'authz:mrwifi:org,manage'])->prefix('v1/admin')->
     Route::put('/inventory/{id}/quantity', [AdminInventoryController::class, 'updateQuantity']);
     Route::post('/inventory/{id}/adjust', [AdminInventoryController::class, 'adjustQuantity']);
     Route::put('/inventory/{id}/threshold', [AdminInventoryController::class, 'updateThreshold']);
-
+    
     // Individual inventory items (devices)
     Route::get('/inventory/{id}/items', [AdminInventoryController::class, 'getItems']);
     Route::post('/inventory/{id}/items', [AdminInventoryController::class, 'addItem']);
     Route::post('/inventory/{id}/items/import-csv', [AdminInventoryController::class, 'importCsv']);
     Route::put('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'updateItem']);
     Route::delete('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'deleteItem']);
-
+    
     // Product Models Management
     Route::get('/models', [AdminProductModelController::class, 'index']);
     Route::get('/models/{id}', [AdminProductModelController::class, 'show']);

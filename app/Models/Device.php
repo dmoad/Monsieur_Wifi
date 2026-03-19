@@ -30,13 +30,7 @@ class Device extends Model
         'reboot_count',
         'scan_counter',
         'uptime',
-        'organization_id',
     ];
-
-    public function organization()
-    {
-        return $this->belongsTo(Organization::class);
-    }
 
     /**
      * Get the product model associated with this device.

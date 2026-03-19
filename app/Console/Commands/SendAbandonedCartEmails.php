@@ -16,8 +16,8 @@ class SendAbandonedCartEmails extends Command
 
     public function handle()
     {
-        $settings = SystemSetting::getSettings();
-        $abandonmentHours = $settings['cart_abandonment_hours'] ?? 24;
+        $settings = SystemSetting::first();
+        $abandonmentHours = $settings->cart_abandonment_hours ?? 24;
         
         $abandonmentTime = Carbon::now()->subHours($abandonmentHours);
         

@@ -18,7 +18,6 @@
     <div class="shadow-bottom"></div>
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            {{-- Core — visible to all authenticated users --}}
             <li class="navigation-header"><span>{{ $locale === 'fr' ? 'Gestion' : 'Management' }}</span></li>
             <li class="nav-item {{ request()->is('*/dashboard') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/dashboard"><i data-feather="home"></i><span class="menu-title text-truncate">Dashboard</span></a>
@@ -35,51 +34,44 @@
             <li class="nav-item {{ request()->is('*/captive-portals') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/captive-portals"><i data-feather="layout"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Portails Captifs' : 'Captive Portals' }}</span></a>
             </li>
-
-            {{-- Shop — only platform admin / shop customers --}}
-            <li class="nav-item hidden {{ request()->is('*/shop', '*/boutique', '*/cart', '*/panier', '*/checkout', '*/commander') ? 'active' : '' }}" data-feature="shop">
+            <li class="nav-item {{ request()->is('*/shop', '*/boutique', '*/cart', '*/panier', '*/checkout', '*/commander') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/boutique' : 'en/shop' }}"><i data-feather="shopping-bag"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Boutique' : 'Shop' }}</span></a>
             </li>
-
-            {{-- Org management — org owner/admin --}}
-            <li class="navigation-header hidden" data-feature="team"><span>{{ $locale === 'fr' ? 'Organisation' : 'Organization' }}</span></li>
-            <li class="nav-item hidden {{ request()->is('*/accounts') ? 'active' : '' }}" data-feature="team">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/accounts"><i data-feather="users"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Équipe' : 'Team' }}</span></a>
+            
+            
+            <li class="navigation-header admin_and_above hidden"><span>{{ $locale === 'fr' ? 'Pour Admin' : 'For Admin' }}</span></li>
+            <li class="nav-item admin_and_above hidden {{ request()->is('*/accounts') ? 'active' : '' }}">
+                <a class="d-flex align-items-center" href="/{{ $locale }}/accounts"><i data-feather="users"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Comptes' : 'Accounts' }}</span></a>
             </li>
-            <li class="nav-item hidden {{ request()->is('*/domain-blocking') ? 'active' : '' }}" data-feature="domain-blocking">
+            <li class="nav-item admin_and_above hidden {{ request()->is('*/domain-blocking') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/domain-blocking"><i data-feather="slash"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Blocage de Domaine' : 'Domain Blocking' }}</span></a>
             </li>
-
-            {{-- Platform admin — Digilan staff only --}}
-            <li class="navigation-header hidden" data-feature="admin.models"><span>{{ $locale === 'fr' ? 'Administration' : 'Administration' }}</span></li>
-            <li class="nav-item hidden {{ request()->is('*/qos-settings', '*/parametres-qos') ? 'active' : '' }}" data-feature="admin.qos">
+            <li class="nav-item only_superadmin hidden {{ request()->is('*/qos-settings', '*/parametres-qos') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/parametres-qos' : 'en/qos-settings' }}"><i data-feather="sliders"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Priorité du trafic' : 'Traffic Priority' }}</span></a>
             </li>
-            <li class="nav-item hidden {{ request()->is('*/admin/models', '*/admin/modeles') ? 'active' : '' }}" data-feature="admin.models">
+            <li class="nav-item admin_and_above hidden {{ request()->is('*/admin/models', '*/admin/modeles') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/admin/modeles' : 'en/admin/models' }}"><i data-feather="cpu"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Gérer les Modèles' : 'Manage Models' }}</span></a>
             </li>
-            <li class="nav-item hidden {{ request()->is('*/admin/inventory', '*/admin/inventaire') ? 'active' : '' }}" data-feature="admin.inventory">
+            <li class="nav-item admin_and_above hidden {{ request()->is('*/admin/inventory', '*/admin/inventaire') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/admin/inventaire' : 'en/admin/inventory' }}"><i data-feather="box"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Gérer l\'Inventaire' : 'Manage Inventory' }}</span></a>
             </li>
-            <li class="nav-item hidden {{ request()->is('*/admin/orders', '*/admin/commandes') ? 'active' : '' }}" data-feature="admin.orders">
+            <li class="nav-item admin_and_above hidden {{ request()->is('*/admin/orders', '*/admin/commandes') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/admin/commandes' : 'en/admin/orders' }}"><i data-feather="package"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Gérer les Commandes' : 'Manage Orders' }}</span></a>
             </li>
-
-            {{-- Super admin only --}}
-            <li class="navigation-header hidden" data-feature="admin.firmware"><span>Super Admin</span></li>
-            <li class="nav-item hidden {{ request()->is('*/firmware') ? 'active' : '' }}" data-feature="admin.firmware">
+            
+            <li class="navigation-header only_superadmin hidden"><span>{{ $locale === 'fr' ? 'Super Admin' : 'Super Admin' }}</span></li>
+            <li class="nav-item only_superadmin hidden {{ request()->is('*/firmware') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/firmware"><i data-feather="download"></i><span class="menu-title text-truncate">Firmware</span></a>
             </li>
-            <li class="nav-item hidden {{ request()->is('*/system-settings') ? 'active' : '' }}" data-feature="admin.system-settings">
+            <li class="nav-item only_superadmin hidden {{ request()->is('*/system-settings') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/system-settings"><i data-feather="settings"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Paramètres Système' : 'System Settings' }}</span></a>
             </li>
-
-            {{-- Account — always visible --}}
+            
             <li class="navigation-header"><span>{{ $locale === 'fr' ? 'Compte' : 'Account' }}</span></li>
             <li class="nav-item {{ request()->is('*/profile') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale }}/profile"><i data-feather="user"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Profil' : 'Profile' }}</span></a>
             </li>
-            <li class="nav-item hidden {{ request()->is('*/orders', '*/commandes') ? 'active' : '' }}" data-feature="orders">
+            <li class="nav-item {{ request()->is('*/orders', '*/commandes') ? 'active' : '' }}">
                 <a class="d-flex align-items-center" href="/{{ $locale === 'fr' ? 'fr/commandes' : 'en/orders' }}"><i data-feather="list"></i><span class="menu-title text-truncate">{{ $locale === 'fr' ? 'Mes Commandes' : 'My Orders' }}</span></a>
             </li>
             <li class="nav-item">

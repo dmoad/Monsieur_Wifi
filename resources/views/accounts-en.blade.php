@@ -1,41 +1,51 @@
 @extends('layouts.app')
 
-@section('title', $locale === 'fr' ? 'Equipe - Monsieur WiFi' : 'Team - Monsieur WiFi')
+@section('title', 'Accounts - Monsieur WiFi')
 
 @push('styles')
+<!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
 
 <style>
-    .badge-role-owner    { background-color: rgba(234, 84, 85, 0.12); color: #ea5455; }
-    .badge-role-admin    { background-color: rgba(115, 103, 240, 0.12); color: #7367f0; }
-    .badge-role-operator { background-color: rgba(255, 159, 67, 0.12); color: #ff9f43; }
-    .badge-role-viewer   { background-color: rgba(108, 117, 125, 0.12); color: #6c757d; }
-    .badge-role-partner  { background-color: rgba(0, 207, 232, 0.12); color: #00cfe8; }
-    .badge-scope         { background-color: rgba(0, 207, 232, 0.12); color: #00cfe8; }
-    .badge-target        { background-color: rgba(40, 199, 111, 0.12); color: #28c76f; }
-    .nav-tabs .nav-link.active { font-weight: 600; }
-    .role-desc-table td { padding: 0.4rem 0.75rem; }
-    .email-autocomplete { position: relative; }
-    .email-autocomplete-results {
-        position: absolute; z-index: 1050; width: 100%; max-height: 200px; overflow-y: auto;
-        background: #fff; border: 1px solid #d8d6de; border-top: 0; border-radius: 0 0 .357rem .357rem;
-        display: none;
+    .avatar-content svg {
+        color: inherit;
+        width: 24px !important;
+        height: 24px !important;
+        stroke-width: 2;
+        display: block !important;
     }
-    .email-autocomplete-results .ac-item {
-        padding: .5rem .75rem; cursor: pointer; border-bottom: 1px solid #f0f0f0;
+    
+    [data-feather] {
+        display: inline-block !important;
+        vertical-align: middle;
     }
-    .email-autocomplete-results .ac-item:hover { background: #f8f8f8; }
-    .email-autocomplete-results .ac-item small { color: #999; }
-    .email-autocomplete-results .ac-empty { padding: .5rem .75rem; color: #999; }
-    /* Fix doubled sort icons: vendor CSS sets text content, Vuexy uses SVG background-image.
-       Reset vendor text content so only the Vuexy feather icons render. */
-    table.dataTable thead .sorting:before,
-    table.dataTable thead .sorting:after,
-    table.dataTable thead .sorting_asc:before,
-    table.dataTable thead .sorting_asc:after,
-    table.dataTable thead .sorting_desc:before,
-    table.dataTable thead .sorting_desc:after { content: '' !important; }
+
+    .avatar-sm {
+        height: 32px;
+        width: 32px;
+    }
+
+    .badge-role-admin {
+        background-color: rgba(115, 103, 240, 0.12);
+        color: #7367f0;
+    }
+    
+    .badge-role-owner {
+        background-color: rgba(40, 199, 111, 0.12);
+        color: #28c76f;
+    }
+    
+    .badge-light-secondary {
+        background-color: rgba(108, 117, 125, 0.12);
+        color: #6c757d;
+    }
+    
+    .badge-role-superadmin {
+        background-color: rgba(234, 84, 85, 0.12);
+        color: #ea5455;
+    }
 </style>
 @endpush
 
@@ -44,99 +54,51 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0" id="page-title"></h2>
+                <h2 class="content-header-title float-left mb-0">User Accounts</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard" id="breadcrumb-home"></a></li>
-                        <li class="breadcrumb-item active" id="breadcrumb-current"></li>
+                        <li class="breadcrumb-item"><a href="/en/dashboard">Home</a></li>
+                        <li class="breadcrumb-item active">Accounts</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
     <div class="content-header-right text-md-right col-md-3 col-12 d-md-block">
-        <div class="form-group breadcrumb-right" id="header-actions"></div>
+        <div class="form-group breadcrumb-right">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-account">
+                <i data-feather="user-plus" class="mr-25"></i>
+                <span>Add New Account</span>
+            </button>
+        </div>
     </div>
 </div>
 
 <div class="content-body">
-    <section>
+    <!-- Accounts Table -->
+    <section id="basic-datatable">
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header pb-0">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="tab-members" data-toggle="tab" href="#panel-members" role="tab">
-                                    <i data-feather="users" style="width:16px;height:16px;" class="mr-50"></i>
-                                    <span id="tab-members-label"></span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="tab-permissions" data-toggle="tab" href="#panel-permissions" role="tab">
-                                    <i data-feather="shield" style="width:16px;height:16px;" class="mr-50"></i>
-                                    <span id="tab-permissions-label"></span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="tab-roles" data-toggle="tab" href="#panel-roles" role="tab">
-                                    <i data-feather="key" style="width:16px;height:16px;" class="mr-50"></i>
-                                    <span id="tab-roles-label"></span>
-                                </a>
-                            </li>
-                        </ul>
+                    <div class="card-header">
+                        <h4 class="card-title">All User Accounts</h4>
                     </div>
                     <div class="card-body">
-                        <div class="tab-content">
-                            <!-- Members Tab -->
-                            <div class="tab-pane fade show active" id="panel-members" role="tabpanel">
-                                <div class="card-datatable table-responsive pt-1">
-                                    <table class="table" id="members-table">
-                                        <thead>
-                                            <tr>
-                                                <th id="th-name"></th>
-                                                <th>Email</th>
-                                                <th id="th-role"></th>
-                                                <th id="th-actions"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Permissions (ACL) Tab -->
-                            <div class="tab-pane fade" id="panel-permissions" role="tabpanel">
-                                <div class="d-flex align-items-center mb-1 pt-1">
-                                    <label class="mr-1 mb-0 font-weight-bold" id="filter-scope-label"></label>
-                                    <select class="form-control form-control-sm" id="scope-filter" style="width:auto;">
-                                        <option value="" id="filter-all-option"></option>
-                                        <option value="mrwifi:org">Organization</option>
-                                        <option value="mrwifi:zone">Zone</option>
-                                        <option value="mrwifi:location">Location</option>
-                                        <option value="mrwifi:device">Device</option>
-                                    </select>
-                                </div>
-                                <div class="card-datatable table-responsive">
-                                    <table class="table" id="permissions-table">
-                                        <thead>
-                                            <tr>
-                                                <th id="th-perm-user"></th>
-                                                <th id="th-perm-role"></th>
-                                                <th id="th-perm-target"></th>
-                                                <th id="th-perm-target-id"></th>
-                                                <th id="th-perm-actions"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Roles Tab -->
-                            <div class="tab-pane fade" id="panel-roles" role="tabpanel">
-                                <div id="roles-content" class="pt-1"></div>
-                            </div>
+                        <div class="card-datatable table-responsive">
+                            <table class="datatables-accounts table" id="accounts-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Profile Picture</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -145,93 +107,187 @@
     </section>
 </div>
 
-<!-- Invite Member Modal -->
-<div class="modal fade" id="invite-member-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- Add New Account Modal -->
+<div class="modal fade text-left" id="add-new-account" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="invite-modal-title"></h4>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel33">Add New Account</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <form id="invite-member-form">
-                <input type="hidden" id="invite-mode" value="" />
+            <form action="#" id="add-account-form">
                 <div class="modal-body">
-                    <div class="form-group email-autocomplete">
-                        <label for="invite-email">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="invite-email" required autocomplete="off" placeholder="" id-placeholder="invite-email-placeholder" />
-                        <div class="email-autocomplete-results" id="invite-email-results"></div>
-                        <small class="text-muted" id="invite-email-hint"></small>
-                    </div>
-                    <div id="invite-selected-user" class="alert alert-success py-50 px-1 mb-1" style="display:none;">
-                        <span id="invite-selected-name"></span>
-                        <button type="button" class="close" id="invite-clear-selection"><span>&times;</span></button>
-                    </div>
-                    <div id="invite-name-fields" style="display:none;">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label for="invite-first-name" id="invite-first-name-label"></label>
-                                    <input type="text" class="form-control" id="invite-first-name" />
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label for="invite-last-name" id="invite-last-name-label"></label>
-                                    <input type="text" class="form-control" id="invite-last-name" />
+                    <!-- Profile Picture Upload Section -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="media">
+                                <a href="javascript:void(0);" class="mr-25">
+                                    <img src="/assets/avatar-default.jpg" id="new-account-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
+                                </a>
+                                <div class="media-body mt-75 ml-1">
+                                    <label for="new-account-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload Profile Picture</label>
+                                    <input type="file" id="new-account-upload" hidden accept="image/*" />
+                                    <p class="mb-0">Allowed JPG or PNG. Max size of 2MB</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="invite-role" id="invite-role-label"></label>
-                        <select class="form-control" id="invite-role" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="invite-scope" id="invite-scope-label"></label>
-                        <select class="form-control" id="invite-scope" required>
-                            <option value="mrwifi:org|*" id="scope-org-option"></option>
-                        </select>
+                    
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="new-account-name">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="new-account-name" placeholder="Full Name" required />
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="new-account-email">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="new-account-email" placeholder="Email" required />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Password Setup</label>
+                                <div class="btn-group btn-group-toggle w-100" data-toggle="buttons" id="password-method-toggle">
+                                    <label class="btn btn-outline-primary active">
+                                        <input type="radio" name="password-method" value="manual" checked> Set Password
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="radio" name="password-method" value="email"> Send Verification Email
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted mt-50">Choose "Send Verification Email" to let the user set their own password.</small>
+                            </div>
+                        </div>
+                        <div id="manual-password-fields" class="col-12 row px-0 mx-0">
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="new-account-password">Password <span class="text-danger">*</span></label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="new-account-password" placeholder="Password" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Minimum 8 characters</small>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="form-group">
+                                    <label for="new-account-confirm-password">Confirm Password <span class="text-danger">*</span></label>
+                                    <div class="input-group form-password-toggle">
+                                        <input type="password" class="form-control" id="new-account-confirm-password" placeholder="Confirm Password" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text cursor-pointer">
+                                                <i data-feather="eye"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-danger hidden" id="new-password-error-message">Passwords do not match</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal" id="btn-cancel"></button>
-                    <button type="submit" class="btn btn-primary" id="btn-invite-submit"></button>
+                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="create-account-btn">Create Account</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Add Permission Modal -->
-<div class="modal fade" id="add-permission-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- Edit User Modal -->
+<div class="modal fade text-left" id="edit-user-modal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="add-perm-title"></h4>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" id="editUserModalLabel">Edit User Account</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <form id="add-permission-form">
+            <form action="#" id="edit-user-form">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="perm-user-select" id="perm-user-label"></label>
-                        <select class="form-control" id="perm-user-select" required>
-                            <option value="" id="perm-user-placeholder"></option>
-                        </select>
+                    <!-- Profile Picture Upload Section -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="media">
+                                <a href="javascript:void(0);" class="mr-25">
+                                    <img src="/assets/avatar-default.jpg" id="edit-user-upload-img" class="rounded mr-50" alt="profile image" height="80" width="80" />
+                                </a>
+                                <div class="media-body mt-75 ml-1">
+                                    <label for="edit-user-upload" class="btn btn-sm btn-primary mb-75 mr-75">Upload Profile Picture</label>
+                                    <input type="file" id="edit-user-upload" hidden accept="image/*" />
+                                    <p class="mb-0">Allowed JPG or PNG. Max size of 2MB</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="perm-role" id="perm-role-label"></label>
-                        <select class="form-control" id="perm-role" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="perm-scope" id="perm-scope-label"></label>
-                        <select class="form-control" id="perm-scope" required>
-                            <option value="mrwifi:org|*" id="perm-scope-org-option"></option>
-                        </select>
+                    
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="edit-user-name">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit-user-name" placeholder="Full Name" required />
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="edit-user-email">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="edit-user-email" placeholder="Email" required />
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="edit-user-password">New Password</label>
+                                <div class="input-group form-password-toggle">
+                                    <input type="password" class="form-control" id="edit-user-password" placeholder="Leave blank to keep current password" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text cursor-pointer">
+                                            <i data-feather="eye"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">Leave blank if you don't want to change the password</small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="edit-user-confirm-password">Confirm New Password</label>
+                                <div class="input-group form-password-toggle">
+                                    <input type="password" class="form-control" id="edit-user-confirm-password" placeholder="Confirm new password" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text cursor-pointer">
+                                            <i data-feather="eye"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-danger hidden" id="edit-password-error-message">Passwords do not match</small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label for="edit-user-role">Role <span class="text-danger">*</span></label>
+                                <select class="form-control" id="edit-user-role" required>
+                                    <option value="">Select Role</option>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="superadmin" class="superadmin-only" style="display:none;">Super Admin</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal" id="perm-btn-cancel"></button>
-                    <button type="submit" class="btn btn-primary" id="perm-btn-submit"></button>
+                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="update-user-btn">Update Account</button>
                 </div>
             </form>
         </div>
@@ -240,11 +296,21 @@
 @endsection
 
 @push('scripts')
+<!-- DataTables JS -->
 <script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
 <script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
 <script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
 <script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+<script src="/app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
+<script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
+<script src="/app-assets/js/scripts/pages/app-user-list.js"></script>
 
-<script>const locale = '{{ $locale }}';</script>
-<script src="/assets/js/team.js?v={{ time() }}"></script>
+<script>
+    const locale = '{{ $locale }}';
+</script>
+<script src="/assets/js/accounts.js?v={{ time() }}"></script>
 @endpush
+
+@php
+    $locale = 'en';
+@endphp

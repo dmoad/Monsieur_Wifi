@@ -9,8 +9,12 @@ class SystemSetting extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-        'organization_id',
         'default_essid',
         'default_password',
         'portal_timeout',
@@ -43,71 +47,45 @@ class SystemSetting extends Model
         'stripe_enabled',
     ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
     protected $hidden = [
         'default_password',
         'radius_secret',
         'smtp_password',
     ];
 
-    public function organization()
-    {
-        return $this->belongsTo(Organization::class);
-    }
-
     /**
-     * Get settings for a specific org, merged with global defaults.
-     *
-     * - Global row: organization_id IS NULL
-     * - Org row: organization_id = $orgId (overrides non-null fields)
-     *
-     * @param int|null $orgId
+     * Get settings as a key-value array
+     * 
      * @return array
      */
-    public static function getSettings(?int $orgId = null): array
+    public static function getSettings()
     {
-        $global = self::whereNull('organization_id')->first();
-        $globalData = $global ? $global->toArray() : (new self())->toArray();
-
-        if (! $orgId) {
-            return $globalData;
-        }
-
-        $orgRow = self::where('organization_id', $orgId)->first();
-        if (! $orgRow) {
-            return $globalData;
-        }
-
-        // Merge: org values override global where they are not null
-        $orgData = $orgRow->toArray();
-        $merged = $globalData;
-        foreach ($orgData as $key => $value) {
-            if ($value !== null && ! in_array($key, ['id', 'organization_id', 'created_at', 'updated_at'])) {
-                $merged[$key] = $value;
-            }
-        }
-
-        // Keep the org row's ID so updates target the right record
-        $merged['id'] = $orgRow->id;
-        $merged['organization_id'] = $orgId;
-
-        return $merged;
+        $settings = self::first() ?? new self();
+        return $settings->toArray();
     }
 
     /**
-     * Update settings. If $orgId is given, upserts the org-specific row.
-     * If $orgId is null, updates the global defaults row.
+     * Update settings from an array
+     * 
+     * @param array $data
+     * @return SystemSetting
      */
-    public static function updateSettings(array $data, ?int $orgId = null): self
+    public static function updateSettings(array $data)
     {
-        if ($orgId) {
-            $settings = self::firstOrNew(['organization_id' => $orgId]);
-        } else {
-            $settings = self::whereNull('organization_id')->first() ?? new self();
+        $settings = self::first();
+        
+        if (!$settings) {
+            $settings = new self();
         }
-
+        
         $settings->fill($data);
         $settings->save();
-
+        
         return $settings;
     }
 }

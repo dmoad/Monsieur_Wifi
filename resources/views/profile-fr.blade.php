@@ -76,17 +76,35 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="col-12">
-                                            <small class="form-text text-muted">Le nom et l'email sont gérés par votre fournisseur d'identité.</small>
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <label for="account-new-password1">Nouveau mot de passe</label>
+                                                <div class="input-group form-password-toggle input-group-merge">
+                                                    <input type="password" id="account-new-password1" name="new-password1" class="form-control" placeholder="Nouveau mot de passe" />
+                                                    <div class="input-group-append">
+                                                        <div class="input-group-text cursor-pointer">
+                                                            <i data-feather="eye"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <small class="form-text text-bold">Laisser vide si vous ne voulez pas changer votre mot de passe</small>
+                                                <small class="form-text text-muted">Minimum 8 caractères, doit inclure des lettres, des chiffres et des caractères spéciaux</small>
+                                                <small class="form-text text-danger hidden" id="password-error-message">Les mots de passe ne correspondent pas</small>
+                                            </div>
                                         </div>
-
-                                        <div class="col-12 mt-2">
-                                            <a href="{{ config('zitadel.issuer') }}/ui/console/users/me" target="_blank" class="btn btn-outline-primary mr-1">
-                                                <i data-feather="external-link" class="mr-50"></i> Gérer mon compte
-                                            </a>
-                                            <a href="/auth/switch" class="btn btn-outline-secondary">
-                                                <i data-feather="repeat" class="mr-50"></i> Changer de compte
-                                            </a>
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <label for="account-retype-new-password1">Confirmer le nouveau mot de passe</label>
+                                                <div class="input-group form-password-toggle input-group-merge">
+                                                    <input type="password" class="form-control" id="account-retype-new-password1" name="confirm-new-password1" placeholder="Confirmer le nouveau mot de passe" />
+                                                    <div class="input-group-append">
+                                                        <div class="input-group-text cursor-pointer"><i data-feather="eye"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary mt-1 mr-1" id="save-profile-btn">Enregistrer les modifications</button>
                                         </div>
                                     </div>
                                 </form>

@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
         // Seed users and domain blocking data
         $this->call([
             UserSeeder::class,
-            OrganizationSeeder::class,
             CategorySeeder::class,
             BlockedDomainSeeder::class,
             ShopSeeder::class,

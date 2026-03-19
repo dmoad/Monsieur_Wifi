@@ -1,33 +1,39 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ZitadelAuthController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CaptivePortalController;
 use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\CategoryController;
 
-// Zitadel OIDC authentication routes
-Route::get('/auth/login', [ZitadelAuthController::class, 'login'])->name('zitadel.login');
-Route::get('/auth/callback', [ZitadelAuthController::class, 'callback'])->name('zitadel.callback');
-Route::post('/auth/logout', [ZitadelAuthController::class, 'logout'])->name('zitadel.logout');
-Route::get('/auth/switch', [ZitadelAuthController::class, 'switchAccount'])->name('zitadel.switch');
-Route::get('/auth/bridge', [ZitadelAuthController::class, 'bridge'])->name('zitadel.bridge');
-Route::post('/auth/refresh', [ZitadelAuthController::class, 'refresh'])->name('zitadel.refresh');
-Route::get('/auth/pending', function () { return view('auth.pending'); })->name('zitadel.pending');
-
-// Root routes — redirect to Zitadel OIDC login
+// Root login routes (language agnostic)
 Route::get('/', function () {
-    if (session('zitadel_user')) {
-        $locale = request()->cookie('preferred_language') ?? 'en';
-        $locale = in_array($locale, ['en', 'fr']) ? $locale : 'en';
-        return redirect("/{$locale}/dashboard");
-    }
-    return redirect()->route('zitadel.login');
+    return view('login');
 })->name('login.show');
 
+Route::get('/register', function () {
+    return view('register');
+})->name('register');
+
 Route::get('/login', function () {
-    return redirect()->route('zitadel.login');
+    return view('login');
 })->name('login');
+
+Route::get('/password-reset', function () {
+    return view('password-reset');
+})->name('password-reset');
+
+Route::get('/reset-password', function () {
+    return view('reset-password');
+})->name('reset-password');
+
+Route::get('/verify-email', function () {
+    return view('verify-email');
+})->name('verify-email');
+
+Route::get('/check-email', function () {
+    return view('check-email');
+})->name('check-email');
 
 // Subscription routes
 Route::get('/pricing', function () {
@@ -42,8 +48,15 @@ Route::get('/subscription/cancel', function () {
     return view('subscription.cancel');
 })->name('subscription.cancel');
 
-// English language routes group (protected by Zitadel auth)
-Route::prefix('en')->name('en.')->middleware('zitadel')->group(function () {
+// Handle login submission (API endpoint - language agnostic)
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
+// Logout routes (API endpoints - language agnostic)
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+
+// English language routes group
+Route::prefix('en')->name('en.')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard-en');
     })->name('dashboard');
@@ -135,15 +148,10 @@ Route::prefix('en')->name('en.')->middleware('zitadel')->group(function () {
         $locale = 'en';
         return view('qos-settings-en', compact('locale'));
     })->name('qos-settings');
-
-    Route::get('/settings/organization', function () {
-        $locale = 'en';
-        return view('organizations', compact('locale'));
-    })->name('organizations');
 });
 
-// French language routes group (protected by Zitadel auth)
-Route::prefix('fr')->name('fr.')->middleware('zitadel')->group(function () {
+// French language routes group
+Route::prefix('fr')->name('fr.')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard-fr');
     })->name('dashboard');
@@ -230,11 +238,6 @@ Route::prefix('fr')->name('fr.')->middleware('zitadel')->group(function () {
         $locale = 'fr';
         return view('qos-settings-fr', compact('locale'));
     })->name('qos-settings');
-
-    Route::get('/settings/organization', function () {
-        $locale = 'fr';
-        return view('organizations', compact('locale'));
-    })->name('organizations');
 });
 
 // Static pages (language agnostic)
@@ -367,54 +370,52 @@ Route::get('/fr/boutique', [ShopController::class, 'indexView'])->name('shop.fr'
 Route::get('/en/shop/{slug}', [ShopController::class, 'detailView'])->name('product.en');
 Route::get('/fr/boutique/{slug}', [ShopController::class, 'detailView'])->name('product.fr');
 
-// Cart (protected)
-Route::get('/en/cart', [CartController::class, 'view'])->middleware('zitadel')->name('cart.en');
-Route::get('/fr/panier', [CartController::class, 'view'])->middleware('zitadel')->name('cart.fr');
+// Cart
+Route::get('/en/cart', [CartController::class, 'view'])->name('cart.en');
+Route::get('/fr/panier', [CartController::class, 'view'])->name('cart.fr');
 
-// Checkout (protected)
-Route::get('/en/checkout', [OrderController::class, 'checkoutView'])->middleware('zitadel')->name('checkout.en');
-Route::get('/fr/commander', [OrderController::class, 'checkoutView'])->middleware('zitadel')->name('checkout.fr');
+// Checkout
+Route::get('/en/checkout', [OrderController::class, 'checkoutView'])->name('checkout.en');
+Route::get('/fr/commander', [OrderController::class, 'checkoutView'])->name('checkout.fr');
 
-// My orders (protected)
-Route::get('/en/orders', [OrderController::class, 'listView'])->middleware('zitadel')->name('orders.en');
-Route::get('/fr/commandes', [OrderController::class, 'listView'])->middleware('zitadel')->name('orders.fr');
+// My orders
+Route::get('/en/orders', [OrderController::class, 'listView'])->name('orders.en');
+Route::get('/fr/commandes', [OrderController::class, 'listView'])->name('orders.fr');
 
-// Order success (protected)
-Route::get('/en/orders/{orderNumber}', [OrderController::class, 'successView'])->middleware('zitadel')->name('order.success.en');
-Route::get('/fr/commandes/{orderNumber}', [OrderController::class, 'successView'])->middleware('zitadel')->name('order.success.fr');
+// Order success
+Route::get('/en/orders/{orderNumber}', [OrderController::class, 'successView'])->name('order.success.en');
+Route::get('/fr/commandes/{orderNumber}', [OrderController::class, 'successView'])->name('order.success.fr');
 
-// Admin shop management routes (protected by Zitadel auth)
-Route::middleware('zitadel')->group(function () {
-    Route::get('/en/admin/orders', function () {
-        return view('admin-orders-en');
-    })->name('admin.orders.en');
+// Admin shop management routes (protected by admin role)
+Route::get('/en/admin/orders', function () {
+    return view('admin-orders-en');
+})->name('admin.orders.en');
 
-    Route::get('/fr/admin/commandes', function () {
-        return view('admin-orders-fr');
-    })->name('admin.orders.fr');
+Route::get('/fr/admin/commandes', function () {
+    return view('admin-orders-fr');
+})->name('admin.orders.fr');
 
-    Route::get('/en/admin/inventory', function () {
-        return view('admin-inventory-en');
-    })->name('admin.inventory.en');
+Route::get('/en/admin/inventory', function () {
+    return view('admin-inventory-en');
+})->name('admin.inventory.en');
 
-    Route::get('/fr/admin/inventaire', function () {
-        return view('admin-inventory-fr');
-    })->name('admin.inventory.fr');
+Route::get('/fr/admin/inventaire', function () {
+    return view('admin-inventory-fr');
+})->name('admin.inventory.fr');
 
-    Route::get('/en/admin/models', function () {
-        return view('admin-models-en');
-    })->name('admin.models.en');
+Route::get('/en/admin/models', function () {
+    return view('admin-models-en');
+})->name('admin.models.en');
 
-    Route::get('/fr/admin/modeles', function () {
-        return view('admin-models-fr');
-    })->name('admin.models.fr');
-});
+Route::get('/fr/admin/modeles', function () {
+    return view('admin-models-fr');
+})->name('admin.models.fr');
 
-// Devices (protected)
+// Devices
 Route::get('/en/devices', function () {
     return view('devices-en');
-})->middleware('zitadel')->name('devices');
+})->name('devices');
 
 Route::get('/fr/appareils', function () {
     return view('devices-fr');
-})->middleware('zitadel')->name('fr.devices');
+})->name('fr.devices');

@@ -36,33 +36,6 @@ class LocationController extends Controller
         }
     }
 
-    /**
-     * Find a location scoped to the current user's organization.
-     * Returns null if the location doesn't belong to the user's org.
-     */
-    private function findScopedLocation($id)
-    {
-        $user = Auth::user();
-        $orgId = $user->current_organization_id;
-
-        $location = Location::find($id);
-        if (! $location) {
-            return null;
-        }
-
-        // If user has an org, location must belong to it
-        if ($orgId) {
-            return $location->organization_id == $orgId ? $location : null;
-        }
-
-        // No org context: admin sees all, others see only owned
-        if (in_array($user->role, ['admin', 'superadmin'])) {
-            return $location;
-        }
-
-        return $location->owner_id == $user->id ? $location : null;
-    }
-
    
     /**
      * Display a listing of the locations.
@@ -72,17 +45,12 @@ class LocationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $orgId = $user->current_organization_id;
-
-        $query = Location::with(['device', 'zone']);
-
-        if ($orgId) {
-            $query->where('organization_id', $orgId);
-        } elseif (!in_array($user->role, ['admin', 'superadmin'])) {
-            $query->where('owner_id', $user->id);
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            // Get locations with their associated devices and zones
+            $locations = Location::with(['device', 'zone'])->get();
+        } else {
+            $locations = Location::with(['device', 'zone'])->where('owner_id', $user->id)->get();
         }
-
-        $locations = $query->get();
         
         // Determine online status for each location's device
         $locationsWithStatus = $locations->map(function ($location) {
@@ -259,7 +227,6 @@ class LocationController extends Controller
         $location->device_id = $device->id;
         $location->user_id = $ownerId;  // User who created/manages the location
         $location->owner_id = $ownerId; // Owner of the location
-        $location->organization_id = $user->current_organization_id;
         $location->save();
 
         // Create the location settings (v2 — router-level only)
@@ -297,13 +264,12 @@ class LocationController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
         }
 
-        // Load source location with settings and networks (org-scoped)
-        $source = $this->findScopedLocation($id);
+        // Load source location with settings and networks
+        $source = Location::with(['settings', 'networks'])->find($id);
 
         if (!$source) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
-        $source->load(['settings', 'networks']);
 
         // Only allow cloning own location (or any location for admins)
         if (!in_array($user->role, ['admin', 'superadmin']) && $source->owner_id !== $user->id) {
@@ -323,11 +289,10 @@ class LocationController extends Controller
             'latitude', 'longitude', 'description',
             'manager_name', 'contact_email', 'contact_phone', 'status',
         ]));
-        $cloned->name              = $source->name . ' (Copy)';
-        $cloned->user_id           = $ownerId;
-        $cloned->owner_id          = $ownerId;
-        $cloned->organization_id   = $user->current_organization_id;
-        $cloned->device_id         = null;
+        $cloned->name      = $source->name . ' (Copy)';
+        $cloned->user_id   = $ownerId;
+        $cloned->owner_id  = $ownerId;
+        $cloned->device_id = null;
         $cloned->save();
 
         // Clone LocationSettingsV2
@@ -373,12 +338,12 @@ class LocationController extends Controller
                 'message' => 'User not authenticated'
             ], 401);
         }
-
-        $location = $this->findScopedLocation($id);
-        if ($location) {
-            $location->load(['device', 'zone', 'settings']);
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            $location = Location::with(['device', 'zone', 'settings'])->find($id);
+        } else {
+            $location = Location::with(['device', 'zone', 'settings'])->where('owner_id', $user->id)->find($id);
         }
-
+        
         if (!$location) {
             return response()->json([
                 'success' => false,
@@ -423,8 +388,8 @@ class LocationController extends Controller
     public function getAccounting($id, Request $request)
     {
         try {
-            $location = $this->findScopedLocation($id);
-
+            $location = Location::find($id);
+            
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -479,8 +444,8 @@ class LocationController extends Controller
     public function getUserSessions($id, Request $request)
     {
         try {
-            $location = $this->findScopedLocation($id);
-
+            $location = Location::find($id);
+            
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -529,8 +494,8 @@ class LocationController extends Controller
     public function getOnlineUsers($id)
     {
         try {
-            $location = $this->findScopedLocation($id);
-
+            $location = Location::find($id);
+            
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -591,7 +556,7 @@ class LocationController extends Controller
     public function getCaptivePortalDailyUsage($id, Request $request)
     {
         try {
-            $location = $this->findScopedLocation($id);
+            $location = Location::find($id);
 
             if (!$location) {
                 return response()->json([
@@ -690,10 +655,7 @@ class LocationController extends Controller
         if ($request->has('settings') && $request->has('settings_type')) {
             $settingsType = $request->input('settings_type');
             $settings = $request->input('settings');
-            $location = $this->findScopedLocation($location_id);
-            if (!$location) {
-                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
-            }
+            $location = Location::find($location_id);
             $increment_version = 0;
             $device = Device::find($location->device_id);
             Log::info('settings: ');
@@ -1525,8 +1487,8 @@ class LocationController extends Controller
         // Check if it's a device update
         if ($request->has('device')) {
             $deviceData = $request->input('device');
-            $location = $this->findScopedLocation($location_id);
-
+            $location = Location::find($location_id);
+            
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -1612,14 +1574,8 @@ class LocationController extends Controller
      * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Location $location)
     {
-        $location = $this->findScopedLocation($id);
-
-        if (!$location) {
-            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
-        }
-
         $location->delete();
 
         return response()->json([
@@ -1630,9 +1586,12 @@ class LocationController extends Controller
 
     public function updateGeneral(Request $request, $location_id)
     {
+        // Log::info('Update general location information received');
+        // Log::info($request->all());
+        
         try {
-            $location = $this->findScopedLocation($location_id);
-
+            $location = Location::find($location_id);
+            
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -1754,14 +1713,17 @@ class LocationController extends Controller
      */
     public function updateFirmware(Request $request, $id)
     {
+        // Log::info('Update firmware request received for location: ' . $id);
+        // Log::info($request->all());
+        
         try {
             $request->validate([
                 'firmware_id' => 'required|exists:firmware,id',
                 'firmware_version' => 'nullable|string'
             ]);
-
-            $location = $this->findScopedLocation($id);
-
+            
+            $location = Location::find($id);
+            
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -1855,7 +1817,7 @@ class LocationController extends Controller
     public function updateQosSettings(Request $request, $id)
     {
         try {
-            $location = $this->findScopedLocation($id);
+            $location = Location::find($id);
             if (!$location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
@@ -1884,7 +1846,7 @@ class LocationController extends Controller
     public function getSettings($id)
     {
         try {
-            $location = $this->findScopedLocation($id);
+            $location = Location::find($id);
             
             if (!$location) {
                 return response()->json([
@@ -1927,8 +1889,11 @@ class LocationController extends Controller
      */
     public function updateSettings(Request $request, $id)
     {
+        // Log::info('Update location settings request received for location: ' . $id);
+        // Log::info($request->all());
+        
         try {
-            $location = $this->findScopedLocation($id);
+            $location = Location::find($id);
             
             if (!$location) {
                 return response()->json([
@@ -2336,8 +2301,8 @@ class LocationController extends Controller
                 'mac_address' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
             ]);
 
-            // Find the location (org-scoped)
-            $location = $this->findScopedLocation($id);
+            // Find the location
+            $location = Location::find($id);
             if (!$location) {
                 return response()->json([
                     'success' => false,
@@ -2567,8 +2532,8 @@ class LocationController extends Controller
     public function syncMacAddressesToRadcheck($locationId)
     {
         try {
-            $location = $this->findScopedLocation($locationId);
-
+            $location = Location::find($locationId);
+            
             if (!$location) {
                 return response()->json([
                     'success' => false,

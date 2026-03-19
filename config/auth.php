@@ -25,7 +25,8 @@ return [
         ],
         
         'api' => [
-            'driver' => 'zitadel-jwt',
+            'driver' => 'jwt',
+            'provider' => 'users',
         ],
     ],
 

@@ -13,7 +13,6 @@ class Zone extends Model
         'name',
         'description',
         'owner_id',
-        'organization_id',
         'primary_location_id',
         'is_active',
     ];
@@ -32,11 +31,6 @@ class Zone extends Model
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
-    }
-
-    public function organization()
-    {
-        return $this->belongsTo(Organization::class);
     }
 
     /**
