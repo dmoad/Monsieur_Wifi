@@ -532,6 +532,18 @@
                                                     <select class="form-control" id="location-owner"><option value="">Sélectionner un propriétaire</option></select>
                                                 </div>
                                             </div>
+                                            <div class="col-md-6" id="location-shared-users-group" data-admin-only="true">
+                                                <div class="form-group">
+                                                    <label for="location-shared-users">
+                                                        Accès partagé
+                                                        <span style="font-size:0.7rem;background:rgba(115,103,240,0.12);color:#7367f0;border-radius:10px;padding:1px 7px;font-weight:600;margin-left:4px;">Admin</span>
+                                                    </label>
+                                                    <select class="select2 form-control" id="location-shared-users" multiple="multiple">
+                                                        <!-- rempli par JS -->
+                                                    </select>
+                                                    <small class="form-text text-muted">Recherchez et sélectionnez les utilisateurs qui auront un accès complet aux paramètres de cet emplacement.</small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

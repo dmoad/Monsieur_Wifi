@@ -196,9 +196,10 @@ async function loadLocationDetails() {
     // Load settings & dropdowns
     loadLocationSettings();
     if (UserManager.isAdminOrAbove()) {
-        loadOwnerDropdown(location.owner_id);
+        loadUserDropdowns(location.owner_id, location.shared_users || []);
     } else {
         $('#location-owner-group').hide();
+        $('#location-shared-users-group').hide();
     }
 
     reRenderFeather();
@@ -245,7 +246,14 @@ async function saveLocationInfo() {
             status: $('#location-status').val(),
             description: $('#location-description').val().trim(),
         };
-        if (UserManager.isAdminOrAbove()) data.owner_id = $('#location-owner').val() || null;
+        if (UserManager.isAdminOrAbove()) {
+            data.owner_id = $('#location-owner').val() || null;
+            const selectedIds = $('#location-shared-users').val() || [];
+            data.shared_users = selectedIds.map(id => ({
+                user_id: parseInt(id, 10),
+                access_level: 'full',
+            }));
+        }
         const modelVal = $('#router-model-select').val();
         if (modelVal) data.product_model_id = parseInt(modelVal, 10);
 
@@ -320,18 +328,80 @@ async function cloneLocation() {
     }
 }
 
-async function loadOwnerDropdown(currentOwnerId) {
+// Role badge colours (matches sidebar pill style)
+const ROLE_BADGE = {
+    superadmin: { bg: 'rgba(234,84,85,0.12)',   color: '#ea5455', label: 'Super Admin' },
+    admin:      { bg: 'rgba(255,159,67,0.12)',   color: '#ff9f43', label: 'Admin' },
+    operator:   { bg: 'rgba(0,207,232,0.12)',    color: '#00cfe8', label: 'Operator' },
+    viewer:     { bg: 'rgba(40,199,111,0.12)',   color: '#28c76f', label: 'Viewer' },
+    partner:    { bg: 'rgba(115,103,240,0.12)',  color: '#7367f0', label: 'Partner' },
+};
+
+function roleBadgeHtml(role) {
+    const r = ROLE_BADGE[role] || { bg: 'rgba(110,107,123,0.12)', color: '#6e6b7b', label: role || 'User' };
+    return `<span style="font-size:0.68rem;background:${r.bg};color:${r.color};border-radius:10px;padding:1px 7px;font-weight:600;margin-left:6px;vertical-align:middle;">${r.label}</span>`;
+}
+
+async function loadUserDropdowns(currentOwnerId, sharedUsers = []) {
     try {
         const res = await apiFetch(`${API}/accounts/users`);
         const users = res.users || res.data || [];
-        const $select = $('#location-owner');
-        $select.empty().append('<option value="">Select Owner</option>');
+
+        // ── Owner dropdown (plain select) ────────────────────────────────────
+        const $owner = $('#location-owner');
+        $owner.empty().append('<option value="">Select Owner</option>');
         users.forEach(u => {
-            $select.append(`<option value="${u.id}" ${u.id == currentOwnerId ? 'selected' : ''}>${u.name} (${u.email})</option>`);
+            const roleLabel = (ROLE_BADGE[u.role] || {}).label || (u.role || '');
+            $owner.append(`<option value="${u.id}" ${u.id == currentOwnerId ? 'selected' : ''}>${u.name} (${u.email}) — ${roleLabel}</option>`);
+        });
+
+        // ── Shared-access Select2 multi-select ───────────────────────────────
+        const sharedUserIds = (sharedUsers || []).map(e => parseInt(e.user_id, 10));
+        const $shared = $('#location-shared-users');
+
+        // Destroy any existing Select2 instance before rebuilding
+        if ($shared.hasClass('select2-hidden-accessible')) {
+            $shared.select2('destroy');
+        }
+        $shared.empty();
+
+        users.forEach(u => {
+            if (u.id == currentOwnerId) return; // owner excluded from shared list
+            const isSelected = sharedUserIds.includes(parseInt(u.id, 10));
+            // Store role on the option so templateResult can read it
+            const $opt = $(new Option(
+                `${u.name} (${u.email})`,
+                u.id,
+                isSelected,
+                isSelected
+            ));
+            $opt.data('role', u.role || '');
+            $shared.append($opt);
+        });
+
+        $shared.select2({
+            placeholder: 'Search users…',
+            allowClear: true,
+            width: '100%',
+            templateResult: function (option) {
+                if (!option.id) return option.text; // placeholder
+                const role = $(option.element).data('role') || '';
+                return $(`<span>${option.text}${roleBadgeHtml(role)}</span>`);
+            },
+            templateSelection: function (option) {
+                if (!option.id) return option.text;
+                const role = $(option.element).data('role') || '';
+                return $(`<span>${option.text}${roleBadgeHtml(role)}</span>`);
+            },
         });
     } catch (err) {
-        console.error('Error loading owner list:', err);
+        console.error('Error loading user dropdowns:', err);
     }
+}
+
+// Keep backward-compat alias (used in clone modal path)
+async function loadOwnerDropdown(currentOwnerId) {
+    return loadUserDropdowns(currentOwnerId, []);
 }
 
 // ============================================================================

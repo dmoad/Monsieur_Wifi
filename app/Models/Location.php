@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\LocationSettingsV2;
 use App\Models\LocationNetwork;
 use App\Models\Radacct;
+use App\Models\User;
 class Location extends Model
 {
     use HasFactory;
@@ -33,6 +34,11 @@ class Location extends Model
         'device_id',
         'user_id',
         'owner_id',
+        'shared_users',
+    ];
+
+    protected $casts = [
+        'shared_users' => 'array',
     ];
 
     /**
@@ -136,6 +142,38 @@ class Location extends Model
         }
 
         return $this->isPrimaryInZone();
+    }
+
+    /**
+     * Return the shared_users array, always as an array (never null).
+     */
+    public function sharedUsers(): array
+    {
+        return $this->shared_users ?? [];
+    }
+
+    /**
+     * Check if the given user may access this location.
+     * Admins and superadmins always pass. For other roles the user must be
+     * the owner or appear in the shared_users JSON array.
+     */
+    public function isAccessibleBy(User $user): bool
+    {
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            return true;
+        }
+
+        if ((int) $user->id === (int) $this->owner_id) {
+            return true;
+        }
+
+        foreach ($this->sharedUsers() as $entry) {
+            if ((int) ($entry['user_id'] ?? 0) === (int) $user->id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

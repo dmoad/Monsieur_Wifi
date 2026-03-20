@@ -49,7 +49,10 @@ class LocationController extends Controller
             // Get locations with their associated devices and zones
             $locations = Location::with(['device', 'zone'])->get();
         } else {
-            $locations = Location::with(['device', 'zone'])->where('owner_id', $user->id)->get();
+            $locations = Location::with(['device', 'zone'])->where(function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                  ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+            })->get();
         }
         
         // Determine online status for each location's device
@@ -341,7 +344,10 @@ class LocationController extends Controller
         if (in_array($user->role, ['admin', 'superadmin'])) {
             $location = Location::with(['device', 'zone', 'settings'])->find($id);
         } else {
-            $location = Location::with(['device', 'zone', 'settings'])->where('owner_id', $user->id)->find($id);
+            $location = Location::with(['device', 'zone', 'settings'])->where(function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                  ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+            })->find($id);
         }
         
         if (!$location) {
@@ -1599,10 +1605,10 @@ class LocationController extends Controller
                 ], 404);
             }
             
-            // Check if owner_id is being updated and validate admin role
-            if ($request->has('owner_id')) {
+            // Check if owner_id or shared_users are being updated — admin/superadmin only
+            if ($request->hasAny(['owner_id', 'shared_users'])) {
                 $currentUser = Auth::guard('api')->user();
-                if (!$currentUser || $currentUser->role !== 'admin') {
+                if (!$currentUser || !in_array($currentUser->role, ['admin', 'superadmin'])) {
                     // Log::warning('Non-admin user attempted to change location owner via updateGeneral', [
                     //     'user_id' => $currentUser ? $currentUser->id : null,
                     //     'user_role' => $currentUser ? $currentUser->role : null,
@@ -1610,7 +1616,7 @@ class LocationController extends Controller
                     // ]);
                     return response()->json([
                         'success' => false,
-                        'message' => 'Only administrators can change location ownership'
+                        'message' => 'Only administrators can change location ownership or shared access'
                     ], 403);
                 }
             }
@@ -1631,6 +1637,9 @@ class LocationController extends Controller
                 'contact_phone' => 'sometimes|nullable|string|max:255',
                 'status' => 'sometimes|nullable|string|in:active,inactive,maintenance',
                 'owner_id' => 'sometimes|nullable|exists:users,id',
+                'shared_users' => 'sometimes|nullable|array',
+                'shared_users.*.user_id' => 'required_with:shared_users|integer|exists:users,id',
+                'shared_users.*.access_level' => 'required_with:shared_users|string|in:full,partial,read_only',
             ]);
             // Log::info('Validated data: ');
             // Log::info($validated);
@@ -1681,6 +1690,12 @@ class LocationController extends Controller
                 ]);
             }
             
+            // Persist shared_users separately (JSON cast handles encoding)
+            if (array_key_exists('shared_users', $validated)) {
+                $location->shared_users = $validated['shared_users'] ?? [];
+                unset($validated['shared_users']);
+            }
+
             // Update the location with validated data
             $location->update($validated);
             

@@ -28,7 +28,10 @@ class LocationNetworkController extends Controller
 
         $location = $isAdmin
             ? Location::find($locationId)
-            : Location::where('id', $locationId)->where('owner_id', $user->id)->first();
+            : Location::where('id', $locationId)->where(function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                  ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+            })->first();
 
         return $location;
     }

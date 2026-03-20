@@ -48,11 +48,13 @@ class DashboardController extends Controller
             ], 401);
         }
         try {
-            // Get all locations with their devices$locations = Location::with('device')->get();
             if (in_array($user->role, ['admin', 'superadmin'])) {
                 $locations = Location::with('device')->get();
             } else {
-                $locations = Location::with('device')->where('owner_id', $user->id)->get();
+                $locations = Location::with('device')->where(function ($q) use ($user) {
+                    $q->where('owner_id', $user->id)
+                      ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                })->get();
             }
             // Calculate location statistics
             $totalLocations = $locations->count();
@@ -172,7 +174,10 @@ class DashboardController extends Controller
             if (in_array($user->role, ['admin', 'superadmin'])) {
                 $locations = Location::with('device')->get();
             } else {
-                $locations = Location::with('device')->where('owner_id', $user->id)->get();
+                $locations = Location::with('device')->where(function ($q) use ($user) {
+                    $q->where('owner_id', $user->id)
+                      ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                })->get();
             }
             
             $analyticsStats = [
@@ -268,7 +273,10 @@ class DashboardController extends Controller
             if (in_array($user->role, ['admin', 'superadmin'])) {
                 $locations = Location::all();
             } else {
-                $locations = Location::where('owner_id', $user->id)->get();
+                $locations = Location::where(function ($q) use ($user) {
+                    $q->where('owner_id', $user->id)
+                      ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                })->get();
             }
             
             // Initialize daily usage array
