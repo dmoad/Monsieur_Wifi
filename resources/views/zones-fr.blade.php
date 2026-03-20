@@ -3,6 +3,7 @@
 @section('title', 'Zones - Monsieur WiFi')
 
 @push('styles')
+<link rel="stylesheet" href="/app-assets/vendors/css/forms/select/select2.min.css">
 <style>
     .zone-card {
         border: none;
@@ -213,6 +214,14 @@
                         <label for="zone-description">Description</label>
                         <textarea class="form-control" id="zone-description" rows="3" placeholder="Entrez la description de la zone (optionnel)"></textarea>
                     </div>
+                    <div class="form-group" id="zone-shared-users-group" style="display:none;">
+                        <label for="zone-shared-users">
+                            Accès partagé
+                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">Admin</span>
+                        </label>
+                        <select class="select2 form-control" id="zone-shared-users" multiple="multiple"></select>
+                        <small class="form-text text-muted">Recherchez et sélectionnez les utilisateurs qui auront un accès complet à cette zone.</small>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -225,6 +234,7 @@
 @endsection
 
 @push('scripts')
+<script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script src="/assets/js/zones.js?v=<?php echo time(); ?>"></script>
 @endpush
 

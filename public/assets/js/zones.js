@@ -1,6 +1,19 @@
 // Zones management JavaScript
 const PAGE_LOCALE = document.documentElement.lang || 'en';
 
+const ROLE_BADGE = {
+    superadmin: { label: 'Super', bg: '#ea5455' },
+    admin:      { label: 'Admin', bg: '#7367f0' },
+    user:       { label: 'User',  bg: '#28c76f' },
+};
+
+function roleBadgeHtml(role) {
+    const meta = ROLE_BADGE[role] || { label: role, bg: '#6e6b7b' };
+    return `<span style="font-size:0.65rem;font-weight:600;background:${meta.bg};color:#fff;border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;">${meta.label}</span>`;
+}
+
+let allUsersCache = [];
+
 const TRANSLATIONS = {
     en: {
         loading: 'Loading...',
@@ -93,17 +106,11 @@ function renderAdminAlert() {
     }
 }
 
-async function loadUsersForZones() {
-    console.log('loadUsersForZones called');
-    console.log('isAdminOrAbove:', UserManager.isAdminOrAbove());
-    
-    if (!UserManager.isAdminOrAbove()) {
-        console.log('User is not admin, skipping user load');
-        return;
-    }
-    
+async function loadUsersForZones(preselectedSharedUsers = []) {
+    if (!UserManager.isAdminOrAbove()) return;
+
     const token = UserManager.getToken();
-    
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
             headers: {
@@ -111,27 +118,68 @@ async function loadUsersForZones() {
                 'Accept': 'application/json'
             }
         });
-        
+
         if (!response.ok) throw new Error('Failed to load users');
-        
+
         const data = await response.json();
-        console.log('Users loaded:', data.users.length);
-        const select = document.getElementById('zone-owner-select');
-        
-        if (select) {
+        allUsersCache = data.users || [];
+
+        // Populate owner dropdown
+        const ownerSelect = document.getElementById('zone-owner-select');
+        if (ownerSelect) {
             let options = `<option value="">${PAGE_LOCALE === 'fr' ? 'Sélectionner le propriétaire...' : 'Select owner...'}</option>`;
-            data.users.forEach(user => {
-                options += `<option value="${user.id}">${user.name} (${user.email})</option>`;
+            allUsersCache.forEach(u => {
+                options += `<option value="${u.id}">${u.name} (${u.email})</option>`;
             });
-            
-            select.innerHTML = options;
-            console.log('User dropdown populated');
-        } else {
-            console.error('zone-owner-select element not found');
+            ownerSelect.innerHTML = options;
         }
+
+        // Populate shared users Select2
+        initSharedUsersSelect2(preselectedSharedUsers);
     } catch (error) {
         console.error('Error loading users:', error);
     }
+}
+
+function initSharedUsersSelect2(preselectedSharedUsers = []) {
+    const $el = $('#zone-shared-users');
+    if (!$el.length) return;
+
+    // Destroy existing instance to avoid duplicates
+    if ($el.hasClass('select2-hidden-accessible')) {
+        $el.select2('destroy');
+    }
+
+    $el.empty();
+
+    // Build options — exclude current owner if set
+    const currentOwner = parseInt(document.getElementById('zone-owner-select')?.value || '0');
+    allUsersCache.forEach(u => {
+        if (u.id === currentOwner) return;
+        const $opt = $('<option>', { value: u.id, text: `${u.name} (${u.email})` });
+        $opt.data('role', u.role || 'user');
+        $el.append($opt);
+    });
+
+    $el.select2({
+        placeholder: PAGE_LOCALE === 'fr' ? 'Rechercher des utilisateurs...' : 'Search users...',
+        allowClear: true,
+        width: '100%',
+        templateResult: function (item) {
+            if (!item.id) return item.text;
+            const role = $(item.element).data('role') || 'user';
+            return $(`<span>${item.text}${roleBadgeHtml(role)}</span>`);
+        },
+        templateSelection: function (item) {
+            if (!item.id) return item.text;
+            const role = $(item.element).data('role') || 'user';
+            return $(`<span>${item.text}${roleBadgeHtml(role)}</span>`);
+        }
+    });
+
+    // Pre-select shared users
+    const preselectedIds = (preselectedSharedUsers || []).map(e => String(e.user_id ?? e));
+    $el.val(preselectedIds).trigger('change');
 }
 
 async function loadZones() {
@@ -359,26 +407,31 @@ function showZoneModal(zoneId = null) {
     
     if (ownerGroup) {
         const shouldShow = UserManager.isAdminOrAbove() && !zoneId;
-        console.log('shouldShow owner dropdown:', shouldShow);
-        
-        if (shouldShow) {
-            ownerGroup.style.display = 'block';
-            console.log('Owner dropdown shown');
-        } else {
-            ownerGroup.style.display = 'none';
-            console.log('Owner dropdown hidden');
-        }
-    } else {
-        console.error('zone-owner-select-group element not found!');
+        ownerGroup.style.display = shouldShow ? 'block' : 'none';
     }
-    
+
+    // Show shared-users group for admin/superadmin (both create and edit)
+    const sharedGroup = document.getElementById('zone-shared-users-group');
+    if (sharedGroup) {
+        sharedGroup.style.display = UserManager.isAdminOrAbove() ? 'block' : 'none';
+    }
+
+    if (UserManager.isAdminOrAbove()) {
+        // Re-init Select2 with no preselection; loadZoneForEdit will preselect on edit
+        if (allUsersCache.length > 0) {
+            initSharedUsersSelect2([]);
+        } else {
+            loadUsersForZones([]);
+        }
+    }
+
     if (zoneId) {
         title.textContent = T.editZoneTitle;
         loadZoneForEdit(zoneId);
     } else {
         title.textContent = T.createZoneTitle;
     }
-    
+
     modal.modal('show');
 }
 
@@ -403,7 +456,12 @@ async function loadZoneForEdit(zoneId) {
         document.getElementById('zone-id').value = zone.id;
         document.getElementById('zone-name').value = zone.name;
         document.getElementById('zone-description').value = zone.description || '';
-        
+
+        // Pre-select shared users when admin is editing
+        if (UserManager.isAdminOrAbove() && zone.shared_users) {
+            initSharedUsersSelect2(zone.shared_users);
+        }
+
         // Show primary location info if available
         const primaryInfoContainer = document.getElementById('primary-location-info-edit');
         if (primaryInfoContainer) {
@@ -501,13 +559,19 @@ async function saveZone() {
         : `${APP_CONFIG.API.BASE_URL}/v1/zones`;
     
     const payload = { name, description };
-    
+
     // Add owner_id if admin is creating for another user
     if (!isEdit && UserManager.isAdminOrAbove()) {
         const ownerId = document.getElementById('zone-owner-select')?.value;
         if (ownerId) {
             payload.owner_id = ownerId;
         }
+    }
+
+    // Add shared_users for admin/superadmin
+    if (UserManager.isAdminOrAbove()) {
+        const selectedIds = $('#zone-shared-users').val() || [];
+        payload.shared_users = selectedIds.map(id => ({ user_id: parseInt(id), access_level: 'full' }));
     }
     
     try {

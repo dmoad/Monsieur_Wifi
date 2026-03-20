@@ -3,6 +3,7 @@
 @section('title', 'Détails de la Zone - Monsieur WiFi')
 
 @push('styles')
+<link rel="stylesheet" href="/app-assets/vendors/css/forms/select/select2.min.css">
 <style>
     .zone-info-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -185,6 +186,14 @@
                         <label for="edit-zone-description">Description</label>
                         <textarea class="form-control" id="edit-zone-description" rows="3"></textarea>
                     </div>
+                    <div class="form-group" id="edit-zone-shared-users-group" style="display:none;">
+                        <label for="edit-zone-shared-users">
+                            Accès partagé
+                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">Admin</span>
+                        </label>
+                        <select class="select2 form-control" id="edit-zone-shared-users" multiple="multiple"></select>
+                        <small class="form-text text-muted">Recherchez et sélectionnez les utilisateurs qui auront un accès complet à cette zone.</small>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -197,6 +206,7 @@
 @endsection
 
 @push('scripts')
+<script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script>
     const ZONE_ID = {{ $zone }};
 </script>

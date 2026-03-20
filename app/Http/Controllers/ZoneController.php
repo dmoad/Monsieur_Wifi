@@ -24,9 +24,12 @@ class ZoneController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
         } else {
-            // Regular users see only their own zones
+            // Regular users see their own zones and zones shared with them
             $zones = Zone::with(['locations', 'primaryLocation'])
-                ->where('owner_id', $user->id)
+                ->where(function ($q) use ($user) {
+                    $q->where('owner_id', $user->id)
+                      ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                })
                 ->orderBy('created_at', 'desc')
                 ->get();
         }
@@ -100,7 +103,7 @@ class ZoneController extends Controller
         }
 
         // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$zone->isAccessibleBy($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -129,18 +132,27 @@ class ZoneController extends Controller
         }
 
         // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$zone->isAccessibleBy($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
             ], 403);
         }
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+        $rules = [
+            'name'        => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'is_active' => 'nullable|boolean',
-        ]);
+            'is_active'   => 'nullable|boolean',
+        ];
+
+        // Only admin/superadmin may manage shared_users
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            $rules['shared_users']               = 'sometimes|nullable|array';
+            $rules['shared_users.*.user_id']     = 'required_with:shared_users|integer|exists:users,id';
+            $rules['shared_users.*.access_level'] = 'required_with:shared_users|string|in:full,partial,read_only';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json([
@@ -149,7 +161,16 @@ class ZoneController extends Controller
             ], 422);
         }
 
-        $zone->update($request->only(['name', 'description', 'is_active']));
+        $validated = $validator->validated();
+
+        // Persist shared_users separately so JSON casting is applied correctly
+        if (in_array($user->role, ['admin', 'superadmin']) && array_key_exists('shared_users', $validated)) {
+            $zone->shared_users = $validated['shared_users'];
+            unset($validated['shared_users']);
+        }
+
+        $zone->update(array_intersect_key($validated, array_flip(['name', 'description', 'is_active'])));
+        $zone->save();
 
         Log::info('Zone updated', ['zone_id' => $zone->id, 'user_id' => $user->id]);
 
@@ -176,7 +197,7 @@ class ZoneController extends Controller
         }
 
         // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$zone->isAccessibleBy($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -223,7 +244,7 @@ class ZoneController extends Controller
         }
 
         // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$zone->isAccessibleBy($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -293,7 +314,7 @@ class ZoneController extends Controller
         }
 
         // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$zone->isAccessibleBy($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -383,7 +404,7 @@ class ZoneController extends Controller
         }
 
         // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$zone->isAccessibleBy($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -431,7 +452,7 @@ class ZoneController extends Controller
         }
 
         // Check permission
-        if ($zone->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$zone->isAccessibleBy($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'

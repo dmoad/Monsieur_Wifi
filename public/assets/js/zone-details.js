@@ -1,5 +1,18 @@
 // Zone Details JavaScript
 const PAGE_LOCALE = document.documentElement.lang || 'en';
+
+const ROLE_BADGE = {
+    superadmin: { label: 'Super', bg: '#ea5455' },
+    admin:      { label: 'Admin', bg: '#7367f0' },
+    user:       { label: 'User',  bg: '#28c76f' },
+};
+
+function roleBadgeHtml(role) {
+    const meta = ROLE_BADGE[role] || { label: role, bg: '#6e6b7b' };
+    return `<span style="font-size:0.65rem;font-weight:600;background:${meta.bg};color:#fff;border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle;">${meta.label}</span>`;
+}
+
+let allUsersForZoneDetails = [];
 const TRANSLATIONS = {
     en: {
         loading: 'Loading...',
@@ -495,9 +508,69 @@ async function setPrimary(locationId) {
     }
 }
 
-function editZone() {
+async function loadAndInitSharedUsersSelect2(preselectedSharedUsers = []) {
+    if (allUsersForZoneDetails.length === 0) {
+        const token = UserManager.getToken();
+        try {
+            const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error('Failed to load users');
+            const data = await response.json();
+            allUsersForZoneDetails = data.users || [];
+        } catch (error) {
+            console.error('Error loading users for shared access:', error);
+            return;
+        }
+    }
+
+    const $el = $('#edit-zone-shared-users');
+    if (!$el.length) return;
+
+    if ($el.hasClass('select2-hidden-accessible')) {
+        $el.select2('destroy');
+    }
+
+    $el.empty();
+
+    allUsersForZoneDetails.forEach(u => {
+        const $opt = $('<option>', { value: u.id, text: `${u.name} (${u.email})` });
+        $opt.data('role', u.role || 'user');
+        $el.append($opt);
+    });
+
+    $el.select2({
+        placeholder: PAGE_LOCALE === 'fr' ? 'Rechercher des utilisateurs...' : 'Search users...',
+        allowClear: true,
+        width: '100%',
+        templateResult: function (item) {
+            if (!item.id) return item.text;
+            const role = $(item.element).data('role') || 'user';
+            return $(`<span>${item.text}${roleBadgeHtml(role)}</span>`);
+        },
+        templateSelection: function (item) {
+            if (!item.id) return item.text;
+            const role = $(item.element).data('role') || 'user';
+            return $(`<span>${item.text}${roleBadgeHtml(role)}</span>`);
+        }
+    });
+
+    const preselectedIds = (preselectedSharedUsers || []).map(e => String(e.user_id ?? e));
+    $el.val(preselectedIds).trigger('change');
+}
+
+async function editZone() {
     document.getElementById('edit-zone-name').value = currentZone.name;
     document.getElementById('edit-zone-description').value = currentZone.description || '';
+
+    // Show/populate shared users for admin/superadmin
+    const sharedGroup = document.getElementById('edit-zone-shared-users-group');
+    if (sharedGroup && UserManager.isAdminOrAbove()) {
+        sharedGroup.style.display = 'block';
+        await loadAndInitSharedUsersSelect2(currentZone.shared_users || []);
+    } else if (sharedGroup) {
+        sharedGroup.style.display = 'none';
+    }
     
     // Show primary location info if available
     const primaryInfoContainer = document.getElementById('primary-location-info');
@@ -585,11 +658,18 @@ async function updateZoneInfo() {
     }
     
     const token = UserManager.getToken();
+    const payload = { name, description, is_active: currentZone.is_active };
+
+    if (UserManager.isAdminOrAbove()) {
+        const selectedIds = $('#edit-zone-shared-users').val() || [];
+        payload.shared_users = selectedIds.map(id => ({ user_id: parseInt(id), access_level: 'full' }));
+    }
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/zones/${ZONE_ID}`, {
             method: 'PUT',
             headers: {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json'},
-            body: JSON.stringify({ name, description, is_active: currentZone.is_active })
+            body: JSON.stringify(payload)
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Failed to update zone');

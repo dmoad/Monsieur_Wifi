@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,10 +16,12 @@ class Zone extends Model
         'owner_id',
         'primary_location_id',
         'is_active',
+        'shared_users',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'is_active'    => 'boolean',
+        'shared_users' => 'array',
     ];
 
     protected $appends = [
@@ -112,6 +115,38 @@ class Zone extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Return the shared_users array, always as an array (never null).
+     */
+    public function sharedUsers(): array
+    {
+        return $this->shared_users ?? [];
+    }
+
+    /**
+     * Check if the given user may access this zone.
+     * Admins and superadmins always pass. For other roles the user must be
+     * the owner or appear in the shared_users JSON array.
+     */
+    public function isAccessibleBy(User $user): bool
+    {
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            return true;
+        }
+
+        if ((int) $user->id === (int) $this->owner_id) {
+            return true;
+        }
+
+        foreach ($this->sharedUsers() as $entry) {
+            if ((int) ($entry['user_id'] ?? 0) === (int) $user->id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
