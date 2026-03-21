@@ -1844,13 +1844,29 @@ class LocationController extends Controller
                 ['web_filter_enabled' => false, 'web_filter_categories' => [], 'qos_enabled' => false]
             );
 
+            $previousQos = (bool) $settings->qos_enabled;
             $settings->qos_enabled = $validated['enabled'];
             $settings->save();
+
+            // Increment device config version whenever QoS is toggled
+            $configVersionIncremented = false;
+            if ((bool)$validated['enabled'] !== $previousQos) {
+                $device = \App\Models\Device::where('id', $location->device_id)->first();
+                if ($device) {
+                    $device->configuration_version = $device->configuration_version + 1;
+                    $device->save();
+                    $configVersionIncremented = true;
+                    Log::info('Device config version incremented to ' . $device->configuration_version . ' after QoS toggle for location: ' . $id);
+                }
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'QoS ' . ($validated['enabled'] ? 'enabled' : 'disabled') . '.',
-                'data'    => ['qos_enabled' => $settings->qos_enabled],
+                'data'    => [
+                    'qos_enabled'               => $settings->qos_enabled,
+                    'config_version_incremented' => $configVersionIncremented,
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Error updating QoS settings: ' . $e->getMessage());

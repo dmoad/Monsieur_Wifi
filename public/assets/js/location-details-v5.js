@@ -452,6 +452,7 @@ async function loadLocationSettings() {
 
         // Web filter
         $('#global-web-filter').prop('checked', !!s.web_filter_enabled);
+        $('#web-filter-propagation-notice').toggle(!!s.web_filter_enabled);
         loadWebFilterCategories(s.web_filter_categories || []);
 
         // QoS
@@ -554,16 +555,27 @@ async function saveWebFilterSettings() {
     const origHtml = $btn.html();
     $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
 
+    const filterEnabled = $('#global-web-filter').is(':checked');
+
     try {
         const selectedCategories = $('#global-filter-categories').val() || [];
         await apiFetch(`${API}/locations/${location_id}/settings`, {
             method: 'PUT',
             body: JSON.stringify({
-                web_filter_enabled: $('#global-web-filter').is(':checked'),
+                web_filter_enabled: filterEnabled,
                 web_filter_categories: selectedCategories.map(Number),
             }),
         });
-        toastr.success('Web filter settings saved.');
+
+        if (filterEnabled) {
+            toastr.success(
+                '<strong>Domain blocking is now enabled.</strong><br>It will take <strong>2–5 minutes</strong> to go live on the router.',
+                'Web Filter Settings Saved',
+                { timeOut: 8000, extendedTimeOut: 3000, enableHtml: true }
+            );
+        } else {
+            toastr.success('Web filter settings saved.');
+        }
     } catch (err) {
         handleApiError(err, 'saveWebFilterSettings');
     } finally {
@@ -1058,6 +1070,12 @@ function initEventHandlers() {
 
     // Save web filter
     $('#save-web-filter-settings').on('click', saveWebFilterSettings);
+
+    // Show propagation notice when filter is toggled on
+    $('#global-web-filter').on('change', function () {
+        $('#web-filter-propagation-notice').toggle($(this).is(':checked'));
+        reRenderFeather();
+    });
 
     // Save QoS
     $('#save-qos-settings').on('click', saveQosSettings);

@@ -574,6 +574,10 @@
                                                 </div>
                                             </div>
                                             <small class="text-muted">Apply content filtering to all WiFi networks.</small>
+                                            <div id="web-filter-propagation-notice" class="alert alert-warning mt-2 mb-0 py-2 px-3" style="display:none; font-size:0.85rem;">
+                                                <i data-feather="clock" style="width:14px;height:14px;vertical-align:middle;" class="mr-1"></i>
+                                                <strong>Please note:</strong> After saving, it takes <strong>2–5 minutes</strong> for domain blocking to go live on the router.
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">

@@ -168,20 +168,34 @@ Route::prefix('fr')->name('fr.')->group(function () {
     Route::get('/locations', function () {
         return view('locations-fr');
     })->name('locations');
-    
+    Route::get('/emplacements', function () {
+        return view('locations-fr');
+    });
+
     Route::get('/locations/{location}', function ($location) {
         $locale = 'fr';
         return view('location-details-fr', compact('location', 'locale'));
     })->name('location-details');
+    Route::get('/emplacements/{location}', function ($location) {
+        $locale = 'fr';
+        return view('location-details-fr', compact('location', 'locale'));
+    });
 
     Route::get('/locations/{location}/networks', function ($location) {
         $locale = 'fr';
         return view('location-networks-fr', compact('location', 'locale'));
     })->name('location-networks');
-    
+    Route::get('/emplacements/{location}/networks', function ($location) {
+        $locale = 'fr';
+        return view('location-networks-fr', compact('location', 'locale'));
+    });
+
     Route::get('/locations/{location}/guests', function ($location) {
         return view('location-guests-fr', compact('location'));
     })->name('location-guests');
+    Route::get('/emplacements/{location}/guests', function ($location) {
+        return view('location-guests-fr', compact('location'));
+    });
     
     // Zones
     Route::get('/zones', function () {

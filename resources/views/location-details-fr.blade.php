@@ -703,6 +703,10 @@
                                                 </div>
                                             </div>
                                             <small class="text-muted">Appliquer le filtrage de contenu à tous les réseaux WiFi.</small>
+                                            <div id="web-filter-propagation-notice" class="alert alert-warning mt-2 mb-0 py-2 px-3" style="display:none; font-size:0.85rem;">
+                                                <i data-feather="clock" style="width:14px;height:14px;vertical-align:middle;" class="mr-1"></i>
+                                                <strong>À noter :</strong> Après l'enregistrement, le blocage de domaines prend <strong>2 à 5 minutes</strong> pour être actif sur le routeur.
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
