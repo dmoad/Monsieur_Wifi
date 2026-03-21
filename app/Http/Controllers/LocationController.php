@@ -1952,6 +1952,7 @@ class LocationController extends Controller
                 'wan_mtu'                 => $settings->wan_mtu,
                 'wan_nat_enabled'         => $settings->wan_nat_enabled,
                 'web_filter_categories'   => $settings->web_filter_categories,
+                'web_filter_enabled'      => $settings->web_filter_enabled,
             ];
             
             // Only accept fields that exist in location_settings_v2
@@ -2039,6 +2040,14 @@ class LocationController extends Controller
                 Log::info('VLAN enabled updated from "' . ($originalSettings['vlan_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['vlan_enabled'] ? 'true' : 'false') . '"');
             }
 
+            // Web filter enable/disable always bumps config version
+            if (isset($settingsData['web_filter_enabled'])
+                && (bool)$settingsData['web_filter_enabled'] !== (bool)$originalSettings['web_filter_enabled']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Web filter enabled updated from "' . ($originalSettings['web_filter_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['web_filter_enabled'] ? 'true' : 'false') . '"');
+            }
+
             // Handle web_filter_categories comparison
             if (isset($settingsData['web_filter_categories'])) {
                 // Ensure web_filter_categories is properly handled as JSON
@@ -2052,7 +2061,12 @@ class LocationController extends Controller
                 $newCategories = $this->sortCategoriesForComparison($settingsData['web_filter_categories']);
                 $oldCategories = $this->sortCategoriesForComparison($originalSettings['web_filter_categories'] ?: []);
 
-                if (json_encode($newCategories) !== json_encode($oldCategories)) {
+                // Resolve whether web filtering will be active after this save
+                $filteringEnabled = isset($settingsData['web_filter_enabled'])
+                    ? (bool)$settingsData['web_filter_enabled']
+                    : (bool)$originalSettings['web_filter_enabled'];
+
+                if (json_encode($newCategories) !== json_encode($oldCategories) && $filteringEnabled) {
                     $increment_version = 1;
                     $routerSettingsChanged = true;
                     Log::info('Web filter categories updated', [
