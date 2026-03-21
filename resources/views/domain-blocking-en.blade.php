@@ -7,7 +7,6 @@
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
 
 <style>
     .avatar-content svg {
@@ -51,6 +50,7 @@
     .cursor-pointer {
         cursor: pointer;
     }
+
 </style>
 @endpush
 
@@ -345,10 +345,11 @@
                         <textarea class="form-control" id="edit-domain-notes" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <div class="custom-control custom-checkbox">
+                        <div class="custom-control custom-checkbox hidden">
                             <input type="checkbox" class="custom-control-input" id="edit-block-subdomains" checked>
                             <label class="custom-control-label" for="edit-block-subdomains">Block all subdomains</label>
                         </div>
+                        <small class="form-text text-muted">All subdomains will be blocked automatically if the domain is blocked.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -490,8 +491,6 @@
 <script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
 <script src="/app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
 <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
-<script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
-<script src="/app-assets/js/scripts/forms/form-select2.js"></script>
 
 <script>
     const locale = '{{ $locale }}';

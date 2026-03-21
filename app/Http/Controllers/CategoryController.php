@@ -17,7 +17,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::withCount('blockedDomains');
+        $query = Category::withCount(['blockedDomains', 'activeBlockedDomains']);
 
         if ($request->filled('search')) {
             $query->where('name', 'like', "%{$request->search}%")

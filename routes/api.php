@@ -205,10 +205,10 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'categories'], function ()
 Route::group(['middleware' => 'auth:api', 'prefix' => 'blocked-domains'], function () {
     Route::get('/', [DomainBlockingController::class, 'index']);
     Route::post('/', [DomainBlockingController::class, 'store']);
-    Route::get('/{domain}', [DomainBlockingController::class, 'show']);
-    Route::put('/{domain}', [DomainBlockingController::class, 'update']);
-    Route::delete('/{domain}', [DomainBlockingController::class, 'destroy']);
     Route::get('/export', [DomainBlockingController::class, 'export']);
+    Route::get('/{blockedDomain}', [DomainBlockingController::class, 'show']);
+    Route::put('/{blockedDomain}', [DomainBlockingController::class, 'update']);
+    Route::delete('/{blockedDomain}', [DomainBlockingController::class, 'destroy']);
 });
 
 // Additional Domain Blocking API routes

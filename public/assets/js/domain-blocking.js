@@ -303,7 +303,7 @@ $(window).on('load', function() {
             
             // Update domain count
             const countSpan = categoryCard.find('h4').next('span');
-            countSpan.text(`${category.blocked_domains_count || 0} ${t.domainCount}`);
+            countSpan.text(`${category.active_blocked_domains_count || 0} ${t.domainCount}`);
 
             // Update checkbox state
             const wasChecked = checkbox.prop('checked');
@@ -322,12 +322,6 @@ $(window).on('load', function() {
         console.log('All categories updated successfully');
     }
 
-    if ($.fn.select2) {
-        $('#domain-category, #edit-domain-category, #category-icon, #category-color').select2({
-            dropdownParent: $('#domain-category, #edit-domain-category').closest('.modal'),
-            minimumResultsForSearch: Infinity
-        });
-    }
     
     $('.custom-file-input').on('change', function() {
         let fileName = $(this).val().split('\\').pop();
