@@ -323,15 +323,16 @@ Route::get('/guest-login', function () {
     }
 })->name('guest-login');
 
-Route::get('/email-login/{location}/{mac_address}', function () {
+// New routes: include zone_id segment  /…/{network_id}/{zone_id}/{mac_address}
+Route::get('/email-login/{location}/{zone_id}/{mac_address}', function () {
     return view('email-login');
 })->name('email-login');
 
-Route::get('/sms-login/{location}/{mac_address}', function () {
+Route::get('/sms-login/{location}/{zone_id}/{mac_address}', function () {
     return view('sms-login');
 })->name('sms-login');
 
-Route::get('/social-login/facebook/{location}/{mac_address}', function () {
+Route::get('/social-login/facebook/{location}/{zone_id}/{mac_address}', function () {
     return view('facebook-login');
 })->name('facebook-login');
 
@@ -339,7 +340,7 @@ Route::get('/social-login/facebook-callback', function () {
     return view('facebook-login-callback');
 })->name('facebook-login-callback');
 
-Route::get('/social-login/twitter/{location}/{mac_address}', function () {
+Route::get('/social-login/twitter/{location}/{zone_id}/{mac_address}', function () {
     return view('twitter-login');
 })->name('twitter-login');
 
@@ -347,7 +348,7 @@ Route::get('/social-login/twitter-callback', function () {
     return view('twitter-login-callback');
 })->name('twitter-login-callback');
 
-Route::get('/social-login/google/{location}/{mac_address}', function () {
+Route::get('/social-login/google/{location}/{zone_id}/{mac_address}', function () {
     return view('google-login');
 })->name('google-login');
 
@@ -355,13 +356,42 @@ Route::get('/social-login/google-callback', function () {
     return view('google-login-callback');
 })->name('google-login-callback');
 
-Route::get('/click-login/{location}/{mac_address}', function () {
+Route::get('/click-login/{location}/{zone_id}/{mac_address}', function () {
     return view('click-login');
 })->name('click-login');
 
-Route::get('/password-login/{location}/{mac_address}', function () {
+Route::get('/password-login/{location}/{zone_id}/{mac_address}', function () {
     return view('password-login');
 })->name('password-login');
+
+// Legacy routes without zone_id — kept for backward compatibility with older nasid formats
+Route::get('/email-login/{location}/{mac_address}', function () {
+    return view('email-login');
+})->name('email-login-legacy');
+
+Route::get('/sms-login/{location}/{mac_address}', function () {
+    return view('sms-login');
+})->name('sms-login-legacy');
+
+Route::get('/social-login/facebook/{location}/{mac_address}', function () {
+    return view('facebook-login');
+})->name('facebook-login-legacy');
+
+Route::get('/social-login/twitter/{location}/{mac_address}', function () {
+    return view('twitter-login');
+})->name('twitter-login-legacy');
+
+Route::get('/social-login/google/{location}/{mac_address}', function () {
+    return view('google-login');
+})->name('google-login-legacy');
+
+Route::get('/click-login/{location}/{mac_address}', function () {
+    return view('click-login');
+})->name('click-login-legacy');
+
+Route::get('/password-login/{location}/{mac_address}', function () {
+    return view('password-login');
+})->name('password-login-legacy');
 
 // Captive Portal routes
 Route::get('/captive-portal/{location_id}', [CaptivePortalController::class, 'showLoginPage']);

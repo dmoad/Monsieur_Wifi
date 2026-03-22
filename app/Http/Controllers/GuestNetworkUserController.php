@@ -210,6 +210,7 @@ class GuestNetworkUserController extends Controller
 
         $validator = Validator::make($input, [
             'network_id'      => 'required|exists:location_networks,id',
+            'zone_id'         => 'nullable|integer|min:0',
             'mac_address'     => 'nullable|string|max:255',
             'login_method'    => 'required|string|in:email,sms,social,click-through,password',
             'name'            => 'nullable|string|max:255',
@@ -227,6 +228,7 @@ class GuestNetworkUserController extends Controller
         }
 
         $networkId    = $input['network_id'];
+        $zoneId       = (int) ($input['zone_id'] ?? 0);
         $macAddress   = $input['mac_address'];
         $loginMethod  = $input['login_method'];
 
@@ -263,7 +265,7 @@ class GuestNetworkUserController extends Controller
         // ── Upsert guest user ────────────────────────────────────────────────
         $user = GuestNetworkUser::firstOrCreate(
             ['network_id' => $networkId, 'mac_address' => $macAddress],
-            ['location_id' => $network->location_id, 'blocked' => false]
+            ['location_id' => $network->location_id, 'zone_id' => $zoneId, 'blocked' => false]
         );
 
         if ($loginMethod === 'email') {
@@ -282,6 +284,7 @@ class GuestNetworkUserController extends Controller
         // values that may still be on the $user object from a previous session.
         Radcheck::updateOrCreateRecord($macAddress, 'Cleartext-Password', $macAddress, '==', [
             'network_id'         => $networkId,
+            'zone_id'            => $zoneId,
             'download_bandwidth' => $network->download_limit,
             'upload_bandwidth'   => $network->upload_limit,
             'expiration_time'    => $user->expiration_time,

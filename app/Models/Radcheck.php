@@ -23,6 +23,7 @@ class Radcheck extends Model
         'op',
         'value',
         'network_id',
+        'zone_id',
         'download_bandwidth',
         'upload_bandwidth',
         'expiration_time',
@@ -87,6 +88,41 @@ class Radcheck extends Model
         return self::where('username', $username)
             ->where('network_id', $networkId)
             ->get();
+    }
+
+    /**
+     * Scope: username + network + expiration window.
+     * Mirrors the index (username, network_id, expiration_time) for maximum performance.
+     *
+     * Matches the primary query:
+     *   SELECT * FROM radcheck WHERE username=? AND network_id=? AND expiration_time > NOW()+30s
+     *
+     * Usage:
+     *   Radcheck::activeForUser($username, $networkId)->get();
+     *   Radcheck::activeForUser($username, $networkId, 60)->first();
+     *
+     * @param  string  $username
+     * @param  int     $networkId
+     * @param  int     $bufferSeconds  only rows expiring further than this many seconds from now are returned
+     */
+    public function scopeActiveForUser($query, string $username, int $networkId, int $bufferSeconds = 30)
+    {
+        return $query->where('username', $username)
+                     ->where('network_id', $networkId)
+                     ->where('expiration_time', '>', now()->addSeconds($bufferSeconds));
+    }
+
+    /**
+     * Scope: network + expiration window (no username filter).
+     * Uses the (username, network_id, expiration_time) index via partial prefix.
+     *
+     * @param  int  $networkId
+     * @param  int  $bufferSeconds
+     */
+    public function scopeActiveInNetwork($query, int $networkId, int $bufferSeconds = 30)
+    {
+        return $query->where('network_id', $networkId)
+                     ->where('expiration_time', '>', now()->addSeconds($bufferSeconds));
     }
 
     /**

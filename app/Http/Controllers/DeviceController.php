@@ -364,8 +364,18 @@ class DeviceController extends Controller
 
         $settings = LocationSettingsV2::where('location_id', $location->id)->first();
 
-        // Check if captive portal should be enabled based on working hours
-        $captivePortalEnabled = $this->isCaptivePortalEnabledAtCurrentTime($location->id);
+        // Check if captive portal should be enabled based on working hours.
+        // For zone members, use the primary location's schedule so all APs in
+        // the zone switch on/off together.
+        $scheduleLocationId = $location->id;
+        if ($location->zone_id && !$location->isPrimaryInZone()) {
+            $zone = $location->zone()->with('primaryLocation')->first();
+            if ($zone?->primaryLocation) {
+                $scheduleLocationId = $zone->primaryLocation->id;
+            }
+        }
+
+        $captivePortalEnabled = $this->isCaptivePortalEnabledAtCurrentTime($scheduleLocationId);
         // convert to 1/0
         $captivePortalEnabled = $captivePortalEnabled ? 1 : 0;
 
@@ -406,10 +416,27 @@ class DeviceController extends Controller
             return response()->json(['error' => 'Settings not found'], 404);
         }
 
+        // ── Zone coalescing ───────────────────────────────────────────────────
+        // If this location belongs to a zone and is NOT the primary, inherit
+        // networks + web_filter + qos from the primary location so all APs in
+        // the zone broadcast identical SSIDs and share the same captive portal
+        // config (enabling seamless roaming). WAN and radio settings stay local.
+        $settingsSource = $settings;    // web_filter + qos — own unless overridden by primary
+        $networksSource = $location;    // location whose LocationNetwork rows to query
+
+        if ($location->zone_id && !$location->isPrimaryInZone()) {
+            $zone = $location->zone()->with('primaryLocation.settings')->first();
+            if ($zone && $zone->primaryLocation && $zone->primaryLocation->settings) {
+                $settingsSource = $zone->primaryLocation->settings;
+                $networksSource = $zone->primaryLocation;
+                Log::info("Zone coalesce: location {$location->id} inheriting networks/settings from primary location {$networksSource->id} (zone {$zone->id})");
+            }
+        }
+
         // ── Web content filtering (router-wide) ─────────────────────────────
         $blockedDomains = collect();
-        if ($settings->web_filter_enabled && !empty($settings->web_filter_categories)) {
-            $enabledCategoryIds = Category::whereIn('id', $settings->web_filter_categories)
+        if ($settingsSource->web_filter_enabled && !empty($settingsSource->web_filter_categories)) {
+            $enabledCategoryIds = Category::whereIn('id', $settingsSource->web_filter_categories)
                 ->where('is_enabled', true)
                 ->pluck('id');
 
@@ -432,7 +459,7 @@ class DeviceController extends Controller
 
         // ── Networks — each captive portal carries its own radius +
         //    guest_settings so future networks can differ independently. ──────
-        $networks = LocationNetwork::where('location_id', $location->id)
+        $networks = LocationNetwork::where('location_id', $networksSource->id)
             ->orderBy('sort_order')
             ->get()
             ->map(function (LocationNetwork $network) use ($systemRadius) {
@@ -501,7 +528,7 @@ class DeviceController extends Controller
         // When disabled the router receives { enabled: false } and flushes rules.
         // When enabled, the compiled rules + per-network policies are included
         // so the router can generate nftables + mqprio config locally.
-        if ($settings->qos_enabled) {
+        if ($settingsSource->qos_enabled) {
             $qosClasses = QosClass::with('domains')->orderBy('priority')->get();
 
             $rules = $qosClasses

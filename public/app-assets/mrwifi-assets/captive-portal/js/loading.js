@@ -10,43 +10,68 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    const networkId = extractNetworkId(nasid);
+    const parsed = parseNasid(nasid);
 
-    if (!networkId) {
+    if (!parsed.networkId) {
         showError('Invalid network identifier: ' + nasid);
         return;
     }
 
-    fetchNetworkInfo(networkId, macAddress, challenge, nasIp);
+    fetchNetworkInfo(parsed, macAddress, challenge, nasIp);
 });
 
 /**
- * Extract the network ID from the nasid parameter.
+ * Parse the nasid parameter into its three components.
+ *
  * Supported formats:
- *   - "n7"   → 7   (new format: n{network_id})
- *   - "7"    → 7   (plain numeric fallback)
- *   - "l4"   → 4   (legacy location format — still accepted during transition)
+ *   - "3-4-7"  → { zoneId: 3, locationId: 4, networkId: 7 }  (new format)
+ *   - "n7"     → { zoneId: 0, locationId: 0, networkId: 7 }  (legacy n{network_id})
+ *   - "l4"     → { zoneId: 0, locationId: 4, networkId: 4 }  (legacy l{location_id})
+ *   - "7"      → { zoneId: 0, locationId: 0, networkId: 7 }  (plain numeric fallback)
  */
-function extractNetworkId(nasid) {
-    if (/^\d+$/.test(nasid)) {
-        return nasid;
+function parseNasid(nasid) {
+    // New format: three dash-separated integers  zone_id-location_id-network_id
+    const tripleMatch = nasid.match(/^(\d+)-(\d+)-(\d+)$/);
+    if (tripleMatch) {
+        return {
+            zoneId:     parseInt(tripleMatch[1], 10),
+            locationId: parseInt(tripleMatch[2], 10),
+            networkId:  tripleMatch[3],
+        };
     }
-    const match = nasid.match(/^[nl](\d+)$/);
-    return match ? match[1] : null;
+
+    // Plain integer
+    if (/^\d+$/.test(nasid)) {
+        return { zoneId: 0, locationId: 0, networkId: nasid };
+    }
+
+    // Legacy prefixed: n{network_id} or l{location_id}
+    const prefixMatch = nasid.match(/^([nl])(\d+)$/);
+    if (prefixMatch) {
+        const isLocation = prefixMatch[1] === 'l';
+        const id         = prefixMatch[2];
+        return {
+            zoneId:     0,
+            locationId: isLocation ? parseInt(id, 10) : 0,
+            networkId:  id,
+        };
+    }
+
+    return { zoneId: 0, locationId: 0, networkId: null };
 }
 
 /**
  * Fetch network/captive-portal info from the API.
  */
-function fetchNetworkInfo(networkId, macAddress, challenge, nasIp) {
-    fetch(`/api/captive-portal/${networkId}/info`)
+function fetchNetworkInfo(parsed, macAddress, challenge, nasIp) {
+    fetch(`/api/captive-portal/${parsed.networkId}/info`)
         .then(response => {
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             return response.json();
         })
         .then(data => {
             if (data.success) {
-                processNetworkData(data.location, macAddress, challenge, nasIp);
+                processNetworkData(data.location, parsed, macAddress, challenge, nasIp);
             } else {
                 showError(data.message || 'Could not fetch network data');
             }
@@ -60,7 +85,7 @@ function fetchNetworkInfo(networkId, macAddress, challenge, nasIp) {
 /**
  * Store network data and redirect to the correct login page based on auth method.
  */
-function processNetworkData(location, macAddress, challenge, nasIp) {
+function processNetworkData(location, parsed, macAddress, challenge, nasIp) {
     if (!location || !location.settings) {
         showError('Invalid network data');
         return;
@@ -71,11 +96,14 @@ function processNetworkData(location, macAddress, challenge, nasIp) {
 
     console.log('Network data:', location);
     console.log('Design data:', design);
+    console.log('Parsed nasid:', parsed);
 
     localStorage.setItem('location_data', JSON.stringify(location));
     localStorage.setItem('design_data', JSON.stringify(design));
     localStorage.setItem('nas_ip', nasIp);
     localStorage.setItem('challenge', challenge);
+    localStorage.setItem('zone_id', parsed.zoneId);
+    localStorage.setItem('location_id', parsed.locationId);
 
     const redirectUrl = settings.captive_portal_redirect || 'https://citypassenger.com';
     localStorage.setItem('captive_portal_redirect', redirectUrl);
@@ -85,30 +113,31 @@ function processNetworkData(location, macAddress, challenge, nasIp) {
         return;
     }
 
-    // location.id is now the network_id returned by the info() endpoint
-    const networkId   = location.id;
-    const authMethod  = settings.captive_auth_method;
+    // location.id is the network_id returned by the info() endpoint
+    const networkId  = location.id;
+    const zoneId     = parsed.zoneId;
+    const authMethod = settings.captive_auth_method;
 
     switch (authMethod) {
         case 'email':
-            window.location.href = `/email-login/${networkId}/${macAddress}`;
+            window.location.href = `/email-login/${networkId}/${zoneId}/${macAddress}`;
             break;
         case 'sms':
-            window.location.href = `/sms-login/${networkId}/${macAddress}`;
+            window.location.href = `/sms-login/${networkId}/${zoneId}/${macAddress}`;
             break;
         case 'social':
             if ((settings.captive_social_auth_method || '').includes('facebook')) {
-                window.location.href = `/social-login/facebook/${networkId}/${macAddress}`;
+                window.location.href = `/social-login/facebook/${networkId}/${zoneId}/${macAddress}`;
             } else if ((settings.captive_social_auth_method || '').includes('google')) {
-                window.location.href = `/social-login/google/${networkId}/${macAddress}`;
+                window.location.href = `/social-login/google/${networkId}/${zoneId}/${macAddress}`;
             }
             break;
         case 'password':
-            window.location.href = `/password-login/${networkId}/${macAddress}`;
+            window.location.href = `/password-login/${networkId}/${zoneId}/${macAddress}`;
             break;
         case 'click-through':
         default:
-            window.location.href = `/click-login/${networkId}/${macAddress}`;
+            window.location.href = `/click-login/${networkId}/${zoneId}/${macAddress}`;
             break;
     }
 }

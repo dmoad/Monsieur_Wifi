@@ -12,6 +12,7 @@ class GuestNetworkUser extends Model
         'mac_address',
         'location_id',
         'network_id',
+        'zone_id',
         'expiration_time',
         'download_bandwidth',
         'upload_bandwidth',
