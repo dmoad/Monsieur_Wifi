@@ -1,6 +1,8 @@
 $(document).ready(function() {
-    // URL format: /click-login/{network_id}/{mac_address}
-    let networkId, macAddress;
+    // URL formats:
+    //   new:    /click-login/{network_id}/{zone_id}/{mac_address}
+    //   legacy: /click-login/{network_id}/{mac_address}
+    let networkId, zoneId, macAddress;
     let locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
     let designData   = JSON.parse(localStorage.getItem('design_data'));
 
@@ -8,12 +10,20 @@ $(document).ready(function() {
     console.log('designData', designData);
 
     const pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
-    if (pathSegments.length >= 3 && pathSegments[0] === 'click-login') {
+    if (pathSegments.length >= 4 && pathSegments[0] === 'click-login') {
+        // new format: click-login / network_id / zone_id / mac_address
         networkId  = pathSegments[1];
+        zoneId     = pathSegments[2];
+        macAddress = pathSegments[3];
+    } else if (pathSegments.length >= 3 && pathSegments[0] === 'click-login') {
+        // legacy format: click-login / network_id / mac_address
+        networkId  = pathSegments[1];
+        zoneId     = '0';
         macAddress = pathSegments[2];
     } else {
         const urlParams = new URLSearchParams(window.location.search);
         networkId  = urlParams.get('network_id');
+        zoneId     = urlParams.get('zone_id') || '0';
         macAddress = urlParams.get('mac_address');
     }
 
@@ -30,6 +40,7 @@ $(document).ready(function() {
 
         const loginData = {
             network_id:   networkId,
+            zone_id:      zoneId,
             mac_address:  macAddress,
             login_method: 'click-through',
             challenge:    challenge,

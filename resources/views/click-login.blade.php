@@ -400,8 +400,9 @@
             
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
+            const networkId  = getPathParameter('location');
+            const zoneId     = getPathParameter('zone_id');
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
-            const networkId = getPathParameter('location');
             $('#terms-content').html(designData.terms_content);
             $('#privacy-content').html(designData.privacy_content);
             var button_text = designData.button_text || 'Connect to WiFi';
@@ -428,6 +429,7 @@
                     method: 'POST',
                     data: {
                         network_id: networkId,
+                        zone_id:    zoneId,
                         mac_address: macAddress,
                         login_method: 'click-through',
                         challenge: challenge,
@@ -606,18 +608,22 @@
                 return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
             }
             
-            // Helper function to get parameter from URL path
+            // Helper function to get parameter from URL path.
+            // Supports both URL patterns:
+            //   new: /click-login/{network_id}/{zone_id}/{mac_address}  (4 parts)
+            //   legacy: /click-login/{network_id}/{mac_address}          (3 parts)
             function getPathParameter(param) {
                 const pathParts = window.location.pathname.split('/');
-                
+                const hasZoneId = pathParts.length >= 5; // ['', 'click-login', networkId, zoneId, mac]
+
                 if (param === 'location') {
-                    // Assuming URL pattern like /click-login/{location}/{mac_address}
                     return pathParts[2] || '';
+                } else if (param === 'zone_id') {
+                    return hasZoneId ? (pathParts[3] || '0') : '0';
                 } else if (param === 'mac_address') {
-                    // Assuming URL pattern like /click-login/{location}/{mac_address}
-                    return pathParts[3] || '';
+                    return hasZoneId ? (pathParts[4] || '') : (pathParts[3] || '');
                 }
-                
+
                 return '';
             }
             

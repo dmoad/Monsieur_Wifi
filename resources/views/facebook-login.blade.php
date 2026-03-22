@@ -439,8 +439,9 @@
             
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
+            let networkId  = getPathParameter('location');
+            let zoneId     = getPathParameter('zone_id');
             let macAddress = urlParams.get('mac') || getPathParameter('mac_address');
-            let networkId = getPathParameter('location');
             
             // Fallback: Extract location and MAC directly from URL path segments
             if (!networkId || !macAddress) {
@@ -630,32 +631,37 @@
                 console.log('URL path:', path);
                 console.log('Path parts:', pathParts);
                 
-                // Check for social-login/facebook pattern
+                // /social-login/facebook/{network_id}/{zone_id}/{mac_address}
+                // /social-login/facebook/{network_id}/{mac_address}  (legacy)
                 if (path.includes('social-login/facebook')) {
+                    const hasZone = pathParts.length >= 6;
                     if (param === 'location') {
-                        // URL pattern: /social-login/facebook/{network_id}/{mac_address}
                         return pathParts[3] || '';
+                    } else if (param === 'zone_id') {
+                        return hasZone ? (pathParts[4] || '0') : '0';
                     } else if (param === 'mac_address') {
-                        // URL pattern: /social-login/facebook/{network_id}/{mac_address}
-                        return pathParts[4] || '';
+                        return hasZone ? (pathParts[5] || '') : (pathParts[4] || '');
                     }
                 } else if (path.includes('facebook-login')) {
+                    const hasZone = pathParts.length >= 5;
                     if (param === 'location') {
-                        // Assuming URL pattern like /facebook-login/{location}/{mac_address}
                         return pathParts[2] || '';
+                    } else if (param === 'zone_id') {
+                        return hasZone ? (pathParts[3] || '0') : '0';
                     } else if (param === 'mac_address') {
-                        // Assuming URL pattern like /facebook-login/{location}/{mac_address}
-                        return pathParts[3] || '';
+                        return hasZone ? (pathParts[4] || '') : (pathParts[3] || '');
                     }
                 } else {
-                    // Handle other route patterns
+                    const hasZone = pathParts.length >= 5;
                     if (param === 'location') {
                         return pathParts[2] || '';
+                    } else if (param === 'zone_id') {
+                        return hasZone ? (pathParts[3] || '0') : '0';
                     } else if (param === 'mac_address') {
-                        return pathParts[3] || '';
+                        return hasZone ? (pathParts[4] || '') : (pathParts[3] || '');
                     }
                 }
-                
+
                 return '';
             }
             

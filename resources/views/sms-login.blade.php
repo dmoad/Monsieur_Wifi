@@ -500,8 +500,9 @@
             }
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
+            const networkId  = getPathParameter('location');
+            const zoneId     = getPathParameter('zone_id');
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
-            const networkId = getPathParameter('location');
             
             // Apply design settings
             applyDesignSettings(locationSettings, designData);
@@ -657,6 +658,7 @@
                 $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].verifying).prop('disabled', true);
                 var login_data = {
                     network_id: networkId,
+                    zone_id:    zoneId,
                     mac_address: macAddress,
                     login_method: 'sms',
                     phone: $('#full-phone').val(),
@@ -954,13 +956,13 @@
                 const pathParts = window.location.pathname.split('/');
                 
                 if (param === 'location') {
-                    // Assuming URL pattern like /sms-login/{location}/{mac_address}
                     return pathParts[2] || '';
+                } else if (param === 'zone_id') {
+                    return pathParts.length >= 5 ? (pathParts[3] || '0') : '0';
                 } else if (param === 'mac_address') {
-                    // Assuming URL pattern like /sms-login/{location}/{mac_address}
-                    return pathParts[3] || '';
+                    return pathParts.length >= 5 ? (pathParts[4] || '') : (pathParts[3] || '');
                 }
-                
+
                 return '';
             }
             
