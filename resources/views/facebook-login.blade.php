@@ -444,21 +444,25 @@
             let macAddress = urlParams.get('mac') || getPathParameter('mac_address');
             
             // Fallback: Extract location and MAC directly from URL path segments
+            // new:    /social-login/facebook/{network_id}/{zone_id}/{mac_address}  (5 segments)
+            // legacy: /social-login/facebook/{network_id}/{mac_address}            (4 segments)
             if (!networkId || !macAddress) {
                 const pathSegments = path.split('/').filter(segment => segment.length > 0);
                 console.log('Path segments:', pathSegments);
-                
-                // Special handling for social-login/facebook pattern
-                if (path.includes('social-login/facebook') && pathSegments.length >= 4) {
-                    networkId = networkId || pathSegments[2];
-                    macAddress = macAddress || pathSegments[3];
-                    console.log('Detected social-login pattern. Location:', networkId, 'MAC:', macAddress);
+
+                if (path.includes('social-login/facebook')) {
+                    const hasZone = pathSegments.length >= 5;
+                    networkId  = networkId  || pathSegments[2];
+                    zoneId     = zoneId     || (hasZone ? pathSegments[3] : '0');
+                    macAddress = macAddress || (hasZone ? pathSegments[4] : pathSegments[3]);
+                    console.log('Detected social-login/facebook pattern. Network:', networkId, 'Zone:', zoneId, 'MAC:', macAddress);
                 } else if (pathSegments.length >= 2) {
-                    // Typically the format would be /facebook-login/{location}/{mac}
-                    networkId = networkId || pathSegments[1];
-                    macAddress = macAddress || pathSegments[2];
+                    const hasZone = pathSegments.length >= 4;
+                    networkId  = networkId  || pathSegments[1];
+                    zoneId     = zoneId     || (hasZone ? pathSegments[2] : '0');
+                    macAddress = macAddress || (hasZone ? pathSegments[3] : pathSegments[2]);
                 }
-                
+
                 // If still not found, try to get MAC from query string
                 if (!macAddress) {
                     const queryString = window.location.search;

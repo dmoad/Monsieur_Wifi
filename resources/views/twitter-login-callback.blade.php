@@ -283,14 +283,19 @@
                 console.log('Path parts from login_url:', pathParts);
                 
                 if (pathParts.length >= 4 && pathParts[0] === 'social-login' && pathParts[1] === 'twitter') {
+                    // new:    /social-login/twitter/{network_id}/{zone_id}/{mac_address}  (5 parts)
+                    // legacy: /social-login/twitter/{network_id}/{mac_address}            (4 parts)
+                    const hasZone     = pathParts.length >= 5;
                     const location_id = pathParts[2];
-                    const mac_address = pathParts[3];
-                    
+                    const zone_id     = hasZone ? pathParts[3] : '0';
+                    const mac_address = hasZone ? pathParts[4] : pathParts[3];
+
                     console.log('Extracted location_id:', location_id);
+                    console.log('Extracted zone_id:', zone_id);
                     console.log('Extracted mac_address:', mac_address);
-                    
+
                     // Now call the API with this information
-                    completeTwitterAuth(location_id, mac_address, client_token, login_url);
+                    completeTwitterAuth(location_id, zone_id, mac_address, client_token, login_url);
                 } else {
                     console.error('Invalid login_url format');
                     showAlert('Invalid login URL format', 'danger');
@@ -332,9 +337,10 @@
         }
         
         // Function to complete Twitter authentication
-        function completeTwitterAuth(location_id, mac_address, code, login_url) {
+        function completeTwitterAuth(location_id, zone_id, mac_address, code, login_url) {
             console.log('Completing Twitter auth with data:');
             console.log('Location ID:', location_id);
+            console.log('Zone ID:', zone_id);
             console.log('MAC Address:', mac_address);
             console.log('Code:', code);
             var challenge = localStorage.getItem('challenge');
@@ -342,6 +348,7 @@
             // Prepare data for the API call
             var login_data = {
                     location_id: location_id,
+                    zone_id:     zone_id,
                     mac_address: mac_address,
                     login_method: 'social',
                     social_platform: 'twitter',
