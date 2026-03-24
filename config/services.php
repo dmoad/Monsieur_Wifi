@@ -41,6 +41,7 @@ return [
         'webhook' => [
             'secret' => env('STRIPE_WEBHOOK_SECRET'),
         ],
+        'terms_url' => env('STRIPE_TERMS_URL', 'https://monsieur-wifi.com/cgv'),
     ],
 
 ];
