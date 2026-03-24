@@ -96,35 +96,58 @@ class SubscriptionController extends Controller
             // Create or get Stripe customer
             $user->createOrGetStripeCustomer();
 
-            // Create checkout session
-            $checkoutOptions = [
-                    'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}'),
-                    'cancel_url' => url('/subscription/cancel'),
-                    'billing_address_collection' => 'required',
-                    'phone_number_collection' => ['enabled' => true],
-                    'tax_id_collection' => ['enabled' => true],
-                    'shipping_address_collection' => [
-                        'allowed_countries' => ['FR', 'BE', 'CH', 'LU', 'MC', 'CA'],
-                    ],
-                    'consent_collection' => [
-                        'terms_of_service' => 'required',
-                    ],
-                    'custom_text' => [
-                        'submit' => [
-                            'message' => 'Votre abonnement inclut : une borne WiFi avec portail captif pré-paramétré et une assistance à la mise en service.',
-                        ],
-                        'terms_of_service_acceptance' => [
-                            'message' => 'J\'accepte les [Conditions Générales de Vente](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')',
-                        ],
-                    ],
-                    'metadata' => [
-                        'user_id' => $user->id,
-                        'plan_name' => $request->plan_name,
-                    ],
-                ];
+            // Create checkout session with subscription + deposit
+            \Stripe\Stripe::setApiKey(config('cashier.secret'));
 
-            $checkout = $user->newSubscription('default', $request->price_id)
-                ->checkout($checkoutOptions);
+            $checkout = \Stripe\Checkout\Session::create([
+                'customer' => $user->stripe_id,
+                'customer_update' => [
+                    'name' => 'auto',
+                    'address' => 'auto',
+                    'shipping' => 'auto',
+                ],
+                'mode' => 'subscription',
+                'line_items' => [
+                    [
+                        'price' => $request->price_id,
+                        'quantity' => 1,
+                    ],
+                    [
+                        'price_data' => [
+                            'currency' => 'eur',
+                            'product_data' => [
+                                'name' => 'Caution borne WiFi',
+                                'description' => 'Caution remboursable pour la borne WiFi Monsieur WiFi',
+                            ],
+                            'unit_amount' => 5000, // 50€ in cents
+                        ],
+                        'quantity' => 1,
+                    ],
+                ],
+                'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}'),
+                'cancel_url' => url('/subscription/cancel'),
+                'billing_address_collection' => 'required',
+                'phone_number_collection' => ['enabled' => true],
+                'tax_id_collection' => ['enabled' => true],
+                'shipping_address_collection' => [
+                    'allowed_countries' => ['FR', 'BE', 'CH', 'LU', 'MC', 'CA'],
+                ],
+                'consent_collection' => [
+                    'terms_of_service' => 'required',
+                ],
+                'custom_text' => [
+                    'submit' => [
+                        'message' => 'Votre abonnement inclut : une borne WiFi avec portail captif pré-paramétré et une assistance à la mise en service. Une caution de 50€ est appliquée.',
+                    ],
+                    'terms_of_service_acceptance' => [
+                        'message' => 'J\'accepte les [Conditions Générales de Vente](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')',
+                    ],
+                ],
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'plan_name' => $request->plan_name,
+                ],
+            ]);
 
             return response()->json([
                 'success' => true,
