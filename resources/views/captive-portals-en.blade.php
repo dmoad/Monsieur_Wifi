@@ -579,6 +579,28 @@
 </div>
 
 <div class="content-body">
+    <!-- Timeline -->
+    <div id="onboarding-timeline" style="max-width:700px; margin:0 auto 25px; padding:0 20px;">
+        <div style="display:flex; align-items:flex-start; justify-content:center; position:relative;">
+            <div style="position:absolute; top:24px; left:calc(16.66% + 20px); right:calc(16.66% + 20px); height:3px; background:#e0e0e0; z-index:0;"></div>
+            <div id="timeline-step-1" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
+                <div id="timeline-circle-1" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:linear-gradient(135deg,#7367f0,#9e95f5); color:white; box-shadow:0 4px 15px rgba(115,103,240,0.4);">1</div>
+                <div style="font-size:0.85rem; font-weight:600; color:#333; text-align:center;">I design my portal</div>
+                <div style="font-size:0.75rem; color:#888; text-align:center; margin-top:4px;">Custom captive portal</div>
+            </div>
+            <a id="timeline-step-2" href="/pricing" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1; text-decoration:none; cursor:pointer;">
+                <div id="timeline-circle-2" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:#f0f0f0; color:#999; border:2px solid #ddd;">2</div>
+                <div id="timeline-label-2" style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">I subscribe</div>
+                <div id="timeline-sub-2" style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">Choose plan & payment</div>
+            </a>
+            <div id="timeline-step-3" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
+                <div id="timeline-circle-3" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:#f0f0f0; color:#999; border:2px solid #ddd;">3</div>
+                <div style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">I receive my device</div>
+                <div style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">Delivery + setup assistance</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Device CTA Banner - hidden by default, shown via JS if user has no devices -->
     <div id="device-cta-banner" style="display: none;"></div>
 

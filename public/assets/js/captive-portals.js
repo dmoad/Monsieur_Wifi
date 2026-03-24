@@ -2,6 +2,45 @@
 let token;
 let currentDesignId = null;
 
+// Update onboarding timeline when designs are loaded
+function updateOnboardingTimeline(hasDesigns) {
+    const circle1 = document.getElementById('timeline-circle-1');
+    const circle2 = document.getElementById('timeline-circle-2');
+    const label2 = document.getElementById('timeline-label-2');
+    const sub2 = document.getElementById('timeline-sub-2');
+    if (!circle1) return;
+
+    if (hasDesigns) {
+        // Step 1 completed: green check
+        circle1.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+        circle1.style.boxShadow = '0 4px 12px rgba(40, 167, 69, 0.3)';
+        circle1.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+        // Step 2 active: purple + clickable
+        circle2.style.background = 'linear-gradient(135deg, #7367f0, #9e95f5)';
+        circle2.style.color = 'white';
+        circle2.style.border = 'none';
+        circle2.style.boxShadow = '0 4px 15px rgba(115, 103, 240, 0.4)';
+        label2.style.color = '#333';
+        sub2.style.color = '#888';
+
+        // Hover effect on step 2
+        const step2 = document.getElementById('timeline-step-2');
+        step2.style.transition = 'transform 0.2s ease';
+        circle2.style.transition = 'box-shadow 0.2s ease, transform 0.2s ease';
+        step2.addEventListener('mouseenter', function() {
+            step2.style.transform = 'translateY(-4px)';
+            circle2.style.boxShadow = '0 8px 25px rgba(115, 103, 240, 0.5)';
+            circle2.style.transform = 'scale(1.1)';
+        });
+        step2.addEventListener('mouseleave', function() {
+            step2.style.transform = 'translateY(0)';
+            circle2.style.boxShadow = '0 4px 15px rgba(115, 103, 240, 0.4)';
+            circle2.style.transform = 'scale(1)';
+        });
+    }
+}
+
 // Translations for bilingual support
 const TRANSLATIONS = {
     en: {
@@ -373,9 +412,12 @@ function fetchDesigns(openFirstDesign = false) {
         success: function(response) {
             $('#portal-designs-container').empty();
             
+            // Update timeline based on whether user has designs
+            updateOnboardingTimeline(response.data && response.data.length > 0);
+
             if (response.data && response.data.length > 0) {
                 const isAdmin = response.is_admin || false;
-                
+
                 if (openFirstDesign) {
                     const firstDesignId = response.data[0].id;
                     const newUrl = window.location.pathname + window.location.hash;

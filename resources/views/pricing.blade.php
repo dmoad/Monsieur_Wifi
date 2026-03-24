@@ -391,6 +391,103 @@
             transform: translateX(-5px);
         }
 
+        /* Timeline */
+        .timeline-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: calc(16.66% + 20px);
+            right: calc(16.66% + 20px);
+            height: 3px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-step.completed .timeline-circle {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .timeline-step.active .timeline-circle {
+            background: linear-gradient(135deg, #7367f0, #9e95f5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(115, 103, 240, 0.4);
+            animation: pulse-ring 2s ease-in-out infinite;
+        }
+
+        .timeline-step.pending .timeline-circle {
+            background: #f0f0f0;
+            color: #999;
+            border: 2px solid #ddd;
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { box-shadow: 0 4px 15px rgba(115, 103, 240, 0.4); }
+            50% { box-shadow: 0 4px 25px rgba(115, 103, 240, 0.6); }
+        }
+
+        .timeline-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            max-width: 140px;
+        }
+
+        .timeline-sublabel {
+            font-size: 0.75rem;
+            color: #888;
+            text-align: center;
+            max-width: 140px;
+            margin-top: 4px;
+        }
+
+        .timeline-step.pending .timeline-label {
+            color: #999;
+        }
+
+        .timeline-step.pending .timeline-sublabel {
+            color: #bbb;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .pricing-header h1 {
@@ -444,6 +541,30 @@
             <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Monsieur WiFi">
             <h2>monsieur-wifi</h2>
         </a>
+
+        <!-- Timeline -->
+        <div class="timeline-container" style="padding-top:10px; padding-bottom:20px;">
+            <div class="timeline">
+                <div class="timeline-step completed">
+                    <div class="timeline-circle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="timeline-label" id="timeline-label-1">Je design mon portail</div>
+                    <div class="timeline-sublabel" id="timeline-sub-1">Portail captif personnalisé</div>
+                </div>
+                <div class="timeline-step active">
+                    <div class="timeline-circle">2</div>
+                    <div class="timeline-label" id="timeline-label-2">Je m'abonne</div>
+                    <div class="timeline-sublabel" id="timeline-sub-2">Choix de l'offre et paiement</div>
+                </div>
+                <div class="timeline-step pending">
+                    <div class="timeline-circle">3</div>
+                    <div class="timeline-label" id="timeline-label-3">Je reçois ma borne</div>
+                    <div class="timeline-sublabel" id="timeline-sub-3">Livraison + assistance mise en service</div>
+                </div>
+            </div>
+        </div>
+
         <h1 id="header-title">Choisissez votre abonnement</h1>
         <p id="header-subtitle">Des solutions WiFi adaptées à vos besoins</p>
 
@@ -559,6 +680,14 @@
                 toggleAnnual: 'Annual',
                 saveBadge: '-15%',
                 priceSubtitleAnnual: '/year, excl. VAT, no commitment',
+                timeline: {
+                    label1: 'I design my portal',
+                    sub1: 'Custom captive portal',
+                    label2: 'I subscribe',
+                    sub2: 'Choose plan & payment',
+                    label3: 'I receive my device',
+                    sub3: 'Delivery + setup assistance',
+                },
                 features: {
                     s1: 'WiFi Client Access',
                     s2: 'Authentication via email/SMS/Facebook/Twitter/Google',
@@ -593,6 +722,14 @@
                 toggleAnnual: 'Annuel',
                 saveBadge: '-15%',
                 priceSubtitleAnnual: '/an, HT et sans engagement',
+                timeline: {
+                    label1: 'Je design mon portail',
+                    sub1: 'Portail captif personnalisé',
+                    label2: 'Je m\'abonne',
+                    sub2: 'Choix de l\'offre et paiement',
+                    label3: 'Je reçois ma borne',
+                    sub3: 'Livraison + assistance mise en service',
+                },
                 features: {
                     s1: 'Accès WiFi Clients',
                     s2: 'Authentification par email/SMS/Facebook/Twitter/Google',
@@ -633,6 +770,14 @@
         document.getElementById('btn-premium').textContent = t.btnPremium;
         document.getElementById('popular-badge').textContent = t.popularBadge;
         document.getElementById('back-label').textContent = t.back;
+
+        // Update timeline
+        document.getElementById('timeline-label-1').textContent = t.timeline.label1;
+        document.getElementById('timeline-sub-1').textContent = t.timeline.sub1;
+        document.getElementById('timeline-label-2').textContent = t.timeline.label2;
+        document.getElementById('timeline-sub-2').textContent = t.timeline.sub2;
+        document.getElementById('timeline-label-3').textContent = t.timeline.label3;
+        document.getElementById('timeline-sub-3').textContent = t.timeline.sub3;
 
         // Update features
         Object.keys(t.features).forEach(key => {
