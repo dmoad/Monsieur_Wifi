@@ -253,15 +253,6 @@
             margin-bottom: 8px;
         }
 
-        .plan-annual {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #7367f0;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(115, 103, 240, 0.1);
-        }
-
         .premium-intro {
             font-weight: 600;
             color: #555;
@@ -455,6 +446,19 @@
         </a>
         <h1 id="header-title">Choisissez votre abonnement</h1>
         <p id="header-subtitle">Des solutions WiFi adaptées à vos besoins</p>
+
+        <!-- Billing Toggle -->
+        <div class="billing-toggle" style="display:inline-flex; align-items:center; gap:12px; margin-top:25px; background:rgba(255,255,255,0.95); padding:8px 20px; border-radius:50px; box-shadow:0 2px 15px rgba(0,0,0,0.08);">
+            <span id="toggle-monthly" class="toggle-label active" style="font-size:0.9rem; font-weight:600; color:#7367f0; cursor:pointer; transition:color 0.3s;">Mensuel</span>
+            <label style="position:relative; display:inline-block; width:50px; height:28px; cursor:pointer;">
+                <input type="checkbox" id="billing-toggle" style="opacity:0; width:0; height:0;">
+                <span style="position:absolute; top:0; left:0; right:0; bottom:0; background:#ccc; border-radius:28px; transition:0.3s;"></span>
+                <span id="toggle-knob" style="position:absolute; top:3px; left:3px; width:22px; height:22px; background:white; border-radius:50%; transition:0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>
+            </label>
+            <span id="toggle-annual" class="toggle-label" style="font-size:0.9rem; font-weight:600; color:#999; cursor:pointer; transition:color 0.3s;">
+                Annuel <span id="save-badge" style="background:linear-gradient(135deg,#28a745,#20c997); color:white; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-left:4px;">-15%</span>
+            </span>
+        </div>
     </div>
 
     <!-- Loading Spinner -->
@@ -469,11 +473,10 @@
         <div class="pricing-card" data-plan="standard">
             <h3 class="plan-name">Standard</h3>
             <div class="plan-price">
-                <span class="amount">29</span>
+                <span class="amount" data-monthly="29" data-annual="299">29</span>
                 <span class="currency">€</span>
             </div>
             <div class="plan-subtitle" id="price-subtitle-1">/mois, HT et sans engagement</div>
-            <div class="plan-annual" id="annual-1">ou 300€/an</div>
 
             <ul class="plan-features">
                 <li id="feature-s1">Accès WiFi Clients</li>
@@ -490,7 +493,7 @@
                 <li id="feature-s12">Relancez chaque semaine vos clients avec des offres promotionnelles</li>
             </ul>
 
-            <button class="btn-subscribe outline" data-plan="standard" data-price="{{ env('STRIPE_PRICE_STANDARD', env('STRIPE_PRICE_STARTER')) }}">
+            <button class="btn-subscribe outline" data-plan="standard" data-price="{{ env('STRIPE_PRICE_STANDARD', env('STRIPE_PRICE_STARTER')) }}" data-price-monthly="{{ env('STRIPE_PRICE_STANDARD', env('STRIPE_PRICE_STARTER')) }}" data-price-annual="{{ env('STRIPE_PRICE_STANDARD_YEARLY') }}">
                 <span class="loading-spinner d-none"></span>
                 <span class="btn-text" id="btn-standard">Adhérez au Standard</span>
             </button>
@@ -501,11 +504,10 @@
             <span class="popular-badge" id="popular-badge">Populaire</span>
             <h3 class="plan-name">Premium</h3>
             <div class="plan-price">
-                <span class="amount">49</span>
+                <span class="amount" data-monthly="49" data-annual="499">49</span>
                 <span class="currency">€</span>
             </div>
             <div class="plan-subtitle" id="price-subtitle-2">/mois, HT et sans engagement</div>
-            <div class="plan-annual" id="annual-2">ou 500€/an</div>
 
             <p class="premium-intro" id="premium-intro">Bénéficiez de l'offre Standard +</p>
 
@@ -514,7 +516,7 @@
                 <li id="feature-p2">Assistance personnalisée</li>
             </ul>
 
-            <button class="btn-subscribe primary" data-plan="premium" data-price="{{ env('STRIPE_PRICE_PREMIUM') }}">
+            <button class="btn-subscribe primary" data-plan="premium" data-price="{{ env('STRIPE_PRICE_PREMIUM') }}" data-price-monthly="{{ env('STRIPE_PRICE_PREMIUM') }}" data-price-annual="{{ env('STRIPE_PRICE_PREMIUM_YEARLY') }}">
                 <span class="loading-spinner d-none"></span>
                 <span class="btn-text" id="btn-premium">Adhérez au Premium</span>
             </button>
@@ -545,8 +547,6 @@
                 headerTitle: 'Choose your subscription',
                 headerSubtitle: 'WiFi solutions tailored to your needs',
                 priceSubtitle: '/month, excl. VAT, no commitment',
-                annual1: 'or €300/year',
-                annual2: 'or €500/year',
                 premiumIntro: 'Get the Standard offer +',
                 btnStandard: 'Subscribe to Standard',
                 btnPremium: 'Subscribe to Premium',
@@ -555,6 +555,10 @@
                 backDashboard: 'Back to dashboard',
                 processing: 'Processing...',
                 loginRequired: 'Please login first to subscribe',
+                toggleMonthly: 'Monthly',
+                toggleAnnual: 'Annual',
+                saveBadge: '-15%',
+                priceSubtitleAnnual: '/year, excl. VAT, no commitment',
                 features: {
                     s1: 'WiFi Client Access',
                     s2: 'Authentication via email/SMS/Facebook/Twitter/Google',
@@ -577,8 +581,6 @@
                 headerTitle: 'Choisissez votre abonnement',
                 headerSubtitle: 'Des solutions WiFi adaptées à vos besoins',
                 priceSubtitle: '/mois, HT et sans engagement',
-                annual1: 'ou 300€/an',
-                annual2: 'ou 500€/an',
                 premiumIntro: 'Bénéficiez de l\'offre Standard +',
                 btnStandard: 'Adhérez au Standard',
                 btnPremium: 'Adhérez au Premium',
@@ -587,6 +589,10 @@
                 backDashboard: 'Retour au tableau de bord',
                 processing: 'Traitement...',
                 loginRequired: 'Veuillez vous connecter pour vous abonner',
+                toggleMonthly: 'Mensuel',
+                toggleAnnual: 'Annuel',
+                saveBadge: '-15%',
+                priceSubtitleAnnual: '/an, HT et sans engagement',
                 features: {
                     s1: 'Accès WiFi Clients',
                     s2: 'Authentification par email/SMS/Facebook/Twitter/Google',
@@ -622,8 +628,6 @@
         document.getElementById('header-subtitle').textContent = t.headerSubtitle;
         document.getElementById('price-subtitle-1').textContent = t.priceSubtitle;
         document.getElementById('price-subtitle-2').textContent = t.priceSubtitle;
-        document.getElementById('annual-1').textContent = t.annual1;
-        document.getElementById('annual-2').textContent = t.annual2;
         document.getElementById('premium-intro').textContent = t.premiumIntro;
         document.getElementById('btn-standard').textContent = t.btnStandard;
         document.getElementById('btn-premium').textContent = t.btnPremium;
@@ -712,6 +716,61 @@
 
             setTimeout(() => animateDot(dot), duration);
         }
+
+        // Apply toggle translations
+        document.getElementById('toggle-monthly').textContent = t.toggleMonthly;
+        document.getElementById('toggle-annual').innerHTML = t.toggleAnnual + ' <span id="save-badge" style="background:linear-gradient(135deg,#28a745,#20c997); color:white; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-left:4px;">' + t.saveBadge + '</span>';
+
+        // Billing toggle logic
+        const billingToggle = document.getElementById('billing-toggle');
+        const toggleKnob = document.getElementById('toggle-knob');
+        const toggleMonthly = document.getElementById('toggle-monthly');
+        const toggleAnnual = document.getElementById('toggle-annual');
+
+        function updatePricing(isAnnual) {
+            document.querySelectorAll('.plan-price .amount').forEach(el => {
+                el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
+            });
+
+            document.getElementById('price-subtitle-1').textContent = isAnnual ? t.priceSubtitleAnnual : t.priceSubtitle;
+            document.getElementById('price-subtitle-2').textContent = isAnnual ? t.priceSubtitleAnnual : t.priceSubtitle;
+
+            // Update button price IDs
+            document.querySelectorAll('.btn-subscribe').forEach(btn => {
+                btn.dataset.price = isAnnual ? btn.dataset.priceAnnual : btn.dataset.priceMonthly;
+            });
+
+            // Toggle visual state
+            if (isAnnual) {
+                toggleKnob.style.left = '25px';
+                toggleKnob.parentElement.querySelector('span:first-of-type').style.background = 'linear-gradient(135deg, #7367f0, #9e95f5)';
+                toggleMonthly.style.color = '#999';
+                toggleMonthly.style.fontWeight = '500';
+                toggleAnnual.style.color = '#7367f0';
+                toggleAnnual.style.fontWeight = '600';
+            } else {
+                toggleKnob.style.left = '3px';
+                toggleKnob.parentElement.querySelector('span:first-of-type').style.background = '#ccc';
+                toggleMonthly.style.color = '#7367f0';
+                toggleMonthly.style.fontWeight = '600';
+                toggleAnnual.style.color = '#999';
+                toggleAnnual.style.fontWeight = '500';
+            }
+        }
+
+        billingToggle.addEventListener('change', function() {
+            updatePricing(this.checked);
+        });
+
+        toggleMonthly.addEventListener('click', function() {
+            billingToggle.checked = false;
+            updatePricing(false);
+        });
+
+        toggleAnnual.addEventListener('click', function() {
+            billingToggle.checked = true;
+            updatePricing(true);
+        });
 
         // Handle subscription button clicks
         document.querySelectorAll('.btn-subscribe').forEach(button => {
