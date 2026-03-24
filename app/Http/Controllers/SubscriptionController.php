@@ -97,19 +97,34 @@ class SubscriptionController extends Controller
             $user->createOrGetStripeCustomer();
 
             // Create checkout session
-            $checkout = $user->newSubscription('default', $request->price_id)
-                ->checkout([
+            $checkoutOptions = [
                     'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}'),
                     'cancel_url' => url('/subscription/cancel'),
                     'billing_address_collection' => 'required',
+                    'phone_number_collection' => ['enabled' => true],
+                    'tax_id_collection' => ['enabled' => true],
                     'shipping_address_collection' => [
                         'allowed_countries' => ['FR', 'BE', 'CH', 'LU', 'MC', 'CA'],
+                    ],
+                    'consent_collection' => [
+                        'terms_of_service' => 'required',
+                    ],
+                    'custom_text' => [
+                        'submit' => [
+                            'message' => 'Votre abonnement inclut : une borne WiFi avec portail captif pré-paramétré et une assistance à la mise en service.',
+                        ],
+                        'terms_of_service_acceptance' => [
+                            'message' => 'J\'accepte les [Conditions Générales de Vente](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')',
+                        ],
                     ],
                     'metadata' => [
                         'user_id' => $user->id,
                         'plan_name' => $request->plan_name,
                     ],
-                ]);
+                ];
+
+            $checkout = $user->newSubscription('default', $request->price_id)
+                ->checkout($checkoutOptions);
 
             return response()->json([
                 'success' => true,
