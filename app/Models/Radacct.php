@@ -74,7 +74,9 @@ class Radacct extends Model
         'framedinterfaceid',
         'delegatedipv6prefix',
         'class',
-        'location_id'
+        'location_id',
+        'zone_id',
+        'network_id',
     ];
 
     /**
@@ -90,7 +92,9 @@ class Radacct extends Model
         'acctoutputoctets' => 'integer',
         'acctsessiontime' => 'integer',
         'acctinterval' => 'integer',
-        'location_id' => 'integer'
+        'location_id' => 'integer',
+        'zone_id'     => 'integer',
+        'network_id'  => 'integer',
     ];
 
     /**
@@ -135,6 +139,32 @@ class Radacct extends Model
     public static function getByLocation(int $locationId): Collection
     {
         return self::where('location_id', $locationId)->get();
+    }
+
+    /**
+     * Get accounting records for a network.
+     */
+    public static function getByNetwork(int $networkId): Collection
+    {
+        return self::where('network_id', $networkId)->get();
+    }
+
+    /**
+     * Get accounting records for a zone.
+     */
+    public static function getByZone(int $zoneId): Collection
+    {
+        return self::where('zone_id', $zoneId)->get();
+    }
+
+    /**
+     * Get accounting records for a specific network within a zone.
+     */
+    public static function getByNetworkAndZone(int $networkId, int $zoneId): Collection
+    {
+        return self::where('network_id', $networkId)
+            ->where('zone_id', $zoneId)
+            ->get();
     }
 
     /**
