@@ -588,6 +588,23 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row mt-2" id="wan-dns-row">
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
+                                            <label for="wan-dns1">WAN Primary DNS</label>
+                                            <input type="text" class="form-control" id="wan-dns1" placeholder="8.8.8.8">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
+                                            <label for="wan-dns2">WAN Secondary DNS <small class="text-muted font-weight-normal">(optional)</small></label>
+                                            <input type="text" class="form-control" id="wan-dns2" placeholder="8.8.4.4">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <small class="text-muted" id="wan-dns-hint">Used as DNS server upstream when web filter is active. Leave empty to fall back to 8.8.8.8 / 8.8.4.4.</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- end #router -->

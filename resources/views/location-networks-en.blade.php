@@ -390,13 +390,17 @@
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Primary DNS</label>
-                                            <input type="text" class="form-control network-dns1" placeholder="8.8.8.8" value="8.8.8.8">
+                                            <div class="dns-field-wrapper" title="DNS is managed by the web filter. Disable the web filter to set per-network DNS.">
+                                                <input type="text" class="form-control network-dns1" placeholder="8.8.8.8">
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-1">
                                         <div class="form-group">
                                             <label>Alt DNS</label>
-                                            <input type="text" class="form-control network-dns2" placeholder="8.8.4.4" value="8.8.4.4">
+                                            <div class="dns-field-wrapper" title="DNS is managed by the web filter. Disable the web filter to set per-network DNS.">
+                                                <input type="text" class="form-control network-dns2" placeholder="8.8.4.4">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

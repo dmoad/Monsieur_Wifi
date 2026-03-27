@@ -17,6 +17,7 @@ let location_id = null;
 let locationData = null;
 let networks = [];
 let captivePortalDesigns = [];
+let webFilterEnabled = false;
 const schedulers = {}; // netId → InteractiveScheduler instance
 
 const API = window.APP_CONFIG_V5?.apiBase || '/api';
@@ -85,6 +86,42 @@ function locationPageUrl() {
     return `/${lang}/locations/${location_id}`;
 }
 
+function isValidIPv4(val) {
+    return /^(\d{1,3}\.){3}\d{1,3}$/.test(val) &&
+        val.split('.').every(n => +n >= 0 && +n <= 255);
+}
+
+function applyDnsFieldState($pane, filterOn) {
+    const $dns1 = $pane.find('.network-dns1');
+    const $dns2 = $pane.find('.network-dns2');
+    const $groups = $dns1.add($dns2).closest('.form-group');
+
+    $dns1.prop('disabled', filterOn);
+    $dns2.prop('disabled', filterOn);
+    $groups.toggleClass('text-muted', filterOn);
+
+    if (filterOn) {
+        $pane.find('.net-dns-hint').remove();
+        $pane.find('.dns-field-wrapper').each(function () {
+            $(this).attr('data-toggle', 'tooltip').attr('data-placement', 'top');
+            if (!$(this).attr('title')) {
+                $(this).attr('title', 'DNS is managed by the web filter. Disable the web filter to set per-network DNS.');
+            }
+            // Bootstrap tooltip
+            if ($.fn.tooltip) $(this).tooltip();
+        });
+    } else {
+        $pane.find('.dns-field-wrapper').each(function () {
+            if ($.fn.tooltip) $(this).tooltip('dispose');
+        });
+        if (!$pane.find('.net-dns-hint').length) {
+            $dns2.closest('.form-group').append(
+                '<small class="text-muted net-dns-hint">Leave empty to use the router as DNS server (no filtering applied).</small>'
+            );
+        }
+    }
+}
+
 // ============================================================================
 // PAGE INIT
 // ============================================================================
@@ -134,6 +171,7 @@ async function initPage() {
         const settingsRes = await apiFetch(`${API}/locations/${location_id}/settings`).catch(() => null);
         if (settingsRes?.success) {
             const vlanEnabled = !!settingsRes.data.settings.vlan_enabled;
+            webFilterEnabled = !!settingsRes.data.settings.web_filter_enabled;
             $('#vlan-enabled').prop('checked', vlanEnabled);
         }
 
@@ -268,8 +306,9 @@ function populatePaneData(nets) {
         $pane.find('.network-ip-address').val(net.ip_address || '');
         $pane.find('.network-netmask').val(net.netmask || '255.255.255.0');
         $pane.find('.network-gateway').val(net.gateway || '');
-        $pane.find('.network-dns1').val(net.dns1 || '8.8.8.8');
-        $pane.find('.network-dns2').val(net.dns2 || '8.8.4.4');
+        $pane.find('.network-dns1').val(net.dns1 || '');
+        $pane.find('.network-dns2').val(net.dns2 || '');
+        applyDnsFieldState($pane, webFilterEnabled);
         $pane.find('.network-dhcp-enabled').prop('checked', net.dhcp_enabled !== false);
         $pane.find('.network-dhcp-start').val(net.dhcp_start || '');
         $pane.find('.network-dhcp-end').val(net.dhcp_end || '');
@@ -499,6 +538,26 @@ async function saveNetwork(netId) {
                 $pane.find('.network-password').focus();
                 return;
             }
+        }
+
+        // DNS validation (only relevant when web filter is off; skip if disabled)
+        if (data.dns1 && !isValidIPv4(data.dns1)) {
+            toastr.warning('Invalid Primary DNS address.');
+            $btn.prop('disabled', false).html(origHtml);
+            $pane.find('.network-dns1').focus();
+            return;
+        }
+        if (data.dns2 && !isValidIPv4(data.dns2)) {
+            toastr.warning('Invalid Secondary DNS address.');
+            $btn.prop('disabled', false).html(origHtml);
+            $pane.find('.network-dns2').focus();
+            return;
+        }
+        if (data.dns2 && !data.dns1) {
+            toastr.warning('Set a primary DNS before adding a secondary.');
+            $btn.prop('disabled', false).html(origHtml);
+            $pane.find('.network-dns1').focus();
+            return;
         }
 
         const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {

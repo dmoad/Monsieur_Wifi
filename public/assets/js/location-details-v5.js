@@ -451,9 +451,15 @@ async function loadLocationSettings() {
         $('#channel-5g').val(s.channel_5g || 36);
 
         // Web filter
-        $('#global-web-filter').prop('checked', !!s.web_filter_enabled);
-        $('#web-filter-propagation-notice').toggle(!!s.web_filter_enabled);
+        const filterOn = !!s.web_filter_enabled;
+        $('#global-web-filter').prop('checked', filterOn);
+        $('#web-filter-propagation-notice').toggle(filterOn);
         loadWebFilterCategories(s.web_filter_categories || []);
+
+        // WAN DNS (active when web filter is on)
+        $('#wan-dns1').val(s.wan_dns1 || '');
+        $('#wan-dns2').val(s.wan_dns2 || '');
+        syncDnsFieldStates(filterOn);
 
         // QoS
         $('#qos-enabled').prop('checked', !!s.qos_enabled);
@@ -477,6 +483,19 @@ function toggleWanFields(type) {
         $('#wan-static-fields').addClass('hidden').hide();
         $('#wan-pppoe-fields').hide();
     }
+}
+
+function isValidIPv4(val) {
+    return /^(\d{1,3}\.){3}\d{1,3}$/.test(val) &&
+        val.split('.').every(n => +n >= 0 && +n <= 255);
+}
+
+function syncDnsFieldStates(filterOn) {
+    $('#wan-dns1, #wan-dns2')
+        .prop('disabled', !filterOn)
+        .closest('.form-group')
+        .toggleClass('text-muted', !filterOn);
+    $('#wan-dns-row').toggleClass('opacity-50', !filterOn);
 }
 
 async function saveWanSettings() {
@@ -557,6 +576,25 @@ async function saveWebFilterSettings() {
 
     const filterEnabled = $('#global-web-filter').is(':checked');
 
+    const wan_dns1 = $('#wan-dns1').val().trim() || null;
+    const wan_dns2 = $('#wan-dns2').val().trim() || null;
+
+    if (wan_dns1 && !isValidIPv4(wan_dns1)) {
+        toastr.warning('Invalid WAN Primary DNS address.');
+        $btn.prop('disabled', false).html(origHtml);
+        return;
+    }
+    if (wan_dns2 && !isValidIPv4(wan_dns2)) {
+        toastr.warning('Invalid WAN Secondary DNS address.');
+        $btn.prop('disabled', false).html(origHtml);
+        return;
+    }
+    if (wan_dns2 && !wan_dns1) {
+        toastr.warning('Set a primary DNS before adding a secondary.');
+        $btn.prop('disabled', false).html(origHtml);
+        return;
+    }
+
     try {
         const selectedCategories = $('#global-filter-categories').val() || [];
         await apiFetch(`${API}/locations/${location_id}/settings`, {
@@ -564,6 +602,8 @@ async function saveWebFilterSettings() {
             body: JSON.stringify({
                 web_filter_enabled: filterEnabled,
                 web_filter_categories: selectedCategories.map(Number),
+                wan_dns1,
+                wan_dns2,
             }),
         });
 
@@ -1073,7 +1113,9 @@ function initEventHandlers() {
 
     // Show propagation notice when filter is toggled on
     $('#global-web-filter').on('change', function () {
-        $('#web-filter-propagation-notice').toggle($(this).is(':checked'));
+        const on = $(this).is(':checked');
+        $('#web-filter-propagation-notice').toggle(on);
+        syncDnsFieldStates(on);
         reRenderFeather();
     });
 

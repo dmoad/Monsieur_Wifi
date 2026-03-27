@@ -717,6 +717,23 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row mt-2" id="wan-dns-row">
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
+                                            <label for="wan-dns1">DNS WAN primaire</label>
+                                            <input type="text" class="form-control" id="wan-dns1" placeholder="8.8.8.8">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
+                                            <label for="wan-dns2">DNS WAN secondaire <small class="text-muted font-weight-normal">(optionnel)</small></label>
+                                            <input type="text" class="form-control" id="wan-dns2" placeholder="8.8.4.4">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <small class="text-muted" id="wan-dns-hint">Utilisé comme serveur DNS en amont lorsque le filtre Web est actif. Laissez vide pour utiliser 8.8.8.8 / 8.8.4.4 par défaut.</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- end #router -->
