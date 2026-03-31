@@ -902,7 +902,7 @@
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover" id="nearby-networks-table">
-                            <thead><tr><th>Bande</th><th>Canal</th><th>Réseaux</th><th>Signal</th><th>Interférences</th><th>Statut</th></tr></thead>
+                            <thead><tr><th>Bande</th><th>Canal</th><th>SSID</th><th>Signal</th><th>Interférences</th><th>Statut</th></tr></thead>
                             <tbody id="nearby-networks-tbody"></tbody>
                         </table>
                     </div>
@@ -984,5 +984,5 @@
         locale: 'fr'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=2"></script>
+<script src="/assets/js/location-details-v5.js?v=5"></script>
 @endpush

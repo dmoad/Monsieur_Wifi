@@ -449,6 +449,8 @@ async function loadLocationSettings() {
         $('#channel-width-5g').val(s.channel_width_5g || 80);
         $('#channel-2g').val(s.channel_2g || 6);
         $('#channel-5g').val(s.channel_5g || 36);
+        $('#last-optimal-2g').text(s.channel_2g || 6);
+        $('#last-optimal-5g').text(s.channel_5g || 36);
 
         // Web filter
         const filterOn = !!s.web_filter_enabled;
@@ -1039,13 +1041,15 @@ async function loadScanResults() {
         const res = await apiFetch(`${API}/locations/${location_id}/scan-results/latest`);
         const results = res.data || {};
         optimalScanResults = results;
-        $('#result-channel-2g').text(results.optimal_2g || '--');
-        $('#result-channel-5g').text(results.optimal_5g || '--');
-        renderNearbyNetworks(results.networks || []);
+        const optimal2g = results.optimal_channel_2g || '--';
+        const optimal5g = results.optimal_channel_5g || '--';
+        $('#result-channel-2g').text(optimal2g);
+        $('#result-channel-5g').text(optimal5g);
+        renderNearbyNetworks(results.scan_results_2g || [], results.scan_results_5g || [], results);
         $('#scan-progress-view').hide();
         $('#scan-results-view').show();
-        $('#last-optimal-2g').text(results.optimal_2g || '--');
-        $('#last-optimal-5g').text(results.optimal_5g || '--');
+        $('#last-optimal-2g').text(optimal2g);
+        $('#last-optimal-5g').text(optimal5g);
         const ts = results.completed_at ? new Date(results.completed_at).toLocaleString() : new Date().toLocaleString();
         $('#last-scan-timestamp').text('Last scan: ' + ts);
         $('#scan-status-text').text('Scan complete. Optimal channels identified.');
@@ -1055,24 +1059,39 @@ async function loadScanResults() {
     }
 }
 
-function renderNearbyNetworks(networks) {
-    if (!networks.length) {
+function renderNearbyNetworks(networks2g, networks5g, results) {
+    const all = [
+        ...( networks2g || []).map(n => ({ ...n, band: '2.4 GHz' })),
+        ...(networks5g || []).map(n => ({ ...n, band: '5 GHz' })),
+    ];
+    if (!all.length) {
         $('#nearby-networks-tbody').html('<tr><td colspan="6" class="text-center text-muted">No nearby networks detected</td></tr>');
         return;
     }
-    const rows = networks.map(n => `
-        <tr>
-            <td>${n.band || '-'}</td><td>${n.channel || '-'}</td><td>${n.count || 0}</td>
-            <td>${n.signal_strength || '-'}</td><td>${n.interference_level || '-'}</td>
-            <td><span class="badge badge-${n.is_optimal ? 'success' : 'secondary'}">${n.is_optimal ? 'Optimal' : 'Used'}</span></td>
-        </tr>`).join('');
+    const optimal2g = results?.optimal_channel_2g;
+    const optimal5g = results?.optimal_channel_5g;
+    const interference2g = results?.interference_level_2g || '-';
+    const interference5g = results?.interference_level_5g || '-';
+    const rows = all.map(n => {
+        const isOptimal = (n.band === '2.4 GHz' && n.channel == optimal2g) || (n.band === '5 GHz' && n.channel == optimal5g);
+        const interference = n.band === '2.4 GHz' ? interference2g : interference5g;
+        const ssidLabel = n.ssid ? n.ssid : '<em class="text-muted">Hidden</em>';
+        return `<tr>
+            <td>${n.band}</td>
+            <td>${n.channel || '-'}</td>
+            <td>${ssidLabel}</td>
+            <td>${n.signal != null ? n.signal + ' dBm' : '-'}</td>
+            <td>${interference}</td>
+            <td><span class="badge badge-${isOptimal ? 'success' : 'secondary'}">${isOptimal ? 'Optimal' : 'Used'}</span></td>
+        </tr>`;
+    }).join('');
     $('#nearby-networks-tbody').html(rows);
 }
 
 async function applyOptimalChannels() {
     if (!optimalScanResults) return;
-    $('#channel-2g').val(optimalScanResults.optimal_2g);
-    $('#channel-5g').val(optimalScanResults.optimal_5g);
+    $('#channel-2g').val(optimalScanResults.optimal_channel_2g);
+    $('#channel-5g').val(optimalScanResults.optimal_channel_5g);
     $('#channel-scan-modal').modal('hide');
     await saveRadioSettings();
     toastr.success('Optimal channels applied.');

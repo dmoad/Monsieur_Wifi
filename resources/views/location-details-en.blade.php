@@ -773,7 +773,7 @@
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover" id="nearby-networks-table">
-                            <thead><tr><th>Band</th><th>Channel</th><th>Networks</th><th>Signal</th><th>Interference</th><th>Status</th></tr></thead>
+                            <thead><tr><th>Band</th><th>Channel</th><th>SSID</th><th>Signal</th><th>Interference</th><th>Status</th></tr></thead>
                             <tbody id="nearby-networks-tbody"></tbody>
                         </table>
                     </div>
@@ -854,5 +854,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=2"></script>
+<script src="/assets/js/location-details-v5.js?v=5"></script>
 @endpush

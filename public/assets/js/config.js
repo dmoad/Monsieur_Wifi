@@ -10,7 +10,7 @@ const APP_CONFIG = {
     API: {
         BASE_URL: ['localhost', '127.0.0.1'].includes(window.location.hostname)
             ? `${window.location.protocol}//${window.location.host}/api`
-            : 'https://predev.monsieur-wifi.com/api',
+            : 'https://dev.monsieur-wifi.com/api',
         VERSION: 'v1',
         TIMEOUT: 30000, // 30 seconds
     },
