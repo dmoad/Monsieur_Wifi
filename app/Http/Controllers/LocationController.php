@@ -2339,79 +2339,86 @@ class LocationController extends Controller
     public function updateMacAddress(Request $request, $id)
     {
         try {
-            Log::info('Updating MAC address for location: ' . $id);
-            
-            // Validate request
+            Log::info('Updating device assignment / MAC address for location: ' . $id);
+
             $request->validate([
-                'mac_address' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+                'mac_address' => 'nullable|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+                'device_id'   => 'nullable|integer|exists:devices,id',
             ]);
 
-            // Find the location
             $location = Location::find($id);
             if (!$location) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Location not found'
-                ], 404);
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
-            // Find the device associated with this location
-            $device = $location->device;
-            if (!$device) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No device associated with this location'
-                ], 404);
+            // If a device_id is supplied, reassign the location to that device first
+            if ($request->filled('device_id')) {
+                $newDevice = Device::findOrFail($request->device_id);
+
+                // Detach the new device from any other location it may currently be on
+                $previousLocation = Location::where('device_id', $newDevice->id)
+                    ->where('id', '!=', $location->id)
+                    ->first();
+                if ($previousLocation) {
+                    $previousLocation->device_id = null;
+                    $previousLocation->save();
+                }
+
+                // Detach whatever device was previously on this location
+                $location->device_id = $newDevice->id;
+                $location->save();
+
+                $device = $newDevice;
+            } else {
+                $device = $location->device;
+                if (!$device) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No device associated with this location. Pass device_id to assign one.',
+                    ], 404);
+                }
             }
 
-            $newMacAddress = str_replace(':', '-', $request->mac_address);
-            
-            // Check if MAC address is already in use by another device
-            $existingDevice = Device::where('mac_address', $newMacAddress)
-                                  ->where('id', '!=', $device->id)
-                                  ->first();
-            
-            if ($existingDevice) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'MAC address is already in use by another device'
-                ], 409);
-            }
-
-            // Update the MAC address
+            // If a mac_address was also provided, update it on the device
             $oldMacAddress = $device->mac_address;
-            $device->mac_address = $newMacAddress;
-            $device->save();
+            if ($request->filled('mac_address')) {
+                $newMacAddress = str_replace(':', '-', $request->mac_address);
 
-            // Log::info('MAC address updated successfully', [
-            //     'location_id' => $id,
-            //     'device_id' => $device->id,
-            //     'old_mac_address' => $oldMacAddress,
-            //     'new_mac_address' => $newMacAddress
-            // ]);
+                $conflict = Device::where('mac_address', $newMacAddress)
+                    ->where('id', '!=', $device->id)
+                    ->first();
+                if ($conflict) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'MAC address is already in use by another device',
+                    ], 409);
+                }
+
+                $device->mac_address = $newMacAddress;
+                $device->save();
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'MAC address updated successfully',
+                'message' => 'Device assigned successfully',
                 'data' => [
-                    'device' => $device,
+                    'device'          => $device,
                     'old_mac_address' => $oldMacAddress,
-                    'new_mac_address' => $newMacAddress
+                    'new_mac_address' => $device->mac_address,
                 ]
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid MAC address format. Please use format XX-XX-XX-XX-XX-XX',
-                'errors' => $e->errors()
+                'message' => 'Validation error',
+                'errors'  => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Error updating MAC address: ' . $e->getMessage());
-            
+            Log::error('Error updating device/MAC for location: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error updating MAC address: ' . $e->getMessage()
+                'message' => 'Error: ' . $e->getMessage(),
             ], 500);
         }
     }

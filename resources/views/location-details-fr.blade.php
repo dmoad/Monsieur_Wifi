@@ -948,22 +948,35 @@
     </div>
 </div>
 
-<!-- MAC Address Edit Modal -->
+<!-- Modal d'assignation d'appareil -->
 <div class="modal fade" id="mac-address-edit-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i data-feather="edit" class="mr-2"></i>Modifier l'adresse MAC</h5>
+                <h5 class="modal-title"><i data-feather="hard-drive" class="mr-2"></i>Assigner un appareil (AP)</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>Remarque :</strong> Ceci mettra à jour l'adresse MAC de l'appareil à cet emplacement.</div></div>
-                <div class="form-group"><label for="mac-address-input">Adresse MAC</label><input type="text" class="form-control" id="mac-address-input" placeholder="XX-XX-XX-XX-XX-XX" maxlength="17"><small class="text-muted">Format : XX-XX-XX-XX-XX-XX</small></div>
-                <div class="form-group"><label>Adresse MAC actuelle</label><div class="form-control-plaintext bg-light p-2 rounded"><span id="current-mac-display">-</span></div></div>
+                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>Remarque :</strong> Sélectionnez un AP dans la liste pour l'assigner à cet emplacement. Son adresse MAC sera appliquée automatiquement.</div></div>
+                <div class="form-group">
+                    <label for="device-select">Sélectionner un point d'accès</label>
+                    <select class="form-control" id="device-select">
+                        <option value="">Chargement des appareils...</option>
+                    </select>
+                    <small class="text-muted">Les AP non assignés apparaissent en premier.</small>
+                </div>
+                <div class="form-group" id="device-mac-preview-group" style="display:none;">
+                    <label>Adresse MAC</label>
+                    <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="device-mac-preview">-</div>
+                </div>
+                <div class="form-group">
+                    <label>Appareil actuellement assigné</label>
+                    <div class="form-control-plaintext bg-light p-2 rounded"><span id="current-mac-display">-</span></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" class="btn custom-btn" id="save-mac-address-btn"><i data-feather="save" class="mr-1"></i><span>Enregistrer les modifications</span></button>
+                <button type="button" class="btn custom-btn" id="save-mac-address-btn" disabled><i data-feather="save" class="mr-1"></i><span>Assigner l'appareil</span></button>
             </div>
         </div>
     </div>
@@ -984,5 +997,5 @@
         locale: 'fr'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=5"></script>
+<script src="/assets/js/location-details-v5.js?v=7"></script>
 @endpush

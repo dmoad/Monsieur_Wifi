@@ -860,26 +860,71 @@ function initMap(lat, lng, label) {
 // MAC ADDRESS EDIT
 // ============================================================================
 
-async function saveMacAddress() {
+async function loadDevicesForAssignment() {
+    try {
+        const res = await apiFetch(`${API}/v1/devices/available-for-location`);
+        const unassigned = res.unassigned || [];
+        const assigned = res.assigned || [];
+        const $select = $('#device-select');
+        const currentDeviceId = currentDeviceData?.id || null;
+        $select.empty().append('<option value="">— Select an AP —</option>');
+        if (unassigned.length) {
+            const $group = $('<optgroup label="Unassigned APs"></optgroup>');
+            unassigned.forEach(d => {
+                const label = [d.name || d.serial_number, d.mac_address].filter(Boolean).join(' — ');
+                $group.append(`<option value="${d.id}" data-mac="${d.mac_address}">${label}</option>`);
+            });
+            $select.append($group);
+        }
+        if (assigned.length) {
+            const $group = $('<optgroup label="Already Assigned APs"></optgroup>');
+            assigned.forEach(d => {
+                const locationName = d.location?.name || '';
+                const label = [d.name || d.serial_number, d.mac_address, locationName ? `(${locationName})` : ''].filter(Boolean).join(' — ');
+                $group.append(`<option value="${d.id}" data-mac="${d.mac_address}">${label}</option>`);
+            });
+            $select.append($group);
+        }
+        if (!unassigned.length && !assigned.length) {
+            $select.append('<option value="" disabled>No devices found</option>');
+        }
+        // Pre-select the device currently assigned to this location
+        if (currentDeviceId) {
+            $select.val(currentDeviceId).trigger('change');
+        }
+    } catch (err) {
+        $('#device-select').html('<option value="">Failed to load devices</option>');
+    }
+}
+
+async function saveDeviceAssignment() {
     const $btn = $('#save-mac-address-btn');
     const origHtml = $btn.html();
     $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
 
     try {
-        const mac = $('#mac-address-input').val().trim();
-        if (!/^([0-9A-Fa-f]{2}[-]){5}([0-9A-Fa-f]{2})$/.test(mac)) {
-            toastr.error('Invalid MAC address format. Use XX-XX-XX-XX-XX-XX');
+        const deviceId = $('#device-select').val();
+        if (!deviceId) {
+            toastr.error('Please select a device.');
             return;
         }
+        const $selectedOpt = $('#device-select option:selected');
+        const mac = ($selectedOpt.data('mac') || '').replace(/-/g, ':');
         await apiFetch(`${API}/locations/${location_id}/update-mac-address`, {
             method: 'POST',
-            body: JSON.stringify({ mac_address: mac }),
+            body: JSON.stringify({ device_id: parseInt(deviceId) }),
         });
-        $('.router_mac_address, .router_mac_address_header').text(mac.replace(/-/g, ':'));
+        // Update currentDeviceData so the modal label is correct next time it opens
+        if (currentDeviceData) {
+            currentDeviceData.mac_address = $selectedOpt.data('mac') || mac;
+            currentDeviceData.serial_number = ($selectedOpt.text().split(' — ')[0] || '').trim();
+            currentDeviceData.name = currentDeviceData.serial_number;
+        }
+        $('.router_mac_address, .router_mac_address_header').text(mac);
         $('#mac-address-edit-modal').modal('hide');
-        toastr.success('MAC address updated successfully.');
+        toastr.success('Device assigned successfully.');
     } catch (err) {
-        handleApiError(err, 'saveMacAddress');
+        handleApiError(err, 'saveDeviceAssignment');
     } finally {
         $btn.prop('disabled', false).html(origHtml);
         reRenderFeather();
@@ -1166,16 +1211,39 @@ function initEventHandlers() {
         initiateScan();
     });
 
-    // MAC address edit
+    // Device assignment modal
     $('#edit-mac-btn').on('click', function () {
-        const currentMac = $('.router_mac_address').text();
-        $('#current-mac-display').text(currentMac);
+        const d = currentDeviceData;
+        const currentLabel = d
+            ? [(d.name || d.serial_number), (d.mac_address || '').replace(/-/g, ':')].filter(Boolean).join(' — ')
+            : '-';
+        $('#current-mac-display').text(currentLabel);
+        $('#device-select').val('').html('<option value="">Loading devices...</option>');
+        $('#device-mac-preview-group').hide();
+        $('#device-mac-preview').text('-');
+        $('#save-mac-address-btn').prop('disabled', true);
         $('#mac-address-edit-modal').modal('show');
+        loadDevicesForAssignment();
     });
-    $('#save-mac-address-btn').on('click', saveMacAddress);
+    $(document).on('change', '#device-select', function () {
+        const $opt = $(this).find('option:selected');
+        const mac = $opt.data('mac') || '';
+        if (mac) {
+            $('#device-mac-preview').text(mac);
+            $('#device-mac-preview-group').show();
+            $('#save-mac-address-btn').prop('disabled', false);
+        } else {
+            $('#device-mac-preview-group').hide();
+            $('#device-mac-preview').text('-');
+            $('#save-mac-address-btn').prop('disabled', true);
+        }
+    });
+    $('#save-mac-address-btn').on('click', saveDeviceAssignment);
     $('#mac-address-edit-modal').on('hidden.bs.modal', function () {
-        $('#mac-address-input').val('');
+        $('#device-select').val('');
+        $('#device-mac-preview-group').hide();
         $('#current-mac-display').text('-');
+        $('#save-mac-address-btn').prop('disabled', true);
     });
 
     // Online users pagination

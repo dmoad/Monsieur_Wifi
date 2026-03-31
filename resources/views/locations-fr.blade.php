@@ -263,7 +263,7 @@
                         <select class="form-control" id="owner-select">
                             <option value="">Chargement des utilisateurs...</option>
                         </select>
-                        <small class="form-text text-muted">Sélectionnez le propriétaire de cet emplacement.</small>
+                        <small class="form-text text-muted">Sélectionnez le propriétaire de cet emplacement. Les appareils se chargeront après la sélection.</small>
                     </div>
                     <div class="form-group">
                         <label for="location-name">Nom de l'emplacement <span class="text-danger">*</span></label>

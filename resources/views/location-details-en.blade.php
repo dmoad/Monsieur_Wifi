@@ -819,22 +819,35 @@
     </div>
 </div>
 
-<!-- MAC Address Edit Modal -->
+<!-- Device Assignment Modal -->
 <div class="modal fade" id="mac-address-edit-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i data-feather="edit" class="mr-2"></i>Edit MAC Address</h5>
+                <h5 class="modal-title"><i data-feather="hard-drive" class="mr-2"></i>Assign Device (AP)</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>Note:</strong> This will update the MAC address for the device at this location.</div></div>
-                <div class="form-group"><label for="mac-address-input">MAC Address</label><input type="text" class="form-control" id="mac-address-input" placeholder="XX-XX-XX-XX-XX-XX" maxlength="17"><small class="text-muted">Format: XX-XX-XX-XX-XX-XX</small></div>
-                <div class="form-group"><label>Current MAC Address</label><div class="form-control-plaintext bg-light p-2 rounded"><span id="current-mac-display">-</span></div></div>
+                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>Note:</strong> Select an AP from the list to assign it to this location. Its MAC address will be applied automatically.</div></div>
+                <div class="form-group">
+                    <label for="device-select">Select Access Point</label>
+                    <select class="form-control" id="device-select">
+                        <option value="">Loading devices...</option>
+                    </select>
+                    <small class="text-muted">Unassigned APs are shown first.</small>
+                </div>
+                <div class="form-group" id="device-mac-preview-group" style="display:none;">
+                    <label>MAC Address</label>
+                    <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="device-mac-preview">-</div>
+                </div>
+                <div class="form-group">
+                    <label>Currently Assigned Device</label>
+                    <div class="form-control-plaintext bg-light p-2 rounded"><span id="current-mac-display">-</span></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn custom-btn" id="save-mac-address-btn"><i data-feather="save" class="mr-1"></i><span>Save Changes</span></button>
+                <button type="button" class="btn custom-btn" id="save-mac-address-btn" disabled><i data-feather="save" class="mr-1"></i><span>Assign Device</span></button>
             </div>
         </div>
     </div>
@@ -854,5 +867,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=5"></script>
+<script src="/assets/js/location-details-v5.js?v=7"></script>
 @endpush
