@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Device;
 use App\Models\Location;
 use App\Models\LocationNetwork;
 use Illuminate\Http\Request;
@@ -360,9 +361,20 @@ class LocationNetworkController extends Controller
 
     private function incrementConfigVersion(Location $location): void
     {
-        $device = $location->device;
-        if ($device) {
-            $device->increment('configuration_version');
+        if ($location->zone_id) {
+            // Bump all devices attached to any location in the same zone
+            $deviceIds = Location::where('zone_id', $location->zone_id)
+                ->whereNotNull('device_id')
+                ->pluck('device_id');
+
+            Device::whereIn('id', $deviceIds)
+                ->increment('configuration_version');
+        } else {
+            // Standalone location — bump only its own device
+            $device = $location->device;
+            if ($device) {
+                $device->increment('configuration_version');
+            }
         }
     }
 }

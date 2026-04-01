@@ -559,17 +559,75 @@ async function loadAndInitSharedUsersSelect2(preselectedSharedUsers = []) {
     $el.val(preselectedIds).trigger('change');
 }
 
+async function loadAndInitOwnerSelect2(currentOwnerId) {
+    if (allUsersForZoneDetails.length === 0) {
+        const token = UserManager.getToken();
+        try {
+            const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error('Failed to load users');
+            const data = await response.json();
+            allUsersForZoneDetails = data.users || [];
+        } catch (error) {
+            console.error('Error loading users for owner:', error);
+            return;
+        }
+    }
+
+    const $el = $('#edit-zone-owner');
+    if (!$el.length) return;
+
+    if ($el.hasClass('select2-hidden-accessible')) {
+        $el.select2('destroy');
+    }
+
+    $el.empty();
+
+    allUsersForZoneDetails.forEach(u => {
+        const $opt = $('<option>', { value: u.id, text: `${u.name} (${u.email})` });
+        $opt.data('role', u.role || 'user');
+        $el.append($opt);
+    });
+
+    $el.select2({
+        placeholder: PAGE_LOCALE === 'fr' ? 'Rechercher un propriétaire...' : 'Search owner...',
+        allowClear: false,
+        width: '100%',
+        templateResult: function (item) {
+            if (!item.id) return item.text;
+            const role = $(item.element).data('role') || 'user';
+            return $(`<span>${item.text}${roleBadgeHtml(role)}</span>`);
+        },
+        templateSelection: function (item) {
+            if (!item.id) return item.text;
+            const role = $(item.element).data('role') || 'user';
+            return $(`<span>${item.text}${roleBadgeHtml(role)}</span>`);
+        }
+    });
+
+    $el.val(String(currentOwnerId)).trigger('change');
+}
+
 async function editZone() {
     document.getElementById('edit-zone-name').value = currentZone.name;
     document.getElementById('edit-zone-description').value = currentZone.description || '';
 
-    // Show/populate shared users for admin/superadmin
+    // Show/populate owner dropdown and shared users for admin/superadmin
+    const ownerGroup = document.getElementById('edit-zone-owner-group');
     const sharedGroup = document.getElementById('edit-zone-shared-users-group');
-    if (sharedGroup && UserManager.isAdminOrAbove()) {
-        sharedGroup.style.display = 'block';
-        await loadAndInitSharedUsersSelect2(currentZone.shared_users || []);
-    } else if (sharedGroup) {
-        sharedGroup.style.display = 'none';
+    if (UserManager.isAdminOrAbove()) {
+        if (ownerGroup) {
+            ownerGroup.style.display = 'block';
+            await loadAndInitOwnerSelect2(currentZone.owner_id);
+        }
+        if (sharedGroup) {
+            sharedGroup.style.display = 'block';
+            await loadAndInitSharedUsersSelect2(currentZone.shared_users || []);
+        }
+    } else {
+        if (ownerGroup) ownerGroup.style.display = 'none';
+        if (sharedGroup) sharedGroup.style.display = 'none';
     }
     
     // Show primary location info if available
@@ -661,6 +719,10 @@ async function updateZoneInfo() {
     const payload = { name, description, is_active: currentZone.is_active };
 
     if (UserManager.isAdminOrAbove()) {
+        const newOwnerId = $('#edit-zone-owner').val();
+        if (newOwnerId) {
+            payload.owner_id = parseInt(newOwnerId);
+        }
         const selectedIds = $('#edit-zone-shared-users').val() || [];
         payload.shared_users = selectedIds.map(id => ({ user_id: parseInt(id), access_level: 'full' }));
     }

@@ -108,6 +108,35 @@
         justify-content: center;
         color: #6c757d;
     }
+    /* Owner dropdown: hide the broken Select2 arrow and use a clean CSS chevron instead */
+    #edit-zone-owner ~ .select2-container .select2-selection__arrow b,
+    #s2id_edit-zone-owner .select2-selection__arrow b {
+        display: none !important;
+    }
+    #edit-zone-owner ~ .select2-container .select2-selection__arrow,
+    .select2-container[aria-owns] .select2-selection__arrow {
+        display: none !important;
+    }
+    #edit-zone-owner-group .select2-container {
+        position: relative;
+    }
+    #edit-zone-owner-group .select2-container .select2-selection--single {
+        position: relative;
+        padding-right: 2rem;
+    }
+    #edit-zone-owner-group .select2-container .select2-selection--single::after {
+        content: '';
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #6e6b7b;
+        pointer-events: none;
+    }
 </style>
 @endpush
 
@@ -185,6 +214,14 @@
                     <div class="form-group">
                         <label for="edit-zone-description">Description</label>
                         <textarea class="form-control" id="edit-zone-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group" id="edit-zone-owner-group" style="display:none;">
+                        <label for="edit-zone-owner">
+                            Propriétaire
+                            <span style="font-size:0.7rem;font-weight:600;background:#ea5455;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">Admin</span>
+                        </label>
+                        <select class="select2" id="edit-zone-owner" style="width:100%"></select>
+                        <small class="form-text text-muted">Changer le propriétaire de cette zone. Tous les emplacements de la zone doivent appartenir au nouveau propriétaire.</small>
                     </div>
                     <div class="form-group" id="edit-zone-shared-users-group" style="display:none;">
                         <label for="edit-zone-shared-users">

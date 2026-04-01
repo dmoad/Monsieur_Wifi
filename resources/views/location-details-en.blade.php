@@ -206,6 +206,10 @@
                     <div class="col-md-7">
                         <h4><i data-feather="wifi" style="width:24px;height:24px;margin-right:10px;vertical-align:middle;"></i> WiFi Networks</h4>
                         <p>Manage all WiFi networks associated with this location — add, remove, or configure each network's security, captive portal, IP settings, and more.</p>
+                        <div id="zone-network-notice" class="alert alert-info py-1 px-2 mb-2" style="display:none;font-size:0.85rem;">
+                            <i data-feather="layers" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+                            Networks are managed by the zone's primary location.
+                        </div>
                         <div id="network-summary-badges">
                             <span class="network-summary-badge"><i data-feather="loader" style="width:12px;height:12px;"></i> Loading...</span>
                         </div>
@@ -867,5 +871,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=7"></script>
+<script src="/assets/js/location-details-v5.js?v=8"></script>
 @endpush

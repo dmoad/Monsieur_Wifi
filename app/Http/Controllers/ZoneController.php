@@ -145,8 +145,9 @@ class ZoneController extends Controller
             'is_active'   => 'nullable|boolean',
         ];
 
-        // Only admin/superadmin may manage shared_users
+        // Only admin/superadmin may manage shared_users and change owner
         if (in_array($user->role, ['admin', 'superadmin'])) {
+            $rules['owner_id']                    = 'sometimes|nullable|integer|exists:users,id';
             $rules['shared_users']               = 'sometimes|nullable|array';
             $rules['shared_users.*.user_id']     = 'required_with:shared_users|integer|exists:users,id';
             $rules['shared_users.*.access_level'] = 'required_with:shared_users|string|in:full,partial,read_only';
@@ -164,9 +165,15 @@ class ZoneController extends Controller
         $validated = $validator->validated();
 
         // Persist shared_users separately so JSON casting is applied correctly
-        if (in_array($user->role, ['admin', 'superadmin']) && array_key_exists('shared_users', $validated)) {
-            $zone->shared_users = $validated['shared_users'];
-            unset($validated['shared_users']);
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            if (array_key_exists('shared_users', $validated)) {
+                $zone->shared_users = $validated['shared_users'];
+                unset($validated['shared_users']);
+            }
+            if (!empty($validated['owner_id'])) {
+                $zone->owner_id = $validated['owner_id'];
+            }
+            unset($validated['owner_id']);
         }
 
         $zone->update(array_intersect_key($validated, array_flip(['name', 'description', 'is_active'])));

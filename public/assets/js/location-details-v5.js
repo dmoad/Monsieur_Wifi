@@ -25,6 +25,7 @@ let currentDeviceData = null;
 let analyticsChart = null;
 let locationMap = null;
 let optimalScanResults = null;
+let networkSourceLocationId = null; // may differ from location_id when location is a non-primary zone member
 
 const API = window.APP_CONFIG_V5?.apiBase || (window.APP_NETWORK_CONFIG?.apiBase) || '/api';
 
@@ -83,6 +84,12 @@ function networksPageUrl() {
     const parts = window.location.pathname.split('/');
     const lang = ['en', 'fr'].includes(parts[1]) ? parts[1] : 'en';
     return `/${lang}/locations/${location_id}/networks`;
+}
+
+function buildNetworksUrl(locId) {
+    const parts = window.location.pathname.split('/');
+    const lang = ['en', 'fr'].includes(parts[1]) ? parts[1] : 'en';
+    return `/${lang}/locations/${locId}/networks`;
 }
 
 // ============================================================================
@@ -164,9 +171,30 @@ async function loadLocationDetails() {
     $('.location_name').text(location.name || '');
     $('.location_address').text([location.address, location.city, location.country].filter(Boolean).join(', '));
 
-    // Manage networks links
-    const netUrl = networksPageUrl();
-    $('#manage-networks-btn, #manage-networks-header-btn').attr('href', netUrl);
+    // Manage networks links — for non-primary zone members, point to primary location
+    const isPrimaryOrStandalone = !location.zone_id || location.is_primary_in_zone;
+    const primaryLocationId = location.primary_location_id || location_id;
+    const canAccessPrimary = location.can_access_primary !== false;
+
+    networkSourceLocationId = primaryLocationId;
+
+    const netUrl = buildNetworksUrl(primaryLocationId);
+    $('#manage-networks-btn, #manage-networks-header-btn')
+        .attr('href', canAccessPrimary ? netUrl : '#')
+        .removeClass('disabled')
+        .removeAttr('title tabindex');
+
+    if (!isPrimaryOrStandalone) {
+        $('#zone-network-notice').show();
+        if (!canAccessPrimary) {
+            $('#manage-networks-btn, #manage-networks-header-btn')
+                .addClass('disabled')
+                .attr('title', 'Networks are managed by the zone\'s primary location — you do not have access to that location')
+                .attr('tabindex', '-1');
+        }
+    } else {
+        $('#zone-network-notice').hide();
+    }
     console.log("location:::::", location.device);
     // Status badge
     const isOnline = location.device && location.device.is_online;
@@ -684,7 +712,8 @@ async function loadQosClassesPreview() {
 
 async function loadNetworkSummary() {
     try {
-        const res = await apiFetch(`${API}/locations/${location_id}/networks`);
+        const srcId = networkSourceLocationId || location_id;
+        const res = await apiFetch(`${API}/locations/${srcId}/networks`);
         const networks = res.data.networks || [];
         const $container = $('#network-summary-badges');
         $container.empty();

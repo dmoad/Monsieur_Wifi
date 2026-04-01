@@ -367,6 +367,19 @@ class LocationController extends Controller
         // Add zone-related information
         $locationData['is_primary_in_zone'] = $location->isPrimaryInZone();
         $locationData['can_edit_settings'] = $location->canEditSettings();
+
+        // For non-primary zone members, expose the primary location id and access flag
+        if ($location->zone_id && !$location->isPrimaryInZone()) {
+            $zone = $location->zone()->with('primaryLocation')->first();
+            $primaryLocation = $zone ? $zone->primaryLocation : null;
+            $locationData['primary_location_id'] = $primaryLocation ? $primaryLocation->id : null;
+            $locationData['can_access_primary'] = $primaryLocation
+                ? $primaryLocation->isAccessibleBy($user)
+                : false;
+        } else {
+            $locationData['primary_location_id'] = null;
+            $locationData['can_access_primary'] = true;
+        }
         
         if ($device) {
             $device->is_online = false;

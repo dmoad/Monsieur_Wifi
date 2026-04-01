@@ -365,6 +365,10 @@
                     <div class="col-md-7">
                         <h4><i data-feather="wifi" style="width:24px;height:24px;margin-right:10px;vertical-align:middle;"></i> Réseaux WiFi</h4>
                         <p>Gérez tous les réseaux WiFi associés à cet emplacement — ajoutez, supprimez ou configurez la sécurité, le portail captif, les paramètres IP, et plus encore.</p>
+                        <div id="zone-network-notice" class="alert alert-info py-1 px-2 mb-2" style="display:none;font-size:0.85rem;">
+                            <i data-feather="layers" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+                            Les réseaux sont gérés par l'emplacement principal de la zone.
+                        </div>
                         <div id="network-summary-badges">
                             <span class="network-summary-badge"><i data-feather="loader" style="width:12px;height:12px;"></i> Chargement...</span>
                         </div>
@@ -997,5 +1001,5 @@
         locale: 'fr'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=7"></script>
+<script src="/assets/js/location-details-v5.js?v=8"></script>
 @endpush
