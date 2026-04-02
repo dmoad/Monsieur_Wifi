@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OnboardingStepNotification;
 
 class CaptivePortalDesignController extends Controller
 {
@@ -109,7 +111,20 @@ class CaptivePortalDesignController extends Controller
         $validated['owner_id'] = $validated['owner_id'] ?? auth()->user()->id;
         
         $design = auth()->user()->captivePortalDesigns()->create($validated);
-        
+
+        // Notify commercial team
+        try {
+            $notifEmail = env('COMMERCIAL_NOTIFICATION_EMAIL');
+            if ($notifEmail) {
+                Mail::to($notifEmail)->send(new OnboardingStepNotification(auth()->user(), 'portal_created', [
+                    'portal_name' => $design->name,
+                    'description' => $design->description,
+                ]));
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send onboarding notification', ['error' => $e->getMessage()]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Captive portal design created successfully',

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Mail\SubscriptionConfirmedMail;
 use App\Mail\NewSubscriptionAdminNotification;
+use App\Mail\OnboardingStepNotification;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Log;
 
@@ -644,8 +645,11 @@ class SubscriptionController extends Controller
 
             Mail::to($user->email)->send(new SubscriptionConfirmedMail($user, $subscriptionData, $locale));
 
-            // Send admin notification
-            Mail::to('lmermet@citypassenger.com')->send(new NewSubscriptionAdminNotification($user, $subscriptionData));
+            // Send onboarding notification to commercial team
+            $notifEmail = env('COMMERCIAL_NOTIFICATION_EMAIL');
+            if ($notifEmail) {
+                Mail::to($notifEmail)->send(new OnboardingStepNotification($user, 'subscription', $subscriptionData));
+            }
 
             Log::info('Subscription confirmation email sent', ['user_id' => $user->id, 'email' => $user->email]);
         } catch (\Exception $e) {
