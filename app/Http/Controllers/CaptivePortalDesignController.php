@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OnboardingStepNotification;
+use App\Services\GoogleSheetsService;
 
 class CaptivePortalDesignController extends Controller
 {
@@ -112,15 +113,19 @@ class CaptivePortalDesignController extends Controller
         
         $design = auth()->user()->captivePortalDesigns()->create($validated);
 
-        // Notify commercial team
+        // Notify commercial team + Google Sheets
         try {
+            $user = auth()->user();
             $notifEmail = env('COMMERCIAL_NOTIFICATION_EMAIL');
             if ($notifEmail) {
-                Mail::to($notifEmail)->send(new OnboardingStepNotification(auth()->user(), 'portal_created', [
+                Mail::to($notifEmail)->send(new OnboardingStepNotification($user, 'portal_created', [
                     'portal_name' => $design->name,
                     'description' => $design->description,
                 ]));
             }
+            app(GoogleSheetsService::class)->updateOnboardingStep($user->name, $user->email, 'portal_created', $user->created_at->format('d/m/Y H:i'), [
+                'portal_name' => $design->name,
+            ]);
         } catch (\Exception $e) {
             Log::error('Failed to send onboarding notification', ['error' => $e->getMessage()]);
         }

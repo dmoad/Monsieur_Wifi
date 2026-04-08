@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Mail\SubscriptionConfirmedMail;
 use App\Mail\NewSubscriptionAdminNotification;
 use App\Mail\OnboardingStepNotification;
+use App\Services\GoogleSheetsService;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Log;
 
@@ -645,11 +646,12 @@ class SubscriptionController extends Controller
 
             Mail::to($user->email)->send(new SubscriptionConfirmedMail($user, $subscriptionData, $locale));
 
-            // Send onboarding notification to commercial team
+            // Send onboarding notification to commercial team + Google Sheets
             $notifEmail = env('COMMERCIAL_NOTIFICATION_EMAIL');
             if ($notifEmail) {
                 Mail::to($notifEmail)->send(new OnboardingStepNotification($user, 'subscription', $subscriptionData));
             }
+            app(GoogleSheetsService::class)->updateOnboardingStep($user->name, $user->email, 'subscription', $user->created_at->format('d/m/Y H:i'), $subscriptionData);
 
             Log::info('Subscription confirmation email sent', ['user_id' => $user->id, 'email' => $user->email]);
         } catch (\Exception $e) {
