@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use App\Models\Location;
 use App\Models\LocationNetwork;
+use App\Support\IPv4Subnet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -113,11 +114,12 @@ class LocationNetworkController extends Controller
             'dns1'              => 'nullable|ip',
             'dns2'              => 'nullable|ip',
             'dhcp_enabled'      => 'boolean',
-            'dhcp_start'        => 'nullable|ip',
-            'dhcp_end'          => 'nullable|ip',
+            'dhcp_start'        => 'nullable|ipv4',
+            'dhcp_end'          => 'nullable|integer|min:1|max:16777216',
             'mac_filter_mode'   => 'nullable|string',
             'mac_filter_list'   => 'nullable|array',
             'qos_policy'        => 'nullable|string|in:full,scavenger',
+            'radio'             => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Set default password for password-type networks
@@ -125,12 +127,21 @@ class LocationNetworkController extends Controller
             $validated['password'] = 'abcd1234';
         }
 
-        // For Bridge to WAN mode, remove null IP/DHCP fields to avoid NOT NULL column errors
-        if (($validated['ip_mode'] ?? null) === 'bridge') {
+        // Bridge or DHCP client: clear LAN / DHCP server fields
+        if (in_array($validated['ip_mode'] ?? null, ['bridge', 'dhcp'], true)) {
             foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
                 unset($validated[$f]);
             }
             $validated['dhcp_enabled'] = false;
+        }
+
+        $dhcpErr = $this->assertDhcpPoolValid($validated, null);
+        if ($dhcpErr !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => $dhcpErr['message'],
+                'errors'  => ['dhcp' => [$dhcpErr['message']]],
+            ], 422);
         }
 
         $sortOrder = $currentCount; // append at end
@@ -219,11 +230,12 @@ class LocationNetworkController extends Controller
             'dns1'              => 'nullable|ip',
             'dns2'              => 'nullable|ip',
             'dhcp_enabled'      => 'sometimes|boolean',
-            'dhcp_start'        => 'nullable|ip',
-            'dhcp_end'          => 'nullable|ip',
+            'dhcp_start'        => 'nullable|ipv4',
+            'dhcp_end'          => 'nullable|integer|min:1|max:16777216',
             'mac_filter_mode'   => 'nullable|string',
             'mac_filter_list'   => 'nullable|array',
             'qos_policy'        => 'nullable|string|in:full,scavenger',
+            'radio'             => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Check if updating to password type or if already password type
@@ -251,13 +263,21 @@ class LocationNetworkController extends Controller
             }
         }
 
-        // For Bridge to WAN mode, null out IP/DHCP fields so they are not written
-        // (those columns may have NOT NULL constraints; bridge mode doesn't use them)
-        if (($validated['ip_mode'] ?? $network->ip_mode) === 'bridge') {
+        // Bridge or DHCP client: clear LAN / DHCP server fields
+        if (in_array($validated['ip_mode'] ?? $network->ip_mode, ['bridge', 'dhcp'], true)) {
             foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
                 unset($validated[$f]);
             }
             $validated['dhcp_enabled'] = false;
+        }
+
+        $dhcpErr = $this->assertDhcpPoolValid($validated, $network);
+        if ($dhcpErr !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => $dhcpErr['message'],
+                'errors'  => ['dhcp' => [$dhcpErr['message']]],
+            ], 422);
         }
 
         // Determine if config version should be incremented
@@ -265,7 +285,7 @@ class LocationNetworkController extends Controller
             'type', 'ssid', 'enabled', 'visible', 'password', 'security',
             'auth_method', 'ip_address', 'netmask', 'gateway', 'dns1', 'dns2',
             'vlan_id', 'vlan_tagging', 'dhcp_enabled', 'dhcp_start', 'dhcp_end',
-            'mac_filter_mode', 'mac_filter_list',
+            'mac_filter_mode', 'mac_filter_list', 'radio',
         ];
 
         $shouldIncrement = false;
@@ -358,6 +378,40 @@ class LocationNetworkController extends Controller
     // -------------------------------------------------------------------------
     // Private helper
     // -------------------------------------------------------------------------
+
+    /**
+     * @return array{message: string}|null
+     */
+    private function assertDhcpPoolValid(array $validated, ?LocationNetwork $existing): ?array
+    {
+        $ipMode = $validated['ip_mode'] ?? $existing?->ip_mode ?? 'static';
+        if ($ipMode !== 'static') {
+            return null;
+        }
+
+        $dhcpEnabled = array_key_exists('dhcp_enabled', $validated)
+            ? (bool) $validated['dhcp_enabled']
+            : (bool) ($existing?->dhcp_enabled ?? false);
+
+        if (! $dhcpEnabled) {
+            return null;
+        }
+
+        $ip = $validated['ip_address'] ?? $existing?->ip_address;
+        $mask = $validated['netmask'] ?? $existing?->netmask;
+        $start = $validated['dhcp_start'] ?? $existing?->dhcp_start;
+        $pool = array_key_exists('dhcp_end', $validated)
+            ? $validated['dhcp_end']
+            : $existing?->dhcp_end;
+        $pool = is_numeric($pool) ? (int) $pool : null;
+
+        $r = IPv4Subnet::validateDhcpPool($ip, $mask, $start, $pool);
+        if (! $r['valid']) {
+            return ['message' => $r['message'] ?? 'Invalid DHCP pool.'];
+        }
+
+        return null;
+    }
 
     private function incrementConfigVersion(Location $location): void
     {

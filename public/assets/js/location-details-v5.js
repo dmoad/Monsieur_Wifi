@@ -230,6 +230,9 @@ async function loadLocationDetails() {
         $('#location-shared-users-group').hide();
     }
 
+    // Pre-populate scheduled reboot fields
+    populateRebootSchedule(location);
+
     reRenderFeather();
 }
 
@@ -960,6 +963,69 @@ async function saveDeviceAssignment() {
     }
 }
 
+function showMacInputError(msg) {
+    $('#device-mac-input').addClass('is-invalid');
+    $('#device-mac-input-error').text(msg).show();
+}
+
+function clearMacInputError() {
+    $('#device-mac-input').removeClass('is-invalid');
+    $('#device-mac-input-error').text('').hide();
+}
+
+async function saveDeviceMacAddress() {
+    if (!UserManager.isAdminOrAbove()) return;
+
+    const $btn = $('#save-device-mac-btn');
+    const origHtml = $btn.html();
+    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>');
+    clearMacInputError();
+
+    const lang = document.documentElement.lang;
+    const newMac = $('#device-mac-input').val().trim();
+    const macRegex = /^([0-9A-Fa-f]{2}[:\-]){5}([0-9A-Fa-f]{2})$/;
+    if (!macRegex.test(newMac)) {
+        showMacInputError(lang === 'fr'
+            ? 'Format invalide. Utilisez AA:BB:CC:DD:EE:FF'
+            : 'Invalid format. Use AA:BB:CC:DD:EE:FF');
+        $btn.prop('disabled', false).html(origHtml);
+        return;
+    }
+
+    try {
+        const res = await apiFetch(`${API}/locations/${location_id}/update-mac-address`, {
+            method: 'POST',
+            body: JSON.stringify({ mac_address: newMac }),
+        });
+        if (res.success) {
+            const normalised = newMac.toUpperCase().replace(/-/g, ':');
+            const normalisedDash = newMac.toUpperCase().replace(/:/g, '-');
+            $('#device-mac-preview').text(normalised);
+            $('.router_mac_address, .router_mac_address_header').text(normalised);
+            if (currentDeviceData) {
+                currentDeviceData.mac_address = normalisedDash;
+            }
+            $('#device-mac-edit-inline').hide();
+            $('#device-mac-preview-view').show();
+            reRenderFeather();
+            toastr.success(lang === 'fr' ? 'Adresse MAC mise à jour.' : 'MAC address updated.');
+        } else {
+            // Show the server error inline (e.g. "MAC address is already in use by another device")
+            showMacInputError(res.message || (lang === 'fr' ? 'Échec de la mise à jour.' : 'Failed to update MAC address.'));
+        }
+    } catch (err) {
+        // 409 conflict and 422 validation errors carry a message we can show inline
+        const serverMsg = err?.body?.message || err?.body?.errors?.mac_address?.[0] || null;
+        if (serverMsg) {
+            showMacInputError(serverMsg);
+        } else {
+            handleApiError(err, 'saveDeviceMacAddress');
+        }
+    } finally {
+        $btn.prop('disabled', false).html(origHtml);
+    }
+}
+
 // ============================================================================
 // FIRMWARE UPDATE
 // ============================================================================
@@ -1047,6 +1113,89 @@ async function restartDevice() {
     } finally {
         $btn.prop('disabled', false).html(origHtml);
         reRenderFeather();
+    }
+}
+
+// ============================================================================
+// SCHEDULED REBOOT
+// ============================================================================
+
+function populateRebootSchedule(location) {
+    if (location.scheduled_reboot_time) {
+        // Convert "2026-03-27 03:00:00" → "2026-03-27T03:00" for datetime-local input
+        const datetimeLocal = location.scheduled_reboot_time.substring(0, 16).replace(' ', 'T');
+        $('#scheduled-reboot-time').val(datetimeLocal);
+
+        // Show "currently scheduled" label
+        const display = location.scheduled_reboot_time.substring(0, 16);
+        $('#scheduled-reboot-current-value').text(display);
+        $('#scheduled-reboot-current').show();
+    } else {
+        $('#scheduled-reboot-time').val('');
+        $('#scheduled-reboot-current').hide();
+    }
+}
+
+async function saveRebootSchedule() {
+    const $btn = $('#save-reboot-schedule-btn');
+    const origHtml = $btn.html();
+    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+
+    // datetime-local gives "2026-03-27T03:00", API expects "2026-03-27 03:00"
+    const rawVal = $('#scheduled-reboot-time').val();
+    const time = rawVal ? rawVal.replace('T', ' ') : null;
+
+    try {
+        const res = await apiFetch(`${API}/locations/${location_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                settings_type: 'reboot_schedule',
+                scheduled_reboot_time: time,
+            }),
+        });
+        if (res.success) {
+            if (time) {
+                $('#scheduled-reboot-current-value').text(time);
+                $('#scheduled-reboot-current').show();
+            } else {
+                $('#scheduled-reboot-current').hide();
+            }
+            toastr.success(document.documentElement.lang === 'fr' ? 'Planification du redémarrage enregistrée.' : 'Reboot schedule saved.');
+            $('#restart-confirmation-modal').modal('hide');
+        } else {
+            toastr.error(res.message || 'Failed to save reboot schedule.');
+        }
+    } catch (err) {
+        handleApiError(err, 'saveRebootSchedule');
+    } finally {
+        $btn.prop('disabled', false).html(origHtml);
+    }
+}
+
+async function clearRebootSchedule() {
+    const $btn = $('#clear-reboot-schedule-btn');
+    const origHtml = $btn.html();
+    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>…');
+
+    try {
+        const res = await apiFetch(`${API}/locations/${location_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                settings_type: 'reboot_schedule',
+                scheduled_reboot_time: null,
+            }),
+        });
+        if (res.success) {
+            $('#scheduled-reboot-time').val('');
+            $('#scheduled-reboot-current').hide();
+            toastr.success(document.documentElement.lang === 'fr' ? 'Planification supprimée.' : 'Reboot schedule cleared.');
+        } else {
+            toastr.error(res.message || 'Failed to clear schedule.');
+        }
+    } catch (err) {
+        handleApiError(err, 'clearRebootSchedule');
+    } finally {
+        $btn.prop('disabled', false).html(origHtml);
     }
 }
 
@@ -1219,9 +1368,39 @@ function initEventHandlers() {
     $(document).on('click', '.save-wan-settings', saveWanSettings);
     $('#wan-connection-type').on('change', function () { toggleWanFields($(this).val()); });
 
-    // Restart device
-    $('#device-restart-btn').on('click', function () { $('#restart-confirmation-modal').modal('show'); });
+    // Restart device — reset modal to "Reboot Now" tab each time it opens
+    $('#device-restart-btn').on('click', function () {
+        // Reset to "Reboot Now" tab
+        $('[data-restart-tab]').removeClass('active');
+        $('[data-restart-tab="now"]').addClass('active');
+        $('#reboot-now-section').show();
+        $('#schedule-reboot-section').hide();
+        $('#confirm-restart-btn').show();
+        $('#save-reboot-schedule-btn').hide();
+        $('#restart-confirmation-modal').modal('show');
+    });
     $('#confirm-restart-btn').on('click', restartDevice);
+    $('#save-reboot-schedule-btn').on('click', saveRebootSchedule);
+    $('#clear-reboot-schedule-btn').on('click', clearRebootSchedule);
+
+    // Restart modal tab switching
+    $(document).on('click', '[data-restart-tab]', function (e) {
+        e.preventDefault();
+        const tab = $(this).data('restart-tab');
+        $('[data-restart-tab]').removeClass('active');
+        $(this).addClass('active');
+        if (tab === 'now') {
+            $('#reboot-now-section').show();
+            $('#schedule-reboot-section').hide();
+            $('#confirm-restart-btn').show();
+            $('#save-reboot-schedule-btn').hide();
+        } else {
+            $('#reboot-now-section').hide();
+            $('#schedule-reboot-section').show();
+            $('#confirm-restart-btn').hide();
+            $('#save-reboot-schedule-btn').show();
+        }
+    });
 
     // Firmware update
     $('#update-firmware-btn').on('click', function () {
@@ -1256,11 +1435,19 @@ function initEventHandlers() {
     });
     $(document).on('change', '#device-select', function () {
         const $opt = $(this).find('option:selected');
-        const mac = $opt.data('mac') || '';
+        const mac = ($opt.data('mac') || '').replace(/-/g, ':');
         if (mac) {
             $('#device-mac-preview').text(mac);
+            $('#device-mac-edit-inline').hide();
+            $('#device-mac-preview-view').show();
+            clearMacInputError();
+            // Only show the edit button for admin / superadmin
+            if (UserManager.isAdminOrAbove()) {
+                $('#edit-device-mac-btn').show();
+            }
             $('#device-mac-preview-group').show();
             $('#save-mac-address-btn').prop('disabled', false);
+            reRenderFeather();
         } else {
             $('#device-mac-preview-group').hide();
             $('#device-mac-preview').text('-');
@@ -1273,7 +1460,31 @@ function initEventHandlers() {
         $('#device-mac-preview-group').hide();
         $('#current-mac-display').text('-');
         $('#save-mac-address-btn').prop('disabled', true);
+        // Reset inline MAC edit state
+        $('#device-mac-edit-inline').hide();
+        $('#device-mac-preview-view').show();
+        $('#edit-device-mac-btn').hide();
+        clearMacInputError();
     });
+
+    // Inline MAC address edit (admin / superadmin only)
+    $(document).on('click', '#edit-device-mac-btn', function () {
+        if (!UserManager.isAdminOrAbove()) return;
+        const currentMac = $('#device-mac-preview').text().trim();
+        $('#device-mac-input').val(currentMac !== '-' ? currentMac : '');
+        clearMacInputError();
+        $('#device-mac-preview-view').hide();
+        $('#device-mac-edit-inline').show();
+        $('#device-mac-input').focus();
+    });
+    $(document).on('click', '#cancel-device-mac-btn', function () {
+        clearMacInputError();
+        $('#device-mac-edit-inline').hide();
+        $('#device-mac-preview-view').show();
+    });
+    $(document).on('click', '#save-device-mac-btn', saveDeviceMacAddress);
+    // Clear inline error as the user types
+    $(document).on('input', '#device-mac-input', clearMacInputError);
 
     // Online users pagination
     $('#refresh-online-users').on('click', loadOnlineUsers);

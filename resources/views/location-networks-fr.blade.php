@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
 <link rel="stylesheet" type="text/css" href="/working-hours/interactive-schedule.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/location-networks.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/location-networks.css?v=6">
 @endpush
 
 @section('content')
@@ -145,17 +145,29 @@
                     </div>
                     <div class="network-identity-divider mx-1"></div>
                     <div class="network-enabled-wrap">
-                        <div class="custom-control custom-switch mb-0">
-                            <input type="checkbox" class="custom-control-input network-enabled" id="network-enabled-__ID__" checked>
-                            <label class="custom-control-label" for="network-enabled-__ID__">Activé</label>
-                        </div>
+                        <input type="checkbox" class="network-toggle-checkbox network-enabled" id="network-enabled-__ID__" checked>
+                        <label class="network-toggle-btn" for="network-enabled-__ID__">
+                            <i data-feather="power" style="width:13px;height:13px;"></i>
+                            <span class="network-toggle-label-on">Actif</span>
+                            <span class="network-toggle-label-off">Inactif</span>
+                        </label>
                     </div>
                     <div class="network-identity-divider mx-1"></div>
                     <div class="network-qos-wrap">
-                        <div class="custom-control custom-switch mb-0">
-                            <input type="checkbox" class="custom-control-input network-qos-policy" id="network-qos-__ID__">
-                            <label class="custom-control-label" for="network-qos-__ID__">QoS complet</label>
-                        </div>
+                        <input type="checkbox" class="network-toggle-checkbox network-qos-policy" id="network-qos-__ID__">
+                        <label class="network-toggle-btn" for="network-qos-__ID__">
+                            <i data-feather="zap" style="width:13px;height:13px;"></i>
+                            <span>QoS complet</span>
+                        </label>
+                    </div>
+                    <div class="network-identity-divider mx-1"></div>
+                    <div class="network-radio-wrap">
+                        <i data-feather="radio" style="width:14px;height:14px;color:#adb5bd;"></i>
+                        <select class="network-radio">
+                            <option value="all">2.4 et 5 GHz</option>
+                            <option value="2.4">2.4 GHz uniquement</option>
+                            <option value="5">5 GHz uniquement</option>
+                        </select>
                     </div>
                 </div>
 
@@ -405,13 +417,21 @@
                                     </div>
                                 </div>
 
-                                <div class="panel-sub-section">
-                                    <div class="panel-sub-label">Serveur DHCP</div>
-                                    <div class="row align-items-end">
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label>&nbsp;</label>
-                                                <div class="d-flex align-items-center" style="height:50px;">
+                                <div class="panel-sub-section dhcp-address-pool-section">
+                                    <div class="dhcp-address-pool-panel">
+                                        <div class="dhcp-address-pool-panel-head">
+                                            <span class="dhcp-address-pool-panel-icon">
+                                                <i data-feather="share-2" style="color:#17a2b8;width:18px;height:18px;"></i>
+                                            </span>
+                                            <div class="dhcp-address-pool-panel-titles">
+                                                <div class="dhcp-address-pool-panel-title">Plage d’adresses DHCP</div>
+                                                <div class="dhcp-address-pool-panel-sub">Attribue des adresses LAN aux appareils sur ce réseau.</div>
+                                            </div>
+                                        </div>
+                                        <div class="row align-items-end">
+                                            <div class="col-md-6 col-lg-5">
+                                                <div class="form-group mb-md-0">
+                                                    <label class="dhcp-address-pool-switch-label">Serveur DHCP</label>
                                                     <div class="custom-control custom-switch mb-0">
                                                         <input type="checkbox" class="custom-control-input network-dhcp-enabled" id="network-dhcp-__ID__" checked>
                                                         <label class="custom-control-label" for="network-dhcp-__ID__">Activer le DHCP</label>
@@ -419,13 +439,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-5">
-                                            <div class="form-group">
-                                                <label>Plage DHCP</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control network-dhcp-start" placeholder="x.x.x.100">
-                                                    <div class="input-group-prepend input-group-append"><span class="input-group-text">–</span></div>
-                                                    <input type="text" class="form-control network-dhcp-end" placeholder="x.x.x.200">
+                                        <div class="row dhcp-address-pool-fields">
+                                            <div class="col-md-6 col-lg-5">
+                                                <div class="form-group">
+                                                    <label>Adresse de début</label>
+                                                    <input type="text" class="form-control network-dhcp-start" placeholder="ex. 192.168.1.100" autocomplete="off">
+                                                    <small class="form-text text-muted">Première adresse de la plage (IPv4).</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-lg-5">
+                                                <div class="form-group">
+                                                    <label>Taille du pool</label>
+                                                    <input type="number" class="form-control network-dhcp-end" placeholder="ex. 101" min="1" max="16777216" step="1">
+                                                    <small class="form-text text-muted">Nombre d’adresses (doit tenir dans le sous-réseau).</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -580,5 +606,5 @@
         },
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=5"></script>
+<script src="/assets/js/location-networks-v5.js?v=6"></script>
 @endpush

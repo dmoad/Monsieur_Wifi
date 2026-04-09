@@ -802,21 +802,56 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>Avertissement :</strong> Cette action redémarrera l'appareil et interrompra temporairement l'accès à internet.</div></div>
-                <div class="d-flex align-items-center mb-3">
-                    <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
-                    <div>
-                        <h6 class="mb-0">Informations sur l'appareil</h6>
-                        <p class="card-text text-muted mb-0">Emplacement : <span class="location_name font-weight-bold"></span></p>
-                        <p class="card-text text-muted mb-0">Modèle : <span class="router_model font-weight-bold"></span></p>
-                        <p class="card-text text-muted mb-0">Adresse MAC : <span class="router_mac_address font-weight-bold"></span></p>
+                <!-- Tab switcher -->
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-restart-tab="now" href="#">
+                            <i data-feather="zap" class="mr-1"></i>Redémarrer maintenant
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-restart-tab="schedule" href="#">
+                            <i data-feather="clock" class="mr-1"></i>Planifier
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Reboot Now tab -->
+                <div id="reboot-now-section">
+                    <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>Avertissement :</strong> Cette action redémarrera l'appareil et interrompra temporairement l'accès à internet.</div></div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
+                        <div>
+                            <h6 class="mb-0">Informations sur l'appareil</h6>
+                            <p class="card-text text-muted mb-0">Emplacement : <span class="location_name font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">Modèle : <span class="router_model font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">Adresse MAC : <span class="router_mac_address font-weight-bold"></span></p>
+                        </div>
                     </div>
+                    <p class="text-muted">Êtes-vous sûr de vouloir redémarrer cet appareil ?</p>
                 </div>
-                <p class="text-muted">Êtes-vous sûr de vouloir redémarrer cet appareil ?</p>
+
+                <!-- Schedule tab -->
+                <div id="schedule-reboot-section" style="display:none;">
+                    <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i>L'appareil redémarrera une seule fois à la date et à l'heure spécifiées (heure du serveur). La planification est supprimée automatiquement après exécution.</div></div>
+                    <div class="form-group">
+                        <label for="scheduled-reboot-time">Date et heure du redémarrage</label>
+                        <input type="datetime-local" class="form-control" id="scheduled-reboot-time">
+                        <small class="text-muted">L'appareil redémarrera à cette heure (dans un délai de 1 à 5 minutes). La planification se supprime automatiquement.</small>
+                    </div>
+                    <div id="scheduled-reboot-current" class="text-muted mb-2" style="font-size:0.85rem; display:none;">
+                        <i data-feather="clock" style="width:13px;height:13px;vertical-align:middle;"></i>
+                        Planifié pour : <strong id="scheduled-reboot-current-value"></strong>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="clear-reboot-schedule-btn">
+                        <i data-feather="x" class="mr-1"></i>Supprimer la planification
+                    </button>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-danger" id="confirm-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i><span>Redémarrer l'appareil</span></button>
+                <button type="button" class="btn btn-danger" id="confirm-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i><span>Redémarrer maintenant</span></button>
+                <button type="button" class="btn btn-primary" id="save-reboot-schedule-btn" style="display:none;"><i data-feather="save" class="mr-1"></i><span>Enregistrer la planification</span></button>
             </div>
         </div>
     </div>
@@ -971,7 +1006,21 @@
                 </div>
                 <div class="form-group" id="device-mac-preview-group" style="display:none;">
                     <label>Adresse MAC</label>
-                    <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="device-mac-preview">-</div>
+                    <div id="device-mac-preview-view" class="d-flex align-items-center">
+                        <span id="device-mac-preview" class="form-control-plaintext bg-light p-2 rounded font-weight-bold mr-2" style="flex:1;">-</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit-device-mac-btn" title="Modifier l'adresse MAC" style="display:none;">
+                            <i data-feather="edit-2" style="width:14px;height:14px;"></i>
+                        </button>
+                    </div>
+                    <div id="device-mac-edit-inline" style="display:none;">
+                        <input type="text" class="form-control form-control-sm mb-1"
+                               id="device-mac-input" placeholder="AA:BB:CC:DD:EE:FF" maxlength="17">
+                        <div id="device-mac-input-error" class="invalid-feedback" style="display:none;"></div>
+                        <div class="d-flex mt-1">
+                            <button type="button" class="btn btn-sm btn-primary mr-1" id="save-device-mac-btn">Enregistrer</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="cancel-device-mac-btn">Annuler</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Appareil actuellement assigné</label>
@@ -1001,5 +1050,5 @@
         locale: 'fr'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=8"></script>
+<script src="/assets/js/location-details-v5.js?v=11"></script>
 @endpush

@@ -673,21 +673,56 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>Warning:</strong> This action will restart the device and temporarily interrupt internet access.</div></div>
-                <div class="d-flex align-items-center mb-3">
-                    <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
-                    <div>
-                        <h6 class="mb-0">Device Information</h6>
-                        <p class="card-text text-muted mb-0">Location: <span class="location_name font-weight-bold"></span></p>
-                        <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
-                        <p class="card-text text-muted mb-0">MAC Address: <span class="router_mac_address font-weight-bold"></span></p>
+                <!-- Tab switcher -->
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-restart-tab="now" href="#">
+                            <i data-feather="zap" class="mr-1"></i>Reboot Now
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-restart-tab="schedule" href="#">
+                            <i data-feather="clock" class="mr-1"></i>Schedule
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Reboot Now tab -->
+                <div id="reboot-now-section">
+                    <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>Warning:</strong> This action will restart the device and temporarily interrupt internet access.</div></div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
+                        <div>
+                            <h6 class="mb-0">Device Information</h6>
+                            <p class="card-text text-muted mb-0">Location: <span class="location_name font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">MAC Address: <span class="router_mac_address font-weight-bold"></span></p>
+                        </div>
                     </div>
+                    <p class="text-muted">Are you sure you want to restart this device?</p>
                 </div>
-                <p class="text-muted">Are you sure you want to restart this device?</p>
+
+                <!-- Schedule tab -->
+                <div id="schedule-reboot-section" style="display:none;">
+                    <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i>The device will reboot once at the specified date and time (server time). The schedule is cleared automatically after firing.</div></div>
+                    <div class="form-group">
+                        <label for="scheduled-reboot-time">Reboot Date &amp; Time</label>
+                        <input type="datetime-local" class="form-control" id="scheduled-reboot-time">
+                        <small class="text-muted">Device will reboot at this time (within 1–5 min). Schedule clears automatically after firing.</small>
+                    </div>
+                    <div id="scheduled-reboot-current" class="text-muted mb-2" style="font-size:0.85rem; display:none;">
+                        <i data-feather="clock" style="width:13px;height:13px;vertical-align:middle;"></i>
+                        Currently scheduled: <strong id="scheduled-reboot-current-value"></strong>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="clear-reboot-schedule-btn">
+                        <i data-feather="x" class="mr-1"></i>Clear Schedule
+                    </button>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirm-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i><span>Restart Device</span></button>
+                <button type="button" class="btn btn-danger" id="confirm-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i><span>Restart Now</span></button>
+                <button type="button" class="btn btn-primary" id="save-reboot-schedule-btn" style="display:none;"><i data-feather="save" class="mr-1"></i><span>Save Schedule</span></button>
             </div>
         </div>
     </div>
@@ -842,7 +877,21 @@
                 </div>
                 <div class="form-group" id="device-mac-preview-group" style="display:none;">
                     <label>MAC Address</label>
-                    <div class="form-control-plaintext bg-light p-2 rounded font-weight-bold" id="device-mac-preview">-</div>
+                    <div id="device-mac-preview-view" class="d-flex align-items-center">
+                        <span id="device-mac-preview" class="form-control-plaintext bg-light p-2 rounded font-weight-bold mr-2" style="flex:1;">-</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit-device-mac-btn" title="Edit MAC address" style="display:none;">
+                            <i data-feather="edit-2" style="width:14px;height:14px;"></i>
+                        </button>
+                    </div>
+                    <div id="device-mac-edit-inline" style="display:none;">
+                        <input type="text" class="form-control form-control-sm mb-1"
+                               id="device-mac-input" placeholder="AA:BB:CC:DD:EE:FF" maxlength="17">
+                        <div id="device-mac-input-error" class="invalid-feedback" style="display:none;"></div>
+                        <div class="d-flex mt-1">
+                            <button type="button" class="btn btn-sm btn-primary mr-1" id="save-device-mac-btn">Save</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="cancel-device-mac-btn">Cancel</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Currently Assigned Device</label>
@@ -871,5 +920,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=8"></script>
+<script src="/assets/js/location-details-v5.js?v=11"></script>
 @endpush

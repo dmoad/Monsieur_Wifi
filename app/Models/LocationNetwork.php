@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\IPv4Subnet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -51,12 +52,16 @@ class LocationNetwork extends Model
 
         // QoS
         'qos_policy',
+
+        // Radio band
+        'radio',
     ];
 
     protected $casts = [
         'enabled'       => 'boolean',
         'visible'       => 'boolean',
         'dhcp_enabled'  => 'boolean',
+        'dhcp_end'      => 'integer',
         'mac_filter_list' => 'array',
         'working_hours'   => 'array',
         'vlan_id'       => 'integer',
@@ -66,6 +71,29 @@ class LocationNetwork extends Model
         'upload_limit'  => 'integer',
         'sort_order'    => 'integer',
     ];
+
+    protected $appends = ['dhcp_end_ip'];
+
+    /**
+     * Last IPv4 in the DHCP pool (derived from dhcp_start + pool size), for firmware/API consumers that expect an end address.
+     */
+    public function getDhcpEndIpAttribute(): ?string
+    {
+        if ($this->dhcp_start === null || $this->dhcp_end === null || (int) $this->dhcp_end < 1) {
+            return null;
+        }
+        $start = IPv4Subnet::ipv4ToUint32($this->dhcp_start);
+        if ($start === null) {
+            return null;
+        }
+        $last = $start + (int) $this->dhcp_end - 1;
+        if ($last > 0xFFFFFFFF) {
+            return null;
+        }
+        $packed = $last > 0x7FFFFFFF ? $last - 0x100000000 : $last;
+
+        return long2ip($packed);
+    }
 
     /**
      * Valid network types.
@@ -80,6 +108,11 @@ class LocationNetwork extends Model
     const QOS_POLICY_FULL      = 'full';
     const QOS_POLICY_SCAVENGER = 'scavenger';
     const QOS_POLICIES         = ['full', 'scavenger'];
+
+    const RADIO_ALL   = 'all';
+    const RADIO_2GHZ  = '2.4';
+    const RADIO_5GHZ  = '5';
+    const RADIOS      = ['all', '2.4', '5'];
 
     public function location(): BelongsTo
     {

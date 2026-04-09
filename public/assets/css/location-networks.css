@@ -65,19 +65,34 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 /* Network identity bar */
 .network-identity-bar { display: flex; align-items: center; gap: 0; background: #f8f9fa; border-radius: 10px; padding: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 6px; }
 .network-type-pill-group { display: flex; gap: 4px; background: #fff; border-radius: 8px; padding: 4px; border: 1px solid #e9ecef; flex-shrink: 0; }
-.network-type-pill { border: none; background: transparent; border-radius: 6px; padding: 6px 14px; font-size: 0.82rem; font-weight: 600; color: #6c757d; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+.network-type-pill { border: none; background: transparent; border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; font-weight: 600; color: #6c757d; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
 .network-type-pill:hover { color: #495057; background: #f1f3f5; }
 .network-type-pill.active-password { background: rgba(115,103,240,0.12); color: #7367f0; }
 .network-type-pill.active-captive_portal { background: rgba(40,199,111,0.12); color: #28c76f; }
 .network-type-pill.active-open { background: rgba(255,159,67,0.12); color: #ff9f43; }
 .network-identity-divider { width: 1px; height: 32px; background: #dee2e6; flex-shrink: 0; }
-.network-ssid-wrap { flex: 1; min-width: 160px; position: relative; }
+.network-ssid-wrap { flex: 1; min-width: 120px; max-width: 220px; position: relative; }
 .network-ssid-wrap .ssid-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #adb5bd; pointer-events: none; }
 .network-ssid-wrap input { padding-left: 36px !important; height: 42px; border-radius: 8px !important; font-weight: 600; }
 .network-visibility-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 0 14px; height: 42px; }
-.network-visibility-wrap select { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; font-size: 0.85rem; font-weight: 500; color: #495057; min-width: 130px; }
+.network-visibility-wrap select { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; font-size: 0.85rem; font-weight: 500; color: #495057; min-width: 110px; }
 .network-visibility-wrap select:focus { box-shadow: none !important; }
-.network-enabled-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 0 14px; height: 42px; font-size: 0.85rem; font-weight: 600; color: #495057; }
+.network-radio-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 0 14px; height: 42px; }
+.network-radio-wrap select { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; font-size: 0.85rem; font-weight: 500; color: #495057; min-width: 95px; }
+.network-radio-wrap select:focus { box-shadow: none !important; }
+.network-enabled-wrap,
+.network-qos-wrap { display: flex; align-items: center; flex-shrink: 0; }
+.network-toggle-checkbox { display: none; }
+.network-toggle-btn { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 0 12px; height: 42px; font-size: 0.82rem; font-weight: 600; color: #adb5bd; cursor: pointer; margin: 0; transition: all 0.2s ease; user-select: none; white-space: nowrap; }
+.network-toggle-btn:hover { border-color: #ced4da; color: #6c757d; }
+.network-toggle-label-off { display: inline; }
+.network-toggle-label-on  { display: none; }
+.network-toggle-checkbox:checked + .network-toggle-btn .network-toggle-label-off { display: none; }
+.network-toggle-checkbox:checked + .network-toggle-btn .network-toggle-label-on  { display: inline; }
+/* Enabled toggle — green when checked */
+.network-enabled-wrap .network-toggle-checkbox:checked + .network-toggle-btn { background: rgba(40,199,111,0.1); border-color: rgba(40,199,111,0.35); color: #28c76f; }
+/* QoS toggle — purple when checked */
+.network-qos-wrap .network-toggle-checkbox:checked + .network-toggle-btn { background: rgba(115,103,240,0.1); border-color: rgba(115,103,240,0.35); color: #7367f0; }
 
 /* Type-specific section panels */
 .network-type-panel { border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 1rem; overflow: hidden; }
@@ -105,6 +120,58 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .panel-ip .network-type-panel-header { background: rgba(23,162,184,0.05); border-bottom-color: rgba(23,162,184,0.15); }
 .panel-ip .network-type-panel-icon { background: rgba(23,162,184,0.12); }
 .panel-ip .network-type-panel-title { color: #17a2b8; }
+
+/* DHCP address pool — prominent sub-panel inside IP configuration */
+.dhcp-address-pool-section { margin-top: 1.25rem; padding-top: 0; border-top: none; }
+.dhcp-address-pool-panel {
+    border: 2px solid rgba(23, 162, 184, 0.35);
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(23, 162, 184, 0.06) 0%, rgba(255, 255, 255, 0.98) 48px);
+    padding: 1rem 1.25rem 1.25rem;
+    box-shadow: 0 2px 12px rgba(23, 162, 184, 0.08);
+}
+.dhcp-address-pool-panel-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(23, 162, 184, 0.2);
+}
+.dhcp-address-pool-panel-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(23, 162, 184, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.dhcp-address-pool-panel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0c5460;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+}
+.dhcp-address-pool-panel-sub {
+    font-size: 0.82rem;
+    color: #6c757d;
+    margin-top: 2px;
+    line-height: 1.35;
+}
+.dhcp-address-pool-switch-label {
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    font-size: 0.82rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem !important;
+}
+.dhcp-address-pool-fields { margin-top: 0.25rem; }
+.dhcp-address-pool-fields .form-text { font-size: 0.78rem; margin-top: 0.35rem; }
+
 .panel-mac { border-color: rgba(234,84,85,0.25); }
 .panel-mac .network-type-panel-header { background: rgba(234,84,85,0.05); border-bottom-color: rgba(234,84,85,0.15); }
 .panel-mac .network-type-panel-icon { background: rgba(234,84,85,0.12); }
@@ -121,11 +188,28 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .auth-method-pill.active { border-color: #28c76f; background: rgba(40,199,111,0.1); color: #28c76f; }
 
 /* Dark mode */
+.dark-layout .dhcp-address-pool-panel {
+    border-color: rgba(23, 162, 184, 0.45);
+    background: linear-gradient(180deg, rgba(23, 162, 184, 0.1) 0%, rgba(40, 48, 70, 0.95) 52px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+.dark-layout .dhcp-address-pool-panel-head { border-bottom-color: rgba(23, 162, 184, 0.25); }
+.dark-layout .dhcp-address-pool-panel-title { color: #b8e0e8; }
+.dark-layout .dhcp-address-pool-panel-sub { color: #9ca3af; }
+.dark-layout .dhcp-address-pool-switch-label { color: #d0d2d6 !important; }
 .dark-layout .panel-ip .network-type-panel-header { background: rgba(23,162,184,0.08); }
 .dark-layout .panel-mac .network-type-panel-header { background: rgba(234,84,85,0.08); }
 .dark-layout .mac-list-box { border-color: #3b4253; }
 .dark-layout .mac-address-item { border-bottom-color: #3b4253; }
 .dark-layout .panel-sub-section { border-top-color: #3b4253; }
+.semi-dark-layout .dhcp-address-pool-panel {
+    border-color: rgba(23, 162, 184, 0.45);
+    background: linear-gradient(180deg, rgba(23, 162, 184, 0.1) 0%, rgba(40, 48, 70, 0.95) 52px);
+}
+.semi-dark-layout .dhcp-address-pool-panel-head { border-bottom-color: rgba(23, 162, 184, 0.25); }
+.semi-dark-layout .dhcp-address-pool-panel-title { color: #b8e0e8; }
+.semi-dark-layout .dhcp-address-pool-panel-sub { color: #9ca3af; }
+.semi-dark-layout .dhcp-address-pool-switch-label { color: #d0d2d6 !important; }
 .semi-dark-layout .panel-ip .network-type-panel-header { background: rgba(23,162,184,0.08); }
 .semi-dark-layout .panel-mac .network-type-panel-header { background: rgba(234,84,85,0.08); }
 .semi-dark-layout .mac-list-box { border-color: #3b4253; }
@@ -135,8 +219,11 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .dark-layout .network-type-pill { color: #b4b7bd; }
 .dark-layout .network-identity-divider { background: #3b4253; }
 .dark-layout .network-visibility-wrap,
-.dark-layout .network-enabled-wrap { background: #283046; border-color: #3b4253; color: #d0d2d6; }
-.dark-layout .network-visibility-wrap select { color: #d0d2d6; }
+.dark-layout .network-radio-wrap { background: #283046; border-color: #3b4253; color: #d0d2d6; }
+.dark-layout .network-visibility-wrap select,
+.dark-layout .network-radio-wrap select { color: #d0d2d6; }
+.dark-layout .network-toggle-btn { background: #283046; border-color: #3b4253; color: #6e7787; }
+.dark-layout .network-toggle-btn:hover { border-color: #4b5468; color: #b4b7bd; }
 .dark-layout .network-type-panel { border-color: #3b4253; }
 .dark-layout .network-type-panel-header { border-bottom-color: #3b4253; }
 .dark-layout .panel-password .network-type-panel-header { background: rgba(115,103,240,0.08); }
@@ -148,8 +235,11 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .semi-dark-layout .network-type-pill-group { background: #283046; border-color: #3b4253; }
 .semi-dark-layout .network-type-pill { color: #b4b7bd; }
 .semi-dark-layout .network-visibility-wrap,
-.semi-dark-layout .network-enabled-wrap { background: #283046; border-color: #3b4253; color: #d0d2d6; }
-.semi-dark-layout .network-visibility-wrap select { color: #d0d2d6; }
+.semi-dark-layout .network-radio-wrap { background: #283046; border-color: #3b4253; color: #d0d2d6; }
+.semi-dark-layout .network-visibility-wrap select,
+.semi-dark-layout .network-radio-wrap select { color: #d0d2d6; }
+.semi-dark-layout .network-toggle-btn { background: #283046; border-color: #3b4253; color: #6e7787; }
+.semi-dark-layout .network-toggle-btn:hover { border-color: #4b5468; color: #b4b7bd; }
 .semi-dark-layout .network-type-panel { border-color: #3b4253; }
 .semi-dark-layout .network-type-panel-header { border-bottom-color: #3b4253; }
 .semi-dark-layout .panel-sub-section { border-top-color: #3b4253; }

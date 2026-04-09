@@ -35,6 +35,7 @@ class Location extends Model
         'user_id',
         'owner_id',
         'shared_users',
+        'scheduled_reboot_time',
     ];
 
     protected $casts = [

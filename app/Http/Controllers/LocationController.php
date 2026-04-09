@@ -1579,6 +1579,35 @@ class LocationController extends Controller
             }
         }
         
+        // Handle reboot schedule update
+        if ($request->input('settings_type') === 'reboot_schedule') {
+            $location = Location::find($location_id);
+            if (!$location) {
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+            }
+            $validated = $request->validate([
+                'scheduled_reboot_time' => 'nullable|date_format:Y-m-d H:i',
+            ]);
+            $location->update([
+                'scheduled_reboot_time' => $validated['scheduled_reboot_time'] ?? null,
+            ]);
+            return response()->json(['success' => true, 'message' => 'Reboot schedule saved']);
+        }
+
+        // Handle immediate restart (increments reboot_count on the device)
+        if ($request->input('settings_type') === 'restart') {
+            $location = Location::find($location_id);
+            if (!$location) {
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+            }
+            $device = Device::find($location->device_id);
+            if (!$device) {
+                return response()->json(['success' => false, 'message' => 'No device assigned to this location'], 404);
+            }
+            $device->increment('reboot_count');
+            return response()->json(['success' => true, 'message' => 'Device restart initiated successfully']);
+        }
+
         // If it's not a settings update or device update, handle regular location update
         // (This part could be implemented later for updating location details)
         return response()->json([
@@ -2395,7 +2424,8 @@ class LocationController extends Controller
             // If a mac_address was also provided, update it on the device
             $oldMacAddress = $device->mac_address;
             if ($request->filled('mac_address')) {
-                $newMacAddress = str_replace(':', '-', $request->mac_address);
+                // Normalise: uppercase and use dashes as separator (matches DB storage format)
+                $newMacAddress = strtoupper(str_replace(':', '-', $request->mac_address));
 
                 $conflict = Device::where('mac_address', $newMacAddress)
                     ->where('id', '!=', $device->id)

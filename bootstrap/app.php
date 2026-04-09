@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('cart:send-abandonment-emails')->daily();
+        $schedule->command('devices:reboot-scheduled')->everyMinute();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

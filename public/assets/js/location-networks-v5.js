@@ -272,6 +272,7 @@ function populatePaneData(nets) {
         $pane.find('.network-visible').val(net.visible ? '1' : '0');
         $pane.find('.network-enabled').prop('checked', !!net.enabled);
         $pane.find('.network-qos-policy').prop('checked', (net.qos_policy || 'scavenger') === 'full');
+        $pane.find('.network-radio').val(net.radio || 'all');
 
         showTypeSections($pane, net.type);
         syncTypePills($pane, net.type);
@@ -301,17 +302,20 @@ function populatePaneData(nets) {
 
         // IP / DHCP
         const loadedIpMode = net.ip_mode || 'static';
+        const noDhcpServer = loadedIpMode === 'bridge' || loadedIpMode === 'dhcp';
         $pane.find('.network-ip-mode').val(loadedIpMode);
-        toggleBridgeFields($pane, loadedIpMode === 'bridge');
         $pane.find('.network-ip-address').val(net.ip_address || '');
         $pane.find('.network-netmask').val(net.netmask || '255.255.255.0');
         $pane.find('.network-gateway').val(net.gateway || '');
         $pane.find('.network-dns1').val(net.dns1 || '');
         $pane.find('.network-dns2').val(net.dns2 || '');
         applyDnsFieldState($pane, webFilterEnabled);
-        $pane.find('.network-dhcp-enabled').prop('checked', net.dhcp_enabled !== false);
-        $pane.find('.network-dhcp-start').val(net.dhcp_start || '');
-        $pane.find('.network-dhcp-end').val(net.dhcp_end || '');
+        if (noDhcpServer) {
+            $pane.find('.network-dhcp-enabled').prop('checked', false);
+            $pane.find('.network-dhcp-start').val('');
+            $pane.find('.network-dhcp-end').val('');
+        }
+        applyIpModeState($pane, loadedIpMode);
 
         // VLAN
         $pane.find('.network-vlan-id').prop('disabled', !vlanEnabled).val(net.vlan_id || '');
@@ -386,26 +390,46 @@ function showTypeSections($pane, type) {
             $ipModeSelect.val('static');
         }
         $bridgeOption.hide().prop('disabled', true);
-        toggleBridgeFields($pane, false);
+        applyIpModeState($pane, $ipModeSelect.val());
     } else {
         $bridgeOption.show().prop('disabled', false);
-        // Restore bridge field visibility based on current ip_mode selection
-        toggleBridgeFields($pane, $ipModeSelect.val() === 'bridge');
+        applyIpModeState($pane, $ipModeSelect.val());
     }
 }
 
-function toggleBridgeFields($pane, isBridge) {
-    // IP address / network fields row
+/**
+ * Restore DHCP switch + start/pool from the in-memory `networks` cache (last API load / save).
+ */
+function applyDhcpFieldsFromCache($pane) {
+    const netId = $pane.data('network-id');
+    const net = networks.find(n => n.id == netId);
+    if (!net) return;
+    $pane.find('.network-dhcp-enabled').prop('checked', net.dhcp_enabled !== false);
+    $pane.find('.network-dhcp-start').val(net.dhcp_start || '');
+    $pane.find('.network-dhcp-end').val(net.dhcp_end != null && net.dhcp_end !== '' ? String(net.dhcp_end) : '');
+}
+
+function applyIpModeState($pane, mode) {
+    const isBridge = mode === 'bridge';
+    const isDhcp   = mode === 'dhcp';
+    const noDhcpServer = isBridge || isDhcp;
+
+    // IP address / network fields row: hide for bridge and dhcp client
     $pane.find('.network-ip-address, .network-netmask, .network-gateway, .network-dns1, .network-dns2')
         .closest('.form-group')
-        .toggle(!isBridge);
-    // DHCP server section
-    $pane.find('.network-dhcp-enabled').closest('.form-group').toggle(!isBridge);
-    $pane.find('.network-dhcp-start, .network-dhcp-end')
-        .closest('.form-group')
-        .toggle(!isBridge);
-    if (isBridge) {
-        $pane.find('.network-dhcp-enabled').prop('checked', false);
+        .toggle(!isBridge && !isDhcp);
+
+    // DHCP server: same for bridge and dhcp client — off, locked, blank range
+    $pane.find('.network-dhcp-enabled').closest('.form-group').show();
+    $pane.find('.network-dhcp-start, .network-dhcp-end').closest('.form-group').show();
+
+    if (noDhcpServer) {
+        $pane.find('.network-dhcp-enabled').prop('checked', false).prop('disabled', true);
+        $pane.find('.network-dhcp-start, .network-dhcp-end').val('').prop('disabled', true);
+    } else {
+        $pane.find('.network-dhcp-enabled').prop('disabled', false);
+        $pane.find('.network-dhcp-start, .network-dhcp-end').prop('disabled', false);
+        applyDhcpFieldsFromCache($pane);
     }
 }
 
@@ -451,6 +475,8 @@ function getFormData(netId, $pane) {
     const type = $pane.find('.network-type-select').val();
     const ipMode = $pane.find('.network-ip-mode').val();
     const isBridge = ipMode === 'bridge';
+    const isDhcp   = ipMode === 'dhcp';
+    const noManualIp = isBridge || isDhcp;
 
     const data = {
         type,
@@ -458,18 +484,24 @@ function getFormData(netId, $pane) {
         visible: $pane.find('.network-visible').val() === '1',
         enabled: $pane.find('.network-enabled').is(':checked'),
         ip_mode: ipMode,
-        ip_address: isBridge ? null : ($pane.find('.network-ip-address').val().trim() || null),
-        netmask: isBridge ? null : ($pane.find('.network-netmask').val().trim() || null),
-        gateway: isBridge ? null : ($pane.find('.network-gateway').val().trim() || null),
-        dns1: isBridge ? null : ($pane.find('.network-dns1').val().trim() || null),
-        dns2: isBridge ? null : ($pane.find('.network-dns2').val().trim() || null),
-        dhcp_enabled: isBridge ? false : $pane.find('.network-dhcp-enabled').is(':checked'),
-        dhcp_start: isBridge ? null : ($pane.find('.network-dhcp-start').val().trim() || null),
-        dhcp_end: isBridge ? null : ($pane.find('.network-dhcp-end').val().trim() || null),
+        ip_address: noManualIp ? null : ($pane.find('.network-ip-address').val().trim() || null),
+        netmask: noManualIp ? null : ($pane.find('.network-netmask').val().trim() || null),
+        gateway: noManualIp ? null : ($pane.find('.network-gateway').val().trim() || null),
+        dns1: noManualIp ? null : ($pane.find('.network-dns1').val().trim() || null),
+        dns2: noManualIp ? null : ($pane.find('.network-dns2').val().trim() || null),
+        dhcp_enabled: noManualIp ? false : $pane.find('.network-dhcp-enabled').is(':checked'),
+        dhcp_start: noManualIp ? null : ($pane.find('.network-dhcp-start').val().trim() || null),
+        dhcp_end: noManualIp ? null : (() => {
+            const raw = $pane.find('.network-dhcp-end').val();
+            if (raw === '' || raw === undefined || raw === null) return null;
+            const n = parseInt(String(raw).trim(), 10);
+            return Number.isNaN(n) ? null : n;
+        })(),
         vlan_id: parseInt($pane.find('.network-vlan-id').val()) || null,
         vlan_tagging: $pane.find('.network-vlan-tagging').val(),
         mac_filter_mode: $pane.find('.network-mac-filter-mode').val(),
         qos_policy: $pane.find('.network-qos-policy').is(':checked') ? 'full' : 'scavenger',
+        radio: $pane.find('.network-radio').val() || 'all',
     };
 
     if (type === 'password') {
@@ -623,7 +655,7 @@ async function addNetwork() {
                 enabled: true,
                 ip_address: `192.168.${ipOctet}.1`,
                 dhcp_start: `192.168.${ipOctet}.100`,
-                dhcp_end: `192.168.${ipOctet}.200`,
+                dhcp_end: 101,
             }),
         });
         toastr.success(MSG.networkAdded);
@@ -676,9 +708,9 @@ function bindPaneEvents() {
         }
     });
 
-    // IP mode change → toggle bridge fields
+    // IP mode change → apply field state for static / dhcp / bridge
     $(document).off('change.nmgr', '.network-ip-mode').on('change.nmgr', '.network-ip-mode', function () {
-        toggleBridgeFields($(this).closest('.tab-pane'), $(this).val() === 'bridge');
+        applyIpModeState($(this).closest('.tab-pane'), $(this).val());
     });
 
     // Auth method change
