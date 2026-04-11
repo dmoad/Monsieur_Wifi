@@ -566,10 +566,20 @@ class DeviceController extends Controller
             $qosBlock = ['enabled' => false];
         }
 
+        // Zone primary is source for qos_bw class mins + default WAN; non-primary may override WAN only.
+        $settingsForDevice = $settings->toArray();
+        $qosBwEffective = LocationSettingsV2::normalizeQosBw($settingsSource->qos_bw);
+        if ($location->zone_id && ! $location->isPrimaryInZone() && $settings->qos_bw_wan_use_local) {
+            $localBw = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
+            $qosBwEffective['wan_up_kbps']   = $localBw['wan_up_kbps'];
+            $qosBwEffective['wan_down_kbps'] = $localBw['wan_down_kbps'];
+        }
+        $settingsForDevice['qos_bw'] = $qosBwEffective;
+
         return response()->json([
             'status'          => 'success',
             'location'        => $location,
-            'settings'        => $settings,
+            'settings'        => $settingsForDevice,
             'networks'        => $networks,
             'blocked_domains' => $blockedDomains,
             'firmware'        => $firmware,

@@ -26,6 +26,12 @@ let analyticsChart = null;
 let locationMap = null;
 let optimalScanResults = null;
 let networkSourceLocationId = null; // may differ from location_id when location is a non-primary zone member
+/** Whether this location may edit zone-wide settings (QoS, networks); false for non-primary zone members. */
+let locationIsPrimaryOrStandalone = true;
+/** Primary location normalized qos_bw (GET); used for zone member WAN/class display. */
+let qosBwZonePrimary = null;
+/** Last loaded local settings.qos_bw (merged defaults); WAN may differ when override is on. */
+let lastLoadedLocalQosBw = null;
 
 const API = window.APP_CONFIG_V5?.apiBase || (window.APP_NETWORK_CONFIG?.apiBase) || '/api';
 
@@ -184,8 +190,11 @@ async function loadLocationDetails() {
         .removeClass('disabled')
         .removeAttr('title tabindex');
 
+    locationIsPrimaryOrStandalone = isPrimaryOrStandalone;
+
     if (!isPrimaryOrStandalone) {
         $('#zone-network-notice').show();
+        $('#zone-qos-notice').show();
         if (!canAccessPrimary) {
             $('#manage-networks-btn, #manage-networks-header-btn')
                 .addClass('disabled')
@@ -194,7 +203,10 @@ async function loadLocationDetails() {
         }
     } else {
         $('#zone-network-notice').hide();
+        $('#zone-qos-notice').hide();
     }
+    applyQosZoneLock();
+
     console.log("location:::::", location.device);
     // Status badge
     const isOnline = location.device && location.device.is_online;
@@ -439,6 +451,38 @@ async function loadOwnerDropdown(currentOwnerId) {
 // LOCATION SETTINGS (WAN, Radio, Web Filter)
 // ============================================================================
 
+/** API stores kbps; UI shows Mbps (1 Mbps = 1000 kbps). */
+function kbpsToMbpsDisplay(kbps) {
+    const k = Math.max(0, Number(kbps) || 0);
+    if (k === 0) return '0';
+    const m = k / 1000;
+    const s = m.toFixed(3).replace(/\.?0+$/, '');
+    return s === '' ? '0' : s;
+}
+
+/** Parse Mbps from input → kbps for API (0–10_000_000). */
+function parseQosMbpsInput($el) {
+    const raw = String($el.val()).trim();
+    if (raw === '') return 0;
+    const m = parseFloat(raw);
+    if (!Number.isFinite(m) || m < 0) return 0;
+    const kbps = Math.round(m * 1000);
+    return Math.min(10000000, Math.max(0, kbps));
+}
+
+function applyQosZoneLock() {
+    const zoneMember = !locationIsPrimaryOrStandalone;
+    $('#qos-wan-override-group').toggle(zoneMember);
+    if (!zoneMember) {
+        $('#qos-enabled, #save-qos-settings, .qos-bw-input, #qos-wan-use-local').prop('disabled', false);
+        return;
+    }
+    $('#qos-enabled, #save-qos-settings, #qos-wan-use-local').prop('disabled', false);
+    $('.qos-bw-class-input').prop('disabled', true);
+    const useLocal = $('#qos-wan-use-local').is(':checked');
+    $('.qos-wan-input').prop('disabled', !useLocal);
+}
+
 async function loadLocationSettings() {
     try {
         const res = await apiFetch(`${API}/locations/${location_id}/settings`);
@@ -496,7 +540,50 @@ async function loadLocationSettings() {
 
         // QoS
         $('#qos-enabled').prop('checked', !!s.qos_enabled);
+        qosBwZonePrimary = res.data.qos_bw_zone_primary || null;
+        const bw = Object.assign(
+            { wan_up_kbps: 0, wan_down_kbps: 0, voip_bw: 0, streaming_bw: 0, be_bw: 0, bulk_bw: 0 },
+            s.qos_bw || {}
+        );
+        lastLoadedLocalQosBw = { ...bw };
+
+        if (!locationIsPrimaryOrStandalone) {
+            $('#qos-wan-use-local').prop('checked', !!s.qos_bw_wan_use_local);
+            if (qosBwZonePrimary) {
+                const zp = Object.assign(
+                    { wan_up_kbps: 0, wan_down_kbps: 0, voip_bw: 0, streaming_bw: 0, be_bw: 0, bulk_bw: 0 },
+                    qosBwZonePrimary
+                );
+                $('#qos-voip-bw').val(kbpsToMbpsDisplay(zp.voip_bw));
+                $('#qos-streaming-bw').val(kbpsToMbpsDisplay(zp.streaming_bw));
+                $('#qos-be-bw').val(kbpsToMbpsDisplay(zp.be_bw));
+                $('#qos-bulk-bw').val(kbpsToMbpsDisplay(zp.bulk_bw));
+                if (s.qos_bw_wan_use_local) {
+                    $('#qos-wan-down-kbps').val(kbpsToMbpsDisplay(bw.wan_down_kbps));
+                    $('#qos-wan-up-kbps').val(kbpsToMbpsDisplay(bw.wan_up_kbps));
+                } else {
+                    $('#qos-wan-down-kbps').val(kbpsToMbpsDisplay(zp.wan_down_kbps));
+                    $('#qos-wan-up-kbps').val(kbpsToMbpsDisplay(zp.wan_up_kbps));
+                }
+            } else {
+                $('#qos-wan-down-kbps').val(kbpsToMbpsDisplay(bw.wan_down_kbps));
+                $('#qos-wan-up-kbps').val(kbpsToMbpsDisplay(bw.wan_up_kbps));
+                $('#qos-voip-bw').val(kbpsToMbpsDisplay(bw.voip_bw));
+                $('#qos-streaming-bw').val(kbpsToMbpsDisplay(bw.streaming_bw));
+                $('#qos-be-bw').val(kbpsToMbpsDisplay(bw.be_bw));
+                $('#qos-bulk-bw').val(kbpsToMbpsDisplay(bw.bulk_bw));
+            }
+        } else {
+            $('#qos-wan-use-local').prop('checked', false);
+            $('#qos-wan-down-kbps').val(kbpsToMbpsDisplay(bw.wan_down_kbps));
+            $('#qos-wan-up-kbps').val(kbpsToMbpsDisplay(bw.wan_up_kbps));
+            $('#qos-voip-bw').val(kbpsToMbpsDisplay(bw.voip_bw));
+            $('#qos-streaming-bw').val(kbpsToMbpsDisplay(bw.streaming_bw));
+            $('#qos-be-bw').val(kbpsToMbpsDisplay(bw.be_bw));
+            $('#qos-bulk-bw').val(kbpsToMbpsDisplay(bw.bulk_bw));
+        }
         loadQosClassesPreview();
+        applyQosZoneLock();
 
         reRenderFeather();
     } catch (err) {
@@ -663,15 +750,31 @@ async function saveQosSettings() {
     $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
 
     try {
+        const payload = {
+            enabled: $('#qos-enabled').is(':checked'),
+            qos_bw: {
+                wan_down_kbps: parseQosMbpsInput($('#qos-wan-down-kbps')),
+                wan_up_kbps: parseQosMbpsInput($('#qos-wan-up-kbps')),
+                voip_bw: parseQosMbpsInput($('#qos-voip-bw')),
+                streaming_bw: parseQosMbpsInput($('#qos-streaming-bw')),
+                be_bw: parseQosMbpsInput($('#qos-be-bw')),
+                bulk_bw: parseQosMbpsInput($('#qos-bulk-bw')),
+            },
+        };
+        if (!locationIsPrimaryOrStandalone) {
+            payload.qos_bw_wan_use_local = $('#qos-wan-use-local').is(':checked');
+        }
         await apiFetch(`${API}/locations/${location_id}/settings/qos`, {
             method: 'PUT',
-            body: JSON.stringify({ enabled: $('#qos-enabled').is(':checked') }),
+            body: JSON.stringify(payload),
         });
         toastr.success('QoS settings saved.');
+        await loadLocationSettings();
     } catch (err) {
         handleApiError(err, 'saveQosSettings');
     } finally {
         $btn.prop('disabled', false).html(origHtml);
+        applyQosZoneLock();
         reRenderFeather();
     }
 }
@@ -1363,6 +1466,24 @@ function initEventHandlers() {
 
     // Save QoS
     $('#save-qos-settings').on('click', saveQosSettings);
+    $('#qos-wan-use-local').on('change', function () {
+        if (!locationIsPrimaryOrStandalone && qosBwZonePrimary && lastLoadedLocalQosBw) {
+            const zp = Object.assign(
+                { wan_up_kbps: 0, wan_down_kbps: 0, voip_bw: 0, streaming_bw: 0, be_bw: 0, bulk_bw: 0 },
+                qosBwZonePrimary
+            );
+            const bw = lastLoadedLocalQosBw;
+            if ($(this).is(':checked')) {
+                $('#qos-wan-down-kbps').val(kbpsToMbpsDisplay(bw.wan_down_kbps));
+                $('#qos-wan-up-kbps').val(kbpsToMbpsDisplay(bw.wan_up_kbps));
+            } else {
+                $('#qos-wan-down-kbps').val(kbpsToMbpsDisplay(zp.wan_down_kbps));
+                $('#qos-wan-up-kbps').val(kbpsToMbpsDisplay(zp.wan_up_kbps));
+            }
+        }
+        applyQosZoneLock();
+        reRenderFeather();
+    });
 
     // Save WAN
     $(document).on('click', '.save-wan-settings', saveWanSettings);

@@ -1869,36 +1869,109 @@ class LocationController extends Controller
     /**
      * Enable or disable QoS for a location.
      * PUT /api/v1/locations/{id}/settings/qos
-     * Body: { "enabled": true|false }
+     * Body: { "enabled", "qos_bw"?, "qos_bw_wan_use_local"? (non-primary zone: use local WAN when true) }
      */
     public function updateQosSettings(Request $request, $id)
     {
         try {
             $location = Location::find($id);
-            if (!$location) {
+            if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
-            $validated = $request->validate(['enabled' => 'required|boolean']);
+            $validated = $request->validate([
+                'enabled'                 => 'required|boolean',
+                'qos_bw'                  => 'sometimes|array',
+                'qos_bw.wan_up_kbps'      => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.wan_down_kbps'    => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.voip_bw'          => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.streaming_bw'     => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.be_bw'            => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.bulk_bw'          => 'nullable|integer|min:0|max:10000000',
+                'qos_bw_wan_use_local'    => 'sometimes|boolean',
+            ]);
 
             $settings = LocationSettingsV2::firstOrCreate(
                 ['location_id' => $id],
                 ['web_filter_enabled' => false, 'web_filter_categories' => [], 'qos_enabled' => false]
             );
 
-            $previousQos = (bool) $settings->qos_enabled;
+            $previousQos         = (bool) $settings->qos_enabled;
+            $previousBw          = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
+            $previousWanUseLocal = (bool) $settings->qos_bw_wan_use_local;
+
+            $primarySettings = null;
+            if ($location->zone_id && ! $location->isPrimaryInZone()) {
+                $zone = $location->zone()->with('primaryLocation.settings')->first();
+                $primarySettings = $zone?->primaryLocation?->settings;
+            }
+            $isNonPrimaryZoneMember = $primarySettings !== null;
+
             $settings->qos_enabled = $validated['enabled'];
+
+            if (array_key_exists('qos_bw_wan_use_local', $validated)) {
+                $settings->qos_bw_wan_use_local = $validated['qos_bw_wan_use_local'];
+            }
+
+            $wanUseLocal = (bool) $settings->qos_bw_wan_use_local;
+
+            if (array_key_exists('qos_bw', $validated)) {
+                $incoming = $validated['qos_bw'] ?? [];
+                $incoming = is_array($incoming) ? $incoming : [];
+
+                if ($isNonPrimaryZoneMember) {
+                    $pBw = LocationSettingsV2::normalizeQosBw($primarySettings->qos_bw);
+                    if ($wanUseLocal) {
+                        $merged = $pBw;
+                        foreach (['wan_up_kbps', 'wan_down_kbps'] as $k) {
+                            if (array_key_exists($k, $incoming)) {
+                                $merged[$k] = max(0, min(10_000_000, (int) $incoming[$k]));
+                            }
+                        }
+                        $settings->qos_bw = LocationSettingsV2::normalizeQosBw($merged);
+                    } else {
+                        $settings->qos_bw = $pBw;
+                    }
+                } else {
+                    $settings->qos_bw = LocationSettingsV2::normalizeQosBw(
+                        array_merge($previousBw, $incoming)
+                    );
+                }
+            } elseif ($isNonPrimaryZoneMember && array_key_exists('qos_bw_wan_use_local', $validated)) {
+                $pBw = LocationSettingsV2::normalizeQosBw($primarySettings->qos_bw);
+                if (! $wanUseLocal) {
+                    $settings->qos_bw = $pBw;
+                } else {
+                    $cur = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
+                    $settings->qos_bw = LocationSettingsV2::normalizeQosBw(array_merge($pBw, [
+                        'wan_up_kbps'   => $cur['wan_up_kbps'],
+                        'wan_down_kbps' => $cur['wan_down_kbps'],
+                    ]));
+                }
+            }
+
+            $newBw = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
+
+            $qosEnabledChanged   = (bool) $validated['enabled'] !== $previousQos;
+            $qosBwChanged        = $previousBw != $newBw;
+            $wanUseLocalChanged  = $previousWanUseLocal !== (bool) $settings->qos_bw_wan_use_local;
+
             $settings->save();
 
-            // Increment device config version whenever QoS is toggled
             $configVersionIncremented = false;
-            if ((bool)$validated['enabled'] !== $previousQos) {
-                $device = \App\Models\Device::where('id', $location->device_id)->first();
+            if ($qosEnabledChanged || $qosBwChanged || $wanUseLocalChanged) {
+                $device = Device::where('id', $location->device_id)->first();
                 if ($device) {
                     $device->configuration_version = $device->configuration_version + 1;
                     $device->save();
                     $configVersionIncremented = true;
-                    Log::info('Device config version incremented to ' . $device->configuration_version . ' after QoS toggle for location: ' . $id);
+                    Log::info(
+                        'Device config version incremented to ' . $device->configuration_version
+                        . ' after QoS update for location: ' . $id
+                        . ' (enabled_changed=' . ($qosEnabledChanged ? '1' : '0')
+                        . ', bw_changed=' . ($qosBwChanged ? '1' : '0')
+                        . ', wan_use_local_changed=' . ($wanUseLocalChanged ? '1' : '0') . ')'
+                    );
                 }
             }
 
@@ -1906,7 +1979,9 @@ class LocationController extends Controller
                 'success' => true,
                 'message' => 'QoS ' . ($validated['enabled'] ? 'enabled' : 'disabled') . '.',
                 'data'    => [
-                    'qos_enabled'               => $settings->qos_enabled,
+                    'qos_enabled'                => $settings->qos_enabled,
+                    'qos_bw'                     => $newBw,
+                    'qos_bw_wan_use_local'       => (bool) $settings->qos_bw_wan_use_local,
                     'config_version_incremented' => $configVersionIncremented,
                 ],
             ]);
@@ -1939,12 +2014,19 @@ class LocationController extends Controller
                 ]);
                 $settings->save();
             }
+
+            $data = ['settings' => $settings];
+            if ($location->zone_id && ! $location->isPrimaryInZone()) {
+                $zone = $location->zone()->with('primaryLocation.settings')->first();
+                $primarySettings = $zone?->primaryLocation?->settings;
+                if ($primarySettings) {
+                    $data['qos_bw_zone_primary'] = LocationSettingsV2::normalizeQosBw($primarySettings->qos_bw);
+                }
+            }
             
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'settings' => $settings
-                ]
+                'data' => $data,
             ]);
             
         } catch (\Exception $e) {

@@ -50,6 +50,8 @@ class LocationSettingsV2 extends Model
 
         // QoS
         'qos_enabled',
+        'qos_bw',
+        'qos_bw_wan_use_local',
     ];
 
     protected $casts = [
@@ -58,7 +60,8 @@ class LocationSettingsV2 extends Model
         'wan_nat_enabled'    => 'boolean',
         'vlan_enabled'       => 'boolean',
         'web_filter_enabled' => 'boolean',
-        'qos_enabled'        => 'boolean',
+        'qos_enabled'            => 'boolean',
+        'qos_bw_wan_use_local'   => 'boolean',
 
         // Integers
         'transmit_power_2g'  => 'integer',
@@ -72,6 +75,7 @@ class LocationSettingsV2 extends Model
         // JSON
         'web_filter_domains'    => 'array',
         'web_filter_categories' => 'array',
+        'qos_bw'                => 'array',
     ];
 
     // ── WAN connection type constants ────────────────────────────────────────
@@ -117,5 +121,41 @@ class LocationSettingsV2 extends Model
     {
         return $this->web_filter_enabled &&
                (!empty($this->web_filter_categories) || !empty($this->web_filter_domains));
+    }
+
+    /** @return array<string, int> */
+    public static function defaultQosBw(): array
+    {
+        return [
+            'wan_up_kbps'    => 0,
+            'wan_down_kbps'  => 0,
+            'voip_bw'        => 0,
+            'streaming_bw'   => 0,
+            'be_bw'          => 0,
+            'bulk_bw'        => 0,
+        ];
+    }
+
+    /**
+     * Merge raw DB/array values into the canonical qos_bw shape (ints, defaults).
+     *
+     * @param  array<string, mixed>|null  $bw
+     * @return array<string, int>
+     */
+    public static function normalizeQosBw(?array $bw): array
+    {
+        $defaults = self::defaultQosBw();
+        if ($bw === null || $bw === []) {
+            return $defaults;
+        }
+        $out = $defaults;
+        foreach ($defaults as $key => $_) {
+            if (! array_key_exists($key, $bw) || $bw[$key] === null || $bw[$key] === '') {
+                continue;
+            }
+            $out[$key] = max(0, min(10_000_000, (int) $bw[$key]));
+        }
+
+        return $out;
     }
 }
