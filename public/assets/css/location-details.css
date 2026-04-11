@@ -43,6 +43,10 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .panel-settings .loc-panel-header { background: rgba(40,199,111,0.05); border-bottom-color: rgba(40,199,111,0.15); }
 .panel-settings .loc-panel-icon { background: rgba(40,199,111,0.12); }
 .panel-settings .loc-panel-title { color: #28c76f; }
+.panel-qos { border-color: rgba(102, 126, 234, 0.28); }
+.panel-qos .loc-panel-header { background: rgba(102, 126, 234, 0.06); border-bottom-color: rgba(102, 126, 234, 0.12); }
+.panel-qos .loc-panel-icon { background: rgba(102, 126, 234, 0.12); }
+.panel-qos .loc-panel-title { color: #667eea; }
 .form-action-bar { display: flex; align-items: center; gap: 8px; background: #f8f9fa; border-radius: 10px; padding: 14px 18px; margin-top: 1.25rem; border: 1px solid #e9ecef; }
 
 .custom-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(115,103,240,0.4) !important; }
@@ -128,6 +132,7 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .dark-layout .loc-panel { border-color: #3b4253; }
 .dark-layout .loc-panel-header { border-bottom-color: #3b4253; }
 .dark-layout .panel-location .loc-panel-header { background: rgba(115,103,240,0.08); }
+.dark-layout .panel-qos .loc-panel-header { background: rgba(102, 126, 234, 0.1); }
 .dark-layout .panel-contact .loc-panel-header { background: rgba(23,162,184,0.08); }
 .dark-layout .panel-settings .loc-panel-header { background: rgba(40,199,111,0.08); }
 .dark-layout .panel-sub-section { border-top-color: #3b4253; }
@@ -135,6 +140,7 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .semi-dark-layout .loc-panel { border-color: #3b4253; }
 .semi-dark-layout .loc-panel-header { border-bottom-color: #3b4253; }
 .semi-dark-layout .panel-location .loc-panel-header { background: rgba(115,103,240,0.08); }
+.semi-dark-layout .panel-qos .loc-panel-header { background: rgba(102, 126, 234, 0.1); }
 .semi-dark-layout .panel-contact .loc-panel-header { background: rgba(23,162,184,0.08); }
 .semi-dark-layout .panel-settings .loc-panel-header { background: rgba(40,199,111,0.08); }
 .semi-dark-layout .panel-sub-section { border-top-color: #3b4253; }
@@ -156,3 +162,64 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .semi-dark-layout h4, .semi-dark-layout h5, .semi-dark-layout h6 { color: #d0d2d6 !important; }
 .semi-dark-layout .form-control { background-color: #3b4253 !important; border-color: #3b4253 !important; color: #d0d2d6 !important; }
 .semi-dark-layout .content-section { background-color: #283046 !important; border: 1px solid #3b4253 !important; }
+
+/* QoS settings — compact numeric fields (override global 50px input height in this section only) */
+#qos-settings-section.content-section { padding: 1.35rem 1.5rem; }
+#qos-settings-section .section-header { margin-bottom: 1rem; padding-bottom: 0.75rem; }
+#qos-settings-section input.form-control {
+    height: auto;
+    min-height: calc(1.5em + 0.45rem + 2px);
+    padding: 0.28rem 0.55rem;
+    font-size: 0.875rem;
+}
+#qos-settings-section .input-group-text {
+    font-size: 0.8125rem;
+    padding: 0.28rem 0.5rem;
+}
+#qos-settings-section .qos-classify-preview-col {
+    padding-top: 0.25rem;
+}
+@media (min-width: 768px) {
+    #qos-settings-section .qos-classify-preview-col {
+        border-left: 1px solid #ebe9f1;
+        padding-left: 1.25rem;
+        margin-left: 0.25rem;
+    }
+}
+#qos-settings-section .input-group-sm .form-control {
+    min-width: 0;
+}
+#qos-settings-section .qos-bw-input {
+    text-align: right;
+}
+#qos-settings-section .qos-bw-class-input {
+    max-width: 100%;
+}
+.dark-layout #qos-settings-section .qos-classify-preview-col,
+.semi-dark-layout #qos-settings-section .qos-classify-preview-col {
+    border-left-color: #3b4253;
+}
+/* Bandwidth limits: WAN vs class minimums side by side (md+) */
+#qos-settings-section .qos-bw-min-col {
+    border-top: 1px solid #ebe9f1;
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+@media (min-width: 768px) {
+    #qos-settings-section .qos-bw-min-col {
+        border-top: none;
+        margin-top: 0;
+        padding-top: 0;
+        padding-left: 1.25rem;
+        margin-left: 0;
+        border-left: 1px solid #ebe9f1;
+    }
+}
+.dark-layout #qos-settings-section .qos-bw-min-col,
+.semi-dark-layout #qos-settings-section .qos-bw-min-col {
+    border-color: #3b4253;
+}
+#qos-settings-section .qos-bandwidth-subsection.qos-bandwidth-disabled {
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+}

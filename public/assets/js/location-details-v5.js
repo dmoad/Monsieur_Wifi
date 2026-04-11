@@ -472,15 +472,21 @@ function parseQosMbpsInput($el) {
 
 function applyQosZoneLock() {
     const zoneMember = !locationIsPrimaryOrStandalone;
+    const qosOn = $('#qos-enabled').is(':checked');
     $('#qos-wan-override-group').toggle(zoneMember);
+    $('.qos-bandwidth-subsection').toggleClass('qos-bandwidth-disabled', !qosOn);
+
     if (!zoneMember) {
-        $('#qos-enabled, #save-qos-settings, .qos-bw-input, #qos-wan-use-local').prop('disabled', false);
+        $('#qos-enabled, #save-qos-settings').prop('disabled', false);
+        $('.qos-bw-input').prop('disabled', !qosOn);
+        $('#qos-wan-use-local').prop('disabled', !qosOn);
         return;
     }
-    $('#qos-enabled, #save-qos-settings, #qos-wan-use-local').prop('disabled', false);
+    $('#qos-enabled, #save-qos-settings').prop('disabled', false);
     $('.qos-bw-class-input').prop('disabled', true);
+    $('#qos-wan-use-local').prop('disabled', !qosOn);
     const useLocal = $('#qos-wan-use-local').is(':checked');
-    $('.qos-wan-input').prop('disabled', !useLocal);
+    $('.qos-wan-input').prop('disabled', !qosOn || !useLocal);
 }
 
 async function loadLocationSettings() {
@@ -1466,6 +1472,10 @@ function initEventHandlers() {
 
     // Save QoS
     $('#save-qos-settings').on('click', saveQosSettings);
+    $('#qos-enabled').on('change', function () {
+        applyQosZoneLock();
+        reRenderFeather();
+    });
     $('#qos-wan-use-local').on('change', function () {
         if (!locationIsPrimaryOrStandalone && qosBwZonePrimary && lastLoadedLocalQosBw) {
             const zp = Object.assign(

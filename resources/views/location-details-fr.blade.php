@@ -694,74 +694,110 @@
                             <div class="content-section" id="qos-settings-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
                                     <h5 class="section-title">Priorisation du trafic (QoS)</h5>
-                                    <button type="button" class="btn custom-btn" id="save-qos-settings"><i data-feather="save" class="mr-2"></i>Enregistrer QoS</button>
+                                    <button type="button" class="btn custom-btn btn-sm" id="save-qos-settings"><i data-feather="save" class="mr-1"></i>Enregistrer QoS</button>
                                 </div>
-                                <div id="zone-qos-notice" class="alert alert-info py-1 px-2 mb-2" style="display:none;font-size:0.85rem;">
-                                    <i data-feather="layers" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+
+                                <div id="zone-qos-notice" class="alert alert-info py-2 px-3 mb-3" style="display:none;">
+                                    <i data-feather="layers" class="mr-50" style="width:16px;height:16px;vertical-align:text-bottom;"></i>
                                     Le QoS est géré par l'emplacement principal de la zone.
                                 </div>
-                                <div id="qos-wan-override-group" class="form-group mb-2" style="display:none;">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="qos-wan-use-local">
-                                        <label class="custom-control-label" for="qos-wan-use-local">Utiliser les débits WAN de cet emplacement (au lieu de la zone)</label>
+
+                                <div class="loc-panel panel-qos mb-0">
+                                    <div class="loc-panel-header">
+                                        <span class="loc-panel-icon">
+                                            <i data-feather="git-merge" style="color:#667eea;width:16px;height:16px;"></i>
+                                        </span>
+                                        <h6 class="loc-panel-title">Classification</h6>
                                     </div>
-                                    <small class="text-muted">Les minimums par classe suivent toujours l'emplacement principal ; seuls téléchargement et envoi peuvent différer ici.</small>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <label class="mb-0">Activer la priorisation du trafic</label>
-                                                <div class="custom-control custom-switch custom-control-primary">
-                                                    <input type="checkbox" class="custom-control-input" id="qos-enabled">
-                                                    <label class="custom-control-label" for="qos-enabled"></label>
+                                    <div class="loc-panel-body">
+                                        <div class="row align-items-start">
+                                            <div class="col-md-7">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="mb-0 font-weight-bold">Activer la priorisation du trafic</span>
+                                                    <div class="custom-control custom-switch custom-control-primary">
+                                                        <input type="checkbox" class="custom-control-input" id="qos-enabled">
+                                                        <label class="custom-control-label" for="qos-enabled"></label>
+                                                    </div>
+                                                </div>
+                                                <p class="text-muted mb-0 small">Classer le trafic par nom d'hôte (SNI) et appliquer une priorité DSCP. Nécessite un firmware routeur compatible.</p>
+                                            </div>
+                                            <div class="col-md-5 mt-3 mt-md-0 qos-classify-preview-col">
+                                                <div class="panel-sub-label mb-2">Classes de priorité actives</div>
+                                                <div id="qos-classes-preview" class="pt-0">
+                                                    <span class="text-muted small">Chargement…</span>
+                                                </div>
+                                                <small class="text-muted d-block mt-1" style="font-size:0.75rem;">Gérées globalement par le SuperAdmin.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-sub-section qos-bandwidth-subsection">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="loc-panel-icon mr-2 mb-0" style="width:28px;height:28px;">
+                                                    <i data-feather="bar-chart-2" style="color:#667eea;width:14px;height:14px;"></i>
+                                                </span>
+                                                <span class="panel-sub-label mb-0" style="font-size:0.8rem;">Limites de débit</span>
+                                            </div>
+                                            <p class="small text-muted mb-3 mb-md-2">Toutes les valeurs en <strong>Mbps</strong>. Définissez la capacité WAN et les minimums réservés optionnels par classe de trafic.</p>
+
+                                            <div id="qos-wan-override-group" class="rounded border px-3 py-2 mb-3 bg-light" style="display:none;">
+                                                <div class="custom-control custom-checkbox mb-0">
+                                                    <input type="checkbox" class="custom-control-input" id="qos-wan-use-local">
+                                                    <label class="custom-control-label" for="qos-wan-use-local">Utiliser les débits WAN de cet emplacement (au lieu de la zone)</label>
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Les minimums par classe suivent l'emplacement principal ; seuls téléchargement et envoi peuvent différer ici.</small>
+                                            </div>
+
+                                            <div class="row qos-bw-split-row align-items-start">
+                                            <div class="col-12 col-md-6">
+                                                <div class="panel-sub-label">Capacité WAN</div>
+                                                <div class="mb-2">
+                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-down-kbps">Téléchargement</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-down-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-up-kbps">Envoi</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-up-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <small class="text-muted">Classer le trafic par nom d'hôte (SNI) et prioriser via DSCP. Nécessite un firmware routeur compatible.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Classes de priorité actives <small class="text-muted font-weight-normal">(gérées globalement par le SuperAdmin)</small></label>
-                                            <div id="qos-classes-preview">
-                                                <span class="text-muted" style="font-size:0.85rem;">Chargement…</span>
+                                            <div class="col-12 col-md-6 qos-bw-min-col">
+                                                <div class="panel-sub-label">Minimum par classe</div>
+                                                <div class="mb-2">
+                                                    <label class="small d-block mb-1" for="qos-voip-bw">VoIP <span class="text-muted">(EF)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-voip-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="small d-block mb-1" for="qos-streaming-bw">Streaming <span class="text-muted">(AF41)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-streaming-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="small d-block mb-1" for="qos-be-bw">Best effort <span class="text-muted">(BE)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-be-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="small d-block mb-1" for="qos-bulk-bw">Bulk <span class="text-muted">(CS1)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-bulk-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="panel-sub-label mt-2">Débit WAN</div>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group mb-md-0">
-                                            <label for="qos-wan-down-kbps">Téléchargement <small class="text-muted font-weight-normal">(Mbps)</small></label>
-                                            <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-down-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group mb-md-0">
-                                            <label for="qos-wan-up-kbps">Envoi <small class="text-muted font-weight-normal">(Mbps)</small></label>
-                                            <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-up-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel-sub-label mt-2">Débit minimum par classe</div>
-                                <small class="text-muted d-block mb-2">Minimums réservés en Mbps (EF = VoIP, AF41 = Streaming, BE = Best effort, CS1 = Bulk).</small>
-                                <div class="list-group list-group-flush border rounded qos-class-bw-list">
-                                    <div class="list-group-item d-flex flex-wrap align-items-center justify-content-between py-2">
-                                        <label class="mb-0 mr-2" for="qos-voip-bw">VoIP (EF) <small class="text-muted font-weight-normal">(Mbps)</small></label>
-                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-voip-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0" style="max-width: 11rem;">
-                                    </div>
-                                    <div class="list-group-item d-flex flex-wrap align-items-center justify-content-between py-2">
-                                        <label class="mb-0 mr-2" for="qos-streaming-bw">Streaming (AF41) <small class="text-muted font-weight-normal">(Mbps)</small></label>
-                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-streaming-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0" style="max-width: 11rem;">
-                                    </div>
-                                    <div class="list-group-item d-flex flex-wrap align-items-center justify-content-between py-2">
-                                        <label class="mb-0 mr-2" for="qos-be-bw">Best effort (BE) <small class="text-muted font-weight-normal">(Mbps)</small></label>
-                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-be-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0" style="max-width: 11rem;">
-                                    </div>
-                                    <div class="list-group-item d-flex flex-wrap align-items-center justify-content-between py-2">
-                                        <label class="mb-0 mr-2" for="qos-bulk-bw">Bulk (CS1) <small class="text-muted font-weight-normal">(Mbps)</small></label>
-                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-bulk-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0" style="max-width: 11rem;">
                                     </div>
                                 </div>
                             </div>
@@ -1126,5 +1162,5 @@
         locale: 'fr'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=15"></script>
+<script src="/assets/js/location-details-v5.js?v=21"></script>
 @endpush
