@@ -53,6 +53,9 @@ const TRANSLATIONS = {
         locations: 'locations',
         previous: 'Previous',
         next: 'Next',
+        roaming: 'Roaming',
+        roamingOn: 'On',
+        roamingOff: 'Off',
     },
     fr: {
         loading: 'Chargement...',
@@ -93,6 +96,9 @@ const TRANSLATIONS = {
         locations: 'emplacements',
         previous: 'Précédent',
         next: 'Suivant',
+        roaming: 'Itinérance',
+        roamingOn: 'Activée',
+        roamingOff: 'Désactivée',
     }
 };
 
@@ -168,6 +174,10 @@ function displayZoneInfo(zone) {
                 <div class="zone-info-item">
                     <i data-feather="activity"></i>
                     <span>${T.status}: ${zone.is_active ? T.active : T.inactive}</span>
+                </div>
+                <div class="zone-info-item">
+                    <i data-feather="wifi"></i>
+                    <span>${T.roaming}: ${zone.roaming_enabled !== false ? T.roamingOn : T.roamingOff}</span>
                 </div>
                 ${primaryLocation ? `
                 <div class="zone-info-item">
@@ -612,6 +622,10 @@ async function loadAndInitOwnerSelect2(currentOwnerId) {
 async function editZone() {
     document.getElementById('edit-zone-name').value = currentZone.name;
     document.getElementById('edit-zone-description').value = currentZone.description || '';
+    const roamingEdit = document.getElementById('edit-zone-roaming-enabled');
+    if (roamingEdit) {
+        roamingEdit.checked = currentZone.roaming_enabled !== false;
+    }
 
     // Show/populate owner dropdown and shared users for admin/superadmin
     const ownerGroup = document.getElementById('edit-zone-owner-group');
@@ -716,7 +730,13 @@ async function updateZoneInfo() {
     }
     
     const token = UserManager.getToken();
-    const payload = { name, description, is_active: currentZone.is_active };
+    const roamingEdit = document.getElementById('edit-zone-roaming-enabled');
+    const payload = {
+        name,
+        description,
+        is_active: currentZone.is_active,
+        roaming_enabled: roamingEdit ? roamingEdit.checked : currentZone.roaming_enabled !== false,
+    };
 
     if (UserManager.isAdminOrAbove()) {
         const newOwnerId = $('#edit-zone-owner').val();

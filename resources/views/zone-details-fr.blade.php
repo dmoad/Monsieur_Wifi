@@ -215,6 +215,16 @@
                         <label for="edit-zone-description">Description</label>
                         <textarea class="form-control" id="edit-zone-description" rows="3"></textarea>
                     </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center mb-1">
+                            <label class="mb-0 font-weight-bold mr-2" for="edit-zone-roaming-enabled">Itinérance</label>
+                            <div class="custom-control custom-switch custom-control-primary">
+                                <input type="checkbox" class="custom-control-input" id="edit-zone-roaming-enabled">
+                                <label class="custom-control-label" for="edit-zone-roaming-enabled"></label>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-0 small">Si activé, les clients peuvent passer d’un point d’accès à l’autre dans cette zone sans perdre leur session ni se reconnecter.</p>
+                    </div>
                     <div class="form-group" id="edit-zone-owner-group" style="display:none;">
                         <label for="edit-zone-owner">
                             Propriétaire

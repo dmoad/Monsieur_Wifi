@@ -51,6 +51,7 @@ class ZoneController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'owner_id' => 'nullable|exists:users,id', // For admin to create zones for other users
+            'roaming_enabled' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -76,6 +77,7 @@ class ZoneController extends Controller
             'description' => $request->description,
             'owner_id' => $ownerId,
             'is_active' => true,
+            'roaming_enabled' => $request->boolean('roaming_enabled', true),
         ]);
 
         Log::info('Zone created', ['zone_id' => $zone->id, 'user_id' => $user->id]);
@@ -140,9 +142,10 @@ class ZoneController extends Controller
         }
 
         $rules = [
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'is_active'   => 'nullable|boolean',
+            'name'              => 'required|string|max:255',
+            'description'       => 'nullable|string|max:1000',
+            'is_active'         => 'nullable|boolean',
+            'roaming_enabled'   => 'nullable|boolean',
         ];
 
         // Only admin/superadmin may manage shared_users and change owner
@@ -176,7 +179,7 @@ class ZoneController extends Controller
             unset($validated['owner_id']);
         }
 
-        $zone->update(array_intersect_key($validated, array_flip(['name', 'description', 'is_active'])));
+        $zone->update(array_intersect_key($validated, array_flip(['name', 'description', 'is_active', 'roaming_enabled'])));
         $zone->save();
 
         Log::info('Zone updated', ['zone_id' => $zone->id, 'user_id' => $user->id]);

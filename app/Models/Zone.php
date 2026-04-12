@@ -16,12 +16,14 @@ class Zone extends Model
         'owner_id',
         'primary_location_id',
         'is_active',
+        'roaming_enabled',
         'shared_users',
     ];
 
     protected $casts = [
-        'is_active'    => 'boolean',
-        'shared_users' => 'array',
+        'is_active'       => 'boolean',
+        'roaming_enabled' => 'boolean',
+        'shared_users'    => 'array',
     ];
 
     protected $appends = [

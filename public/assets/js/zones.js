@@ -456,6 +456,10 @@ async function loadZoneForEdit(zoneId) {
         document.getElementById('zone-id').value = zone.id;
         document.getElementById('zone-name').value = zone.name;
         document.getElementById('zone-description').value = zone.description || '';
+        const roamingEl = document.getElementById('zone-roaming-enabled');
+        if (roamingEl) {
+            roamingEl.checked = zone.roaming_enabled !== false;
+        }
 
         // Pre-select shared users when admin is editing
         if (UserManager.isAdminOrAbove() && zone.shared_users) {
@@ -558,7 +562,12 @@ async function saveZone() {
         ? `${APP_CONFIG.API.BASE_URL}/v1/zones/${zoneId}`
         : `${APP_CONFIG.API.BASE_URL}/v1/zones`;
     
-    const payload = { name, description };
+    const roamingEl = document.getElementById('zone-roaming-enabled');
+    const payload = {
+        name,
+        description,
+        roaming_enabled: roamingEl ? roamingEl.checked : true,
+    };
 
     // Add owner_id if admin is creating for another user
     if (!isEdit && UserManager.isAdminOrAbove()) {

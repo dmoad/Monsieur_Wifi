@@ -214,6 +214,16 @@
                         <label for="zone-description">Description</label>
                         <textarea class="form-control" id="zone-description" rows="3" placeholder="Enter zone description (optional)"></textarea>
                     </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center mb-1">
+                            <label class="mb-0 font-weight-bold mr-2" for="zone-roaming-enabled">Roaming</label>
+                            <div class="custom-control custom-switch custom-control-primary">
+                                <input type="checkbox" class="custom-control-input" id="zone-roaming-enabled" name="zone-roaming-enabled" checked>
+                                <label class="custom-control-label" for="zone-roaming-enabled"></label>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-0 small">When enabled, clients can move between access points in this zone without losing their session or signing in again.</p>
+                    </div>
                     <div class="form-group" id="zone-shared-users-group" style="display:none;">
                         <label for="zone-shared-users">
                             Shared Access
