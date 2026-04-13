@@ -32,6 +32,9 @@ const MSG = Object.assign({
     networkAdded:      'Network added.',
     networkDeleted:    'Network deleted.',
     invalidMac:        'Invalid MAC address format.',
+    macBadgeBypass:    'Bypass',
+    macBadgeBlock:     'Block',
+    pageOf:            'Page {page} of {total}',
     invalidSsid:       'SSID cannot be empty.',
     ssidTooLong:       'SSID must be 32 characters or fewer (802.11 limit).',
     passwordRequired:  'Password is required for password-type networks.',
@@ -340,9 +343,8 @@ function populatePaneData(nets) {
         $pane.find('.network-vlan-tagging').prop('disabled', !vlanEnabled).val(net.vlan_tagging || 'disabled');
 
         // MAC filter & IP reservations
-        renderMacList($pane, net.mac_filter_list || []);
-        $pane.find('.network-mac-filter-mode').val(net.mac_filter_mode || 'allow-all');
-        renderReservationList($pane, net.dhcp_reservations || []);
+        renderMacList($pane, net.mac_filter_list || [], 1);
+        renderReservationList($pane, net.dhcp_reservations || [], 1);
         applyReservationsVisibility($pane);
 
         // Working hours scheduler (captive portal only)
@@ -488,58 +490,131 @@ function showAuthSubFields($pane, method) {
     $pane.find('.network-social-group').toggle(method === 'social');
 }
 
-function renderMacList($pane, list) {
-    const $container = $pane.find('.network-mac-list');
-    const $empty = $pane.find('.network-mac-empty');
-    $container.empty();
-    if (!list.length) {
-        $empty.show();
-    } else {
-        $empty.hide();
-        list.forEach((entry, i) => {
-            const mac = typeof entry === 'object' ? (entry.mac || entry.address || '') : entry;
-            $container.append(`
-                <div class="mac-address-item">
-                    <span>${escapeHtml(mac)}</span>
-                    <button class="btn btn-sm btn-link text-danger p-0 network-mac-remove-btn" data-mac-index="${i}">
-                        <i data-feather="x"></i>
-                    </button>
-                </div>`);
+const MAC_PAGE_SIZE = 5;
+const RES_PAGE_SIZE = 5;
+
+/**
+ * Normalise a mac_filter_list entry to { mac, type } shape.
+ * Handles legacy formats: plain string → { mac, type: 'block' }
+ */
+function normaliseMacEntry(entry) {
+    if (typeof entry === 'string') return { mac: entry.toUpperCase(), type: 'block' };
+    return {
+        mac:  (entry.mac || entry.address || '').toUpperCase(),
+        type: entry.type === 'bypass' ? 'bypass' : 'block',
+    };
+}
+
+function renderMacList($pane, list, page) {
+    const normList   = (list || []).map(normaliseMacEntry).filter(e => !!e.mac);
+    const total      = normList.length;
+    const totalPages = total === 0 ? 0 : Math.ceil(total / MAC_PAGE_SIZE);
+    const safePage   = total === 0 ? 1 : Math.min(Math.max(page || 1, 1), totalPages);
+    const start      = (safePage - 1) * MAC_PAGE_SIZE;
+    const pageItems  = normList.slice(start, start + MAC_PAGE_SIZE);
+
+    const $tbody      = $pane.find('.network-mac-list');
+    const $emptyRow   = $pane.find('.network-mac-empty');
+    const $pagination = $pane.find('.mac-list-pagination');
+    const $pageInfo   = $pane.find('.mac-page-info');
+
+    $tbody.find('tr:not(.rl-empty-row)').remove();
+    $emptyRow.toggle(total === 0);
+    $tbody.attr('data-mac-page', safePage);
+
+    if (total > 0) {
+        pageItems.forEach((entry, pageIdx) => {
+            const realIdx  = start + pageIdx;
+            const isBypass = entry.type === 'bypass';
+            $tbody.append(`
+                <tr class="rl-row">
+                    <td><span class="mac-badge ${isBypass ? 'mac-badge-bypass' : 'mac-badge-block'}">${isBypass ? MSG.macBadgeBypass : MSG.macBadgeBlock}</span></td>
+                    <td class="rl-mono">${escapeHtml(entry.mac)}</td>
+                    <td class="rl-action">
+                        <button class="btn btn-sm btn-link text-danger p-0 network-mac-remove-btn" data-mac-index="${realIdx}" title="Remove">
+                            <i data-feather="x" style="width:13px;height:13px;"></i>
+                        </button>
+                    </td>
+                </tr>`);
         });
+
+        $pageInfo.text(MSG.pageOf.replace('{page}', safePage).replace('{total}', totalPages));
+        $pagination.show();
+        $pagination.find('.mac-page-btn[data-dir="prev"]').prop('disabled', safePage <= 1);
+        $pagination.find('.mac-page-btn[data-dir="next"]').prop('disabled', safePage >= totalPages);
+    } else {
+        $pagination.hide();
     }
     reRenderFeather();
 }
 
-function renderReservationList($pane, list) {
-    const $container = $pane.find('.network-reservation-list');
-    const $empty     = $pane.find('.network-reservation-empty');
-    $container.empty();
-    if (!list.length) {
-        $empty.show();
-    } else {
-        $empty.hide();
-        list.forEach((entry, i) => {
-            $container.append(`
-                <div class="dhcp-reservation-item">
-                    <span class="reservation-mac">${escapeHtml(entry.mac || '')}</span>
-                    <span class="reservation-ip">${escapeHtml(entry.ip || '')}</span>
-                    <button class="btn btn-sm btn-link text-danger p-0 network-reservation-remove-btn" data-reservation-index="${i}">
-                        <i data-feather="x"></i>
-                    </button>
-                </div>`);
+function renderReservationList($pane, list, page) {
+    const safeList   = (list || []).filter(e => e && e.mac && e.ip);
+    const total      = safeList.length;
+    const totalPages = total === 0 ? 0 : Math.ceil(total / RES_PAGE_SIZE);
+    const safePage   = total === 0 ? 1 : Math.min(Math.max(page || 1, 1), totalPages);
+    const start      = (safePage - 1) * RES_PAGE_SIZE;
+    const pageItems  = safeList.slice(start, start + RES_PAGE_SIZE);
+
+    const $tbody      = $pane.find('.network-reservation-list');
+    const $emptyRow   = $pane.find('.network-reservation-empty');
+    const $pagination = $pane.find('.res-list-pagination');
+    const $pageInfo   = $pane.find('.res-page-info');
+
+    $tbody.find('tr:not(.rl-empty-row)').remove();
+    $emptyRow.toggle(total === 0);
+    $tbody.attr('data-res-page', safePage);
+
+    if (total > 0) {
+        pageItems.forEach((entry, pageIdx) => {
+            const realIdx = start + pageIdx;
+            $tbody.append(`
+                <tr class="rl-row">
+                    <td class="rl-mono">${escapeHtml(entry.mac || '')}</td>
+                    <td class="rl-mono rl-ip">${escapeHtml(entry.ip || '')}</td>
+                    <td class="rl-action">
+                        <button class="btn btn-sm btn-link text-danger p-0 network-reservation-remove-btn" data-reservation-index="${realIdx}" title="Remove">
+                            <i data-feather="x" style="width:13px;height:13px;"></i>
+                        </button>
+                    </td>
+                </tr>`);
         });
+
+        $pageInfo.text(MSG.pageOf.replace('{page}', safePage).replace('{total}', totalPages));
+        $pagination.show();
+        $pagination.find('.res-page-btn[data-dir="prev"]').prop('disabled', safePage <= 1);
+        $pagination.find('.res-page-btn[data-dir="next"]').prop('disabled', safePage >= totalPages);
+    } else {
+        $pagination.hide();
     }
     reRenderFeather();
+}
+
+function collectMacList(netId) {
+    const net = networks.find(n => n.id == netId);
+    return (net?.mac_filter_list || []).map(normaliseMacEntry);
+}
+
+/**
+ * Derive the legacy mac_filter_mode from the unified list for backward compatibility.
+ * If all entries are 'bypass' → 'allow-listed'
+ * If any entry is 'block'   → 'block-listed'  (mixed list: block takes precedence in mode field)
+ * If empty                  → 'none'
+ */
+function deriveMacFilterMode(netId) {
+    const list = collectMacList(netId);
+    if (!list.length) return 'none';
+    const hasBlock  = list.some(e => e.type === 'block');
+    const hasBypass = list.some(e => e.type === 'bypass');
+    if (hasBlock && hasBypass) return 'mixed';
+    if (hasBlock)  return 'block-listed';
+    return 'allow-listed';
 }
 
 function collectReservations($pane) {
-    const reservations = [];
-    $pane.find('.dhcp-reservation-item').each(function () {
-        const mac = $(this).find('.reservation-mac').text().trim();
-        const ip  = $(this).find('.reservation-ip').text().trim();
-        if (mac && ip) reservations.push({ mac, ip });
-    });
-    return reservations;
+    const netId = $pane.data('network-id');
+    const net   = networks.find(n => n.id == netId);
+    return (net?.dhcp_reservations || []).filter(r => r.mac && r.ip);
 }
 
 function applyReservationsVisibility($pane) {
@@ -593,7 +668,8 @@ function getFormData(netId, $pane) {
         })(),
         vlan_id: parseInt($pane.find('.network-vlan-id').val()) || null,
         vlan_tagging: $pane.find('.network-vlan-tagging').val(),
-        mac_filter_mode: $pane.find('.network-mac-filter-mode').val(),
+        mac_filter_list: collectMacList(netId),
+        mac_filter_mode: deriveMacFilterMode(netId),
         dhcp_reservations: (noDhcpServer || type === 'captive_portal')
             ? null
             : collectReservations($pane),
@@ -731,8 +807,8 @@ async function saveMacFilter(netId, $pane) {
         const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                mac_filter_mode: $pane.find('.network-mac-filter-mode').val(),
-                mac_filter_list: net?.mac_filter_list || [],
+                mac_filter_mode: deriveMacFilterMode(netId),
+                mac_filter_list: collectMacList(netId),
                 dhcp_reservations: includeReservations ? collectReservations($pane) : null,
             }),
         });
@@ -836,6 +912,8 @@ function bindPaneEvents() {
         applyReservationsVisibility($(this).closest('.tab-pane'));
     });
 
+    // (mac-filter-mode select removed — mode is now derived from the list)
+
     // Add IP reservation
     $(document).off('click.nmgr', '.network-reservation-add-btn').on('click.nmgr', '.network-reservation-add-btn', function () {
         const $pane = $(this).closest('.tab-pane');
@@ -887,7 +965,9 @@ function bindPaneEvents() {
         }
 
         net.dhcp_reservations.push({ mac, ip });
-        renderReservationList($pane, net.dhcp_reservations);
+        const validResCount = net.dhcp_reservations.filter(e => e && e.mac && e.ip).length;
+        const lastResPage   = Math.ceil(validResCount / RES_PAGE_SIZE);
+        renderReservationList($pane, net.dhcp_reservations, lastResPage);
         $pane.find('.network-reservation-mac, .network-reservation-ip').val('');
     });
 
@@ -899,7 +979,22 @@ function bindPaneEvents() {
         const net   = networks.find(n => n.id == netId);
         if (!net || !net.dhcp_reservations) return;
         net.dhcp_reservations.splice(idx, 1);
-        renderReservationList($pane, net.dhcp_reservations);
+        const curPage    = parseInt($pane.find('.network-reservation-list').attr('data-res-page')) || 1;
+        const remaining  = (net.dhcp_reservations || []).filter(e => e && e.mac && e.ip).length;
+        const totalPages = remaining === 0 ? 1 : Math.ceil(remaining / RES_PAGE_SIZE);
+        renderReservationList($pane, net.dhcp_reservations, Math.min(curPage, totalPages));
+    });
+
+    // Paginate IP reservation list
+    $(document).off('click.nmgr', '.res-page-btn').on('click.nmgr', '.res-page-btn', function () {
+        const $pane  = $(this).closest('.tab-pane');
+        const netId  = $pane.data('network-id');
+        const net    = networks.find(n => n.id == netId);
+        if (!net) return;
+        const dir     = $(this).data('dir');
+        const curPage = parseInt($pane.find('.network-reservation-list').attr('data-res-page')) || 1;
+        const newPage = dir === 'next' ? curPage + 1 : curPage - 1;
+        renderReservationList($pane, net.dhcp_reservations || [], newPage);
     });
 
     // Auth method change
@@ -961,32 +1056,64 @@ function bindPaneEvents() {
         reRenderFeather();
     });
 
-    // Add MAC address
+    // Add MAC entry (unified bypass/block list)
     $(document).off('click.nmgr', '.network-mac-add-btn').on('click.nmgr', '.network-mac-add-btn', function () {
-        const $pane = $(this).closest('.tab-pane');
-        const mac = $pane.find('.network-mac-input').val().trim();
-        if (!/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac)) {
+        const $pane  = $(this).closest('.tab-pane');
+        const rawMac = $pane.find('.network-mac-input').val().trim();
+        const mac    = rawMac.toUpperCase().replace(/-/g, ':');
+        const type   = $pane.find('.network-mac-type-select').val() || 'block';
+
+        if (!/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac)) {
             toastr.warning(MSG.invalidMac);
             return;
         }
         const netId = $pane.data('network-id');
-        const net = networks.find(n => n.id == netId);
+        const net   = networks.find(n => n.id == netId);
         if (!net) return;
-        net.mac_filter_list = net.mac_filter_list || [];
-        net.mac_filter_list.push(mac);
-        renderMacList($pane, net.mac_filter_list);
+
+        net.mac_filter_list = (net.mac_filter_list || []).map(normaliseMacEntry);
+
+        if (net.mac_filter_list.some(e => e.mac === mac)) {
+            toastr.warning('This MAC address is already in the list.');
+            return;
+        }
+
+        net.mac_filter_list.push({ mac, type });
+
+        // Jump to last page so the new entry is visible
+        const validCount = net.mac_filter_list.filter(e => normaliseMacEntry(e).mac).length;
+        const lastPage   = Math.ceil(validCount / MAC_PAGE_SIZE);
+        renderMacList($pane, net.mac_filter_list, lastPage);
         $pane.find('.network-mac-input').val('');
     });
 
-    // Remove MAC address
+    // Remove MAC entry
     $(document).off('click.nmgr', '.network-mac-remove-btn').on('click.nmgr', '.network-mac-remove-btn', function () {
         const $pane = $(this).closest('.tab-pane');
         const netId = $pane.data('network-id');
-        const idx = parseInt($(this).data('mac-index'));
-        const net = networks.find(n => n.id == netId);
+        const idx   = parseInt($(this).data('mac-index'));
+        const net   = networks.find(n => n.id == netId);
         if (!net || !net.mac_filter_list) return;
+
+        net.mac_filter_list = net.mac_filter_list.map(normaliseMacEntry);
         net.mac_filter_list.splice(idx, 1);
-        renderMacList($pane, net.mac_filter_list);
+
+        const curPage    = parseInt($pane.find('.network-mac-list').attr('data-mac-page')) || 1;
+        const remaining  = net.mac_filter_list.filter(e => normaliseMacEntry(e).mac).length;
+        const totalPages = remaining === 0 ? 1 : Math.ceil(remaining / MAC_PAGE_SIZE);
+        renderMacList($pane, net.mac_filter_list, Math.min(curPage, totalPages));
+    });
+
+    // Paginate MAC list
+    $(document).off('click.nmgr', '.mac-page-btn').on('click.nmgr', '.mac-page-btn', function () {
+        const $pane  = $(this).closest('.tab-pane');
+        const netId  = $pane.data('network-id');
+        const net    = networks.find(n => n.id == netId);
+        if (!net) return;
+        const dir    = $(this).data('dir');
+        const curPage = parseInt($pane.find('.network-mac-list').attr('data-mac-page')) || 1;
+        const newPage = dir === 'next' ? curPage + 1 : curPage - 1;
+        renderMacList($pane, net.mac_filter_list || [], newPage);
     });
 
     // Save MAC filter

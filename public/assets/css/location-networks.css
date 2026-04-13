@@ -281,39 +281,119 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     font-size: 0.78rem;
 }
 
-/* MAC address row */
-.mac-address-item {
+/* ── Add-row: MAC input + type selector + Add button inline ── */
+.mac-add-row {
     display: flex;
-    justify-content: space-between;
+    gap: 6px;
     align-items: center;
-    padding: 6px 12px;
-    border-bottom: 1px solid #f1f3f4;
-    font-size: 0.83rem;
-    font-family: monospace;
-    color: #374151;
+    margin-bottom: 8px;
 }
-.mac-address-item:last-child { border-bottom: none; }
+.mac-add-input { flex: 1; min-width: 0; font-family: monospace; }
+.mac-add-type  { width: 130px; flex-shrink: 0; }
 
-/* DHCP reservation row: MAC | IP | remove */
-.dhcp-reservation-item {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    align-items: center;
-    padding: 6px 12px;
-    border-bottom: 1px solid #f1f3f4;
-    font-size: 0.83rem;
-    font-family: monospace;
+/* ── Bypass / Block badges ── */
+.mac-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    white-space: nowrap;
 }
-.dhcp-reservation-item:last-child { border-bottom: none; }
-.dhcp-reservation-item .reservation-mac { color: #374151; }
-.dhcp-reservation-item .reservation-ip  { color: #0e7490; font-weight: 600; }
+.mac-badge-bypass { background: rgba(40,199,111,0.12); color: #28c76f; }
+.mac-badge-block  { background: rgba(234,84,85,0.12);  color: #ea5455; }
+
+/* ── Table layout (MAC list + reservation list) ── */
+.rl-table-wrap {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.rl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+.rl-table thead th {
+    background: #f8f9fa;
+    color: #6b7280;
+    font-size: 0.69rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 6px 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+.rl-table .rl-row td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #f1f3f4;
+    vertical-align: middle;
+}
+.rl-table .rl-row:last-child td { border-bottom: none; }
+.rl-mono  { font-family: monospace; color: #374151; }
+.rl-ip    { color: #0e7490; font-weight: 600; }
+.rl-action { width: 32px; text-align: center; }
+
+/* Empty-state row */
+.rl-table .rl-empty-row td {
+    text-align: center;
+    color: #c4c8d0;
+    padding: 14px;
+    font-size: 0.78rem;
+}
+
+/* ── Pagination bar ── */
+.rl-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 0 2px;
+    border-top: 1px solid #f1f3f4;
+}
+.rl-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 9px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    color: #6b7280;
+    cursor: pointer;
+    line-height: 1;
+}
+.rl-page-btn:hover:not(:disabled) { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+.rl-page-btn:disabled { opacity: .35; cursor: default; }
+.rl-page-info { font-size: 0.74rem; color: #6b7280; }
 
 /* Save row below the grid */
 .mac-res-save-row {
     display: flex;
-    justify-content: flex-end;
-    padding: 10px 2px 4px;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 4px 4px;
+    border-top: 1px solid #f1f3f4;
+    margin-top: 10px;
 }
+.mac-res-save-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: auto;
+    font-size: 0.73rem;
+    color: #9ca3af;
+    line-height: 1.4;
+}
+.mac-res-save-hint svg { flex-shrink: 0; opacity: .7; }
+.dark-layout .mac-res-save-row,
+.semi-dark-layout .mac-res-save-row { border-top-color: #3b4253; }
+.dark-layout .mac-res-save-hint,
+.semi-dark-layout .mac-res-save-hint { color: #6b7280; }
 
 /* Reset btn height inside mac-res panels (overrides the global 50px rule) */
 .mac-res-panel .input-group-append .btn,
@@ -338,8 +418,34 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .dark-layout .mac-res-list-box,
 .semi-dark-layout .mac-res-list-box { background: #1e2a3c; border-color: #3b4253; }
 
-.dark-layout .mac-address-item,
-.semi-dark-layout .mac-address-item { color: #d0d2d6; border-bottom-color: #3b4253; }
+/* Dark / semi-dark: table */
+.dark-layout .rl-table-wrap,
+.semi-dark-layout .rl-table-wrap { border-color: #3b4253; }
+
+.dark-layout .rl-table thead th,
+.semi-dark-layout .rl-table thead th { background: #283046; color: #b4b7bd; border-bottom-color: #3b4253; }
+
+.dark-layout .rl-table .rl-row td,
+.semi-dark-layout .rl-table .rl-row td { border-bottom-color: #3b4253; }
+
+.dark-layout .rl-mono,
+.semi-dark-layout .rl-mono { color: #d0d2d6; }
+
+.dark-layout .rl-table .rl-empty-row td,
+.semi-dark-layout .rl-table .rl-empty-row td { color: #6b7280; }
+
+/* Dark / semi-dark: pagination */
+.dark-layout .rl-pagination,
+.semi-dark-layout .rl-pagination { border-top-color: #3b4253; }
+
+.dark-layout .rl-page-btn,
+.semi-dark-layout .rl-page-btn { background: #283046; border-color: #3b4253; color: #b4b7bd; }
+
+.dark-layout .rl-page-btn:hover:not(:disabled),
+.semi-dark-layout .rl-page-btn:hover:not(:disabled) { background: #1e2a3c; color: #d0d2d6; }
+
+.dark-layout .rl-page-info,
+.semi-dark-layout .rl-page-info { color: #b4b7bd; }
 
 .dark-layout .dhcp-reservation-item,
 .semi-dark-layout .dhcp-reservation-item { border-bottom-color: #3b4253; }

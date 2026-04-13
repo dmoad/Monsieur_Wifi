@@ -517,28 +517,45 @@
                                     <span class="mac-res-panel-title">MAC Address Filtering</span>
                                 </div>
                                 <div class="mac-res-panel-body">
-                                    <label class="mac-res-label">Filter Mode</label>
-                                    <select class="form-control form-control-sm network-mac-filter-mode mb-3">
-                                        <option value="allow-all">Allow All Devices</option>
-                                        <option value="allow-listed">Allow Listed Only</option>
-                                        <option value="block-listed">Block Listed Devices</option>
-                                    </select>
-
-                                    <label class="mac-res-label">MAC Addresses</label>
-                                    <div class="input-group input-group-sm mb-2">
-                                        <input type="text" class="form-control network-mac-input" placeholder="00:11:22:33:44:55">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-primary network-mac-add-btn" type="button">
-                                                <i data-feather="plus" style="width:13px;height:13px;"></i> Add
-                                            </button>
-                                        </div>
+                                    <!-- Add row -->
+                                    <div class="mac-add-row">
+                                        <input type="text" class="form-control form-control-sm network-mac-input mac-add-input" placeholder="00:11:22:33:44:55">
+                                        <select class="form-control form-control-sm network-mac-type-select mac-add-type">
+                                            <option value="bypass">Bypass Auth</option>
+                                            <option value="block">Block</option>
+                                        </select>
+                                        <button class="btn btn-sm btn-outline-primary network-mac-add-btn" type="button">
+                                            <i data-feather="plus" style="width:13px;height:13px;"></i> Add
+                                        </button>
                                     </div>
-                                    <div class="mac-res-list-box">
-                                        <div class="network-mac-list"></div>
-                                        <div class="mac-res-empty network-mac-empty">
-                                            <i data-feather="shield-off" style="width:20px;height:20px;opacity:.3;"></i>
-                                            <span>No MAC addresses added</span>
-                                        </div>
+
+                                    <!-- Table -->
+                                    <div class="rl-table-wrap">
+                                        <table class="rl-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Type</th>
+                                                    <th>MAC Address</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="network-mac-list">
+                                                <tr class="rl-empty-row network-mac-empty">
+                                                    <td colspan="3">No MAC rules added</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Pagination -->
+                                    <div class="rl-pagination mac-list-pagination" style="display:none;">
+                                        <button class="rl-page-btn mac-page-btn" data-dir="prev" disabled>
+                                            <i data-feather="chevron-left" style="width:13px;height:13px;"></i>
+                                        </button>
+                                        <span class="rl-page-info mac-page-info"></span>
+                                        <button class="rl-page-btn mac-page-btn" data-dir="next">
+                                            <i data-feather="chevron-right" style="width:13px;height:13px;"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -552,27 +569,42 @@
                                     <span class="mac-res-panel-title">DHCP IP Reservations</span>
                                 </div>
                                 <div class="mac-res-panel-body">
-                                    <p class="mac-res-hint-text">Assign a fixed IP to a device by MAC address. Applied by the DHCP server on each lease.</p>
-
-                                    <div class="row gx-2 mb-2">
-                                        <div class="col-7">
-                                            <label class="mac-res-label">Device MAC</label>
-                                            <input type="text" class="form-control form-control-sm network-reservation-mac" placeholder="00:11:22:33:44:55">
-                                        </div>
-                                        <div class="col-5">
-                                            <label class="mac-res-label">Reserved IP</label>
-                                            <input type="text" class="form-control form-control-sm network-reservation-ip" placeholder="192.168.1.50">
-                                        </div>
+                                    <!-- Add row -->
+                                    <div class="mac-add-row mb-2">
+                                        <input type="text" class="form-control form-control-sm network-reservation-mac mac-add-input" placeholder="MAC  00:11:22:33:44:55">
+                                        <input type="text" class="form-control form-control-sm network-reservation-ip" placeholder="IP  192.168.1.50" style="width:130px;flex-shrink:0;">
+                                        <button class="btn btn-sm btn-outline-info network-reservation-add-btn" type="button">
+                                            <i data-feather="plus" style="width:13px;height:13px;"></i> Add
+                                        </button>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-info w-100 mb-2 network-reservation-add-btn" type="button">
-                                        <i data-feather="plus" style="width:13px;height:13px;"></i> Add Reservation
-                                    </button>
-                                    <div class="mac-res-list-box">
-                                        <div class="network-reservation-list"></div>
-                                        <div class="mac-res-empty network-reservation-empty">
-                                            <i data-feather="bookmark" style="width:20px;height:20px;opacity:.3;"></i>
-                                            <span>No reservations added</span>
-                                        </div>
+
+                                    <!-- Table -->
+                                    <div class="rl-table-wrap">
+                                        <table class="rl-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>MAC Address</th>
+                                                    <th>Reserved IP</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="network-reservation-list">
+                                                <tr class="rl-empty-row network-reservation-empty">
+                                                    <td colspan="3">No reservations added</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Pagination -->
+                                    <div class="rl-pagination res-list-pagination" style="display:none;">
+                                        <button class="rl-page-btn res-page-btn" data-dir="prev" disabled>
+                                            <i data-feather="chevron-left" style="width:13px;height:13px;"></i>
+                                        </button>
+                                        <span class="rl-page-info res-page-info"></span>
+                                        <button class="rl-page-btn res-page-btn" data-dir="next">
+                                            <i data-feather="chevron-right" style="width:13px;height:13px;"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -581,6 +613,10 @@
 
                         <!-- Save -->
                         <div class="mac-res-save-row">
+                            <span class="mac-res-save-hint">
+                                <i data-feather="info" style="width:12px;height:12px;"></i>
+                                Add or remove entries, then click Save to apply.
+                            </span>
                             <button class="btn btn-sm btn-success network-mac-save-btn" type="button">
                                 <i data-feather="save" style="width:13px;height:13px;" class="mr-1"></i> Save
                             </button>
@@ -605,5 +641,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=8"></script>
+<script src="/assets/js/location-networks-v5.js?v=9"></script>
 @endpush

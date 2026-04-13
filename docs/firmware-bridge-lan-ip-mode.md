@@ -175,6 +175,99 @@ for each reservation in network.dhcp_reservations:
 
 ---
 
+## MAC Address Filtering
+
+> **Fields:** `networks[*].mac_filter_mode` and `networks[*].mac_filter_list`
+> Both fields are always present in the payload regardless of `ip_mode` or `type`.
+
+### Concept
+
+MAC filtering is an **association-layer modifier** that sits on top of the network's normal authentication flow. By default every device goes through whatever auth the network requires (WPA2-PSK handshake, or captive portal redirect). The MAC list can either:
+
+- **Hard-block** specific devices before auth even begins (`block-listed`)
+- **Pre-authorise** specific devices so they skip the PSK or portal step (`allow-listed`) — **only relevant for `password` networks** (see captive portal note below)
+
+### `mac_filter_list` format — unified per-entry type
+
+Each entry in the list is an object with a `mac` and a `type` field:
+
+```json
+{
+  "mac_filter_mode": "mixed",
+  "mac_filter_list": [
+    { "mac": "AA:BB:CC:DD:EE:01", "type": "bypass" },
+    { "mac": "AA:BB:CC:DD:EE:02", "type": "bypass" },
+    { "mac": "DE:AD:BE:EF:00:01", "type": "block"  }
+  ]
+}
+```
+
+| `type` | Meaning |
+|---|---|
+| `bypass` | This MAC is pre-authorised — it associates and gets internet access without going through PSK or captive portal. |
+| `block`  | This MAC is hard-rejected at association — it cannot connect regardless of credentials. |
+
+**`mac_filter_mode`** is a derived summary field computed from the list:
+
+| Value | Meaning |
+|---|---|
+| `none` | List is empty — no MAC rules active |
+| `allow-listed` | All entries are `bypass` |
+| `block-listed` | All entries are `block` |
+| `mixed` | Both `bypass` and `block` entries coexist |
+| `allow-all` | *(retired legacy value — treat as `none`)* |
+
+> Firmware should **not** rely on `mac_filter_mode` to decide behaviour. Read the `type` field on each entry directly.
+
+- `null` is equivalent to `[]` — no MAC rules.
+- MACs are transmitted in **uppercase colon-notation**. Normalise client MACs before comparison.
+
+### Captive portal networks — bypass is handled server-side, not by firmware
+
+For `type == "captive_portal"` networks, **the firmware does not act on `bypass` entries**. The captive portal/RADIUS server manages which MACs are pre-approved. The firmware simply runs the normal association flow for all clients; the portal backend decides whether to redirect or grant access.
+
+The **only** thing firmware does for captive portal + MAC filtering is the **`block` hard reject** at the 802.11 layer.
+
+### Firmware handling
+
+```
+// Build lookup sets from the unified list
+blocked_macs = {}
+bypass_macs  = {}
+
+for entry in (network.mac_filter_list ?? []):
+    mac = uppercase(entry.mac)
+    if entry.type == "block":
+        blocked_macs.add(mac)
+    elif entry.type == "bypass" and network.type != "captive_portal":
+        // Only pre-authorise at firmware level for password/open networks.
+        // Captive portal bypass is handled by the portal/RADIUS server.
+        bypass_macs.add(mac)
+
+
+// ── Per association attempt ──────────────────────────────────────────────
+
+on_client_connect(client_mac, network):
+    mac = uppercase(client_mac)
+
+    // 1. Hard block — deny before any auth (all network types)
+    if mac IN blocked_macs:
+        REJECT association
+        return
+
+    // 2. Pre-authorise bypass (password / open networks only)
+    if mac IN bypass_macs:
+        ACCEPT association, grant full internet access immediately
+        return
+
+    // 3. Normal auth path (unchanged)
+    proceed with standard WPA2/WPA3 handshake or captive portal redirect
+```
+
+> **Interaction with DHCP reservations:** hard-blocked devices never reach DHCP. Bypassed devices receive an IP normally and will get their reserved IP if a matching `dhcp_reservations` entry exists.
+
+---
+
 ## API routes
 
 | Route | Payload key |
@@ -182,5 +275,67 @@ for each reservation in network.dhcp_reservations:
 | `GET /api/devices/{key}/{secret}/v2-settings` | `response.networks[*]` |
 | `GET /api/devices/{key}/{secret}/settings` | `response.networks[*]` |
 
-Both routes serialise `LocationNetwork` model rows via `toArray()`.
-`bridge_lan_dhcp_mode` and `dhcp_reservations` are included automatically in every network object — no special mapping needed on the API side.
+Both routes serialise `LocationNetwork` model rows via `toArray()`. All fields —`bridge_lan_dhcp_mode`, `dhcp_reservations`, `mac_filter_mode`, `mac_filter_list` — are included automatically in every network object. No special mapping is needed on the API side.
+
+### Full network object reference (fields relevant to this document)
+
+Example — captive portal with a DHCP reservation and a blocked device:
+
+```json
+{
+  "id": 1,
+  "ssid": "GuestPortal",
+  "type": "captive_portal",
+  "enabled": true,
+  "ip_mode": "static",
+  "bridge_lan_dhcp_mode": null,
+  "ip_address": "192.168.10.1",
+  "netmask": "255.255.255.0",
+  "gateway": "192.168.1.1",
+  "dns1": "8.8.8.8",
+  "dns2": "8.8.4.4",
+  "dhcp_enabled": true,
+  "dhcp_start": "192.168.10.100",
+  "dhcp_end": 101,
+  "dhcp_end_ip": "192.168.10.200",
+  "dhcp_reservations": [
+    { "mac": "AA:BB:CC:DD:EE:FF", "ip": "192.168.10.50" }
+  ],
+  "mac_filter_mode": "block-listed",
+  "mac_filter_list": [
+    { "mac": "BA:D0:BA:D0:BA:D0", "type": "block" }
+  ]
+}
+```
+
+**Reading this example:**
+- `BA:D0:BA:D0:BA:D0` has `type: "block"` — firmware rejects it at the 802.11 layer
+- `AA:BB:CC:DD:EE:FF` is not in the list, so it associates normally, goes through the captive portal, and receives `192.168.10.50` from DHCP
+- Captive portal pre-approval (if any) is managed by the portal/RADIUS server — firmware has no role in that
+
+Example — password network with a blocked device:
+
+```json
+{
+  "id": 2,
+  "ssid": "OfficeWPA",
+  "type": "password",
+  "enabled": true,
+  "ip_mode": "static",
+  "ip_address": "10.0.0.1",
+  "netmask": "255.255.255.0",
+  "dhcp_enabled": true,
+  "dhcp_start": "10.0.0.100",
+  "dhcp_end": 50,
+  "dhcp_end_ip": "10.0.0.149",
+  "dhcp_reservations": [],
+  "mac_filter_mode": "block-listed",
+  "mac_filter_list": [
+    { "mac": "DE:AD:BE:EF:00:01", "type": "block" }
+  ]
+}
+```
+
+**Reading this example:**
+- `DE:AD:BE:EF:00:01` has `type: "block"` — rejected at the 802.11 layer even if it knows the WPA2 password
+- All other devices authenticate via PSK as normal
