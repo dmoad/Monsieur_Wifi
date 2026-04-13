@@ -138,11 +138,12 @@ A list of static MAC → IP mappings the DHCP server must honour. Present on any
 
 | `ip_mode` | `bridge_lan_dhcp_mode` | `type` | `dhcp_reservations` |
 |---|---|---|---|
-| `static` | — | password / open | populated if `dhcp_enabled: true` |
-| `bridge_lan` | `dhcp_server` | password / open | always populated (may be `[]`) |
+| `static` | — | any (incl. captive portal) | populated if `dhcp_enabled: true` (may be `[]`) |
+| `bridge_lan` | `dhcp_server` | any | always populated (may be `[]`) |
 | `bridge_lan` | `dhcp_client` | any | `null` |
 | `bridge` | — | any | `null` |
-| any | any | `captive_portal` | `null` |
+
+> **Note:** Captive portal networks _can_ act as DHCP servers (e.g. `static` + `dhcp_enabled: true`). In that case `dhcp_reservations` will be present. Firmware should apply reservations regardless of network type.
 
 ### Payload shape
 
@@ -157,7 +158,8 @@ A list of static MAC → IP mappings the DHCP server must honour. Present on any
 
 - `mac` — colon-separated uppercase hex, e.g. `"AA:BB:CC:DD:EE:FF"`
 - `ip` — IPv4 address string; guaranteed by the API to be within the network's subnet
-- When no reservations exist the field is an **empty array** `[]`, not `null` (unless the network is not a DHCP server, in which case it is `null`)
+- When no reservations exist the field is an **empty array** `[]`
+- The field is `null` only when the network cannot be a DHCP server: `bridge` mode, or `bridge_lan + dhcp_client`
 
 ### Firmware handling
 
@@ -219,7 +221,7 @@ Each entry in the list is an object with a `mac` and a `type` field:
 
 > Firmware should **not** rely on `mac_filter_mode` to decide behaviour. Read the `type` field on each entry directly.
 
-- `null` is equivalent to `[]` — no MAC rules.
+- The field is always an array (never `null`) in the API response — the model casts it. An empty list `[]` means no rules are active.
 - MACs are transmitted in **uppercase colon-notation**. Normalise client MACs before comparison.
 
 ### Captive portal networks — bypass is handled server-side, not by firmware
@@ -270,12 +272,16 @@ on_client_connect(client_mac, network):
 
 ## API routes
 
-| Route | Payload key |
-|---|---|
-| `GET /api/devices/{key}/{secret}/v2-settings` | `response.networks[*]` |
-| `GET /api/devices/{key}/{secret}/settings` | `response.networks[*]` |
+| Route | Payload key | Notes |
+|---|---|---|
+| `GET /api/devices/{device_key}/{device_secret}/v2-settings` | `response.networks[*]` | Recommended — full structured payload |
+| `GET /api/devices/{device_key}/{device_secret}/settings` | `response.networks[*]` | Legacy v1 — also includes `networks` array |
 
-Both routes serialise `LocationNetwork` model rows via `toArray()`. All fields —`bridge_lan_dhcp_mode`, `dhcp_reservations`, `mac_filter_mode`, `mac_filter_list` — are included automatically in every network object. No special mapping is needed on the API side.
+Both routes serialise `LocationNetwork` model rows via `toArray()`. All fields — `bridge_lan_dhcp_mode`, `dhcp_reservations`, `mac_filter_mode`, `mac_filter_list` — are included automatically in every network object. No special mapping is needed on the API side.
+
+### Zone network coalescing (v2-settings only)
+
+If a location belongs to a **zone** and is **not** the primary location, `getSettingsV2` automatically substitutes the primary location's `networks` rows in the response. This means all APs in a zone broadcast identical SSIDs and share the same captive portal configuration (enabling seamless roaming). WAN and radio settings remain per-device. Firmware does not need to do anything special — it simply processes whatever `networks` array it receives.
 
 ### Full network object reference (fields relevant to this document)
 

@@ -517,12 +517,14 @@
                                     <span class="mac-res-panel-title">Filtrage des adresses MAC</span>
                                 </div>
                                 <div class="mac-res-panel-body">
+                                    <!-- Indication contextuelle selon le type de réseau (définie par JS) -->
+                                    <p class="network-mac-filter-hint text-muted mb-2" style="font-size:0.82rem;"></p>
                                     <!-- Ligne d'ajout -->
                                     <div class="mac-add-row">
                                         <input type="text" class="form-control form-control-sm network-mac-input mac-add-input" placeholder="00:11:22:33:44:55">
                                         <select class="form-control form-control-sm network-mac-type-select mac-add-type">
+                                            <option value="block" selected>Bloquer</option>
                                             <option value="bypass">Contourner</option>
-                                            <option value="block">Bloquer</option>
                                         </select>
                                         <button class="btn btn-sm btn-outline-primary network-mac-add-btn" type="button">
                                             <i data-feather="plus" style="width:13px;height:13px;"></i> Ajouter
@@ -655,6 +657,9 @@
             passwordRequired:   'Un mot de passe est requis pour les réseaux de type mot de passe.',
             passwordTooShort:   'Le mot de passe doit contenir au moins 8 caractères.',
             savingSchedule:     'Enregistrement…',
+            macFilterHintPassword: 'Seul le blocage est disponible sur les réseaux protégés par mot de passe. Le contournement de l\'authentification n\'est pas applicable ici.',
+            macFilterHintOpen:     'Seul le blocage est disponible sur les réseaux ouverts. Il n\'y a pas de portail ni de mot de passe à contourner.',
+            macFilterHintCaptive:  'Le blocage (refus d\'accès) et le contournement (accès au réseau sans passer par le portail captif) sont disponibles pour les réseaux à portail captif.',
         },
         schedulerLabels: {
             title:              'Heures de travail',
@@ -687,5 +692,5 @@
         },
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=9"></script>
+<script src="/assets/js/location-networks-v5.js?v=10"></script>
 @endpush

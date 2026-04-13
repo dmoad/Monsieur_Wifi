@@ -40,6 +40,9 @@ const MSG = Object.assign({
     passwordRequired:  'Password is required for password-type networks.',
     passwordTooShort:  'Password must be at least 8 characters long.',
     savingSchedule:    'Saving…',
+    macFilterHintPassword: 'Only blocking is available on password-protected networks. Bypassing authentication is not applicable here.',
+    macFilterHintOpen:     'Only blocking is available on open networks. There is no portal or password to bypass.',
+    macFilterHintCaptive:  'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
 }, window.APP_CONFIG_V5?.messages || {});
 
 const TYPE_LABELS = Object.assign(
@@ -346,6 +349,7 @@ function populatePaneData(nets) {
         renderMacList($pane, net.mac_filter_list || [], 1);
         renderReservationList($pane, net.dhcp_reservations || [], 1);
         applyReservationsVisibility($pane);
+        applyMacFilterBypassUi($pane);
 
         // Working hours scheduler (captive portal only)
         if (net.type === 'captive_portal') {
@@ -427,6 +431,7 @@ function showTypeSections($pane, type) {
         $dhcpClientOption.show().prop('disabled', false);
     }
     applyIpModeState($pane, $ipModeSelect.val());
+    applyMacFilterBypassUi($pane);
 }
 
 /**
@@ -492,6 +497,61 @@ function showAuthSubFields($pane, method) {
 
 const MAC_PAGE_SIZE = 5;
 const RES_PAGE_SIZE = 5;
+
+/**
+ * Returns true only for captive_portal networks, which are the only type where
+ * bypassing the portal makes sense.  Password and open networks have no portal
+ * to bypass, so only blocking is meaningful there.
+ */
+function macFilterAllowsBypass(networkType) {
+    return networkType === 'captive_portal';
+}
+
+/**
+ * Coerce any bypass entries to block for network types that do not support bypass.
+ */
+function coerceMacFilterListForType(list, networkType) {
+    if (macFilterAllowsBypass(networkType)) return list;
+    return list.map(e => e.type === 'bypass' ? { ...e, type: 'block' } : e);
+}
+
+/**
+ * Update the MAC filter UI to reflect what the current network type supports:
+ * - Show/hide the bypass option in the type dropdown.
+ * - Coerce any existing bypass entries in the cache to block and re-render the list.
+ * - Update the contextual hint text.
+ */
+function applyMacFilterBypassUi($pane) {
+    const networkType = $pane.find('.network-type-select').val();
+    const allowsBypass = macFilterAllowsBypass(networkType);
+
+    // Enable/disable the bypass option in the add-row dropdown
+    const $typeSelect   = $pane.find('.network-mac-type-select');
+    const $bypassOption = $typeSelect.find('option[value="bypass"]');
+    $bypassOption.prop('disabled', !allowsBypass).toggle(allowsBypass);
+    // Always force block when bypass is not allowed — handles initial render where
+    // the browser may select the first option in DOM order before JS runs.
+    if (!allowsBypass) {
+        $typeSelect.val('block');
+    }
+
+    // Coerce any bypass entries in the cache and re-render
+    const netId = $pane.data('network-id');
+    const net   = networks.find(n => n.id == netId);
+    if (net && !allowsBypass) {
+        const before = (net.mac_filter_list || []).map(normaliseMacEntry);
+        const after  = coerceMacFilterListForType(before, networkType);
+        net.mac_filter_list = after;
+        const curPage = parseInt($pane.find('.network-mac-list').attr('data-mac-page')) || 1;
+        renderMacList($pane, after, curPage);
+    }
+
+    // Update hint text
+    const hintKey = networkType === 'password' ? 'macFilterHintPassword'
+                  : networkType === 'open'     ? 'macFilterHintOpen'
+                  :                              'macFilterHintCaptive';
+    $pane.find('.network-mac-filter-hint').text(MSG[hintKey] || '');
+}
 
 /**
  * Normalise a mac_filter_list entry to { mac, type } shape.
@@ -668,7 +728,7 @@ function getFormData(netId, $pane) {
         })(),
         vlan_id: parseInt($pane.find('.network-vlan-id').val()) || null,
         vlan_tagging: $pane.find('.network-vlan-tagging').val(),
-        mac_filter_list: collectMacList(netId),
+        mac_filter_list: coerceMacFilterListForType(collectMacList(netId), type),
         mac_filter_mode: deriveMacFilterMode(netId),
         dhcp_reservations: (noDhcpServer || type === 'captive_portal')
             ? null
@@ -804,11 +864,12 @@ async function saveMacFilter(netId, $pane) {
         const noDhcpServer = ipMode === 'bridge' || (ipMode === 'bridge_lan' && subMode === 'dhcp_client');
         const includeReservations = !noDhcpServer && type !== 'captive_portal';
 
+        const coercedList = coerceMacFilterListForType(collectMacList(netId), type);
         const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
             method: 'PUT',
             body: JSON.stringify({
                 mac_filter_mode: deriveMacFilterMode(netId),
-                mac_filter_list: collectMacList(netId),
+                mac_filter_list: coercedList,
                 dhcp_reservations: includeReservations ? collectReservations($pane) : null,
             }),
         });
@@ -1058,10 +1119,13 @@ function bindPaneEvents() {
 
     // Add MAC entry (unified bypass/block list)
     $(document).off('click.nmgr', '.network-mac-add-btn').on('click.nmgr', '.network-mac-add-btn', function () {
-        const $pane  = $(this).closest('.tab-pane');
-        const rawMac = $pane.find('.network-mac-input').val().trim();
-        const mac    = rawMac.toUpperCase().replace(/-/g, ':');
-        const type   = $pane.find('.network-mac-type-select').val() || 'block';
+        const $pane       = $(this).closest('.tab-pane');
+        const rawMac      = $pane.find('.network-mac-input').val().trim();
+        const mac         = rawMac.toUpperCase().replace(/-/g, ':');
+        const networkType = $pane.find('.network-type-select').val();
+        const rawType     = $pane.find('.network-mac-type-select').val() || 'block';
+        // Bypass is only meaningful for captive portal — silently coerce to block otherwise
+        const type        = macFilterAllowsBypass(networkType) ? rawType : 'block';
 
         if (!/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac)) {
             toastr.warning(MSG.invalidMac);

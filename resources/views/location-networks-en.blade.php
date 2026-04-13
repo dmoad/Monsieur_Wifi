@@ -517,12 +517,14 @@
                                     <span class="mac-res-panel-title">MAC Address Filtering</span>
                                 </div>
                                 <div class="mac-res-panel-body">
+                                    <!-- Per-network-type hint (set by JS) -->
+                                    <p class="network-mac-filter-hint text-muted mb-2" style="font-size:0.82rem;"></p>
                                     <!-- Add row -->
                                     <div class="mac-add-row">
                                         <input type="text" class="form-control form-control-sm network-mac-input mac-add-input" placeholder="00:11:22:33:44:55">
                                         <select class="form-control form-control-sm network-mac-type-select mac-add-type">
+                                            <option value="block" selected>Block</option>
                                             <option value="bypass">Bypass Auth</option>
-                                            <option value="block">Block</option>
                                         </select>
                                         <button class="btn btn-sm btn-outline-primary network-mac-add-btn" type="button">
                                             <i data-feather="plus" style="width:13px;height:13px;"></i> Add
@@ -638,8 +640,13 @@
 <script>
     window.APP_CONFIG_V5 = {
         maxNetworks: {{ (int) env('MAX_NETWORKS_PER_LOCATION', 4) }},
-        apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
+        apiBase: '{{ rtrim(config("app.url"), "/") }}/api',
+        messages: {
+            macFilterHintPassword: 'Only blocking is available on password-protected networks. Bypassing authentication is not applicable here.',
+            macFilterHintOpen:     'Only blocking is available on open networks. There is no portal or password to bypass.',
+            macFilterHintCaptive:  'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
+        }
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=9"></script>
+<script src="/assets/js/location-networks-v5.js?v=10"></script>
 @endpush

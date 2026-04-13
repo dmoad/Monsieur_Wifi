@@ -133,6 +133,17 @@ class LocationNetworkController extends Controller
             $validated['password'] = 'abcd1234';
         }
 
+        // Bypass is only meaningful for captive portal — coerce any bypass entries to block
+        // for password and open networks so the DB stays consistent.
+        if (in_array($validated['type'], ['password', 'open'], true) && !empty($validated['mac_filter_list'])) {
+            $validated['mac_filter_list'] = array_map(function ($entry) {
+                if (($entry['type'] ?? null) === 'bypass') {
+                    $entry['type'] = 'block';
+                }
+                return $entry;
+            }, $validated['mac_filter_list']);
+        }
+
         // Clear LAN/DHCP fields for bridge (WAN) and bridge_lan in dhcp_client sub-mode
         $resolvedIpMode        = $validated['ip_mode'] ?? null;
         $bridgeLanDhcpMode     = $validated['bridge_lan_dhcp_mode'] ?? 'dhcp_client';
@@ -278,6 +289,17 @@ class LocationNetworkController extends Controller
                     ]
                 ], 422);
             }
+        }
+
+        // Bypass is only meaningful for captive portal — coerce any bypass entries to block
+        // for password and open networks so the DB stays consistent.
+        if (in_array($newType, ['password', 'open'], true) && !empty($validated['mac_filter_list'])) {
+            $validated['mac_filter_list'] = array_map(function ($entry) {
+                if (($entry['type'] ?? null) === 'bypass') {
+                    $entry['type'] = 'block';
+                }
+                return $entry;
+            }, $validated['mac_filter_list']);
         }
 
         // Clear LAN/DHCP fields for bridge (WAN) and bridge_lan in dhcp_client sub-mode
