@@ -91,6 +91,18 @@ function isValidIPv4(val) {
         val.split('.').every(n => +n >= 0 && +n <= 255);
 }
 
+/**
+ * Returns true if `ip` belongs to the subnet defined by `networkIp` and `netmask`.
+ * Works by converting all three addresses to 32-bit integers and ANDing with the mask.
+ */
+function ipToInt(ip) {
+    return ip.split('.').reduce((acc, octet) => (acc << 8) | (+octet & 0xff), 0) >>> 0;
+}
+function ipInSubnet(ip, networkIp, netmask) {
+    const maskInt = ipToInt(netmask);
+    return (ipToInt(ip) & maskInt) === (ipToInt(networkIp) & maskInt);
+}
+
 function applyDnsFieldState($pane, filterOn) {
     const $dns1 = $pane.find('.network-dns1');
     const $dns2 = $pane.find('.network-dns2');
@@ -327,9 +339,11 @@ function populatePaneData(nets) {
         $pane.find('.network-vlan-id').prop('disabled', !vlanEnabled).val(net.vlan_id || '');
         $pane.find('.network-vlan-tagging').prop('disabled', !vlanEnabled).val(net.vlan_tagging || 'disabled');
 
-        // MAC filter
+        // MAC filter & IP reservations
         renderMacList($pane, net.mac_filter_list || []);
         $pane.find('.network-mac-filter-mode').val(net.mac_filter_mode || 'allow-all');
+        renderReservationList($pane, net.dhcp_reservations || []);
+        applyReservationsVisibility($pane);
 
         // Working hours scheduler (captive portal only)
         if (net.type === 'captive_portal') {
@@ -458,6 +472,8 @@ function applyIpModeState($pane, mode) {
         $pane.find('.network-dhcp-start, .network-dhcp-end').prop('disabled', false);
         applyDhcpFieldsFromCache($pane);
     }
+
+    applyReservationsVisibility($pane);
 }
 
 function syncTypePills($pane, type) {
@@ -492,6 +508,52 @@ function renderMacList($pane, list) {
         });
     }
     reRenderFeather();
+}
+
+function renderReservationList($pane, list) {
+    const $container = $pane.find('.network-reservation-list');
+    const $empty     = $pane.find('.network-reservation-empty');
+    $container.empty();
+    if (!list.length) {
+        $empty.show();
+    } else {
+        $empty.hide();
+        list.forEach((entry, i) => {
+            $container.append(`
+                <div class="dhcp-reservation-item">
+                    <span class="reservation-mac">${escapeHtml(entry.mac || '')}</span>
+                    <span class="reservation-ip">${escapeHtml(entry.ip || '')}</span>
+                    <button class="btn btn-sm btn-link text-danger p-0 network-reservation-remove-btn" data-reservation-index="${i}">
+                        <i data-feather="x"></i>
+                    </button>
+                </div>`);
+        });
+    }
+    reRenderFeather();
+}
+
+function collectReservations($pane) {
+    const reservations = [];
+    $pane.find('.dhcp-reservation-item').each(function () {
+        const mac = $(this).find('.reservation-mac').text().trim();
+        const ip  = $(this).find('.reservation-ip').text().trim();
+        if (mac && ip) reservations.push({ mac, ip });
+    });
+    return reservations;
+}
+
+function applyReservationsVisibility($pane) {
+    const type    = $pane.find('.network-type-select').val();
+    const ipMode  = $pane.find('.network-ip-mode').val();
+    const subMode = $pane.find('.network-bridge-lan-dhcp-mode').val() || 'dhcp_client';
+    const dhcpOn  = $pane.find('.network-dhcp-enabled').is(':checked');
+
+    const dhcpServerActive = (ipMode === 'static' && dhcpOn)
+        || (ipMode === 'bridge_lan' && subMode === 'dhcp_server');
+
+    const showReservations = dhcpServerActive && type !== 'captive_portal';
+    $pane.find('.dhcp-reservations-section').toggle(showReservations);
+    $pane.find('.mac-res-grid').toggleClass('mac-res-grid--dual', showReservations);
 }
 
 // ============================================================================
@@ -532,6 +594,9 @@ function getFormData(netId, $pane) {
         vlan_id: parseInt($pane.find('.network-vlan-id').val()) || null,
         vlan_tagging: $pane.find('.network-vlan-tagging').val(),
         mac_filter_mode: $pane.find('.network-mac-filter-mode').val(),
+        dhcp_reservations: (noDhcpServer || type === 'captive_portal')
+            ? null
+            : collectReservations($pane),
         qos_policy: $pane.find('.network-qos-policy').is(':checked') ? 'full' : 'scavenger',
         radio: $pane.find('.network-radio').val() || 'all',
     };
@@ -656,14 +721,30 @@ async function saveMacFilter(netId, $pane) {
 
     try {
         const net = networks.find(n => n.id == netId);
-        await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
+        const type = $pane.find('.network-type-select').val();
+        const ipMode = $pane.find('.network-ip-mode').val();
+        const subMode = $pane.find('.network-bridge-lan-dhcp-mode').val() || 'dhcp_client';
+        const dhcpOn = $pane.find('.network-dhcp-enabled').is(':checked');
+        const noDhcpServer = ipMode === 'bridge' || (ipMode === 'bridge_lan' && subMode === 'dhcp_client');
+        const includeReservations = !noDhcpServer && type !== 'captive_portal';
+
+        const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
             method: 'PUT',
             body: JSON.stringify({
                 mac_filter_mode: $pane.find('.network-mac-filter-mode').val(),
                 mac_filter_list: net?.mac_filter_list || [],
+                dhcp_reservations: includeReservations ? collectReservations($pane) : null,
             }),
         });
+
+        // Update local cache
+        const idx = networks.findIndex(n => n.id == netId);
+        if (idx >= 0) networks[idx] = res.data.network;
+
         toastr.success(MSG.macFilterSaved);
+        if (res.data.config_version_incremented) {
+            toastr.info(MSG.routerReconfigure, '', { timeOut: 5000 });
+        }
     } catch (err) {
         handleApiError(err, 'saveMacFilter');
     } finally {
@@ -748,6 +829,77 @@ function bindPaneEvents() {
     // bridge_lan DHCP sub-mode change → re-apply field state
     $(document).off('change.nmgr', '.network-bridge-lan-dhcp-mode').on('change.nmgr', '.network-bridge-lan-dhcp-mode', function () {
         applyIpModeState($(this).closest('.tab-pane'), $(this).closest('.tab-pane').find('.network-ip-mode').val());
+    });
+
+    // DHCP enabled toggle → update reservations visibility
+    $(document).off('change.nmgr', '.network-dhcp-enabled').on('change.nmgr', '.network-dhcp-enabled', function () {
+        applyReservationsVisibility($(this).closest('.tab-pane'));
+    });
+
+    // Add IP reservation
+    $(document).off('click.nmgr', '.network-reservation-add-btn').on('click.nmgr', '.network-reservation-add-btn', function () {
+        const $pane = $(this).closest('.tab-pane');
+        const mac   = $pane.find('.network-reservation-mac').val().trim().toUpperCase().replace(/-/g, ':');
+        const ip    = $pane.find('.network-reservation-ip').val().trim();
+
+        // — MAC validation
+        if (!/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(mac)) {
+            toastr.warning(MSG.invalidMac || 'Invalid MAC address. Use format 00:11:22:33:44:55.');
+            return;
+        }
+
+        // — Basic IPv4 syntax check
+        if (!isValidIPv4(ip)) {
+            toastr.warning('Invalid IP address.');
+            return;
+        }
+
+        // — Must belong to this network's subnet
+        const netId  = $pane.data('network-id');
+        const net    = networks.find(n => n.id == netId);
+        if (!net) return;
+
+        const gatewayIp = net.ip_address || $pane.find('.network-ip-address').val().trim();
+        const netmask   = net.netmask    || $pane.find('.network-netmask').val().trim();
+
+        if (gatewayIp && netmask) {
+            if (!ipInSubnet(ip, gatewayIp, netmask)) {
+                toastr.warning(`IP ${ip} is outside this network's subnet (${gatewayIp} / ${netmask}).`);
+                return;
+            }
+            // Reserved IP must not be the gateway itself
+            if (ip === gatewayIp) {
+                toastr.warning('Reserved IP cannot be the gateway address.');
+                return;
+            }
+        }
+
+        // — Duplicate checks
+        net.dhcp_reservations = net.dhcp_reservations || [];
+        const normMac = mac.toUpperCase();
+        if (net.dhcp_reservations.some(r => r.mac.toUpperCase() === normMac)) {
+            toastr.warning('A reservation for this MAC address already exists.');
+            return;
+        }
+        if (net.dhcp_reservations.some(r => r.ip === ip)) {
+            toastr.warning('This IP address is already reserved for another device.');
+            return;
+        }
+
+        net.dhcp_reservations.push({ mac, ip });
+        renderReservationList($pane, net.dhcp_reservations);
+        $pane.find('.network-reservation-mac, .network-reservation-ip').val('');
+    });
+
+    // Remove IP reservation
+    $(document).off('click.nmgr', '.network-reservation-remove-btn').on('click.nmgr', '.network-reservation-remove-btn', function () {
+        const $pane = $(this).closest('.tab-pane');
+        const netId = $pane.data('network-id');
+        const idx   = parseInt($(this).data('reservation-index'));
+        const net   = networks.find(n => n.id == netId);
+        if (!net || !net.dhcp_reservations) return;
+        net.dhcp_reservations.splice(idx, 1);
+        renderReservationList($pane, net.dhcp_reservations);
     });
 
     // Auth method change

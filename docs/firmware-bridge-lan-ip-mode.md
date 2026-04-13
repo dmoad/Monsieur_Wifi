@@ -78,7 +78,10 @@ The captive portal requires a routable IP on the interface to redirect unauthent
   "dhcp_enabled": true,
   "dhcp_start": "192.168.x.100",
   "dhcp_end": 101,
-  "dhcp_end_ip": "192.168.x.200"
+  "dhcp_end_ip": "192.168.x.200",
+  "dhcp_reservations": [
+    { "mac": "AA:BB:CC:DD:EE:FF", "ip": "192.168.x.50" }
+  ]
 }
 ```
 
@@ -96,6 +99,7 @@ switch ip_mode:
   "static":
     assign ip_address / netmask / gateway / dns statically
     if dhcp_enabled:
+      apply dhcp_reservations (see below)
       run DHCP server over pool [dhcp_start .. dhcp_end_ip]
 
   "bridge_lan":
@@ -112,6 +116,7 @@ switch ip_mode:
       // ip_address / dhcp_start / dhcp_end will be null — do not configure them
     if effective_mode == "dhcp_server":
       assign ip_address / netmask to bridged interface
+      apply dhcp_reservations (see below)
       run DHCP server over pool [dhcp_start .. dhcp_end_ip]
 
   "bridge":
@@ -123,6 +128,53 @@ switch ip_mode:
 
 ---
 
+## New field: `dhcp_reservations`
+
+> **Introduced:** 2026-04-13
+
+A list of static MAC → IP mappings the DHCP server must honour. Present on any network that acts as a DHCP server.
+
+### When it is populated
+
+| `ip_mode` | `bridge_lan_dhcp_mode` | `type` | `dhcp_reservations` |
+|---|---|---|---|
+| `static` | — | password / open | populated if `dhcp_enabled: true` |
+| `bridge_lan` | `dhcp_server` | password / open | always populated (may be `[]`) |
+| `bridge_lan` | `dhcp_client` | any | `null` |
+| `bridge` | — | any | `null` |
+| any | any | `captive_portal` | `null` |
+
+### Payload shape
+
+```json
+{
+  "dhcp_reservations": [
+    { "mac": "AA:BB:CC:DD:EE:FF", "ip": "192.168.10.50" },
+    { "mac": "11:22:33:44:55:66", "ip": "192.168.10.51" }
+  ]
+}
+```
+
+- `mac` — colon-separated uppercase hex, e.g. `"AA:BB:CC:DD:EE:FF"`
+- `ip` — IPv4 address string; guaranteed by the API to be within the network's subnet
+- When no reservations exist the field is an **empty array** `[]`, not `null` (unless the network is not a DHCP server, in which case it is `null`)
+
+### Firmware handling
+
+```
+for each reservation in network.dhcp_reservations:
+    add static DHCP lease: bind reservation.mac → reservation.ip
+
+// Host is authoritative: if a device with a listed MAC requests an
+// address, always hand out the reserved IP regardless of its requested IP.
+// All reserved IPs are excluded from the dynamic pool
+// [dhcp_start .. dhcp_end_ip] to prevent conflicts.
+```
+
+> **Conflict guard:** the cloud UI validates that each reserved IP is within the subnet and is not the gateway address, and rejects duplicate MACs/IPs. Firmware should still skip any entry whose IP falls outside [dhcp_start .. dhcp_end_ip] and log a warning if encountered.
+
+---
+
 ## API routes
 
 | Route | Payload key |
@@ -131,4 +183,4 @@ switch ip_mode:
 | `GET /api/devices/{key}/{secret}/settings` | `response.networks[*]` |
 
 Both routes serialise `LocationNetwork` model rows via `toArray()`.
-`bridge_lan_dhcp_mode` is included automatically in every network object — no special mapping needed on the API side.
+`bridge_lan_dhcp_mode` and `dhcp_reservations` are included automatically in every network object — no special mapping needed on the API side.

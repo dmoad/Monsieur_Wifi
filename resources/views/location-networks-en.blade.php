@@ -494,64 +494,96 @@
                     </div>
                 </div>
 
-                <!-- Collapsible: MAC Address Filtering -->
+                <!-- Collapsible: MAC Filtering & IP Reservations -->
                 <div class="collapsible-section" data-collapse-id="mac-filter-__ID__">
                     <div class="collapsible-section-header" data-target="mac-filter-__ID__">
                         <h6 class="collapsible-section-title">
                             <span class="section-icon" style="background:rgba(234,84,85,0.12);">
                                 <i data-feather="shield" style="color:#ea5455;width:14px;height:14px;"></i>
                             </span>
-                            MAC Address Filtering
+                            MAC Filtering &amp; IP Reservations
                         </h6>
                         <i data-feather="chevron-down" class="collapsible-chevron" style="width:18px;height:18px;"></i>
                     </div>
                     <div class="collapsible-section-body" id="mac-filter-__ID__" style="display:none;">
-                        <div class="network-type-panel panel-mac mt-2">
-                            <div class="network-type-panel-header">
-                                <span class="network-type-panel-icon">
-                                    <i data-feather="shield" style="color:#ea5455;width:16px;height:16px;"></i>
-                                </span>
-                                <h6 class="network-type-panel-title">MAC Address Filtering</h6>
-                            </div>
-                            <div class="network-type-panel-body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="panel-sub-label">Filter Mode</div>
-                                        <div class="form-group">
-                                            <select class="form-control network-mac-filter-mode">
-                                                <option value="allow-all">Allow All Devices</option>
-                                                <option value="allow-listed">Allow Listed Only</option>
-                                                <option value="block-listed">Block Listed Devices</option>
-                                            </select>
+                        <div class="mac-res-grid mt-2">
+
+                            <!-- ── col 1: MAC Address Filtering ── -->
+                            <div class="mac-res-panel mac-res-panel-shield">
+                                <div class="mac-res-panel-head">
+                                    <span class="mac-res-panel-icon">
+                                        <i data-feather="shield" style="width:13px;height:13px;color:#ea5455;"></i>
+                                    </span>
+                                    <span class="mac-res-panel-title">MAC Address Filtering</span>
+                                </div>
+                                <div class="mac-res-panel-body">
+                                    <label class="mac-res-label">Filter Mode</label>
+                                    <select class="form-control form-control-sm network-mac-filter-mode mb-3">
+                                        <option value="allow-all">Allow All Devices</option>
+                                        <option value="allow-listed">Allow Listed Only</option>
+                                        <option value="block-listed">Block Listed Devices</option>
+                                    </select>
+
+                                    <label class="mac-res-label">MAC Addresses</label>
+                                    <div class="input-group input-group-sm mb-2">
+                                        <input type="text" class="form-control network-mac-input" placeholder="00:11:22:33:44:55">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-primary network-mac-add-btn" type="button">
+                                                <i data-feather="plus" style="width:13px;height:13px;"></i> Add
+                                            </button>
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
-                                        <div class="panel-sub-label">MAC Address List</div>
-                                        <div class="form-group mb-2">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control network-mac-input" placeholder="00:11:22:33:44:55">
-                                                <div class="input-group-append">
-                                                    <button class="btn btn-outline-primary network-mac-add-btn" type="button">
-                                                        <i data-feather="plus" style="width:14px;height:14px;"></i> Add
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mac-list-box">
-                                            <div class="network-mac-list"></div>
-                                            <div class="text-center text-muted p-3 network-mac-empty">
-                                                <i data-feather="inbox" style="width:18px;height:18px;margin-bottom:4px;display:block;margin-left:auto;margin-right:auto;"></i>
-                                                <small>No MAC addresses added</small>
-                                            </div>
-                                        </div>
-                                        <div class="mt-2">
-                                            <button class="btn btn-sm btn-success network-mac-save-btn" type="button">
-                                                <i data-feather="save" class="mr-1"></i> Save MAC Filter
-                                            </button>
+                                    <div class="mac-res-list-box">
+                                        <div class="network-mac-list"></div>
+                                        <div class="mac-res-empty network-mac-empty">
+                                            <i data-feather="shield-off" style="width:20px;height:20px;opacity:.3;"></i>
+                                            <span>No MAC addresses added</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- ── col 2: DHCP IP Reservations ── -->
+                            <div class="mac-res-panel mac-res-panel-bookmark dhcp-reservations-section" style="display:none;">
+                                <div class="mac-res-panel-head">
+                                    <span class="mac-res-panel-icon">
+                                        <i data-feather="bookmark" style="width:13px;height:13px;color:#17a2b8;"></i>
+                                    </span>
+                                    <span class="mac-res-panel-title">DHCP IP Reservations</span>
+                                </div>
+                                <div class="mac-res-panel-body">
+                                    <p class="mac-res-hint-text">Assign a fixed IP to a device by MAC address. Applied by the DHCP server on each lease.</p>
+
+                                    <div class="row gx-2 mb-2">
+                                        <div class="col-7">
+                                            <label class="mac-res-label">Device MAC</label>
+                                            <input type="text" class="form-control form-control-sm network-reservation-mac" placeholder="00:11:22:33:44:55">
+                                        </div>
+                                        <div class="col-5">
+                                            <label class="mac-res-label">Reserved IP</label>
+                                            <input type="text" class="form-control form-control-sm network-reservation-ip" placeholder="192.168.1.50">
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-info w-100 mb-2 network-reservation-add-btn" type="button">
+                                        <i data-feather="plus" style="width:13px;height:13px;"></i> Add Reservation
+                                    </button>
+                                    <div class="mac-res-list-box">
+                                        <div class="network-reservation-list"></div>
+                                        <div class="mac-res-empty network-reservation-empty">
+                                            <i data-feather="bookmark" style="width:20px;height:20px;opacity:.3;"></i>
+                                            <span>No reservations added</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- /.mac-res-grid -->
+
+                        <!-- Save -->
+                        <div class="mac-res-save-row">
+                            <button class="btn btn-sm btn-success network-mac-save-btn" type="button">
+                                <i data-feather="save" style="width:13px;height:13px;" class="mr-1"></i> Save
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -46,6 +46,7 @@ class LocationNetwork extends Model
         'dhcp_enabled',
         'dhcp_start',
         'dhcp_end',
+        'dhcp_reservations',
 
         // MAC filtering
         'mac_filter_mode',
@@ -63,7 +64,8 @@ class LocationNetwork extends Model
         'visible'       => 'boolean',
         'dhcp_enabled'  => 'boolean',
         'dhcp_end'      => 'integer',
-        'mac_filter_list' => 'array',
+        'mac_filter_list'    => 'array',
+        'dhcp_reservations'  => 'array',
         'working_hours'   => 'array',
         'vlan_id'       => 'integer',
         'session_timeout' => 'integer',

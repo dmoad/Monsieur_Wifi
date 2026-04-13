@@ -117,10 +117,13 @@ class LocationNetworkController extends Controller
             'dhcp_enabled'          => 'boolean',
             'dhcp_start'            => 'nullable|ipv4',
             'dhcp_end'              => 'nullable|integer|min:1|max:16777216',
-            'mac_filter_mode'       => 'nullable|string',
-            'mac_filter_list'       => 'nullable|array',
-            'qos_policy'            => 'nullable|string|in:full,scavenger',
-            'radio'                 => 'nullable|string|in:all,2.4,5',
+            'mac_filter_mode'             => 'nullable|string',
+            'mac_filter_list'             => 'nullable|array',
+            'dhcp_reservations'           => 'nullable|array',
+            'dhcp_reservations.*.mac'     => 'required_with:dhcp_reservations|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
+            'dhcp_reservations.*.ip'      => 'required_with:dhcp_reservations|ipv4',
+            'qos_policy'                  => 'nullable|string|in:full,scavenger',
+            'radio'                       => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Set default password for password-type networks
@@ -135,7 +138,7 @@ class LocationNetworkController extends Controller
             || ($resolvedIpMode === 'bridge_lan' && $bridgeLanDhcpMode === 'dhcp_client');
 
         if ($clearLanFields) {
-            foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
+            foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end', 'dhcp_reservations'] as $f) {
                 unset($validated[$f]);
             }
             $validated['dhcp_enabled'] = false;
@@ -236,13 +239,16 @@ class LocationNetworkController extends Controller
             'gateway'               => 'nullable|ip',
             'dns1'                  => 'nullable|ip',
             'dns2'                  => 'nullable|ip',
-            'dhcp_enabled'          => 'sometimes|boolean',
-            'dhcp_start'            => 'nullable|ipv4',
-            'dhcp_end'              => 'nullable|integer|min:1|max:16777216',
-            'mac_filter_mode'       => 'nullable|string',
-            'mac_filter_list'       => 'nullable|array',
-            'qos_policy'            => 'nullable|string|in:full,scavenger',
-            'radio'                 => 'nullable|string|in:all,2.4,5',
+            'dhcp_enabled'                => 'sometimes|boolean',
+            'dhcp_start'                  => 'nullable|ipv4',
+            'dhcp_end'                    => 'nullable|integer|min:1|max:16777216',
+            'mac_filter_mode'             => 'nullable|string',
+            'mac_filter_list'             => 'nullable|array',
+            'dhcp_reservations'           => 'nullable|array',
+            'dhcp_reservations.*.mac'     => 'required_with:dhcp_reservations|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
+            'dhcp_reservations.*.ip'      => 'required_with:dhcp_reservations|ipv4',
+            'qos_policy'                  => 'nullable|string|in:full,scavenger',
+            'radio'                       => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Check if updating to password type or if already password type
@@ -277,7 +283,7 @@ class LocationNetworkController extends Controller
             || ($resolvedIpMode === 'bridge_lan' && $bridgeLanDhcpMode === 'dhcp_client');
 
         if ($clearLanFields) {
-            foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
+            foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end', 'dhcp_reservations'] as $f) {
                 unset($validated[$f]);
             }
             $validated['dhcp_enabled'] = false;
@@ -297,7 +303,7 @@ class LocationNetworkController extends Controller
             'type', 'ssid', 'enabled', 'visible', 'password', 'security',
             'auth_method', 'ip_address', 'netmask', 'gateway', 'dns1', 'dns2',
             'vlan_id', 'vlan_tagging', 'dhcp_enabled', 'dhcp_start', 'dhcp_end',
-            'mac_filter_mode', 'mac_filter_list', 'radio',
+            'mac_filter_mode', 'mac_filter_list', 'dhcp_reservations', 'radio',
         ];
 
         $shouldIncrement = false;
