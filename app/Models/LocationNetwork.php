@@ -37,6 +37,7 @@ class LocationNetwork extends Model
 
         // Shared IP / DHCP fields
         'ip_mode',
+        'bridge_lan_dhcp_mode',
         'ip_address',
         'netmask',
         'gateway',

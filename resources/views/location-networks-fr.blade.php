@@ -376,9 +376,19 @@
                                             <label>Mode IP</label>
                                             <select class="form-control network-ip-mode">
                                                 <option value="static">IP statique</option>
-                                                <option value="dhcp">Client DHCP</option>
+                                                <option value="bridge_lan">Pont vers port LAN</option>
                                                 <option value="bridge">Pont vers WAN</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="network-bridge-lan-dhcp-mode-wrap col-md-3" style="display:none;">
+                                        <div class="form-group">
+                                            <label>Mode DHCP LAN</label>
+                                            <select class="form-control network-bridge-lan-dhcp-mode">
+                                                <option value="dhcp_client">Client DHCP</option>
+                                                <option value="dhcp_server">Serveur DHCP</option>
+                                            </select>
+                                            <small class="form-text text-muted">Le mode Client DHCP n'est pas disponible pour les réseaux Portail Captif.</small>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -606,5 +616,5 @@
         },
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=6"></script>
+<script src="/assets/js/location-networks-v5.js?v=8"></script>
 @endpush

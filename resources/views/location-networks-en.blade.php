@@ -376,9 +376,19 @@
                                             <label>IP Mode</label>
                                             <select class="form-control network-ip-mode">
                                                 <option value="static">Static IP</option>
-                                                <option value="dhcp">DHCP Client</option>
+                                                <option value="bridge_lan">Bridge to LAN Port</option>
                                                 <option value="bridge">Bridge to WAN</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="network-bridge-lan-dhcp-mode-wrap col-md-3" style="display:none;">
+                                        <div class="form-group">
+                                            <label>LAN DHCP Mode</label>
+                                            <select class="form-control network-bridge-lan-dhcp-mode">
+                                                <option value="dhcp_client">DHCP Client</option>
+                                                <option value="dhcp_server">DHCP Server</option>
+                                            </select>
+                                            <small class="form-text text-muted">DHCP Client is not available for Captive Portal networks.</small>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -563,5 +573,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=6"></script>
+<script src="/assets/js/location-networks-v5.js?v=8"></script>
 @endpush

@@ -274,6 +274,10 @@ function populatePaneData(nets) {
         $pane.find('.network-qos-policy').prop('checked', (net.qos_policy || 'scavenger') === 'full');
         $pane.find('.network-radio').val(net.radio || 'all');
 
+        // Set bridge_lan_dhcp_mode BEFORE showTypeSections so the captive portal
+        // guard inside it reads the correct saved value, not the default.
+        $pane.find('.network-bridge-lan-dhcp-mode').val(net.bridge_lan_dhcp_mode || 'dhcp_client');
+
         showTypeSections($pane, net.type);
         syncTypePills($pane, net.type);
 
@@ -302,7 +306,9 @@ function populatePaneData(nets) {
 
         // IP / DHCP
         const loadedIpMode = net.ip_mode || 'static';
-        const noDhcpServer = loadedIpMode === 'bridge' || loadedIpMode === 'dhcp';
+        const loadedBridgeLanDhcpMode = net.bridge_lan_dhcp_mode || 'dhcp_client';
+        const noDhcpServer = loadedIpMode === 'bridge'
+            || (loadedIpMode === 'bridge_lan' && loadedBridgeLanDhcpMode === 'dhcp_client');
         $pane.find('.network-ip-mode').val(loadedIpMode);
         $pane.find('.network-ip-address').val(net.ip_address || '');
         $pane.find('.network-netmask').val(net.netmask || '255.255.255.0');
@@ -382,19 +388,29 @@ function showTypeSections($pane, type) {
         .addClass(`network-type-${type}`)
         .text(TYPE_LABELS[type] || type);
 
-    // Bridge to WAN is not available for captive portal networks
-    const $ipModeSelect = $pane.find('.network-ip-mode');
-    const $bridgeOption = $ipModeSelect.find('option[value="bridge"]');
+    // Bridge to WAN is not available for captive portal networks.
+    // bridge_lan + dhcp_client is also not available for captive portal (portal needs a routable IP).
+    const $ipModeSelect      = $pane.find('.network-ip-mode');
+    const $bridgeOption      = $ipModeSelect.find('option[value="bridge"]');
+    const $dhcpClientOption  = $pane.find('.network-bridge-lan-dhcp-mode option[value="dhcp_client"]');
+    const $bridgeLanSubMode  = $pane.find('.network-bridge-lan-dhcp-mode');
+
     if (type === 'captive_portal') {
         if ($ipModeSelect.val() === 'bridge') {
             $ipModeSelect.val('static');
         }
         $bridgeOption.hide().prop('disabled', true);
-        applyIpModeState($pane, $ipModeSelect.val());
+
+        // Force dhcp_server if currently on dhcp_client
+        if ($bridgeLanSubMode.val() === 'dhcp_client') {
+            $bridgeLanSubMode.val('dhcp_server');
+        }
+        $dhcpClientOption.hide().prop('disabled', true);
     } else {
         $bridgeOption.show().prop('disabled', false);
-        applyIpModeState($pane, $ipModeSelect.val());
+        $dhcpClientOption.show().prop('disabled', false);
     }
+    applyIpModeState($pane, $ipModeSelect.val());
 }
 
 /**
@@ -410,16 +426,27 @@ function applyDhcpFieldsFromCache($pane) {
 }
 
 function applyIpModeState($pane, mode) {
-    const isBridge = mode === 'bridge';
-    const isDhcp   = mode === 'dhcp';
-    const noDhcpServer = isBridge || isDhcp;
+    const isBridge    = mode === 'bridge';
+    const isBridgeLan = mode === 'bridge_lan';
 
-    // IP address / network fields row: hide for bridge and dhcp client
+    // Show/hide the bridge_lan DHCP sub-mode selector
+    $pane.find('.network-bridge-lan-dhcp-mode-wrap').toggle(isBridgeLan);
+
+    const bridgeLanSubMode = $pane.find('.network-bridge-lan-dhcp-mode').val() || 'dhcp_client';
+    const noDhcpServer = isBridge
+        || (isBridgeLan && bridgeLanSubMode === 'dhcp_client');
+
+    // IP address / network fields:
+    //   bridge (WAN)              → hidden (no manual IP)
+    //   bridge_lan + dhcp_client  → hidden (IP obtained from upstream)
+    //   bridge_lan + dhcp_server  → visible (device needs a gateway IP for the subnet)
+    //   static                    → visible
+    const hideIpFields = isBridge || (isBridgeLan && bridgeLanSubMode === 'dhcp_client');
     $pane.find('.network-ip-address, .network-netmask, .network-gateway, .network-dns1, .network-dns2')
         .closest('.form-group')
-        .toggle(!isBridge && !isDhcp);
+        .toggle(!hideIpFields);
 
-    // DHCP server: same for bridge and dhcp client — off, locked, blank range
+    // DHCP server row always visible; just enable/disable based on mode
     $pane.find('.network-dhcp-enabled').closest('.form-group').show();
     $pane.find('.network-dhcp-start, .network-dhcp-end').closest('.form-group').show();
 
@@ -474,9 +501,13 @@ function renderMacList($pane, list) {
 function getFormData(netId, $pane) {
     const type = $pane.find('.network-type-select').val();
     const ipMode = $pane.find('.network-ip-mode').val();
-    const isBridge = ipMode === 'bridge';
-    const isDhcp   = ipMode === 'dhcp';
-    const noManualIp = isBridge || isDhcp;
+    const isBridge    = ipMode === 'bridge';
+    const isBridgeLan = ipMode === 'bridge_lan';
+    const bridgeLanDhcpMode = $pane.find('.network-bridge-lan-dhcp-mode').val() || 'dhcp_client';
+    // IP fields are hidden (and should be nulled) for bridge (WAN) and bridge_lan + dhcp_client
+    const noManualIp  = isBridge || (isBridgeLan && bridgeLanDhcpMode === 'dhcp_client');
+    // DHCP server is suppressed for bridge (WAN) and bridge_lan + dhcp_client
+    const noDhcpServer = isBridge || (isBridgeLan && bridgeLanDhcpMode === 'dhcp_client');
 
     const data = {
         type,
@@ -484,14 +515,15 @@ function getFormData(netId, $pane) {
         visible: $pane.find('.network-visible').val() === '1',
         enabled: $pane.find('.network-enabled').is(':checked'),
         ip_mode: ipMode,
+        bridge_lan_dhcp_mode: isBridgeLan ? bridgeLanDhcpMode : null,
         ip_address: noManualIp ? null : ($pane.find('.network-ip-address').val().trim() || null),
         netmask: noManualIp ? null : ($pane.find('.network-netmask').val().trim() || null),
         gateway: noManualIp ? null : ($pane.find('.network-gateway').val().trim() || null),
         dns1: noManualIp ? null : ($pane.find('.network-dns1').val().trim() || null),
         dns2: noManualIp ? null : ($pane.find('.network-dns2').val().trim() || null),
-        dhcp_enabled: noManualIp ? false : $pane.find('.network-dhcp-enabled').is(':checked'),
-        dhcp_start: noManualIp ? null : ($pane.find('.network-dhcp-start').val().trim() || null),
-        dhcp_end: noManualIp ? null : (() => {
+        dhcp_enabled: noDhcpServer ? false : $pane.find('.network-dhcp-enabled').is(':checked'),
+        dhcp_start: noDhcpServer ? null : ($pane.find('.network-dhcp-start').val().trim() || null),
+        dhcp_end: noDhcpServer ? null : (() => {
             const raw = $pane.find('.network-dhcp-end').val();
             if (raw === '' || raw === undefined || raw === null) return null;
             const n = parseInt(String(raw).trim(), 10);
@@ -708,9 +740,14 @@ function bindPaneEvents() {
         }
     });
 
-    // IP mode change → apply field state for static / dhcp / bridge
+    // IP mode change → apply field state for static / bridge_lan / bridge
     $(document).off('change.nmgr', '.network-ip-mode').on('change.nmgr', '.network-ip-mode', function () {
         applyIpModeState($(this).closest('.tab-pane'), $(this).val());
+    });
+
+    // bridge_lan DHCP sub-mode change → re-apply field state
+    $(document).off('change.nmgr', '.network-bridge-lan-dhcp-mode').on('change.nmgr', '.network-bridge-lan-dhcp-mode', function () {
+        applyIpModeState($(this).closest('.tab-pane'), $(this).closest('.tab-pane').find('.network-ip-mode').val());
     });
 
     // Auth method change

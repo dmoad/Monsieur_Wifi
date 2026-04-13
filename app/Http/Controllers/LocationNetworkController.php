@@ -107,19 +107,20 @@ class LocationNetworkController extends Controller
             'working_hours.*.day'       => 'required_with:working_hours|string',
             'working_hours.*.startHour' => 'required_with:working_hours|integer|min:0|max:23',
             'working_hours.*.endHour'   => 'required_with:working_hours|integer|min:1|max:24',
-            'ip_mode'           => 'nullable|string',
-            'ip_address'        => 'nullable|ip',
-            'netmask'           => 'nullable|string',
-            'gateway'           => 'nullable|ip',
-            'dns1'              => 'nullable|ip',
-            'dns2'              => 'nullable|ip',
-            'dhcp_enabled'      => 'boolean',
-            'dhcp_start'        => 'nullable|ipv4',
-            'dhcp_end'          => 'nullable|integer|min:1|max:16777216',
-            'mac_filter_mode'   => 'nullable|string',
-            'mac_filter_list'   => 'nullable|array',
-            'qos_policy'        => 'nullable|string|in:full,scavenger',
-            'radio'             => 'nullable|string|in:all,2.4,5',
+            'ip_mode'               => 'nullable|string',
+            'bridge_lan_dhcp_mode'  => 'nullable|string|in:dhcp_client,dhcp_server',
+            'ip_address'            => 'nullable|ip',
+            'netmask'               => 'nullable|string',
+            'gateway'               => 'nullable|ip',
+            'dns1'                  => 'nullable|ip',
+            'dns2'                  => 'nullable|ip',
+            'dhcp_enabled'          => 'boolean',
+            'dhcp_start'            => 'nullable|ipv4',
+            'dhcp_end'              => 'nullable|integer|min:1|max:16777216',
+            'mac_filter_mode'       => 'nullable|string',
+            'mac_filter_list'       => 'nullable|array',
+            'qos_policy'            => 'nullable|string|in:full,scavenger',
+            'radio'                 => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Set default password for password-type networks
@@ -127,8 +128,13 @@ class LocationNetworkController extends Controller
             $validated['password'] = 'abcd1234';
         }
 
-        // Bridge or DHCP client: clear LAN / DHCP server fields
-        if (in_array($validated['ip_mode'] ?? null, ['bridge', 'dhcp'], true)) {
+        // Clear LAN/DHCP fields for bridge (WAN) and bridge_lan in dhcp_client sub-mode
+        $resolvedIpMode        = $validated['ip_mode'] ?? null;
+        $bridgeLanDhcpMode     = $validated['bridge_lan_dhcp_mode'] ?? 'dhcp_client';
+        $clearLanFields        = $resolvedIpMode === 'bridge'
+            || ($resolvedIpMode === 'bridge_lan' && $bridgeLanDhcpMode === 'dhcp_client');
+
+        if ($clearLanFields) {
             foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
                 unset($validated[$f]);
             }
@@ -223,19 +229,20 @@ class LocationNetworkController extends Controller
             'working_hours.*.day'       => 'required_with:working_hours|string',
             'working_hours.*.startHour' => 'required_with:working_hours|integer|min:0|max:23',
             'working_hours.*.endHour'   => 'required_with:working_hours|integer|min:1|max:24',
-            'ip_mode'           => 'nullable|string',
-            'ip_address'        => 'nullable|ip',
-            'netmask'           => 'nullable|string',
-            'gateway'           => 'nullable|ip',
-            'dns1'              => 'nullable|ip',
-            'dns2'              => 'nullable|ip',
-            'dhcp_enabled'      => 'sometimes|boolean',
-            'dhcp_start'        => 'nullable|ipv4',
-            'dhcp_end'          => 'nullable|integer|min:1|max:16777216',
-            'mac_filter_mode'   => 'nullable|string',
-            'mac_filter_list'   => 'nullable|array',
-            'qos_policy'        => 'nullable|string|in:full,scavenger',
-            'radio'             => 'nullable|string|in:all,2.4,5',
+            'ip_mode'               => 'nullable|string',
+            'bridge_lan_dhcp_mode'  => 'nullable|string|in:dhcp_client,dhcp_server',
+            'ip_address'            => 'nullable|ip',
+            'netmask'               => 'nullable|string',
+            'gateway'               => 'nullable|ip',
+            'dns1'                  => 'nullable|ip',
+            'dns2'                  => 'nullable|ip',
+            'dhcp_enabled'          => 'sometimes|boolean',
+            'dhcp_start'            => 'nullable|ipv4',
+            'dhcp_end'              => 'nullable|integer|min:1|max:16777216',
+            'mac_filter_mode'       => 'nullable|string',
+            'mac_filter_list'       => 'nullable|array',
+            'qos_policy'            => 'nullable|string|in:full,scavenger',
+            'radio'                 => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Check if updating to password type or if already password type
@@ -263,8 +270,13 @@ class LocationNetworkController extends Controller
             }
         }
 
-        // Bridge or DHCP client: clear LAN / DHCP server fields
-        if (in_array($validated['ip_mode'] ?? $network->ip_mode, ['bridge', 'dhcp'], true)) {
+        // Clear LAN/DHCP fields for bridge (WAN) and bridge_lan in dhcp_client sub-mode
+        $resolvedIpMode    = $validated['ip_mode'] ?? $network->ip_mode;
+        $bridgeLanDhcpMode = $validated['bridge_lan_dhcp_mode'] ?? $network->bridge_lan_dhcp_mode ?? 'dhcp_client';
+        $clearLanFields    = $resolvedIpMode === 'bridge'
+            || ($resolvedIpMode === 'bridge_lan' && $bridgeLanDhcpMode === 'dhcp_client');
+
+        if ($clearLanFields) {
             foreach (['ip_address', 'netmask', 'gateway', 'dns1', 'dns2', 'dhcp_start', 'dhcp_end'] as $f) {
                 unset($validated[$f]);
             }
@@ -384,8 +396,14 @@ class LocationNetworkController extends Controller
      */
     private function assertDhcpPoolValid(array $validated, ?LocationNetwork $existing): ?array
     {
-        $ipMode = $validated['ip_mode'] ?? $existing?->ip_mode ?? 'static';
-        if ($ipMode !== 'static') {
+        $ipMode            = $validated['ip_mode'] ?? $existing?->ip_mode ?? 'static';
+        $bridgeLanDhcpMode = $validated['bridge_lan_dhcp_mode'] ?? $existing?->bridge_lan_dhcp_mode ?? 'dhcp_client';
+
+        // DHCP pool validation applies to static IP and bridge_lan in server mode
+        $dhcpPoolApplies = $ipMode === 'static'
+            || ($ipMode === 'bridge_lan' && $bridgeLanDhcpMode === 'dhcp_server');
+
+        if (! $dhcpPoolApplies) {
             return null;
         }
 

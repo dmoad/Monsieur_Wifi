@@ -167,6 +167,8 @@ class ZoneController extends Controller
 
         $validated = $validator->validated();
 
+        $roamingBefore = $zone->roaming_enabled;
+
         // Persist shared_users separately so JSON casting is applied correctly
         if (in_array($user->role, ['admin', 'superadmin'])) {
             if (array_key_exists('shared_users', $validated)) {
@@ -180,7 +182,10 @@ class ZoneController extends Controller
         }
 
         $zone->update(array_intersect_key($validated, array_flip(['name', 'description', 'is_active', 'roaming_enabled'])));
-        $zone->save();
+
+        if (array_key_exists('roaming_enabled', $validated) && (bool) $roamingBefore !== (bool) $zone->roaming_enabled) {
+            $zone->bumpConfigurationVersionForAllDevices();
+        }
 
         Log::info('Zone updated', ['zone_id' => $zone->id, 'user_id' => $user->id]);
 

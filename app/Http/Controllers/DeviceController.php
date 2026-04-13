@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\CaptivePortalWorkingHour;
 use App\Models\LocationNetwork;
 use App\Models\QosClass;
+use App\Models\Zone;
 
 class DeviceController extends Controller
 {
@@ -380,12 +381,13 @@ class DeviceController extends Controller
         $captivePortalEnabled = $captivePortalEnabled ? 1 : 0;
 
         return response()->json([
-            'status' => 'success', 
-            'config_version' => $device->configuration_version, 
-            'reboot_count' => $device->reboot_count, 
-            'firmware_version' => $firmware_version, 
+            'status' => 'success',
+            'config_version' => $device->configuration_version,
+            'reboot_count' => $device->reboot_count,
+            'firmware_version' => $firmware_version,
             'scan_counter' => $device->scan_counter,
-            'captive_portal_enabled' => $captivePortalEnabled
+            'captive_portal_enabled' => $captivePortalEnabled,
+            'zone_roaming' => $this->zoneRoamingPayload($location),
         ]);
     }
 
@@ -584,7 +586,38 @@ class DeviceController extends Controller
             'blocked_domains' => $blockedDomains,
             'firmware'        => $firmware,
             'qos'             => $qosBlock,
+            'zone_roaming'    => $this->zoneRoamingPayload($location),
         ]);
+    }
+
+    /**
+     * Zone roaming flags for routers (802.11r /k/v seamless handoff policy may depend on this).
+     */
+    private function zoneRoamingPayload(Location $location): array
+    {
+        if (!$location->zone_id) {
+            return [
+                'in_zone' => false,
+                'zone_id' => null,
+                'roaming_enabled' => null,
+            ];
+        }
+
+        $zone = Zone::query()->whereKey($location->zone_id)->first(['id', 'roaming_enabled']);
+        if (!$zone) {
+            // Orphan zone_id on location — expose it so firmware can log / reconcile.
+            return [
+                'in_zone' => false,
+                'zone_id' => $location->zone_id,
+                'roaming_enabled' => null,
+            ];
+        }
+
+        return [
+            'in_zone' => true,
+            'zone_id' => $zone->id,
+            'roaming_enabled' => (bool) $zone->roaming_enabled,
+        ];
     }
 
     /**

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Device;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Zone extends Model
 {
@@ -44,6 +46,26 @@ class Zone extends Model
     public function locations()
     {
         return $this->hasMany(Location::class);
+    }
+
+    /**
+     * Increment configuration_version on every device attached to locations in this zone
+     * so routers pull updated settings (e.g. after roaming toggle changes).
+     */
+    public function bumpConfigurationVersionForAllDevices(): void
+    {
+        $deviceIds = $this->locations()
+            ->whereNotNull('device_id')
+            ->pluck('device_id')
+            ->unique();
+
+        if ($deviceIds->isEmpty()) {
+            return;
+        }
+
+        Device::whereIn('id', $deviceIds)->update([
+            'configuration_version' => DB::raw('COALESCE(configuration_version, 0) + 1'),
+        ]);
     }
 
     /**
