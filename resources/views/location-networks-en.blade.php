@@ -233,14 +233,25 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Method</label>
-                                        <select class="form-control network-auth-method">
-                                            <option value="click-through" selected>Click-through (No Auth)</option>
-                                            <option value="password">Password-based</option>
-                                            <option value="sms">SMS Verification</option>
-                                            <option value="email">Email Verification</option>
-                                            <option value="social">Social Media Login</option>
-                                        </select>
+                                        <label>Login Methods <small class="text-muted font-weight-normal">(select one or more)</small></label>
+                                        <div class="network-auth-method-pills d-flex flex-wrap" style="gap:6px;">
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="click-through">
+                                                <i data-feather="wifi" style="width:13px;height:13px;"></i> Click-through
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="password">
+                                                <i data-feather="lock" style="width:13px;height:13px;"></i> Password
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="sms">
+                                                <i data-feather="message-circle" style="width:13px;height:13px;"></i> SMS
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="email">
+                                                <i data-feather="mail" style="width:13px;height:13px;"></i> Email
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="social">
+                                                <i data-feather="share-2" style="width:13px;height:13px;"></i> Social
+                                            </button>
+                                        </div>
+                                        <small class="form-text text-muted mt-1">When multiple methods are selected, guests will choose at login.</small>
                                     </div>
                                     <div class="form-group network-captive-password-group" style="display:none;">
                                         <label>Shared Password</label>
@@ -642,11 +653,12 @@
         maxNetworks: {{ (int) env('MAX_NETWORKS_PER_LOCATION', 4) }},
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api',
         messages: {
-            macFilterHintPassword: 'Only blocking is available on password-protected networks. Bypassing authentication is not applicable here.',
-            macFilterHintOpen:     'Only blocking is available on open networks. There is no portal or password to bypass.',
-            macFilterHintCaptive:  'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
+            macFilterHintPassword:   'Only blocking is available on password-protected networks. Bypassing authentication is not applicable here.',
+            macFilterHintOpen:       'Only blocking is available on open networks. There is no portal or password to bypass.',
+            macFilterHintCaptive:    'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
+            portalPasswordRequired:  'A shared password is required when the Password login method is enabled.',
         }
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=10"></script>
+<script src="/assets/js/location-networks-v5.js?v=11"></script>
 @endpush

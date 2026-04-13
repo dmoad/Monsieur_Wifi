@@ -364,6 +364,10 @@ Route::get('/password-login/{location}/{zone_id}/{mac_address}', function () {
     return view('password-login');
 })->name('password-login');
 
+Route::get('/login-select/{location}/{zone_id}/{mac_address}', function () {
+    return view('login-select');
+})->name('login-select');
+
 // Legacy routes without zone_id — kept for backward compatibility with older nasid formats
 Route::get('/email-login/{location}/{mac_address}', function () {
     return view('email-login');
@@ -392,6 +396,10 @@ Route::get('/click-login/{location}/{mac_address}', function () {
 Route::get('/password-login/{location}/{mac_address}', function () {
     return view('password-login');
 })->name('password-login-legacy');
+
+Route::get('/login-select/{location}/{mac_address}', function () {
+    return view('login-select');
+})->name('login-select-legacy');
 
 // Captive Portal routes
 Route::get('/captive-portal/{location_id}', [CaptivePortalController::class, 'showLoginPage']);

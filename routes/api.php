@@ -244,6 +244,7 @@ Route::resource('/guest-users', GuestNetworkUserController::class);
 Route::post('/network/{network_id}/guest/info', [GuestNetworkUserController::class, 'info']);
 Route::post('/guest/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/guest/request-otp', [GuestNetworkUserController::class, 'requestOtp']);
+Route::post('/guest/request-email-otp', [GuestNetworkUserController::class, 'requestEmailOtp']);
 
 // Subscription routes
 use App\Http\Controllers\SubscriptionController;

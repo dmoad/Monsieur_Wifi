@@ -233,14 +233,25 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Méthode</label>
-                                        <select class="form-control network-auth-method">
-                                            <option value="click-through" selected>Clic (sans authentification)</option>
-                                            <option value="password">Authentification par mot de passe</option>
-                                            <option value="sms">Vérification par SMS</option>
-                                            <option value="email">Vérification par e-mail</option>
-                                            <option value="social">Connexion via les réseaux sociaux</option>
-                                        </select>
+                                        <label>Méthodes de connexion <small class="text-muted font-weight-normal">(une ou plusieurs)</small></label>
+                                        <div class="network-auth-method-pills d-flex flex-wrap" style="gap:6px;">
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="click-through">
+                                                <i data-feather="wifi" style="width:13px;height:13px;"></i> Clic
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="password">
+                                                <i data-feather="lock" style="width:13px;height:13px;"></i> Mot de passe
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="sms">
+                                                <i data-feather="message-circle" style="width:13px;height:13px;"></i> SMS
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="email">
+                                                <i data-feather="mail" style="width:13px;height:13px;"></i> E-mail
+                                            </button>
+                                            <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="social">
+                                                <i data-feather="share-2" style="width:13px;height:13px;"></i> Social
+                                            </button>
+                                        </div>
+                                        <small class="form-text text-muted mt-1">Si plusieurs méthodes sont sélectionnées, les invités pourront choisir lors de la connexion.</small>
                                     </div>
                                     <div class="form-group network-captive-password-group" style="display:none;">
                                         <label>Mot de passe partagé</label>
@@ -657,9 +668,10 @@
             passwordRequired:   'Un mot de passe est requis pour les réseaux de type mot de passe.',
             passwordTooShort:   'Le mot de passe doit contenir au moins 8 caractères.',
             savingSchedule:     'Enregistrement…',
-            macFilterHintPassword: 'Seul le blocage est disponible sur les réseaux protégés par mot de passe. Le contournement de l\'authentification n\'est pas applicable ici.',
-            macFilterHintOpen:     'Seul le blocage est disponible sur les réseaux ouverts. Il n\'y a pas de portail ni de mot de passe à contourner.',
-            macFilterHintCaptive:  'Le blocage (refus d\'accès) et le contournement (accès au réseau sans passer par le portail captif) sont disponibles pour les réseaux à portail captif.',
+            macFilterHintPassword:   'Seul le blocage est disponible sur les réseaux protégés par mot de passe. Le contournement de l\'authentification n\'est pas applicable ici.',
+            macFilterHintOpen:       'Seul le blocage est disponible sur les réseaux ouverts. Il n\'y a pas de portail ni de mot de passe à contourner.',
+            macFilterHintCaptive:    'Le blocage (refus d\'accès) et le contournement (accès au réseau sans passer par le portail captif) sont disponibles pour les réseaux à portail captif.',
+            portalPasswordRequired:  'Un mot de passe partagé est requis lorsque la méthode de connexion par mot de passe est activée.',
         },
         schedulerLabels: {
             title:              'Heures de travail',
@@ -692,5 +704,5 @@
         },
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=10"></script>
+<script src="/assets/js/location-networks-v5.js?v=11"></script>
 @endpush

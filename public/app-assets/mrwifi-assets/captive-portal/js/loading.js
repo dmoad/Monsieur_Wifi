@@ -83,7 +83,7 @@ function fetchNetworkInfo(parsed, macAddress, challenge, nasIp) {
 }
 
 /**
- * Store network data and redirect to the correct login page based on auth method.
+ * Store network data and redirect to the correct login page based on auth method(s).
  */
 function processNetworkData(location, parsed, macAddress, challenge, nasIp) {
     if (!location || !location.settings) {
@@ -114,11 +114,29 @@ function processNetworkData(location, parsed, macAddress, challenge, nasIp) {
     }
 
     // location.id is the network_id returned by the info() endpoint
-    const networkId  = location.id;
-    const zoneId     = parsed.zoneId;
-    const authMethod = settings.captive_auth_method;
+    const networkId = location.id;
+    const zoneId    = parsed.zoneId;
 
-    switch (authMethod) {
+    // Resolve the ordered list of methods. captive_auth_methods (array) is the new field;
+    // fall back to the legacy single captive_auth_method string for older data.
+    const methods = (settings.captive_auth_methods && settings.captive_auth_methods.length)
+        ? settings.captive_auth_methods
+        : [settings.captive_auth_method || 'click-through'];
+
+    if (methods.length > 1) {
+        // More than one method — show the selection page and let the user choose.
+        window.location.href = `/login-select/${networkId}/${zoneId}/${macAddress}`;
+    } else {
+        redirectToMethod(methods[0], settings, networkId, zoneId, macAddress);
+    }
+}
+
+/**
+ * Redirect to the appropriate login page for a single auth method.
+ * Shared by loading.js (single-method path) and login-select.blade.php (after user picks).
+ */
+function redirectToMethod(method, settings, networkId, zoneId, macAddress) {
+    switch (method) {
         case 'email':
             window.location.href = `/email-login/${networkId}/${zoneId}/${macAddress}`;
             break;

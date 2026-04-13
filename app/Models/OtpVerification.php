@@ -23,7 +23,7 @@ class OtpVerification extends Model
     ];
 
     /**
-     * Generate a new OTP for the given phone number, scoped to a network.
+     * Generate a new OTP for the given phone/email, scoped to a network.
      */
     public static function generateOtp(string $phone, int $networkId, string $macAddress = null): self
     {
@@ -35,12 +35,16 @@ class OtpVerification extends Model
 
         $otp = (string) random_int(1000, 9999);
 
+        // Resolve location_id from the network so the column is always populated
+        $locationId = \App\Models\LocationNetwork::where('id', $networkId)->value('location_id');
+
         return self::create([
-            'phone'      => $phone,
-            'otp'        => $otp,
-            'network_id' => $networkId,
+            'phone'       => $phone,
+            'otp'         => $otp,
+            'location_id' => $locationId,
+            'network_id'  => $networkId,
             'mac_address' => $macAddress,
-            'expires_at' => now()->addMinutes(5),
+            'expires_at'  => now()->addMinutes(5),
         ]);
     }
 

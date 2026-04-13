@@ -9,6 +9,8 @@ use App\Models\GuestNetworkUser;
 use App\Models\Radcheck;
 use App\Models\OtpVerification;
 use App\Services\SmsService;
+use App\Mail\GuestOtpMail;
+use Illuminate\Support\Facades\Mail;
 use Validator;
 use Log;
 
@@ -125,11 +127,16 @@ class GuestNetworkUserController extends Controller
                 ->first();
         }
 
+        // Resolve the ordered list of enabled auth methods. When auth_methods (array) is set
+        // that takes precedence; otherwise fall back to the legacy single auth_method string.
+        $authMethodsArray = $network->auth_methods ?? [$network->auth_method ?? 'click-through'];
+
         $captivePortalSettings = [
             'captive_portal_enabled'      => $network->enabled,
             'captive_portal_ssid'         => $network->ssid,
             'captive_portal_visible'      => $network->visible,
-            'captive_auth_method'         => $network->auth_method,
+            'captive_auth_method'         => $network->auth_method,   // kept for backward compat
+            'captive_auth_methods'        => $authMethodsArray,       // multi-method array
             'session_timeout'             => $network->session_timeout,
             'idle_timeout'                => $network->idle_timeout,
             'captive_portal_redirect'     => $network->redirect_url,
@@ -201,6 +208,43 @@ class GuestNetworkUserController extends Controller
     }
 
     /**
+     * Request an email OTP — scoped to a specific network.
+     */
+    public function requestEmailOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'network_id'  => 'required|exists:location_networks,id',
+            'email'       => 'required|email|max:255',
+            'mac_address' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        $email      = $request->email;
+        $networkId  = $request->network_id;
+        $macAddress = $request->mac_address;
+
+        // Re-use OtpVerification with email as the identifier (stored in the phone column)
+        $otpVerification = OtpVerification::generateOtp($email, $networkId, $macAddress);
+
+        $brandName = env('APP_BRAND_NAME', 'Monsieur WiFi');
+        $locale    = $request->input('locale', 'en');
+
+        Log::info("Sending email OTP {$otpVerification->otp} to {$email}");
+
+        try {
+            Mail::to($email)->send(new GuestOtpMail($otpVerification->otp, $brandName, $locale));
+        } catch (\Exception $e) {
+            Log::error("Failed to send email OTP to {$email}: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to send verification code. Please try again later.'], 500);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Verification code sent', 'expires_at' => $otpVerification->expires_at]);
+    }
+
+    /**
      * Authenticate a guest device and return the CoovaChilli CHAP login URL.
      */
     public function login(Request $request)
@@ -233,8 +277,14 @@ class GuestNetworkUserController extends Controller
         $loginMethod  = $input['login_method'];
 
         // ── Method-specific pre-checks ───────────────────────────────────────
-        if ($loginMethod === 'email' && empty($input['email'])) {
-            return response()->json(['success' => false, 'message' => 'Email is required'], 422);
+        if ($loginMethod === 'email') {
+            if (empty($input['email']) || empty($input['otp'])) {
+                return response()->json(['success' => false, 'message' => 'Email and verification code are required'], 422);
+            }
+            if (!OtpVerification::verifyOtp($input['email'], $input['otp'], $networkId)) {
+                Log::info('Invalid or expired email OTP');
+                return response()->json(['success' => false, 'message' => 'Invalid or expired verification code'], 422);
+            }
         }
 
         if ($loginMethod === 'sms') {

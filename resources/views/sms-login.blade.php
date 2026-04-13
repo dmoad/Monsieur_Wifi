@@ -266,6 +266,15 @@
 
         <!-- OTP Verification Form -->
         <div id="otp-form" class="otp-container">
+            <div id="sent-to-bar" style="
+                display: flex; align-items: center; justify-content: center; gap: 6px;
+                font-size: 0.85rem; color: #555; margin-bottom: 1.25rem;
+                background: #f4f6f9; border-radius: 8px; padding: 8px 12px;">
+                <span data-i18n="sentTo">Sent to</span>
+                <strong id="sent-to-phone" style="color: #333;"></strong>
+                <span style="color: #ccc;">·</span>
+                <a href="#" id="edit-phone-link" style="color: var(--theme-color); text-decoration: none; font-weight: 500;" data-i18n="edit">Edit</a>
+            </div>
             <form id="verify-otp-form">
                 <div class="form-group">
                     <label for="otp-1" data-i18n="verificationCodeLabel">Verification Code</label>
@@ -379,7 +388,9 @@
                 finalAttempt: ' (final attempt - limit reached)',
                 failedToResend: 'Failed to resend verification code',
                 errorMissing: 'Required information is missing. Please check your connection or contact support.',
-                termsText: 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>'
+                termsText: 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>',
+                sentTo: 'Sent to',
+                edit:   'Edit',
             },
             fr: {
                 welcomeText: 'Veuillez entrer votre numéro de téléphone pour recevoir un mot de passe unique et vous connecter à notre réseau WiFi.',
@@ -406,7 +417,9 @@
                 finalAttempt: ' (dernière tentative - limite atteinte)',
                 failedToResend: 'Échec du renvoi du code de vérification',
                 errorMissing: 'Informations requises manquantes. Veuillez vérifier votre connexion ou contacter le support.',
-                termsText: 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#termsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#privacyModal">Politique de confidentialité</a>'
+                termsText: 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#termsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#privacyModal">Politique de confidentialité</a>',
+                sentTo: 'Envoyé à',
+                edit:   'Modifier',
             }
         };
 
@@ -514,6 +527,31 @@
             let smsSendCount = 0;
             const MAX_SMS_SENDS = 5;
             
+            // Handle edit phone — go back to phone entry step
+            $('#edit-phone-link').on('click', function(e) {
+                e.preventDefault();
+                const lang = getLanguage();
+                if (timerInterval) clearInterval(timerInterval);
+                // Reset OTP step state
+                $('#otp-form').hide();
+                $('#otp-1').val('');
+                $('#otp-2').val('');
+                $('#otp-3').val('');
+                $('#otp-4').val('');
+                $('#otp').val('');
+                $('#resend-container').hide();
+                $('#timer-text').show();
+                secondsRemaining = 10;
+                updateTimerDisplay();
+                // Restore send button to its original enabled state
+                $('#request-otp-button')
+                    .prop('disabled', false)
+                    .html(translations[lang].sendCode);
+                $('#phone-form').show();
+                $('#phone').focus().select();
+                $('#alert-container').hide();
+            });
+
             // Handle OTP input functionality
             $('.otp-input').on('input', function() {
                 if ($(this).val().length === 1) {
@@ -602,8 +640,9 @@
                             console.log(`SMS sent ${smsSendCount} of ${MAX_SMS_SENDS} allowed`);
                             
                             // Show OTP form
+                            $('#sent-to-phone').text(fullPhoneNumber);
                             $('#phone-form').hide();
-                            // Make the otp inputs empty and fous on first one
+                            // Make the otp inputs empty and focus on first one
                             $('#otp-1').val('');
                             $('#otp-2').val('');
                             $('#otp-3').val('');

@@ -37,8 +37,9 @@ const MSG = Object.assign({
     pageOf:            'Page {page} of {total}',
     invalidSsid:       'SSID cannot be empty.',
     ssidTooLong:       'SSID must be 32 characters or fewer (802.11 limit).',
-    passwordRequired:  'Password is required for password-type networks.',
-    passwordTooShort:  'Password must be at least 8 characters long.',
+    passwordRequired:       'Password is required for password-type networks.',
+    passwordTooShort:       'Password must be at least 8 characters long.',
+    portalPasswordRequired: 'A shared password is required when the Password login method is enabled.',
     savingSchedule:    'Saving…',
     macFilterHintPassword: 'Only blocking is available on password-protected networks. Bypassing authentication is not applicable here.',
     macFilterHintOpen:     'Only blocking is available on open networks. There is no portal or password to bypass.',
@@ -305,7 +306,11 @@ function populatePaneData(nets) {
         $pane.find('.network-cipher-suites').val(net.cipher_suites || 'CCMP');
 
         // Captive portal fields
-        $pane.find('.network-auth-method').val(net.auth_method || 'click-through');
+        // auth_methods (array) takes precedence over the legacy single auth_method string
+        const loadedAuthMethods = (net.auth_methods && net.auth_methods.length)
+            ? net.auth_methods
+            : [net.auth_method || 'click-through'];
+        setActiveAuthMethods($pane, loadedAuthMethods);
         $pane.find('.network-portal-password').val(net.portal_password || '');
         $pane.find('.network-social-method').val(net.social_auth_method || 'facebook');
         $pane.find('.network-session-timeout').val(net.session_timeout || 60);
@@ -313,7 +318,6 @@ function populatePaneData(nets) {
         $pane.find('.network-redirect-url').val(net.redirect_url || '');
         $pane.find('.network-download-limit').val(net.download_limit || '');
         $pane.find('.network-upload-limit').val(net.upload_limit || '');
-        showAuthSubFields($pane, net.auth_method || 'click-through');
 
         // Portal design
         const $designSelect = $pane.find('.network-portal-design-id');
@@ -490,9 +494,41 @@ function syncTypePills($pane, type) {
         .addClass(`active-${type}`);
 }
 
-function showAuthSubFields($pane, method) {
-    $pane.find('.network-captive-password-group').toggle(method === 'password');
-    $pane.find('.network-social-group').toggle(method === 'social');
+/**
+ * Show/hide captive portal sub-fields based on the active methods array.
+ * Accepts either a string (single method, legacy) or an array of method keys.
+ */
+function showAuthSubFields($pane, methods) {
+    const active = Array.isArray(methods) ? methods : [methods];
+    $pane.find('.network-captive-password-group').toggle(active.includes('password'));
+    $pane.find('.network-social-group').toggle(active.includes('social'));
+}
+
+/**
+ * Read which auth-method pills are currently active in the pane.
+ * Returns an array of method keys in DOM order.
+ */
+function getActiveAuthMethods($pane) {
+    const active = [];
+    $pane.find('.network-auth-method-pill.active').each(function () {
+        active.push($(this).data('method'));
+    });
+    return active.length ? active : ['click-through'];
+}
+
+/**
+ * Activate the specified method pills and update sub-field visibility.
+ * @param {jQuery} $pane
+ * @param {string[]} methods  Array of method keys to mark active.
+ */
+function setActiveAuthMethods($pane, methods) {
+    const active = Array.isArray(methods) && methods.length ? methods : ['click-through'];
+    $pane.find('.network-auth-method-pill').each(function () {
+        const m = $(this).data('method');
+        $(this).toggleClass('active btn-primary', active.includes(m))
+               .toggleClass('btn-outline-secondary', !active.includes(m));
+    });
+    showAuthSubFields($pane, active);
 }
 
 const MAC_PAGE_SIZE = 5;
@@ -745,7 +781,9 @@ function getFormData(netId, $pane) {
         data.security = $pane.find('.network-security').val();
         data.cipher_suites = $pane.find('.network-cipher-suites').val();
     } else if (type === 'captive_portal') {
-        data.auth_method = $pane.find('.network-auth-method').val();
+        const activeMethods = getActiveAuthMethods($pane);
+        data.auth_methods  = activeMethods;
+        data.auth_method   = activeMethods[0] || 'click-through'; // backward compat
         data.portal_password = $pane.find('.network-portal-password').val() || null;
         data.social_auth_method = $pane.find('.network-social-method').val() || null;
         data.session_timeout = parseInt($pane.find('.network-session-timeout').val()) || 60;
@@ -787,7 +825,7 @@ async function saveNetwork(netId) {
             return;
         }
 
-        // For password-type networks: validate the password field
+        // For password-type networks: validate the WiFi password field
         if (data.type === 'password') {
             if (data.password !== undefined && data.password.length < 8) {
                 // A value was typed but it's too short
@@ -801,6 +839,16 @@ async function saveNetwork(netId) {
                 toastr.warning(MSG.passwordRequired);
                 $btn.prop('disabled', false).html(origHtml);
                 $pane.find('.network-password').focus();
+                return;
+            }
+        }
+
+        // For captive portal networks with "password" method: require the shared portal password
+        if (data.type === 'captive_portal' && Array.isArray(data.auth_methods) && data.auth_methods.includes('password')) {
+            if (!data.portal_password) {
+                toastr.warning(MSG.portalPasswordRequired);
+                $btn.prop('disabled', false).html(origHtml);
+                $pane.find('.network-portal-password').focus();
                 return;
             }
         }
@@ -1058,9 +1106,18 @@ function bindPaneEvents() {
         renderReservationList($pane, net.dhcp_reservations || [], newPage);
     });
 
-    // Auth method change
-    $(document).off('change.nmgr', '.network-auth-method').on('change.nmgr', '.network-auth-method', function () {
-        showAuthSubFields($(this).closest('.tab-pane'), $(this).val());
+    // Auth method pill toggle
+    $(document).off('click.nmgr', '.network-auth-method-pill').on('click.nmgr', '.network-auth-method-pill', function () {
+        const $pane   = $(this).closest('.tab-pane');
+        const isActive = $(this).hasClass('active');
+        // Toggle active state on the clicked pill
+        $(this).toggleClass('active btn-primary', !isActive)
+               .toggleClass('btn-outline-secondary', isActive);
+        // Ensure at least one method stays active — revert if this was the last one
+        if (!$pane.find('.network-auth-method-pill.active').length) {
+            $(this).addClass('active btn-primary').removeClass('btn-outline-secondary');
+        }
+        showAuthSubFields($pane, getActiveAuthMethods($pane));
     });
 
     // SSID input → update tab label live; block Enter to avoid accidental saves
