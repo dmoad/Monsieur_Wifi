@@ -117,32 +117,32 @@
                 <!-- Network identity bar: type pills + SSID + visibility + enabled -->
                 <div class="network-identity-bar mt-1">
                     <select class="network-type-select d-none" data-network-id="__ID__">
-                        <option value="password">Password WiFi</option>
-                        <option value="captive_portal">Captive Portal</option>
-                        <option value="open">Open ESSID</option>
+                        <option value="password">{{ __('location_networks.type_password_wifi') }}</option>
+                        <option value="captive_portal">{{ __('location_networks.type_captive_portal') }}</option>
+                        <option value="open">{{ __('location_networks.type_open_essid') }}</option>
                     </select>
                     <div class="network-type-pill-group">
                         <button type="button" class="network-type-pill" data-type="password">
-                            <i data-feather="lock" style="width:13px;height:13px;"></i> Password
+                            <i data-feather="lock" style="width:13px;height:13px;"></i> {{ __('location_networks.pill_password') }}
                         </button>
                         <button type="button" class="network-type-pill" data-type="captive_portal">
-                            <i data-feather="layout" style="width:13px;height:13px;"></i> Captive Portal
+                            <i data-feather="layout" style="width:13px;height:13px;"></i> {{ __('location_networks.pill_captive_portal') }}
                         </button>
                         <button type="button" class="network-type-pill" data-type="open">
-                            <i data-feather="wifi" style="width:13px;height:13px;"></i> Open
+                            <i data-feather="wifi" style="width:13px;height:13px;"></i> {{ __('location_networks.pill_open') }}
                         </button>
                     </div>
                     <div class="network-identity-divider mx-1"></div>
                     <div class="network-ssid-wrap">
                         <i data-feather="wifi" class="ssid-icon" style="width:15px;height:15px;"></i>
-                        <input type="text" class="form-control network-ssid" placeholder="Network name (SSID)" maxlength="32">
+                        <input type="text" class="form-control network-ssid" placeholder="{{ __('location_networks.ssid_placeholder') }}" maxlength="32">
                     </div>
                     <div class="network-identity-divider mx-1"></div>
                     <div class="network-visibility-wrap">
                         <i data-feather="eye" style="width:14px;height:14px;color:#adb5bd;flex-shrink:0;"></i>
                         <select class="network-visible">
-                            <option value="1">Broadcast SSID</option>
-                            <option value="0">Hidden SSID</option>
+                            <option value="1">{{ __('location_networks.visibility_broadcast') }}</option>
+                            <option value="0">{{ __('location_networks.visibility_hidden') }}</option>
                         </select>
                     </div>
                     <div class="network-identity-divider mx-1"></div>
@@ -150,8 +150,8 @@
                         <input type="checkbox" class="network-toggle-checkbox network-enabled" id="network-enabled-__ID__" checked>
                         <label class="network-toggle-btn" for="network-enabled-__ID__">
                             <i data-feather="power" style="width:13px;height:13px;"></i>
-                            <span class="network-toggle-label-on">Active</span>
-                            <span class="network-toggle-label-off">Inactive</span>
+                            <span class="network-toggle-label-on">{{ __('common.active') }}</span>
+                            <span class="network-toggle-label-off">{{ __('common.inactive') }}</span>
                         </label>
                     </div>
                     <div class="network-identity-divider mx-1"></div>
@@ -159,16 +159,16 @@
                         <input type="checkbox" class="network-toggle-checkbox network-qos-policy" id="network-qos-__ID__">
                         <label class="network-toggle-btn" for="network-qos-__ID__">
                             <i data-feather="zap" style="width:13px;height:13px;"></i>
-                            <span>Full QoS</span>
+                            <span>{{ __('location_networks.full_qos') }}</span>
                         </label>
                     </div>
                     <div class="network-identity-divider mx-1"></div>
                     <div class="network-radio-wrap">
                         <i data-feather="radio" style="width:14px;height:14px;color:#adb5bd;"></i>
                         <select class="network-radio">
-                            <option value="all">2.4 &amp; 5 GHz</option>
-                            <option value="2.4">2.4 GHz only</option>
-                            <option value="5">5 GHz only</option>
+                            <option value="all">{{ __('location_networks.band_all') }}</option>
+                            <option value="2.4">{{ __('location_networks.band_2_4_only') }}</option>
+                            <option value="5">{{ __('location_networks.band_5_only') }}</option>
                         </select>
                     </div>
                 </div>
