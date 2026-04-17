@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" href="/app-assets/vendors/css/extensions/toastr.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/mrwifi.css">
 
     <style>
         .dropdown-cart .dropdown-menu-media {
