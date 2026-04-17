@@ -2,33 +2,27 @@
    mrwifi design tokens — light mode defaults
    ============================================================ */
 :root {
-    /* Primary */
     --mw-primary:        #6366F1;
     --mw-primary-hover:  #4F46E5;
     --mw-primary-tint:   #EEF2FF;
 
-    /* Page structure */
     --mw-bg-page:        #F5F7FA;
     --mw-bg-surface:     #FFFFFF;
     --mw-bg-hover:       #E8EBF0;
     --mw-bg-muted:       #F0F2F5;
 
-    /* Text */
     --mw-text-primary:   #1A1A2E;
     --mw-text-secondary: #5C6370;
     --mw-text-muted:     #8B919A;
 
-    /* Borders */
     --mw-border:         #D5D9E0;
     --mw-border-light:   #E5E8ED;
 
-    /* Semantic */
     --mw-success:        #16A34A;
     --mw-warning:        #EA8B09;
     --mw-danger:         #DC2626;
     --mw-info:           #2563EB;
 
-    /* Spacing */
     --mw-space-xs:       4px;
     --mw-space-sm:       8px;
     --mw-space-md:       12px;
@@ -37,25 +31,25 @@
     --mw-space-2xl:      25px;
     --mw-space-3xl:      30px;
 
-    /* Border radius */
     --mw-radius-sm:      5px;
     --mw-radius-md:      8px;
     --mw-radius-lg:      16px;
     --mw-radius-badge:   12px;
     --mw-radius-full:    9999px;
 
-    /* Shadows */
     --mw-shadow-card:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     --mw-shadow-elevated: 0 4px 12px rgba(0,0,0,0.08);
     --mw-shadow-modal:    0 16px 48px rgba(0,0,0,0.12);
 
-    /* Typography */
     --mw-font:           -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     --mw-font-size-base: 14px;
+
+    --mw-sb-width:       56px;
+    --mw-sb-width-exp:   220px;
 }
 
 /* ============================================================
-   Dark mode overrides — toggled via data-theme="dark" on :root
+   Dark mode
    ============================================================ */
 :root[data-theme="dark"] {
     --mw-primary:        #818CF8;
@@ -79,4 +73,360 @@
     --mw-shadow-card:     0 1px 3px rgba(0,0,0,0.30), 0 1px 2px rgba(0,0,0,0.20);
     --mw-shadow-elevated: 0 4px 12px rgba(0,0,0,0.40);
     --mw-shadow-modal:    0 16px 48px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   KILL OLD VUEXY HEADER + SIDEBAR
+   ============================================================ */
+.header-navbar,
+.header-navbar-shadow,
+.navbar-floating,
+.sidenav-overlay,
+.drag-target,
+.main-menu {
+    display: none !important;
+}
+
+/* ============================================================
+   CONTENT AREA — offset for new sidebar
+   ============================================================ */
+.app-content.content {
+    margin-left: var(--mw-sb-width) !important;
+    margin-top: 0 !important;
+    padding-top: var(--mw-space-2xl) !important;
+    transition: margin-left 0.2s ease;
+    min-height: 100vh;
+    background: var(--mw-bg-page);
+}
+
+body.mw-sb-expanded .app-content.content {
+    margin-left: var(--mw-sb-width-exp) !important;
+}
+
+/* ============================================================
+   NEW SIDEBAR
+   ============================================================ */
+.mw-sb {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: var(--mw-sb-width);
+    background: var(--mw-bg-surface);
+    border-right: 1px solid var(--mw-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--mw-space-md) 0;
+    z-index: 1030;
+    transition: width 0.2s ease;
+    overflow: hidden;
+    box-shadow: var(--mw-shadow-card);
+}
+
+.mw-sb.expanded {
+    width: var(--mw-sb-width-exp);
+    align-items: stretch;
+    padding: var(--mw-space-md) var(--mw-space-sm);
+}
+
+/* --- Logo / toggle header --- */
+.mw-sb-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 36px;
+    cursor: pointer;
+    margin-bottom: var(--mw-space-lg);
+    flex-shrink: 0;
+    gap: 0;
+    border-radius: var(--mw-radius-md);
+    transition: background 0.12s;
+}
+
+.mw-sb-head:hover { background: var(--mw-bg-hover); }
+
+.mw-sb.expanded .mw-sb-head {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 var(--mw-space-sm);
+    border-radius: var(--mw-radius-md);
+}
+
+.mw-sb-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    overflow: hidden;
+}
+
+.mw-sb-logo img {
+    height: 30px;
+    width: 30px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: var(--mw-radius-sm);
+}
+
+.mw-sb-logo-text {
+    display: none;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.mw-sb.expanded .mw-sb-logo-text { display: block; }
+
+.mw-sb-m { color: #1a3a8f; }
+.mw-sb-w { color: #6abf40; }
+
+.mw-sb-chevron {
+    width: 18px;
+    height: 18px;
+    color: var(--mw-text-muted);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    display: none;
+}
+
+.mw-sb.expanded .mw-sb-chevron {
+    display: block;
+    transform: rotate(180deg);
+}
+
+/* --- Nav list --- */
+.mw-sb-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    padding: 0 var(--mw-space-xs);
+    scrollbar-width: none;
+}
+
+.mw-sb-nav::-webkit-scrollbar { display: none; }
+
+.mw-sb.expanded .mw-sb-nav {
+    align-items: stretch;
+    padding: 0;
+}
+
+/* --- Nav item --- */
+.mw-si {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--mw-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mw-text-muted);
+    flex-shrink: 0;
+    text-decoration: none !important;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    gap: var(--mw-space-md);
+    position: relative;
+}
+
+.mw-sb.expanded .mw-si {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0 var(--mw-space-md);
+    height: 36px;
+}
+
+.mw-si:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+.mw-si.active { background: var(--mw-primary-tint); color: var(--mw-primary); }
+
+.mw-si svg,
+.mw-si [data-feather] {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0;
+}
+
+.mw-si-label {
+    display: none;
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mw-sb.expanded .mw-si-label { display: block; }
+
+/* --- Separator --- */
+.mw-si-sep {
+    width: 28px;
+    height: 1px;
+    background: var(--mw-border-light);
+    margin: var(--mw-space-xs) 0;
+    flex-shrink: 0;
+}
+
+.mw-sb.expanded .mw-si-sep { width: 100%; }
+
+/* --- Cart badge on icon --- */
+.mw-cart-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--mw-primary);
+    color: #fff;
+    border-radius: var(--mw-radius-full);
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+}
+
+.mw-sb.expanded .mw-cart-badge {
+    top: 50%;
+    right: var(--mw-space-md);
+    transform: translateY(-50%);
+}
+
+/* --- Bottom section --- */
+.mw-sb-bot {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: var(--mw-space-sm) 0 var(--mw-space-xs);
+    width: 100%;
+    position: relative;
+}
+
+.mw-sb.expanded .mw-sb-bot {
+    padding: var(--mw-space-sm) 0 var(--mw-space-xs);
+    align-items: stretch;
+}
+
+.mw-sb-bot .mw-si {
+    align-self: center;
+}
+
+.mw-sb.expanded .mw-sb-bot .mw-si {
+    align-self: auto;
+    width: 100%;
+}
+
+/* --- Avatar button --- */
+.mw-av {
+    width: 36px;
+    height: 36px;
+    background: var(--mw-primary);
+    border-radius: var(--mw-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    flex-shrink: 0;
+    transition: background 0.12s, transform 0.12s;
+    align-self: center;
+}
+
+.mw-av:hover { background: var(--mw-primary-hover); transform: scale(1.05); }
+
+/* --- Avatar dropdown --- */
+.mw-av-menu {
+    display: none;
+    position: fixed;
+    bottom: 12px;
+    left: calc(var(--mw-sb-width) + 6px);
+    background: var(--mw-bg-surface);
+    border: 1px solid var(--mw-border);
+    border-radius: var(--mw-radius-md);
+    box-shadow: var(--mw-shadow-elevated);
+    min-width: 200px;
+    z-index: 1050;
+    padding: var(--mw-space-sm) 0;
+    animation: mw-fade-in 0.1s ease;
+}
+
+body.mw-sb-expanded .mw-av-menu {
+    left: calc(var(--mw-sb-width-exp) + 6px);
+}
+
+.mw-av-menu.open { display: block; }
+
+@keyframes mw-fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.mw-av-info {
+    padding: var(--mw-space-sm) var(--mw-space-lg) var(--mw-space-xs);
+}
+
+.mw-av-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mw-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mw-av-role {
+    font-size: 11px;
+    color: var(--mw-text-muted);
+    text-transform: capitalize;
+    margin-top: 1px;
+}
+
+.mw-av-divider {
+    height: 1px;
+    background: var(--mw-border-light);
+    margin: var(--mw-space-xs) 0;
+}
+
+.mw-av-item {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    padding: 7px var(--mw-space-lg);
+    font-size: 13px;
+    color: var(--mw-text-secondary);
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+    white-space: nowrap;
+}
+
+.mw-av-item:hover {
+    background: var(--mw-bg-hover);
+    color: var(--mw-text-primary);
+}
+
+.mw-av-item.active {
+    color: var(--mw-primary);
+    font-weight: 600;
+}
+
+.mw-av-item.mw-av-logout { color: var(--mw-danger); }
+.mw-av-item.mw-av-logout:hover { background: rgba(220, 38, 38, 0.06); }
+
+.mw-av-item [data-feather] {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0;
 }

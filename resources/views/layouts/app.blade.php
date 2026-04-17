@@ -89,14 +89,10 @@
 
     @stack('styles')
 </head>
-<body class="vertical-layout vertical-menu-modern navbar-floating footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
-    <!-- BEGIN: Header-->
-    @include('layouts.partials.navbar')
-    <!-- END: Header-->
-
-    <!-- BEGIN: Main Menu-->
+<body class="vertical-layout vertical-menu-modern footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
+    <!-- BEGIN: Sidebar-->
     @include('layouts.partials.sidebar')
-    <!-- END: Main Menu-->
+    <!-- END: Sidebar-->
 
     <!-- BEGIN: Content-->
     <div class="app-content content">
@@ -137,6 +133,32 @@
             hideMethod: 'fadeOut'
         };
 
+        // ── Sidebar expand / collapse ──────────────────────────────
+        (function () {
+            const sb     = document.getElementById('mwSidebar');
+            const toggle = document.getElementById('mwSbToggle');
+            const avBtn  = document.getElementById('mwAvBtn');
+            const avMenu = document.getElementById('mwAvMenu');
+
+            if (localStorage.getItem('mwSbExpanded') === '1') {
+                sb.classList.add('expanded');
+                document.body.classList.add('mw-sb-expanded');
+            }
+
+            toggle.addEventListener('click', () => {
+                const expanded = sb.classList.toggle('expanded');
+                document.body.classList.toggle('mw-sb-expanded', expanded);
+                localStorage.setItem('mwSbExpanded', expanded ? '1' : '0');
+            });
+
+            avBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                avMenu.classList.toggle('open');
+            });
+
+            document.addEventListener('click', () => avMenu.classList.remove('open'));
+        })();
+
         if (typeof feather !== 'undefined') feather.replace();
 
         // Authentication check and user display
@@ -151,6 +173,12 @@
 
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
+
+            // Avatar initials
+            if (user.name) {
+                const initials = user.name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                $('.mw-av-initials').text(initials);
+            }
             var profile_picture = localStorage.getItem('profile_picture');
             if (!profile_picture || profile_picture === 'null') {
                 profile_picture = '/assets/avatar-default.png';

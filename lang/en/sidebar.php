@@ -23,4 +23,5 @@ return [
     'firmware' => 'Firmware',
     'system_settings' => 'System Settings',
     'my_orders' => 'My Orders',
+    'toggle' => 'Toggle sidebar',
 ];

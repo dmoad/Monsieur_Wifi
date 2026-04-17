@@ -23,4 +23,5 @@ return [
     'firmware' => 'Firmware',
     'system_settings' => 'Paramètres Système',
     'my_orders' => 'Mes Commandes',
+    'toggle' => 'Réduire/agrandir le menu',
 ];

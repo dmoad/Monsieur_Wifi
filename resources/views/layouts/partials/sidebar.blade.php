@@ -1,82 +1,180 @@
-<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
-    <div class="navbar-header">
-        <ul class="nav navbar-nav flex-row">
-            <li class="nav-item mr-auto">
-                <a class="navbar-brand" href="/{{ $locale }}/dashboard">
-                    <span class="brand-logo"><img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="logo"></span>
-                    <h2 class="brand-text">monsieur-wifi</h2>
-                </a>
-            </li>
-            <li class="nav-item nav-toggle">
-                <a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse">
-                    <i class="d-block d-xl-none text-primary toggle-icon font-medium-4" data-feather="x"></i>
-                    <i class="d-none d-xl-block collapse-toggle-icon font-medium-4 text-primary" data-feather="disc"></i>
-                </a>
-            </li>
-        </ul>
+@php
+    $locale = app()->getLocale();
+    $pathWithoutLocale = preg_replace('/^(en|fr)\//', '', request()->path());
+@endphp
+
+<aside class="mw-sb" id="mwSidebar">
+
+    {{-- Logo / collapse toggle --}}
+    <div class="mw-sb-head" id="mwSbToggle" title="{{ __('sidebar.toggle') }}">
+        <div class="mw-sb-logo">
+            <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Monsieur WiFi">
+            <span class="mw-sb-logo-text">
+                <span class="mw-sb-m">Monsieur</span>&nbsp;<span class="mw-sb-w">WiFi</span>
+            </span>
+        </div>
+        <svg class="mw-sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+        </svg>
     </div>
-    <div class="shadow-bottom"></div>
-    <div class="main-menu-content">
-        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            <li class="navigation-header"><span>{{ __('sidebar.section_management') }}</span></li>
-            <li class="nav-item {{ request()->is('*/dashboard') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/dashboard"><i data-feather="home"></i><span class="menu-title text-truncate">{{ __('sidebar.dashboard') }}</span></a>
-            </li>
-            <li class="nav-item {{ request()->is('*/zones*') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/zones"><i data-feather="layers"></i><span class="menu-title text-truncate">{{ __('sidebar.zones') }}</span></a>
-            </li>
-            <li class="nav-item {{ request()->is('*/devices', '*/appareils') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/devices"><i data-feather="hard-drive"></i><span class="menu-title text-truncate">{{ __('sidebar.devices') }}</span></a>
-            </li>
-            <li class="nav-item {{ request()->is('*/locations') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/locations"><i data-feather="map-pin"></i><span class="menu-title text-truncate">{{ __('sidebar.locations') }}</span></a>
-            </li>
-            <li class="nav-item {{ request()->is('*/captive-portals') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/captive-portals"><i data-feather="layout"></i><span class="menu-title text-truncate">{{ __('sidebar.captive_portals') }}</span></a>
-            </li>
-            <li class="nav-item {{ request()->is('*/shop', '*/boutique', '*/cart', '*/panier', '*/checkout', '*/commander') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/shop"><i data-feather="shopping-bag"></i><span class="menu-title text-truncate">{{ __('sidebar.shop') }}</span></a>
-            </li>
 
+    {{-- Main nav --}}
+    <nav class="mw-sb-nav">
+        <a class="mw-si {{ request()->is('*/dashboard') ? 'active' : '' }}"
+           href="/{{ $locale }}/dashboard"
+           title="{{ __('sidebar.dashboard') }}">
+            <i data-feather="home"></i>
+            <span class="mw-si-label">{{ __('sidebar.dashboard') }}</span>
+        </a>
 
-            <li class="navigation-header admin_and_above hidden"><span>{{ __('sidebar.section_admin') }}</span></li>
-            <li class="nav-item admin_and_above hidden {{ request()->is('*/accounts') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/accounts"><i data-feather="users"></i><span class="menu-title text-truncate">{{ __('sidebar.accounts') }}</span></a>
-            </li>
-            <li class="nav-item admin_and_above hidden {{ request()->is('*/domain-blocking') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/domain-blocking"><i data-feather="slash"></i><span class="menu-title text-truncate">{{ __('sidebar.domain_blocking') }}</span></a>
-            </li>
-            <li class="nav-item only_superadmin hidden {{ request()->is('*/qos-settings', '*/parametres-qos') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/qos-settings"><i data-feather="sliders"></i><span class="menu-title text-truncate">{{ __('sidebar.traffic_priority') }}</span></a>
-            </li>
-            <li class="nav-item admin_and_above hidden {{ request()->is('*/admin/models', '*/admin/modeles') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/admin/models"><i data-feather="cpu"></i><span class="menu-title text-truncate">{{ __('sidebar.manage_models') }}</span></a>
-            </li>
-            <li class="nav-item admin_and_above hidden {{ request()->is('*/admin/inventory', '*/admin/inventaire') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/admin/inventory"><i data-feather="box"></i><span class="menu-title text-truncate">{{ __('sidebar.manage_inventory') }}</span></a>
-            </li>
-            <li class="nav-item admin_and_above hidden {{ request()->is('*/admin/orders', '*/admin/commandes') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/admin/orders"><i data-feather="package"></i><span class="menu-title text-truncate">{{ __('sidebar.manage_orders') }}</span></a>
-            </li>
+        <a class="mw-si {{ request()->is('*/zones*') ? 'active' : '' }}"
+           href="/{{ $locale }}/zones"
+           title="{{ __('sidebar.zones') }}">
+            <i data-feather="layers"></i>
+            <span class="mw-si-label">{{ __('sidebar.zones') }}</span>
+        </a>
 
-            <li class="navigation-header only_superadmin hidden"><span>{{ __('sidebar.section_superadmin') }}</span></li>
-            <li class="nav-item only_superadmin hidden {{ request()->is('*/firmware') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/firmware"><i data-feather="download"></i><span class="menu-title text-truncate">{{ __('sidebar.firmware') }}</span></a>
-            </li>
-            <li class="nav-item only_superadmin hidden {{ request()->is('*/system-settings') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/system-settings"><i data-feather="settings"></i><span class="menu-title text-truncate">{{ __('sidebar.system_settings') }}</span></a>
-            </li>
+        <a class="mw-si {{ request()->is('*/locations*') ? 'active' : '' }}"
+           href="/{{ $locale }}/locations"
+           title="{{ __('sidebar.locations') }}">
+            <i data-feather="map-pin"></i>
+            <span class="mw-si-label">{{ __('sidebar.locations') }}</span>
+        </a>
 
-            <li class="navigation-header"><span>{{ __('sidebar.section_account') }}</span></li>
-            <li class="nav-item {{ request()->is('*/profile') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/profile"><i data-feather="user"></i><span class="menu-title text-truncate">{{ __('common.profile') }}</span></a>
-            </li>
-            <li class="nav-item {{ request()->is('*/orders', '*/commandes') ? 'active' : '' }}">
-                <a class="d-flex align-items-center" href="/{{ $locale }}/orders"><i data-feather="list"></i><span class="menu-title text-truncate">{{ __('sidebar.my_orders') }}</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="d-flex align-items-center logout-button" href="/logout"><i data-feather="power"></i><span class="menu-title text-truncate">{{ __('common.logout') }}</span></a>
-            </li>
-        </ul>
+        <a class="mw-si {{ request()->is('*/captive-portals') ? 'active' : '' }}"
+           href="/{{ $locale }}/captive-portals"
+           title="{{ __('sidebar.captive_portals') }}">
+            <i data-feather="layout"></i>
+            <span class="mw-si-label">{{ __('sidebar.captive_portals') }}</span>
+        </a>
+
+        <a class="mw-si {{ request()->is('*/devices', '*/appareils') ? 'active' : '' }}"
+           href="/{{ $locale }}/devices"
+           title="{{ __('sidebar.devices') }}">
+            <i data-feather="hard-drive"></i>
+            <span class="mw-si-label">{{ __('sidebar.devices') }}</span>
+        </a>
+
+        <a class="mw-si {{ request()->is('*/shop', '*/boutique', '*/cart', '*/panier', '*/checkout', '*/commander') ? 'active' : '' }}"
+           href="/{{ $locale }}/shop"
+           title="{{ __('sidebar.shop') }}">
+            <i data-feather="shopping-bag"></i>
+            <span class="mw-si-label">{{ __('sidebar.shop') }}</span>
+        </a>
+
+        <div class="mw-si-sep admin_and_above hidden"></div>
+
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/accounts') ? 'active' : '' }}"
+           href="/{{ $locale }}/accounts"
+           title="{{ __('sidebar.accounts') }}">
+            <i data-feather="users"></i>
+            <span class="mw-si-label">{{ __('sidebar.accounts') }}</span>
+        </a>
+
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/domain-blocking') ? 'active' : '' }}"
+           href="/{{ $locale }}/domain-blocking"
+           title="{{ __('sidebar.domain_blocking') }}">
+            <i data-feather="slash"></i>
+            <span class="mw-si-label">{{ __('sidebar.domain_blocking') }}</span>
+        </a>
+
+        <a class="mw-si only_superadmin hidden {{ request()->is('*/qos-settings', '*/parametres-qos') ? 'active' : '' }}"
+           href="/{{ $locale }}/qos-settings"
+           title="{{ __('sidebar.traffic_priority') }}">
+            <i data-feather="sliders"></i>
+            <span class="mw-si-label">{{ __('sidebar.traffic_priority') }}</span>
+        </a>
+
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/models', '*/admin/modeles') ? 'active' : '' }}"
+           href="/{{ $locale }}/admin/models"
+           title="{{ __('sidebar.manage_models') }}">
+            <i data-feather="cpu"></i>
+            <span class="mw-si-label">{{ __('sidebar.manage_models') }}</span>
+        </a>
+
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/inventory', '*/admin/inventaire') ? 'active' : '' }}"
+           href="/{{ $locale }}/admin/inventory"
+           title="{{ __('sidebar.manage_inventory') }}">
+            <i data-feather="box"></i>
+            <span class="mw-si-label">{{ __('sidebar.manage_inventory') }}</span>
+        </a>
+
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/orders', '*/admin/commandes') ? 'active' : '' }}"
+           href="/{{ $locale }}/admin/orders"
+           title="{{ __('sidebar.manage_orders') }}">
+            <i data-feather="package"></i>
+            <span class="mw-si-label">{{ __('sidebar.manage_orders') }}</span>
+        </a>
+
+        <div class="mw-si-sep only_superadmin hidden"></div>
+
+        <a class="mw-si only_superadmin hidden {{ request()->is('*/firmware') ? 'active' : '' }}"
+           href="/{{ $locale }}/firmware"
+           title="{{ __('sidebar.firmware') }}">
+            <i data-feather="download"></i>
+            <span class="mw-si-label">{{ __('sidebar.firmware') }}</span>
+        </a>
+
+        <a class="mw-si only_superadmin hidden {{ request()->is('*/system-settings') ? 'active' : '' }}"
+           href="/{{ $locale }}/system-settings"
+           title="{{ __('sidebar.system_settings') }}">
+            <i data-feather="settings"></i>
+            <span class="mw-si-label">{{ __('sidebar.system_settings') }}</span>
+        </a>
+    </nav>
+
+    {{-- Bottom: cart shortcut + avatar --}}
+    <div class="mw-sb-bot">
+        <a class="mw-si {{ request()->is('*/cart', '*/panier') ? 'active' : '' }}"
+           href="/{{ $locale }}/cart"
+           title="{{ __('navbar.my_cart') }}">
+            <i data-feather="shopping-cart"></i>
+            <span class="mw-si-label">{{ __('navbar.my_cart') }}</span>
+            <span class="mw-cart-badge cart-item-count" style="display: none;">0</span>
+        </a>
+
+        {{-- Avatar trigger --}}
+        <button class="mw-av" id="mwAvBtn" title="{{ __('common.profile') }}">
+            <span class="mw-av-initials">?</span>
+        </button>
+
+        {{-- Avatar dropdown (opens upward) --}}
+        <div class="mw-av-menu" id="mwAvMenu">
+            <div class="mw-av-info">
+                <div class="mw-av-name user-name"></div>
+                <div class="mw-av-role user-status"></div>
+            </div>
+            <div class="mw-av-divider"></div>
+
+            <a class="mw-av-item" href="/{{ $locale }}/profile">
+                <i data-feather="user"></i>
+                {{ __('common.profile') }}
+            </a>
+            <a class="mw-av-item {{ request()->is('*/orders', '*/commandes') ? 'active' : '' }}"
+               href="/{{ $locale }}/orders">
+                <i data-feather="list"></i>
+                {{ __('sidebar.my_orders') }}
+            </a>
+
+            <div class="mw-av-divider"></div>
+
+            {{-- Language switcher --}}
+            <a class="mw-av-item {{ $locale === 'en' ? 'active' : '' }}" href="/en/{{ $pathWithoutLocale }}">
+                <i data-feather="globe"></i>
+                English
+            </a>
+            <a class="mw-av-item {{ $locale === 'fr' ? 'active' : '' }}" href="/fr/{{ $pathWithoutLocale }}">
+                <i data-feather="globe"></i>
+                Français
+            </a>
+
+            <div class="mw-av-divider"></div>
+
+            <a class="mw-av-item mw-av-logout logout-button" href="/logout">
+                <i data-feather="power"></i>
+                {{ __('common.logout') }}
+            </a>
+        </div>
     </div>
-</div>
+
+</aside>
