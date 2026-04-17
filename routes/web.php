@@ -55,167 +55,130 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
-// English language routes group
-Route::prefix('en')->name('en.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard-en');
-    })->name('dashboard');
-    
-    Route::get('/accounts', function () {
-        $locale = 'en';
-        return view('accounts-en', compact('locale'));
-    })->name('accounts');
-    
-    Route::get('/locations', function () {
-        return view('locations-en');
-    })->name('locations');
-    
-    Route::get('/locations/{location}', function ($location) {
-        $locale = 'en';
-        return view('location-details-en', compact('location', 'locale'));
-    })->name('location-details');
+// Localized routes. SetLocale middleware reads the URL prefix and calls
+// app()->setLocale($locale), so handlers can resolve the right -en/-fr view
+// from app()->getLocale(). Shared definitions below are registered once for
+// each locale; per-locale branches carry the few asymmetries.
+foreach (['en', 'fr'] as $loc) {
+    Route::prefix($loc)->name($loc . '.')->group(function () use ($loc) {
+        Route::get('/dashboard', function () {
+            return view('dashboard-' . app()->getLocale());
+        })->name('dashboard');
 
-    Route::get('/locations/{location}/networks', function ($location) {
-        $locale = 'en';
-        return view('location-networks-en', compact('location', 'locale'));
-    })->name('location-networks');
-    
-    Route::get('/system-settings', function () {
-        return view('system-settings-en');
-    })->name('system-settings');
-    
-    Route::get('/profile', function () {
-        $locale = 'en'; 
-        return view('profile-en', compact('locale'));
-    })->name('profile');
-    
-    Route::get('/location-details', function () {
-        return view('location-details');
-    })->name('location-details');
+        Route::get('/devices', function () {
+            return view('devices');
+        })->name('devices');
 
-    Route::get('/locations/{location}/guests', function ($location) {
-        return view('location-guests', compact('location'));
-    })->name('location-guests');
-    
-    // Zones
-    Route::get('/zones', function () {
-        return view('zones-en');
-    })->name('zones');
-    
-    Route::get('/zones/{zone}', function ($zone) {
-        return view('zone-details-en', compact('zone'));
-    })->name('zone-details');
-    
-    Route::get('/firmware', function () {
-        return view('firmware-en');
-    })->name('firmware');
-    
-    Route::get('/captive-portals', function () {
-        $locale = 'en';
-        return view('captive-portals-en', compact('locale'));
-    })->name('captive-portals');
-    
-    Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])->defaults('locale', 'en')->name('domain-blocking');
-    
-    // Domain Blocking Routes (English)
-    Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
-    Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
-    Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+        Route::get('/accounts', function () {
+            $locale = app()->getLocale();
+            return view('accounts-' . $locale, compact('locale'));
+        })->name('accounts');
 
-    // QoS Settings (SuperAdmin only — enforced in view/JS)
-    Route::get('/qos-settings', function () {
-        $locale = 'en';
-        return view('qos-settings-en', compact('locale'));
-    })->name('qos-settings');
-});
+        Route::get('/locations', function () {
+            return view('locations-' . app()->getLocale());
+        })->name('locations');
 
-// French language routes group
-Route::prefix('fr')->name('fr.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard-fr');
-    })->name('dashboard');
-    
-    Route::get('/accounts', function () {
-        $locale = 'fr';
-        return view('accounts-fr', compact('locale'));
-    })->name('accounts');
-    
-    Route::get('/locations', function () {
-        return view('locations-fr');
-    })->name('locations');
-    Route::get('/emplacements', function () {
-        return view('locations-fr');
+        Route::get('/locations/{location}', function ($location) {
+            $locale = app()->getLocale();
+            return view('location-details-' . $locale, compact('location', 'locale'));
+        })->name('location-details');
+
+        Route::get('/locations/{location}/networks', function ($location) {
+            $locale = app()->getLocale();
+            return view('location-networks-' . $locale, compact('location', 'locale'));
+        })->name('location-networks');
+
+        Route::get('/locations/analytics/{location_id}', function ($location_id) {
+            return view('location-analytics', compact('location_id'));
+        })->name('location-analytics');
+
+        Route::get('/system-settings', function () {
+            return view('system-settings-' . app()->getLocale());
+        })->name('system-settings');
+
+        Route::get('/profile', function () {
+            $locale = app()->getLocale();
+            return view('profile-' . $locale, compact('locale'));
+        })->name('profile');
+
+        Route::get('/location-details', function () {
+            return view('location-details');
+        })->name('location-details');
+
+        Route::get('/location-analytics', function () {
+            return view('location-analytics');
+        })->name('location-analytics');
+
+        // Asymmetric: EN returns the bare view, FR returns the -fr suffixed view.
+        Route::get('/locations/{location}/guests', function ($location) {
+            $view = app()->getLocale() === 'fr' ? 'location-guests-fr' : 'location-guests';
+            return view($view, compact('location'));
+        })->name('location-guests');
+
+        Route::get('/zones', function () {
+            return view('zones-' . app()->getLocale());
+        })->name('zones');
+
+        Route::get('/zones/{zone}', function ($zone) {
+            return view('zone-details-' . app()->getLocale(), compact('zone'));
+        })->name('zone-details');
+
+        Route::get('/firmware', function () {
+            return view('firmware-' . app()->getLocale());
+        })->name('firmware');
+
+        Route::get('/analytics', function () {
+            return view('analytics');
+        })->name('analytics');
+
+        Route::get('/captive-portals', function () {
+            $locale = app()->getLocale();
+            return view('captive-portals-' . $locale, compact('locale'));
+        })->name('captive-portals');
+
+        Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])
+            ->defaults('locale', $loc)
+            ->name('domain-blocking');
+
+        Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
+        Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
+        Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+
+        if ($loc === 'en') {
+            Route::get('/v2/locations/{location}', function ($location) {
+                return view('location-details-v2-en');
+            })->name('location-details-v2');
+
+            Route::get('/qos-settings', function () {
+                $locale = app()->getLocale();
+                return view('qos-settings-' . $locale, compact('locale'));
+            })->name('qos-settings');
+        }
+
+        if ($loc === 'fr') {
+            // French-slug aliases for existing locations/guests URLs.
+            Route::get('/emplacements', function () {
+                return view('locations-fr');
+            });
+            Route::get('/emplacements/{location}', function ($location) {
+                $locale = 'fr';
+                return view('location-details-fr', compact('location', 'locale'));
+            });
+            Route::get('/emplacements/{location}/networks', function ($location) {
+                $locale = 'fr';
+                return view('location-networks-fr', compact('location', 'locale'));
+            });
+            Route::get('/emplacements/{location}/guests', function ($location) {
+                return view('location-guests-fr', compact('location'));
+            });
+
+            Route::get('/parametres-qos', function () {
+                $locale = 'fr';
+                return view('qos-settings-fr', compact('locale'));
+            })->name('qos-settings');
+        }
     });
-
-    Route::get('/locations/{location}', function ($location) {
-        $locale = 'fr';
-        return view('location-details-fr', compact('location', 'locale'));
-    })->name('location-details');
-    Route::get('/emplacements/{location}', function ($location) {
-        $locale = 'fr';
-        return view('location-details-fr', compact('location', 'locale'));
-    });
-
-    Route::get('/locations/{location}/networks', function ($location) {
-        $locale = 'fr';
-        return view('location-networks-fr', compact('location', 'locale'));
-    })->name('location-networks');
-    Route::get('/emplacements/{location}/networks', function ($location) {
-        $locale = 'fr';
-        return view('location-networks-fr', compact('location', 'locale'));
-    });
-
-    Route::get('/locations/{location}/guests', function ($location) {
-        return view('location-guests-fr', compact('location'));
-    })->name('location-guests');
-    Route::get('/emplacements/{location}/guests', function ($location) {
-        return view('location-guests-fr', compact('location'));
-    });
-    
-    // Zones
-    Route::get('/zones', function () {
-        return view('zones-fr');
-    })->name('zones');
-    
-    Route::get('/zones/{zone}', function ($zone) {
-        return view('zone-details-fr', compact('zone'));
-    })->name('zone-details');
-
-    Route::get('/system-settings', function () {
-        return view('system-settings-fr');
-    })->name('system-settings');
-    
-    Route::get('/profile', function () {
-        $locale = 'fr';
-        return view('profile-fr', compact('locale'));
-    })->name('profile');
-    
-    Route::get('/location-details', function () {
-        return view('location-details');
-    })->name('location-details');
-    
-    Route::get('/firmware', function () {
-        return view('firmware-fr');
-    })->name('firmware');
-    
-    Route::get('/captive-portals', function () {
-        $locale = 'fr';
-        return view('captive-portals-fr', compact('locale'));
-    })->name('captive-portals');
-    
-    Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])->defaults('locale', 'fr')->name('domain-blocking');
-    
-    // Domain Blocking Routes (French)
-    Route::get('/blocked-domains/export', [DomainBlockingController::class, 'export'])->name('blocked-domains.export');
-    Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
-    Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
-
-    // QoS Settings (SuperAdmin only — enforced in view/JS)
-    Route::get('/parametres-qos', function () {
-        $locale = 'fr';
-        return view('qos-settings-fr', compact('locale'));
-    })->name('qos-settings');
-});
+}
 
 // Static pages (language agnostic)
 Route::get('/tos', function () {
