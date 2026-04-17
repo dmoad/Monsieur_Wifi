@@ -60,17 +60,17 @@
                 <ul class="dropdown-menu dropdown-menu-media dropdown-menu-right" style="width: 350px;">
                     <li class="dropdown-menu-header">
                         <div class="dropdown-header d-flex">
-                            <h4 class="notification-title mb-0 mr-auto">{{ $locale === 'fr' ? 'Mon Panier' : 'My Cart' }}</h4>
+                            <h4 class="notification-title mb-0 mr-auto">{{ __('navbar.my_cart') }}</h4>
                             <div class="badge badge-pill badge-light-primary cart-item-count">0</div>
                         </div>
                     </li>
                     <li class="scrollable-container media-list" id="cart-dropdown-items">
                         <div class="text-center p-2">
-                            <p class="text-muted">{{ $locale === 'fr' ? 'Chargement...' : 'Loading...' }}</p>
+                            <p class="text-muted">{{ __('common.loading') }}</p>
                         </div>
                     </li>
                     <li class="dropdown-menu-footer">
-                        <a class="btn btn-primary btn-block" href="/{{ $locale === 'fr' ? 'fr/panier' : 'en/cart' }}">{{ $locale === 'fr' ? 'Voir le Panier' : 'View Cart' }}</a>
+                        <a class="btn btn-primary btn-block" href="/{{ $locale === 'fr' ? 'fr/panier' : 'en/cart' }}">{{ __('navbar.view_cart') }}</a>
                     </li>
                 </ul>
             </li>
@@ -83,9 +83,9 @@
                     <span class="avatar"><img class="round user-profile-picture" src="/assets/avatar-default.png" alt="avatar" height="40" width="40"><span class="avatar-status-online"></span></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" href="/{{ $locale }}/profile"><i class="mr-50" data-feather="user"></i> {{ $locale === 'fr' ? 'Profil' : 'Profile' }}</a>
+                    <a class="dropdown-item" href="/{{ $locale }}/profile"><i class="mr-50" data-feather="user"></i> {{ __('common.profile') }}</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item logout-button" href="/logout"><i class="mr-50" data-feather="power"></i> {{ $locale === 'fr' ? 'Déconnexion' : 'Logout' }}</a>
+                    <a class="dropdown-item logout-button" href="/logout"><i class="mr-50" data-feather="power"></i> {{ __('common.logout') }}</a>
                 </div>
             </li>
         </ul>
