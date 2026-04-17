@@ -101,10 +101,6 @@ foreach (['en', 'fr'] as $loc) {
             return view('profile-' . $locale, compact('locale'));
         })->name('profile');
 
-        Route::get('/location-details', function () {
-            return view('location-details');
-        })->name('location-details');
-
         Route::get('/location-analytics', function () {
             return view('location-analytics');
         })->name('location-analytics');
