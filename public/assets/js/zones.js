@@ -98,7 +98,7 @@ function renderAdminAlert() {
     if (UserManager.isAdminOrAbove()) {
         container.innerHTML = `
             <div class="admin-alert">
-                <i data-feather="info" style="width: 24px; height: 24px;"></i>
+                <i data-feather="info"></i>
                 <div>${T.adminAlert}</div>
             </div>
         `;

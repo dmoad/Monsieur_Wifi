@@ -138,15 +138,24 @@
     .zc-i { color: var(--mw-info); }
 
     .admin-alert {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.75rem 1rem;
-        border-radius: var(--mw-radius-md);
-        margin-bottom: var(--mw-space-lg);
         display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 0.9rem;
+        align-items: flex-start;
+        gap: var(--mw-space-sm);
+        padding: var(--mw-space-md) var(--mw-space-lg);
+        background: var(--mw-primary-tint);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-left: 3px solid var(--mw-primary);
+        border-radius: var(--mw-radius-md);
+        color: var(--mw-text-secondary);
+        font-size: 13px;
+        margin-bottom: var(--mw-space-lg);
+    }
+    .admin-alert [data-feather] {
+        color: var(--mw-primary);
+        flex-shrink: 0;
+        width: 15px !important;
+        height: 15px !important;
+        margin-top: 1px;
     }
     .empty-state {
         text-align: center;
