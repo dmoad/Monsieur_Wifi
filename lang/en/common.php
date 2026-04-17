@@ -10,6 +10,7 @@ return [
     'logout' => 'Logout',
     'maintenance' => 'Maintenance',
     'offline' => 'Offline',
+    'optional' => '(optional)',
     'profile' => 'Profile',
     'reset' => 'Reset',
 ];

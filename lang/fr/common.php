@@ -10,6 +10,7 @@ return [
     'logout' => 'Déconnexion',
     'maintenance' => 'Maintenance',
     'offline' => 'Hors ligne',
+    'optional' => '(optionnel)',
     'profile' => 'Profil',
     'reset' => 'Réinitialiser',
 ];

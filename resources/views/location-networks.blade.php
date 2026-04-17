@@ -180,15 +180,15 @@
                             <span class="network-type-panel-icon">
                                 <i data-feather="lock" style="color:#7367f0;width:16px;height:16px;"></i>
                             </span>
-                            <h6 class="network-type-panel-title">Security &amp; Encryption</h6>
+                            <h6 class="network-type-panel-title">{{ __('location_networks.panel_security_encryption') }}</h6>
                         </div>
                         <div class="network-type-panel-body">
                             <div class="row">
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label>WiFi Password</label>
+                                        <label>{{ __('location_networks.wifi_password') }}</label>
                                         <div class="input-group">
-                                            <input type="password" class="form-control network-password" placeholder="Minimum 8 characters">
+                                            <input type="password" class="form-control network-password" placeholder="{{ __('location_networks.wifi_password_placeholder') }}">
                                             <div class="input-group-append">
                                                 <button class="btn btn-outline-secondary network-toggle-password" type="button"><i data-feather="eye"></i></button>
                                             </div>
@@ -197,18 +197,18 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Security Protocol</label>
+                                        <label>{{ __('location_networks.security_protocol') }}</label>
                                         <select class="form-control network-security">
-                                            <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
-                                            <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
-                                            <option value="wpa3-psk">WPA3-PSK (Most Secure)</option>
-                                            <option value="wep">WEP (Legacy)</option>
+                                            <option value="wpa2-psk" selected>{{ __('location_networks.security_wpa2_psk_rec') }}</option>
+                                            <option value="wpa-wpa2-psk">{{ __('location_networks.security_wpa_wpa2_mixed') }}</option>
+                                            <option value="wpa3-psk">{{ __('location_networks.security_wpa3_psk_secure') }}</option>
+                                            <option value="wep">{{ __('location_networks.security_wep_legacy') }}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>Cipher Suites</label>
+                                        <label>{{ __('location_networks.cipher_suites') }}</label>
                                         <select class="form-control network-cipher-suites">
                                             <option value="CCMP" selected>CCMP</option>
                                             <option value="TKIP">TKIP</option>
@@ -228,35 +228,35 @@
                             <span class="network-type-panel-icon">
                                 <i data-feather="layout" style="color:#28c76f;width:16px;height:16px;"></i>
                             </span>
-                            <h6 class="network-type-panel-title">Captive Portal Configuration</h6>
+                            <h6 class="network-type-panel-title">{{ __('location_networks.panel_captive_portal_config') }}</h6>
                         </div>
                         <div class="network-type-panel-body">
-                            <div class="panel-sub-label">Authentication</div>
+                            <div class="panel-sub-label">{{ __('location_networks.sub_authentication') }}</div>
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Login Methods <small class="text-muted font-weight-normal">(select one or more)</small></label>
+                                        <label>{{ __('location_networks.login_methods') }} <small class="text-muted font-weight-normal">{{ __('location_networks.login_methods_hint') }}</small></label>
                                         <div class="network-auth-method-pills d-flex flex-wrap" style="gap:6px;">
                                             <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="click-through">
-                                                <i data-feather="wifi" style="width:13px;height:13px;"></i> Click-through
+                                                <i data-feather="wifi" style="width:13px;height:13px;"></i> {{ __('location_networks.method_click_through') }}
                                             </button>
                                             <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="password">
-                                                <i data-feather="lock" style="width:13px;height:13px;"></i> Password
+                                                <i data-feather="lock" style="width:13px;height:13px;"></i> {{ __('location_networks.method_password') }}
                                             </button>
                                             <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="sms">
-                                                <i data-feather="message-circle" style="width:13px;height:13px;"></i> SMS
+                                                <i data-feather="message-circle" style="width:13px;height:13px;"></i> {{ __('location_networks.method_sms') }}
                                             </button>
                                             <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="email">
-                                                <i data-feather="mail" style="width:13px;height:13px;"></i> Email
+                                                <i data-feather="mail" style="width:13px;height:13px;"></i> {{ __('location_networks.method_email') }}
                                             </button>
                                             <button type="button" class="network-auth-method-pill btn btn-sm btn-outline-secondary" data-method="social">
-                                                <i data-feather="share-2" style="width:13px;height:13px;"></i> Social
+                                                <i data-feather="share-2" style="width:13px;height:13px;"></i> {{ __('location_networks.method_social') }}
                                             </button>
                                         </div>
-                                        <small class="form-text text-muted mt-1">When multiple methods are selected, guests will choose at login.</small>
+                                        <small class="form-text text-muted mt-1">{{ __('location_networks.multiple_methods_hint') }}</small>
                                     </div>
                                     <div class="form-group network-captive-password-group" style="display:none;">
-                                        <label>Shared Password</label>
+                                        <label>{{ __('location_networks.shared_password') }}</label>
                                         <div class="input-group">
                                             <input type="password" class="form-control network-portal-password">
                                             <div class="input-group-append">
@@ -272,7 +272,7 @@
                                         <small class="form-text text-muted mt-1">When disabled, guests enter their email without receiving a verification code.</small>
                                     </div>
                                     <div class="form-group network-social-group" style="display:none;">
-                                        <label>Social Provider</label>
+                                        <label>{{ __('location_networks.social_provider') }}</label>
                                         <select class="form-control network-social-method">
                                             <option value="facebook">Facebook</option>
                                             <option value="google">Google</option>
@@ -281,49 +281,49 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Portal Design</label>
+                                        <label>{{ __('location_networks.portal_design') }}</label>
                                         <select class="form-control network-portal-design-id">
-                                            <option value="">Default Design</option>
+                                            <option value="">{{ __('location_networks.default_design') }}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Redirect URL <small class="text-muted font-weight-normal">(optional)</small></label>
-                                        <input type="url" class="form-control network-redirect-url" placeholder="https://example.com">
+                                        <label>{{ __('location_networks.redirect_url') }} <small class="text-muted font-weight-normal">{{ __('common.optional') }}</small></label>
+                                        <input type="url" class="form-control network-redirect-url" placeholder="{{ __('location_networks.redirect_url_placeholder') }}">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Session Timeout</label>
+                                        <label>{{ __('location_networks.session_timeout') }}</label>
                                         <select class="form-control network-session-timeout">
-                                            <option value="60">1 Hour</option><option value="120">2 Hours</option><option value="180">3 Hours</option>
-                                            <option value="240">4 Hours</option><option value="300">5 Hours</option><option value="360">6 Hours</option>
-                                            <option value="720">12 Hours</option><option value="1440">1 Day</option><option value="10080">1 Week</option>
-                                            <option value="43200">3 Months</option><option value="172800">1 Year</option>
+                                            <option value="60">{{ __('location_networks.dur_1_hour') }}</option><option value="120">{{ __('location_networks.dur_2_hours') }}</option><option value="180">{{ __('location_networks.dur_3_hours') }}</option>
+                                            <option value="240">{{ __('location_networks.dur_4_hours') }}</option><option value="300">{{ __('location_networks.dur_5_hours') }}</option><option value="360">{{ __('location_networks.dur_6_hours') }}</option>
+                                            <option value="720">{{ __('location_networks.dur_12_hours') }}</option><option value="1440">{{ __('location_networks.dur_1_day') }}</option><option value="10080">{{ __('location_networks.dur_1_week') }}</option>
+                                            <option value="43200">{{ __('location_networks.dur_3_months') }}</option><option value="172800">{{ __('location_networks.dur_1_year') }}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Idle Timeout</label>
+                                        <label>{{ __('location_networks.idle_timeout') }}</label>
                                         <select class="form-control network-idle-timeout">
-                                            <option value="15">15 Minutes</option><option value="30">30 Minutes</option><option value="45">45 Minutes</option>
-                                            <option value="60">1 Hour</option><option value="120">2 Hours</option><option value="240">4 Hours</option>
-                                            <option value="720">12 Hours</option><option value="1440">1 Day</option>
+                                            <option value="15">{{ __('location_networks.dur_15_min') }}</option><option value="30">{{ __('location_networks.dur_30_min') }}</option><option value="45">{{ __('location_networks.dur_45_min') }}</option>
+                                            <option value="60">{{ __('location_networks.dur_1_hour') }}</option><option value="120">{{ __('location_networks.dur_2_hours') }}</option><option value="240">{{ __('location_networks.dur_4_hours') }}</option>
+                                            <option value="720">{{ __('location_networks.dur_12_hours') }}</option><option value="1440">{{ __('location_networks.dur_1_day') }}</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="panel-sub-section">
-                                <div class="panel-sub-label">Bandwidth Limits</div>
+                                <div class="panel-sub-label">{{ __('location_networks.sub_bandwidth_limits') }}</div>
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label><i data-feather="download" style="width:13px;height:13px;margin-right:4px;"></i>Download (Mbps)</label>
-                                            <input type="number" class="form-control network-download-limit" placeholder="Unlimited" min="0">
+                                            <label><i data-feather="download" style="width:13px;height:13px;margin-right:4px;"></i>{{ __('location_networks.download_mbps') }}</label>
+                                            <input type="number" class="form-control network-download-limit" placeholder="{{ __('location_networks.unlimited') }}" min="0">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label><i data-feather="upload" style="width:13px;height:13px;margin-right:4px;"></i>Upload (Mbps)</label>
-                                            <input type="number" class="form-control network-upload-limit" placeholder="Unlimited" min="0">
+                                            <label><i data-feather="upload" style="width:13px;height:13px;margin-right:4px;"></i>{{ __('location_networks.upload_mbps') }}</label>
+                                            <input type="number" class="form-control network-upload-limit" placeholder="{{ __('location_networks.unlimited') }}" min="0">
                                         </div>
                                     </div>
                                 </div>
@@ -339,7 +339,7 @@
                             <span class="section-icon" style="background:rgba(40,199,111,0.12);">
                                 <i data-feather="clock" style="color:#28c76f;width:14px;height:14px;"></i>
                             </span>
-                            Working Hours
+                            {{ __('location_networks.working_hours') }}
                         </h6>
                         <i data-feather="chevron-down" class="collapsible-chevron" style="width:18px;height:18px;"></i>
                     </div>
@@ -355,14 +355,14 @@
                             <span class="network-type-panel-icon">
                                 <i data-feather="wifi" style="color:#ff9f43;width:16px;height:16px;"></i>
                             </span>
-                            <h6 class="network-type-panel-title">Open Network</h6>
+                            <h6 class="network-type-panel-title">{{ __('location_networks.panel_open_network') }}</h6>
                         </div>
                         <div class="network-type-panel-body">
                             <div class="d-flex align-items-start" style="gap:12px;">
                                 <i data-feather="alert-triangle" style="width:20px;height:20px;color:#ff9f43;flex-shrink:0;margin-top:1px;"></i>
                                 <div>
-                                    <p class="mb-1" style="font-weight:600;color:#ff9f43;font-size:0.95rem;">No authentication required</p>
-                                    <p class="mb-0 text-muted" style="font-size:0.88rem;">Anyone within range can connect without a password or portal. Use only in trusted environments.</p>
+                                    <p class="mb-1" style="font-weight:600;color:#ff9f43;font-size:0.95rem;">{{ __('location_networks.no_auth_required') }}</p>
+                                    <p class="mb-0 text-muted" style="font-size:0.88rem;">{{ __('location_networks.open_network_warning') }}</p>
                                 </div>
                             </div>
                         </div>
