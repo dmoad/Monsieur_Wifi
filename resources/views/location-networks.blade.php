@@ -376,7 +376,7 @@
                             <span class="section-icon" style="background:rgba(23,162,184,0.12);">
                                 <i data-feather="server" style="color:#17a2b8;width:14px;height:14px;"></i>
                             </span>
-                            IP &amp; DHCP Settings
+                            {{ __('location_networks.section_ip_dhcp') }}
                         </h6>
                         <i data-feather="chevron-down" class="collapsible-chevron" style="width:18px;height:18px;"></i>
                     </div>
@@ -386,61 +386,61 @@
                                 <span class="network-type-panel-icon">
                                     <i data-feather="globe" style="color:#17a2b8;width:16px;height:16px;"></i>
                                 </span>
-                                <h6 class="network-type-panel-title">IP Configuration</h6>
+                                <h6 class="network-type-panel-title">{{ __('location_networks.panel_ip_config') }}</h6>
                             </div>
                             <div class="network-type-panel-body">
-                                <div class="panel-sub-label">Addressing</div>
+                                <div class="panel-sub-label">{{ __('location_networks.sub_addressing') }}</div>
                                 <div class="row">
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label>IP Mode</label>
+                                            <label>{{ __('location_networks.ip_mode') }}</label>
                                             <select class="form-control network-ip-mode">
-                                                <option value="static">Static IP</option>
-                                                <option value="bridge_lan">Bridge to LAN Port</option>
-                                                <option value="bridge">Bridge to WAN</option>
+                                                <option value="static">{{ __('location_networks.ip_mode_static') }}</option>
+                                                <option value="bridge_lan">{{ __('location_networks.ip_mode_bridge_lan') }}</option>
+                                                <option value="bridge">{{ __('location_networks.ip_mode_bridge') }}</option>
                                             </select>
                                             <small class="form-text text-muted network-ip-mode-bridge-hint" style="display:none;"></small>
                                         </div>
                                     </div>
                                     <div class="network-bridge-lan-dhcp-mode-wrap col-md-3" style="display:none;">
                                         <div class="form-group">
-                                            <label>LAN DHCP Mode</label>
+                                            <label>{{ __('location_networks.lan_dhcp_mode') }}</label>
                                             <select class="form-control network-bridge-lan-dhcp-mode">
-                                                <option value="dhcp_client">DHCP Client</option>
-                                                <option value="dhcp_server">DHCP Server</option>
+                                                <option value="dhcp_client">{{ __('location_networks.lan_dhcp_client') }}</option>
+                                                <option value="dhcp_server">{{ __('location_networks.lan_dhcp_server') }}</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label>IP Address</label>
-                                            <input type="text" class="form-control network-ip-address" placeholder="192.168.x.1">
+                                            <label>{{ __('location_networks.ip_address') }}</label>
+                                            <input type="text" class="form-control network-ip-address" placeholder="{{ __('location_networks.ip_address_placeholder') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label>Netmask</label>
+                                            <label>{{ __('location_networks.netmask') }}</label>
                                             <input type="text" class="form-control network-netmask" placeholder="255.255.255.0" value="255.255.255.0">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label>Gateway</label>
-                                            <input type="text" class="form-control network-gateway" placeholder="Auto">
+                                            <label>{{ __('location_networks.gateway') }}</label>
+                                            <input type="text" class="form-control network-gateway" placeholder="{{ __('location_networks.gateway_placeholder') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label>Primary DNS</label>
-                                            <div class="dns-field-wrapper" title="DNS is managed by the web filter. Disable the web filter to set per-network DNS.">
+                                            <label>{{ __('location_networks.primary_dns') }}</label>
+                                            <div class="dns-field-wrapper" title="{{ __('location_networks.dns_field_title') }}">
                                                 <input type="text" class="form-control network-dns1" placeholder="8.8.8.8">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-1">
                                         <div class="form-group">
-                                            <label>Alt DNS</label>
-                                            <div class="dns-field-wrapper" title="DNS is managed by the web filter. Disable the web filter to set per-network DNS.">
+                                            <label>{{ __('location_networks.alt_dns') }}</label>
+                                            <div class="dns-field-wrapper" title="{{ __('location_networks.dns_field_title') }}">
                                                 <input type="text" class="form-control network-dns2" placeholder="8.8.4.4">
                                             </div>
                                         </div>
@@ -454,17 +454,17 @@
                                                 <i data-feather="share-2" style="color:#17a2b8;width:18px;height:18px;"></i>
                                             </span>
                                             <div class="dhcp-address-pool-panel-titles">
-                                                <div class="dhcp-address-pool-panel-title">DHCP address pool</div>
-                                                <div class="dhcp-address-pool-panel-sub">Assign LAN IPs to client devices on this network.</div>
+                                                <div class="dhcp-address-pool-panel-title">{{ __('location_networks.dhcp_pool_title') }}</div>
+                                                <div class="dhcp-address-pool-panel-sub">{{ __('location_networks.dhcp_pool_desc') }}</div>
                                             </div>
                                         </div>
                                         <div class="row align-items-end">
                                             <div class="col-md-6 col-lg-5">
                                                 <div class="form-group mb-md-0">
-                                                    <label class="dhcp-address-pool-switch-label">DHCP server</label>
+                                                    <label class="dhcp-address-pool-switch-label">{{ __('location_networks.dhcp_server_label') }}</label>
                                                     <div class="custom-control custom-switch mb-0">
                                                         <input type="checkbox" class="custom-control-input network-dhcp-enabled" id="network-dhcp-__ID__" checked>
-                                                        <label class="custom-control-label" for="network-dhcp-__ID__">Enable DHCP</label>
+                                                        <label class="custom-control-label" for="network-dhcp-__ID__">{{ __('location_networks.enable_dhcp') }}</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -472,16 +472,16 @@
                                         <div class="row dhcp-address-pool-fields">
                                             <div class="col-md-6 col-lg-5">
                                                 <div class="form-group">
-                                                    <label>Start IP</label>
-                                                    <input type="text" class="form-control network-dhcp-start" placeholder="e.g. 192.168.1.100" autocomplete="off">
-                                                    <small class="form-text text-muted">First address in the pool (IPv4).</small>
+                                                    <label>{{ __('location_networks.start_ip') }}</label>
+                                                    <input type="text" class="form-control network-dhcp-start" placeholder="{{ __('location_networks.start_ip_placeholder') }}" autocomplete="off">
+                                                    <small class="form-text text-muted">{{ __('location_networks.start_ip_hint') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-lg-5">
                                                 <div class="form-group">
-                                                    <label>Pool size</label>
-                                                    <input type="number" class="form-control network-dhcp-end" placeholder="e.g. 101" min="1" max="16777216" step="1">
-                                                    <small class="form-text text-muted">Number of addresses (must fit within your subnet).</small>
+                                                    <label>{{ __('location_networks.pool_size') }}</label>
+                                                    <input type="number" class="form-control network-dhcp-end" placeholder="{{ __('location_networks.pool_size_placeholder') }}" min="1" max="16777216" step="1">
+                                                    <small class="form-text text-muted">{{ __('location_networks.pool_size_hint') }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -489,21 +489,21 @@
                                 </div>
 
                                 <div class="panel-sub-section">
-                                    <div class="panel-sub-label">VLAN</div>
+                                    <div class="panel-sub-label">{{ __('location_networks.sub_vlan') }}</div>
                                     <div class="row">
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label>VLAN ID <small class="text-muted font-weight-normal">(1–4094)</small></label>
-                                                <input type="number" class="form-control network-vlan-id" placeholder="None" min="1" max="4094" disabled>
+                                                <label>{{ __('location_networks.vlan_id') }} <small class="text-muted font-weight-normal">{{ __('location_networks.vlan_id_range') }}</small></label>
+                                                <input type="number" class="form-control network-vlan-id" placeholder="{{ __('location_networks.vlan_none') }}" min="1" max="4094" disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label>Tagging</label>
+                                                <label>{{ __('location_networks.tagging') }}</label>
                                                 <select class="form-control network-vlan-tagging" disabled>
-                                                    <option value="disabled">Disabled</option>
-                                                    <option value="tagged">Tagged</option>
-                                                    <option value="untagged">Untagged</option>
+                                                    <option value="disabled">{{ __('location_networks.tagging_disabled') }}</option>
+                                                    <option value="tagged">{{ __('location_networks.tagging_tagged') }}</option>
+                                                    <option value="untagged">{{ __('location_networks.tagging_untagged') }}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -521,7 +521,7 @@
                             <span class="section-icon" style="background:rgba(234,84,85,0.12);">
                                 <i data-feather="shield" style="color:#ea5455;width:14px;height:14px;"></i>
                             </span>
-                            MAC Filtering &amp; IP Reservations
+                            {{ __('location_networks.section_mac_filter_reservations') }}
                         </h6>
                         <i data-feather="chevron-down" class="collapsible-chevron" style="width:18px;height:18px;"></i>
                     </div>
@@ -534,7 +534,7 @@
                                     <span class="mac-res-panel-icon">
                                         <i data-feather="shield" style="width:13px;height:13px;color:#ea5455;"></i>
                                     </span>
-                                    <span class="mac-res-panel-title">MAC Address Filtering</span>
+                                    <span class="mac-res-panel-title">{{ __('location_networks.mac_filtering') }}</span>
                                 </div>
                                 <div class="mac-res-panel-body">
                                     <!-- Per-network-type hint (set by JS) -->
@@ -543,11 +543,11 @@
                                     <div class="mac-add-row">
                                         <input type="text" class="form-control form-control-sm network-mac-input mac-add-input" placeholder="00:11:22:33:44:55">
                                         <select class="form-control form-control-sm network-mac-type-select mac-add-type">
-                                            <option value="block" selected>Block</option>
-                                            <option value="bypass">Bypass Auth</option>
+                                            <option value="block" selected>{{ __('location_networks.mac_add_type_block') }}</option>
+                                            <option value="bypass">{{ __('location_networks.mac_add_type_bypass') }}</option>
                                         </select>
                                         <button class="btn btn-sm btn-outline-primary network-mac-add-btn" type="button">
-                                            <i data-feather="plus" style="width:13px;height:13px;"></i> Add
+                                            <i data-feather="plus" style="width:13px;height:13px;"></i> {{ __('common.add') }}
                                         </button>
                                     </div>
 
@@ -556,14 +556,14 @@
                                         <table class="rl-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Type</th>
-                                                    <th>MAC Address</th>
+                                                    <th>{{ __('location_networks.table_col_type') }}</th>
+                                                    <th>{{ __('location_networks.table_col_mac') }}</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="network-mac-list">
                                                 <tr class="rl-empty-row network-mac-empty">
-                                                    <td colspan="3">No MAC rules added</td>
+                                                    <td colspan="3">{{ __('location_networks.mac_list_empty') }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -588,15 +588,15 @@
                                     <span class="mac-res-panel-icon">
                                         <i data-feather="bookmark" style="width:13px;height:13px;color:#17a2b8;"></i>
                                     </span>
-                                    <span class="mac-res-panel-title">DHCP IP Reservations</span>
+                                    <span class="mac-res-panel-title">{{ __('location_networks.dhcp_reservations') }}</span>
                                 </div>
                                 <div class="mac-res-panel-body">
                                     <!-- Add row -->
                                     <div class="mac-add-row mb-2">
-                                        <input type="text" class="form-control form-control-sm network-reservation-mac mac-add-input" placeholder="MAC  00:11:22:33:44:55">
-                                        <input type="text" class="form-control form-control-sm network-reservation-ip" placeholder="IP  192.168.1.50" style="width:130px;flex-shrink:0;">
+                                        <input type="text" class="form-control form-control-sm network-reservation-mac mac-add-input" placeholder="{{ __('location_networks.reservation_mac_placeholder') }}">
+                                        <input type="text" class="form-control form-control-sm network-reservation-ip" placeholder="{{ __('location_networks.reservation_ip_placeholder') }}" style="width:130px;flex-shrink:0;">
                                         <button class="btn btn-sm btn-outline-info network-reservation-add-btn" type="button">
-                                            <i data-feather="plus" style="width:13px;height:13px;"></i> Add
+                                            <i data-feather="plus" style="width:13px;height:13px;"></i> {{ __('common.add') }}
                                         </button>
                                     </div>
 
@@ -605,14 +605,14 @@
                                         <table class="rl-table">
                                             <thead>
                                                 <tr>
-                                                    <th>MAC Address</th>
-                                                    <th>Reserved IP</th>
+                                                    <th>{{ __('location_networks.table_col_mac') }}</th>
+                                                    <th>{{ __('location_networks.table_col_reserved_ip') }}</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="network-reservation-list">
                                                 <tr class="rl-empty-row network-reservation-empty">
-                                                    <td colspan="3">No reservations added</td>
+                                                    <td colspan="3">{{ __('location_networks.reservation_list_empty') }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -637,10 +637,10 @@
                         <div class="mac-res-save-row">
                             <span class="mac-res-save-hint">
                                 <i data-feather="info" style="width:12px;height:12px;"></i>
-                                Add or remove entries, then click Save to apply.
+                                {{ __('location_networks.mac_save_hint') }}
                             </span>
                             <button class="btn btn-sm btn-success network-mac-save-btn" type="button">
-                                <i data-feather="save" style="width:13px;height:13px;" class="mr-1"></i> Save
+                                <i data-feather="save" style="width:13px;height:13px;" class="mr-1"></i> {{ __('location_networks.mac_save_btn') }}
                             </button>
                         </div>
                     </div>

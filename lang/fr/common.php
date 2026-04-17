@@ -2,6 +2,7 @@
 
 return [
     'active' => 'Actif',
+    'add' => 'Ajouter',
     'cancel' => 'Annuler',
     'close' => 'Fermer',
     'home' => 'Accueil',
