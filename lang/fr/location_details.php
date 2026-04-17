@@ -96,4 +96,33 @@ return [
 
     // Action bar
     'save_location_info' => 'Enregistrer les informations de l\'emplacement',
+
+    // Router Settings tab - WAN Connection
+    'wan_connection' => 'Connexion WAN',
+    'edit_wan_settings' => 'Modifier les paramètres WAN',
+    'connection_type' => 'Type de connexion',
+    'ip_address' => 'Adresse IP',
+    'subnet_mask' => 'Masque de sous-réseau',
+    'gateway' => 'Passerelle',
+    'primary_dns' => 'DNS principal',
+    'username' => 'Nom d\'utilisateur',
+    'service_name' => 'Nom du service',
+
+    // Router Settings tab - Radio & Channel
+    'wifi_radio_channel' => 'Configuration radio et canal WiFi',
+    'country_region' => 'Pays / Région',
+    'power_2g' => 'Puissance 2,4 GHz',
+    'power_5g' => 'Puissance 5 GHz',
+    'width_2g' => 'Largeur de canal 2,4 GHz',
+    'width_5g' => 'Largeur de canal 5 GHz',
+    'channel_2g' => 'Canal 2,4 GHz',
+    'channel_5g' => 'Canal 5 GHz',
+    'channel_optimization' => 'Optimisation des canaux',
+    'scan_button' => 'Analyser',
+    'scan_default_status' => 'Cliquez sur Analyser pour déterminer les canaux optimaux.',
+    'best_2g' => 'Meilleur 2,4G',
+    'best_5g' => 'Meilleur 5G',
+    'no_scan_yet' => 'Aucune analyse effectuée',
+    'apply_optimal' => 'Appliquer optimal',
+    'save_all_radio' => 'Enregistrer tous les paramètres radio',
 ];

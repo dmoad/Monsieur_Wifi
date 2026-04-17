@@ -413,25 +413,25 @@
                             <!-- WAN -->
                             <div class="content-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
-                                    <h5 class="section-title">WAN Connection</h5>
-                                    <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#wan-settings-modal"><i data-feather="edit" class="mr-1"></i>Edit WAN Settings</button>
+                                    <h5 class="section-title">{{ __('location_details.wan_connection') }}</h5>
+                                    <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#wan-settings-modal"><i data-feather="edit" class="mr-1"></i>{{ __('location_details.edit_wan_settings') }}</button>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <div class="interface-detail"><span class="interface-label">Connection Type</span><span class="interface-value" id="wan-type-display">DHCP</span></div>
+                                        <div class="interface-detail"><span class="interface-label">{{ __('location_details.connection_type') }}</span><span class="interface-value" id="wan-type-display">DHCP</span></div>
                                     </div>
                                     <div class="col-md-9 wan-static-ip-display_div hidden">
                                         <div class="row">
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">IP Address</span><span class="interface-value" id="wan-ip-display">-</span></div></div>
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">Subnet Mask</span><span class="interface-value" id="wan-subnet-display">-</span></div></div>
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">Gateway</span><span class="interface-value" id="wan-gateway-display">-</span></div></div>
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">Primary DNS</span><span class="interface-value" id="wan-dns1-display">-</span></div></div>
+                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.ip_address') }}</span><span class="interface-value" id="wan-ip-display">-</span></div></div>
+                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.subnet_mask') }}</span><span class="interface-value" id="wan-subnet-display">-</span></div></div>
+                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.gateway') }}</span><span class="interface-value" id="wan-gateway-display">-</span></div></div>
+                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.primary_dns') }}</span><span class="interface-value" id="wan-dns1-display">-</span></div></div>
                                         </div>
                                     </div>
                                     <div class="col-md-9 wan-pppoe-display_div hidden">
                                         <div class="row">
-                                            <div class="col-md-6"><div class="interface-detail"><span class="interface-label">Username</span><span class="interface-value" id="wan-pppoe-username">-</span></div></div>
-                                            <div class="col-md-6"><div class="interface-detail"><span class="interface-label">Service Name</span><span class="interface-value" id="wan-pppoe-service-name">-</span></div></div>
+                                            <div class="col-md-6"><div class="interface-detail"><span class="interface-label">{{ __('location_details.username') }}</span><span class="interface-value" id="wan-pppoe-username">-</span></div></div>
+                                            <div class="col-md-6"><div class="interface-detail"><span class="interface-label">{{ __('location_details.service_name') }}</span><span class="interface-value" id="wan-pppoe-service-name">-</span></div></div>
                                         </div>
                                     </div>
                                 </div>
@@ -439,11 +439,11 @@
 
                             <!-- Radio Settings -->
                             <div class="content-section">
-                                <div class="section-header"><h5 class="section-title">WiFi Radio &amp; Channel Configuration</h5></div>
+                                <div class="section-header"><h5 class="section-title">{{ __('location_details.wifi_radio_channel') }}</h5></div>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="wifi-country">Country/Region</label>
+                                            <label for="wifi-country">{{ __('location_details.country_region') }}</label>
                                             <select class="form-control" id="wifi-country">
                                                 <option value="US" selected>United States (US)</option>
                                                 <option value="CA">Canada (CA)</option>
@@ -463,7 +463,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="power-level-2g">2.4 GHz Power</label>
+                                            <label for="power-level-2g">{{ __('location_details.power_2g') }}</label>
                                             <select class="form-control" id="power-level-2g">
                                                 <option value="20">Maximum (20 dBm)</option>
                                                 <option value="17">High (17 dBm)</option>
@@ -473,7 +473,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="power-level-5g">5 GHz Power</label>
+                                            <label for="power-level-5g">{{ __('location_details.power_5g') }}</label>
                                             <select class="form-control" id="power-level-5g">
                                                 <option value="23">Maximum (23 dBm)</option>
                                                 <option value="20">High (20 dBm)</option>
@@ -485,15 +485,15 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="channel-width-2g">2.4 GHz Channel Width</label>
+                                            <label for="channel-width-2g">{{ __('location_details.width_2g') }}</label>
                                             <select class="form-control" id="channel-width-2g"><option value="20">20 MHz</option><option value="40" selected>40 MHz</option></select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="channel-width-5g">5 GHz Channel Width</label>
+                                            <label for="channel-width-5g">{{ __('location_details.width_5g') }}</label>
                                             <select class="form-control" id="channel-width-5g"><option value="20">20 MHz</option><option value="40">40 MHz</option><option value="80" selected>80 MHz</option><option value="160">160 MHz</option></select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="channel-2g">2.4 GHz Channel</label>
+                                            <label for="channel-2g">{{ __('location_details.channel_2g') }}</label>
                                             <select class="form-control" id="channel-2g">
                                                 <option value="1">Ch 1 (2412)</option><option value="2">Ch 2</option><option value="3">Ch 3</option><option value="4">Ch 4</option><option value="5">Ch 5</option>
                                                 <option value="6" selected>Ch 6 (2437)</option><option value="7">Ch 7</option><option value="8">Ch 8</option><option value="9">Ch 9</option><option value="10">Ch 10</option>
@@ -501,7 +501,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="channel-5g">5 GHz Channel</label>
+                                            <label for="channel-5g">{{ __('location_details.channel_5g') }}</label>
                                             <select class="form-control" id="channel-5g">
                                                 <option value="36" selected>Ch 36</option><option value="40">Ch 40</option><option value="44">Ch 44</option><option value="48">Ch 48</option>
                                                 <option value="52">Ch 52</option><option value="56">Ch 56</option><option value="60">Ch 60</option><option value="64">Ch 64</option>
@@ -514,22 +514,22 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <label class="mb-0">Channel Optimization</label>
-                                            <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn"><i data-feather="wifi" class="mr-1"></i>Scan</button>
+                                            <label class="mb-0">{{ __('location_details.channel_optimization') }}</label>
+                                            <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn"><i data-feather="wifi" class="mr-1"></i>{{ __('location_details.scan_button') }}</button>
                                         </div>
                                         <div class="alert alert-info mb-3" id="scan-status-alert">
-                                            <div class="alert-body"><i data-feather="info" class="mr-2"></i><span id="scan-status-text">Click Scan to analyze optimal channels.</span></div>
+                                            <div class="alert-body"><i data-feather="info" class="mr-2"></i><span id="scan-status-text">{{ __('location_details.scan_default_status') }}</span></div>
                                         </div>
                                         <div class="row text-center mb-3">
-                                            <div class="col-6"><div class="stat-value text-primary" id="last-optimal-2g">--</div><div class="stat-label">Best 2.4G</div></div>
-                                            <div class="col-6"><div class="stat-value text-success" id="last-optimal-5g">--</div><div class="stat-label">Best 5G</div></div>
+                                            <div class="col-6"><div class="stat-value text-primary" id="last-optimal-2g">--</div><div class="stat-label">{{ __('location_details.best_2g') }}</div></div>
+                                            <div class="col-6"><div class="stat-value text-success" id="last-optimal-5g">--</div><div class="stat-label">{{ __('location_details.best_5g') }}</div></div>
                                         </div>
-                                        <div class="text-center mb-2"><small class="text-muted" id="last-scan-timestamp">No scan performed yet</small></div>
-                                        <button class="btn btn-success btn-block btn-sm" id="save-channels-btn" disabled><i data-feather="check" class="mr-1"></i>Apply Optimal</button>
+                                        <div class="text-center mb-2"><small class="text-muted" id="last-scan-timestamp">{{ __('location_details.no_scan_yet') }}</small></div>
+                                        <button class="btn btn-success btn-block btn-sm" id="save-channels-btn" disabled><i data-feather="check" class="mr-1"></i>{{ __('location_details.apply_optimal') }}</button>
                                     </div>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <button class="btn custom-btn" id="save-radio-settings"><i data-feather="save" class="mr-2"></i>Save All Radio Settings</button>
+                                    <button class="btn custom-btn" id="save-radio-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_all_radio') }}</button>
                                 </div>
                             </div>
 
