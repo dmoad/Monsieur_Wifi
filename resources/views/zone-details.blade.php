@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Détails de la Zone - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+@endphp
+
+@section('title', __('zone_details.page_title'))
 
 @push('styles')
 <link rel="stylesheet" href="/app-assets/vendors/css/forms/select/select2.min.css">
@@ -145,12 +149,12 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Détails de la Zone</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('zone_details.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="/fr/zones">Zones</a></li>
-                        <li class="breadcrumb-item active" id="zone-breadcrumb">Chargement...</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/zones">{{ __('zones.heading') }}</a></li>
+                        <li class="breadcrumb-item active" id="zone-breadcrumb">{{ __('common.loading') }}</li>
                     </ol>
                 </div>
             </div>
@@ -158,7 +162,7 @@
     </div>
     <div class="content-header-right col-md-3 col-12 text-right d-flex justify-content-end gap-2">
         <button class="btn btn-outline-primary" onclick="editZone()">
-            <i data-feather="edit"></i> Modifier la Zone
+            <i data-feather="edit"></i> {{ __('zone_details.edit_zone') }}
         </button>
     </div>
 </div>
@@ -166,7 +170,7 @@
 <div class="content-body">
     <div id="zone-loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Chargement...</span>
+            <span class="sr-only">{{ __('common.loading') }}</span>
         </div>
     </div>
     
@@ -176,7 +180,7 @@
         
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Emplacements dans la Zone</h4>
+                <h4 class="card-title">{{ __('zone_details.locations_in_zone') }}</h4>
             </div>
             <div class="card-body">
                 <div id="locations-list"></div>
@@ -185,7 +189,7 @@
         
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Ajouter un Emplacement à la Zone</h4>
+                <h4 class="card-title">{{ __('zone_details.add_location_to_zone') }}</h4>
             </div>
             <div class="card-body">
                 <div id="available-locations-container"></div>
@@ -199,8 +203,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Modifier la Zone</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                <h5 class="modal-title">{{ __('zone_details.edit_zone') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -208,7 +212,7 @@
                 <div id="primary-location-info" class="mb-3"></div>
                 <form id="edit-zone-form">
                     <div class="form-group">
-                        <label for="edit-zone-name">Nom de la Zone *</label>
+                        <label for="edit-zone-name">{{ __('zones.zone_name') }} *</label>
                         <input type="text" class="form-control" id="edit-zone-name" required>
                     </div>
                     <div class="form-group">
@@ -217,35 +221,35 @@
                     </div>
                     <div class="form-group">
                         <div class="d-flex align-items-center mb-1">
-                            <label class="mb-0 font-weight-bold mr-2" for="edit-zone-roaming-enabled">Itinérance</label>
+                            <label class="mb-0 font-weight-bold mr-2" for="edit-zone-roaming-enabled">{{ __('zones.roaming') }}</label>
                             <div class="custom-control custom-switch custom-control-primary">
                                 <input type="checkbox" class="custom-control-input" id="edit-zone-roaming-enabled">
                                 <label class="custom-control-label" for="edit-zone-roaming-enabled"></label>
                             </div>
                         </div>
-                        <p class="text-muted mb-0 small">Si activé, les clients peuvent passer d’un point d’accès à l’autre dans cette zone sans perdre leur session ni se reconnecter.</p>
+                        <p class="text-muted mb-0 small">{{ __('zones.roaming_help') }}</p>
                     </div>
                     <div class="form-group" id="edit-zone-owner-group" style="display:none;">
                         <label for="edit-zone-owner">
-                            Propriétaire
-                            <span style="font-size:0.7rem;font-weight:600;background:#ea5455;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">Admin</span>
+                            {{ __('zones.owner') }}
+                            <span style="font-size:0.7rem;font-weight:600;background:#ea5455;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">{{ __('zones.admin_badge') }}</span>
                         </label>
                         <select class="select2" id="edit-zone-owner" style="width:100%"></select>
-                        <small class="form-text text-muted">Changer le propriétaire de cette zone. Tous les emplacements de la zone doivent appartenir au nouveau propriétaire.</small>
+                        <small class="form-text text-muted">{{ __('zone_details.change_owner_help') }}</small>
                     </div>
                     <div class="form-group" id="edit-zone-shared-users-group" style="display:none;">
                         <label for="edit-zone-shared-users">
-                            Accès partagé
-                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">Admin</span>
+                            {{ __('zones.shared_access') }}
+                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">{{ __('zones.admin_badge') }}</span>
                         </label>
                         <select class="select2 form-control" id="edit-zone-shared-users" multiple="multiple"></select>
-                        <small class="form-text text-muted">Recherchez et sélectionnez les utilisateurs qui auront un accès complet à cette zone.</small>
+                        <small class="form-text text-muted">{{ __('zones.shared_users_help') }}</small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" onclick="updateZoneInfo()">Enregistrer les Modifications</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="updateZoneInfo()">{{ __('zone_details.save_changes') }}</button>
             </div>
         </div>
     </div>
@@ -259,7 +263,3 @@
 </script>
 <script src="/assets/js/zone-details.js?v=<?php echo time(); ?>"></script>
 @endpush
-
-@php
-    $locale = 'fr';
-@endphp
