@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Location Details - monsieur-wifi Controller')
+@php
+    $locale = app()->getLocale();
+@endphp
 
-@php $locale = 'en'; @endphp
+@section('title', __('location_details.page_title'))
 
 @push('styles')
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
@@ -21,12 +23,12 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Location Details</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('location_details.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/en/dashboard">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/en/locations">Locations</a></li>
-                        <li class="breadcrumb-item active"><span class="location_name">Loading...</span></li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/locations">{{ __('locations.heading') }}</a></li>
+                        <li class="breadcrumb-item active"><span class="location_name">{{ __('common.loading') }}</span></li>
                     </ol>
                 </div>
             </div>
@@ -35,10 +37,10 @@
     <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
         <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end" style="gap:8px;">
             <button id="clone-location-btn" class="btn btn-outline-secondary">
-                <i data-feather="copy" class="mr-1"></i>Clone
+                <i data-feather="copy" class="mr-1"></i>{{ __('location_details.clone_button') }}
             </button>
             <a id="manage-networks-header-btn" href="#" class="btn custom-btn">
-                <i data-feather="wifi" class="mr-1"></i>Networks
+                <i data-feather="wifi" class="mr-1"></i>{{ __('location_details.networks_button') }}
             </a>
         </div>
     </div>

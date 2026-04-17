@@ -80,7 +80,7 @@ foreach (['en', 'fr'] as $loc) {
 
         Route::get('/locations/{location}', function ($location) {
             $locale = app()->getLocale();
-            return view('location-details-' . $locale, compact('location', 'locale'));
+            return view('location-details', compact('location', 'locale'));
         })->name('location-details');
 
         Route::get('/locations/{location}/networks', function ($location) {
@@ -158,7 +158,7 @@ foreach (['en', 'fr'] as $loc) {
             });
             Route::get('/emplacements/{location}', function ($location) {
                 $locale = 'fr';
-                return view('location-details-fr', compact('location', 'locale'));
+                return view('location-details', compact('location', 'locale'));
             });
             Route::get('/emplacements/{location}/networks', function ($location) {
                 $locale = 'fr';
