@@ -10,33 +10,42 @@
 <link rel="stylesheet" href="/app-assets/vendors/css/forms/select/select2.min.css">
 <style>
     .zone-info-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 2rem;
+        background: var(--mw-bg-surface);
+        border: 1px solid var(--mw-border);
+        border-radius: var(--mw-radius-lg);
+        box-shadow: var(--mw-shadow-card);
+        padding: var(--mw-space-xl);
+        margin-top: var(--mw-space-lg);
+        margin-bottom: var(--mw-space-lg);
     }
     .zone-info-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--mw-text-primary);
+        margin-bottom: 4px;
     }
     .zone-info-description {
-        opacity: 0.9;
-        margin-bottom: 1rem;
+        color: var(--mw-text-muted);
+        font-size: 13px;
+        margin-bottom: 0;
     }
     .zone-info-meta {
         display: flex;
-        gap: 2rem;
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(255,255,255,0.2);
+        gap: var(--mw-space-xl);
+        flex-wrap: wrap;
+        margin-top: var(--mw-space-lg);
+        padding-top: var(--mw-space-lg);
+        border-top: 1px solid var(--mw-border-light);
+        align-items: center;
     }
     .zone-info-item {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--mw-text-secondary);
     }
+    .zone-info-item [data-feather] { width: 14px !important; height: 14px !important; color: var(--mw-text-muted); }
     .admin-alert {
         background: #fff3cd;
         border: 1px solid #ffeaa7;
