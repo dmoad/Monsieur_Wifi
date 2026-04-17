@@ -723,7 +723,7 @@
                     <label>{{ __('location_details.connection_type') }}</label>
                     <select class="form-control" id="wan-connection-type">
                         <option value="DHCP">DHCP</option>
-                        <option value="STATIC">Static IP</option>
+                        <option value="STATIC">{{ __('location_details.modal_wan_static_ip') }}</option>
                         <option value="PPPOE">PPPoE</option>
                     </select>
                 </div>
@@ -873,8 +873,8 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background: linear-gradient(135deg,#7367f0,#9c88ff);">
-                <h5 class="modal-title" style="color:white;"><i data-feather="wifi" class="mr-2"></i>Channel Scan</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
+                <h5 class="modal-title" style="color:white;"><i data-feather="wifi" class="mr-2"></i>{{ __('location_details.modal_scan_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true" style="color:white;">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div id="scan-progress-view">
@@ -882,27 +882,27 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
                     </div>
                     <div class="timeline">
-                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-initiated-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>Scan Initiated</h6><span class="text-muted">Step 1/4</span></div><p>Preparing device for channel scanning</p></div></div>
-                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-started-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>Scan Started</h6><span class="text-muted">Step 2/4</span></div><p>Device is ready and beginning frequency analysis</p></div></div>
-                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-2g-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>Scanning 2.4 GHz Band</h6><span class="text-muted">Step 3/4</span></div><p>Checking channels 1-11 for signal strength and interference</p></div></div>
-                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-5g-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>Scanning 5 GHz Band</h6><span class="text-muted">Step 4/4</span></div><p>Checking channels 36-165 for signal strength and interference</p></div></div>
+                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-initiated-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>{{ __('location_details.modal_scan_step_1_title') }}</h6><span class="text-muted">{{ __('location_details.modal_scan_step_num', ['num' => 1]) }}</span></div><p>{{ __('location_details.modal_scan_step_1_desc') }}</p></div></div>
+                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-started-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>{{ __('location_details.modal_scan_step_2_title') }}</h6><span class="text-muted">{{ __('location_details.modal_scan_step_num', ['num' => 2]) }}</span></div><p>{{ __('location_details.modal_scan_step_2_desc') }}</p></div></div>
+                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-2g-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>{{ __('location_details.modal_scan_step_3_title') }}</h6><span class="text-muted">{{ __('location_details.modal_scan_step_num', ['num' => 3]) }}</span></div><p>{{ __('location_details.modal_scan_step_3_desc') }}</p></div></div>
+                        <div class="timeline-item"><div class="timeline-point"><div class="timeline-point-indicator" id="step-5g-indicator"></div></div><div class="timeline-event"><div class="d-flex justify-content-between"><h6>{{ __('location_details.modal_scan_step_4_title') }}</h6><span class="text-muted">{{ __('location_details.modal_scan_step_num', ['num' => 4]) }}</span></div><p>{{ __('location_details.modal_scan_step_4_desc') }}</p></div></div>
                     </div>
                 </div>
                 <div id="scan-results-view" style="display: none;">
-                    <div class="alert alert-success mb-2"><div class="alert-body"><i data-feather="check-circle" class="mr-1"></i><span>Scan complete! Optimal channels have been determined.</span></div></div>
+                    <div class="alert alert-success mb-2"><div class="alert-body"><i data-feather="check-circle" class="mr-1"></i><span>{{ __('location_details.modal_scan_complete') }}</span></div></div>
                     <div class="row mb-2">
-                        <div class="col-md-6"><div class="card bg-light-primary mb-0"><div class="card-body"><h5 class="card-title">2.4 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>Recommended:</span><h3 class="mb-0" id="result-channel-2g">6</h3></div></div></div></div>
-                        <div class="col-md-6"><div class="card bg-light-primary mb-0"><div class="card-body"><h5 class="card-title">5 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>Recommended:</span><h3 class="mb-0" id="result-channel-5g">36</h3></div></div></div></div>
+                        <div class="col-md-6"><div class="card bg-light-primary mb-0"><div class="card-body"><h5 class="card-title">2.4 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>{{ __('location_details.modal_scan_recommended') }}</span><h3 class="mb-0" id="result-channel-2g">6</h3></div></div></div></div>
+                        <div class="col-md-6"><div class="card bg-light-primary mb-0"><div class="card-body"><h5 class="card-title">5 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>{{ __('location_details.modal_scan_recommended') }}</span><h3 class="mb-0" id="result-channel-5g">36</h3></div></div></div></div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover" id="nearby-networks-table">
-                            <thead><tr><th>Band</th><th>Channel</th><th>SSID</th><th>Signal</th><th>Interference</th><th>Status</th></tr></thead>
+                            <thead><tr><th>{{ __('location_details.modal_scan_col_band') }}</th><th>{{ __('location_details.modal_scan_col_channel') }}</th><th>{{ __('location_details.modal_scan_col_ssid') }}</th><th>{{ __('location_details.modal_scan_col_signal') }}</th><th>{{ __('location_details.modal_scan_col_interference') }}</th><th>{{ __('location_details.modal_scan_col_status') }}</th></tr></thead>
                             <tbody id="nearby-networks-tbody"></tbody>
                         </table>
                     </div>
                     <div class="d-flex justify-content-between mt-2">
-                        <button class="btn custom-btn" id="apply-scan-results"><i data-feather="check" class="mr-1"></i> Apply Settings</button>
-                        <button class="btn btn-outline-primary" id="back-to-scan-btn"><i data-feather="refresh-cw" class="mr-1"></i> Scan Again</button>
+                        <button class="btn custom-btn" id="apply-scan-results"><i data-feather="check" class="mr-1"></i> {{ __('location_details.modal_scan_apply_settings') }}</button>
+                        <button class="btn btn-outline-primary" id="back-to-scan-btn"><i data-feather="refresh-cw" class="mr-1"></i> {{ __('location_details.modal_scan_again') }}</button>
                     </div>
                 </div>
             </div>
@@ -915,27 +915,27 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i data-feather="copy" class="mr-2"></i>Clone Location</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title"><i data-feather="copy" class="mr-2"></i>{{ __('location_details.modal_clone_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-info mb-3">
-                    <div class="alert-body"><i data-feather="info" class="mr-2"></i>This will create a copy of this location including all its settings and networks. The cloned location will not have a device assigned.</div>
+                    <div class="alert-body"><i data-feather="info" class="mr-2"></i>{{ __('location_details.modal_clone_info') }}</div>
                 </div>
                 <div id="clone-owner-group" style="display:none;">
                     <div class="form-group">
-                        <label for="clone-owner-select">Assign to User</label>
+                        <label for="clone-owner-select">{{ __('location_details.modal_clone_assign_to_user') }}</label>
                         <select class="form-control" id="clone-owner-select">
-                            <option value="">Assign to self</option>
+                            <option value="">{{ __('location_details.modal_clone_assign_to_self') }}</option>
                         </select>
-                        <small class="text-muted">Leave blank to assign to yourself.</small>
+                        <small class="text-muted">{{ __('location_details.modal_clone_assign_help') }}</small>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
                 <button type="button" class="btn custom-btn" id="confirm-clone-btn">
-                    <i data-feather="copy" class="mr-1"></i><span>Clone Location</span>
+                    <i data-feather="copy" class="mr-1"></i><span>{{ __('location_details.modal_clone_location_btn') }}</span>
                 </button>
             </div>
         </div>
@@ -947,23 +947,23 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i data-feather="hard-drive" class="mr-2"></i>Assign Device (AP)</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title"><i data-feather="hard-drive" class="mr-2"></i>{{ __('location_details.modal_assign_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>Note:</strong> Select an AP from the list to assign it to this location. Its MAC address will be applied automatically.</div></div>
+                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>{{ __('location_details.modal_assign_note_label') }}</strong> {{ __('location_details.modal_assign_info') }}</div></div>
                 <div class="form-group">
-                    <label for="device-select">Select Access Point</label>
+                    <label for="device-select">{{ __('location_details.modal_select_ap') }}</label>
                     <select class="form-control" id="device-select">
-                        <option value="">Loading devices...</option>
+                        <option value="">{{ __('location_details.modal_loading_devices') }}</option>
                     </select>
-                    <small class="text-muted">Unassigned APs are shown first.</small>
+                    <small class="text-muted">{{ __('location_details.modal_unassigned_first') }}</small>
                 </div>
                 <div class="form-group" id="device-mac-preview-group" style="display:none;">
-                    <label>MAC Address</label>
+                    <label>{{ __('location_details.mac_address') }}</label>
                     <div id="device-mac-preview-view" class="d-flex align-items-center">
                         <span id="device-mac-preview" class="form-control-plaintext bg-light p-2 rounded font-weight-bold mr-2" style="flex:1;">-</span>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit-device-mac-btn" title="Edit MAC address" style="display:none;">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit-device-mac-btn" title="{{ __('location_details.modal_edit_mac_title') }}" style="display:none;">
                             <i data-feather="edit-2" style="width:14px;height:14px;"></i>
                         </button>
                     </div>
@@ -972,19 +972,19 @@
                                id="device-mac-input" placeholder="AA:BB:CC:DD:EE:FF" maxlength="17">
                         <div id="device-mac-input-error" class="invalid-feedback" style="display:none;"></div>
                         <div class="d-flex mt-1">
-                            <button type="button" class="btn btn-sm btn-primary mr-1" id="save-device-mac-btn">Save</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="cancel-device-mac-btn">Cancel</button>
+                            <button type="button" class="btn btn-sm btn-primary mr-1" id="save-device-mac-btn">{{ __('location_details.modal_save_btn') }}</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="cancel-device-mac-btn">{{ __('common.cancel') }}</button>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Currently Assigned Device</label>
+                    <label>{{ __('location_details.modal_currently_assigned') }}</label>
                     <div class="form-control-plaintext bg-light p-2 rounded"><span id="current-mac-display">-</span></div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn custom-btn" id="save-mac-address-btn" disabled><i data-feather="save" class="mr-1"></i><span>Assign Device</span></button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn custom-btn" id="save-mac-address-btn" disabled><i data-feather="save" class="mr-1"></i><span>{{ __('location_details.modal_assign_device_btn') }}</span></button>
             </div>
         </div>
     </div>

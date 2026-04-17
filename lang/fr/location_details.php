@@ -165,6 +165,7 @@ return [
     'modal_wan_password' => 'Mot de passe',
     'modal_wan_service_name_optional' => 'Nom du service (optionnel)',
     'modal_save_changes' => 'Enregistrer les modifications',
+    'modal_wan_static_ip' => 'IP statique',
 
     // Restart modal
     'modal_restart_title' => 'Redémarrer l\'appareil',
@@ -201,4 +202,46 @@ return [
     'modal_firmware_progress_warning' => 'Ne fermez pas cette fenêtre et n\'éteignez pas l\'appareil pendant la mise à jour.',
     'modal_firmware_preparing' => 'Préparation de la mise à jour du firmware...',
     'modal_firmware_taking_minutes' => 'Cela peut prendre plusieurs minutes.',
+
+    // Channel Scan modal
+    'modal_scan_title' => 'Analyse des canaux',
+    'modal_scan_step_1_title' => 'Analyse lancée',
+    'modal_scan_step_1_desc' => 'Préparation de l\'appareil pour l\'analyse des canaux',
+    'modal_scan_step_2_title' => 'Analyse démarrée',
+    'modal_scan_step_2_desc' => 'L\'appareil est prêt et commence l\'analyse des fréquences',
+    'modal_scan_step_3_title' => 'Analyse de la bande 2,4 GHz',
+    'modal_scan_step_3_desc' => 'Vérification des canaux 1 à 11 pour la puissance du signal et les interférences',
+    'modal_scan_step_4_title' => 'Analyse de la bande 5 GHz',
+    'modal_scan_step_4_desc' => 'Vérification des canaux 36 à 165 pour la puissance du signal et les interférences',
+    'modal_scan_step_num' => 'Étape :num/4',
+    'modal_scan_complete' => 'Analyse terminée ! Les canaux optimaux ont été déterminés.',
+    'modal_scan_recommended' => 'Recommandé :',
+    'modal_scan_col_band' => 'Bande',
+    'modal_scan_col_channel' => 'Canal',
+    'modal_scan_col_ssid' => 'SSID',
+    'modal_scan_col_signal' => 'Signal',
+    'modal_scan_col_interference' => 'Interférence',
+    'modal_scan_col_status' => 'Statut',
+    'modal_scan_apply_settings' => 'Appliquer les paramètres',
+    'modal_scan_again' => 'Analyser à nouveau',
+
+    // Clone Location modal
+    'modal_clone_title' => 'Cloner l\'emplacement',
+    'modal_clone_info' => 'Cela créera une copie de cet emplacement, y compris tous ses paramètres et ses réseaux. L\'emplacement cloné n\'aura aucun appareil assigné.',
+    'modal_clone_assign_to_user' => 'Assigner à un utilisateur',
+    'modal_clone_assign_to_self' => 'S\'assigner à soi-même',
+    'modal_clone_assign_help' => 'Laissez vide pour vous l\'assigner à vous-même.',
+    'modal_clone_location_btn' => 'Cloner l\'emplacement',
+
+    // Device Assignment modal
+    'modal_assign_title' => 'Assigner un appareil (AP)',
+    'modal_assign_note_label' => 'Note :',
+    'modal_assign_info' => 'Sélectionnez un AP dans la liste pour l\'assigner à cet emplacement. Son adresse MAC sera appliquée automatiquement.',
+    'modal_select_ap' => 'Sélectionner un point d\'accès',
+    'modal_loading_devices' => 'Chargement des appareils...',
+    'modal_unassigned_first' => 'Les AP non assignés sont affichés en premier.',
+    'modal_edit_mac_title' => 'Modifier l\'adresse MAC',
+    'modal_save_btn' => 'Enregistrer',
+    'modal_currently_assigned' => 'Appareil actuellement assigné',
+    'modal_assign_device_btn' => 'Assigner l\'appareil',
 ];

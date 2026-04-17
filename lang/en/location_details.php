@@ -165,6 +165,7 @@ return [
     'modal_wan_password' => 'Password',
     'modal_wan_service_name_optional' => 'Service Name (Optional)',
     'modal_save_changes' => 'Save Changes',
+    'modal_wan_static_ip' => 'Static IP',
 
     // Restart modal
     'modal_restart_title' => 'Restart Device',
@@ -201,4 +202,46 @@ return [
     'modal_firmware_progress_warning' => 'Do not close this window or power off the device during update.',
     'modal_firmware_preparing' => 'Preparing firmware update...',
     'modal_firmware_taking_minutes' => 'This may take several minutes.',
+
+    // Channel Scan modal
+    'modal_scan_title' => 'Channel Scan',
+    'modal_scan_step_1_title' => 'Scan Initiated',
+    'modal_scan_step_1_desc' => 'Preparing device for channel scanning',
+    'modal_scan_step_2_title' => 'Scan Started',
+    'modal_scan_step_2_desc' => 'Device is ready and beginning frequency analysis',
+    'modal_scan_step_3_title' => 'Scanning 2.4 GHz Band',
+    'modal_scan_step_3_desc' => 'Checking channels 1-11 for signal strength and interference',
+    'modal_scan_step_4_title' => 'Scanning 5 GHz Band',
+    'modal_scan_step_4_desc' => 'Checking channels 36-165 for signal strength and interference',
+    'modal_scan_step_num' => 'Step :num/4',
+    'modal_scan_complete' => 'Scan complete! Optimal channels have been determined.',
+    'modal_scan_recommended' => 'Recommended:',
+    'modal_scan_col_band' => 'Band',
+    'modal_scan_col_channel' => 'Channel',
+    'modal_scan_col_ssid' => 'SSID',
+    'modal_scan_col_signal' => 'Signal',
+    'modal_scan_col_interference' => 'Interference',
+    'modal_scan_col_status' => 'Status',
+    'modal_scan_apply_settings' => 'Apply Settings',
+    'modal_scan_again' => 'Scan Again',
+
+    // Clone Location modal
+    'modal_clone_title' => 'Clone Location',
+    'modal_clone_info' => 'This will create a copy of this location including all its settings and networks. The cloned location will not have a device assigned.',
+    'modal_clone_assign_to_user' => 'Assign to User',
+    'modal_clone_assign_to_self' => 'Assign to self',
+    'modal_clone_assign_help' => 'Leave blank to assign to yourself.',
+    'modal_clone_location_btn' => 'Clone Location',
+
+    // Device Assignment modal
+    'modal_assign_title' => 'Assign Device (AP)',
+    'modal_assign_note_label' => 'Note:',
+    'modal_assign_info' => 'Select an AP from the list to assign it to this location. Its MAC address will be applied automatically.',
+    'modal_select_ap' => 'Select Access Point',
+    'modal_loading_devices' => 'Loading devices...',
+    'modal_unassigned_first' => 'Unassigned APs are shown first.',
+    'modal_edit_mac_title' => 'Edit MAC address',
+    'modal_save_btn' => 'Save',
+    'modal_currently_assigned' => 'Currently Assigned Device',
+    'modal_assign_device_btn' => 'Assign Device',
 ];
