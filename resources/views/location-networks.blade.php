@@ -661,24 +661,9 @@
     window.APP_CONFIG_V5 = {
         maxNetworks: {{ (int) env('MAX_NETWORKS_PER_LOCATION', 4) }},
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api',
-        messages: {
-            macFilterHintPassword:   'Only blocking is available on password-protected networks. Bypassing authentication is not applicable here.',
-            macFilterHintOpen:       'Only blocking is available on open networks. There is no portal or password to bypass.',
-            macFilterHintCaptive:    'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
-            portalPasswordRequired:  'A shared password is required when the Password login method is enabled.',
-            bridgeWanTaken:          'Bridge to WAN is already used by another network on this location.',
-            bridgeLanTaken:          'Bridge to LAN Port is already used by another network on this location.',
-            reservationInvalidIp:       'Invalid IP address.',
-            reservationOutsideSubnet:   "IP {ip} is outside this network's subnet ({gateway} / {netmask}).",
-            reservationIsGateway:       'Reserved IP cannot be the gateway address.',
-            reservationOutsideDhcpPool: 'IP {ip} is outside the DHCP pool range ({start} – {end}).',
-            reservationDuplicateMac:    'A reservation for this MAC address already exists.',
-            reservationDuplicateIp:     'This IP address is already reserved for another device.',
-            macAlreadyInList:           'This MAC address is already in the list.',
-            invalidPrimaryDns:          'Invalid Primary DNS address.',
-            invalidSecondaryDns:        'Invalid Secondary DNS address.',
-            primaryDnsRequiredFirst:    'Set a primary DNS before adding a secondary.',
-        }
+        messages: @json(__('location_networks.js_messages')),
+        schedulerLabels: @json(__('location_networks.js_scheduler')),
+        typeLabels: @json(__('location_networks.js_type_labels')),
     };
 </script>
 <script src="/assets/js/location-networks-v5.js?v=15"></script>
