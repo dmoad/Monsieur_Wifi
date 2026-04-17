@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Tableau de bord - Contrôleur Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+@endphp
+
+@section('title', __('dashboard.page_title'))
 
 @push('styles')
 <!-- Dashboard-specific CSS -->
@@ -125,11 +129,11 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Tableau de bord</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('dashboard.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item active">Tableau de bord</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('dashboard.heading') }}</li>
                     </ol>
                 </div>
             </div>
@@ -140,8 +144,9 @@
             <div class="dropdown">
                 <button class="btn-icon btn btn-primary btn-round btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i data-feather="grid"></i></button>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" href="/fr/locations"><i class="mr-1" data-feather="plus"></i><span class="align-middle">Ajouter un emplacement</span></a>
-                    <a class="dropdown-item" href="/fr/accounts"><i class="mr-1" data-feather="user-plus"></i><span class="align-middle">Ajouter un utilisateur</span></a>
+                    <a class="dropdown-item" href="/{{ $locale }}/locations"><i class="mr-1" data-feather="plus"></i><span class="align-middle">{{ __('dashboard.add_location') }}</span></a>
+                    <a class="dropdown-item" href="/{{ $locale }}/accounts"><i class="mr-1" data-feather="user-plus"></i><span class="align-middle">{{ __('dashboard.add_user') }}</span></a>
+                    <a class="dropdown-item" href="/{{ $locale }}/analytics"><i class="mr-1" data-feather="bar-chart-2"></i><span class="align-middle">{{ __('dashboard.reports') }}</span></a>
                 </div>
             </div>
         </div>
@@ -156,24 +161,24 @@
             <div class="col-lg-4 col-md-6 col-12">
                 <div class="card card-congratulation-medal" id="welcome-card">
                     <div class="card-body">
-                        <h5>Bienvenue sur le tableau de bord monsieur-wifi</h5>
-                        <p class="card-text font-small-3">Aperçu de l'état du réseau</p>
+                        <h5>{{ __('dashboard.welcome_title') }}</h5>
+                        <p class="card-text font-small-3">{{ __('dashboard.status_overview') }}</p>
                         <h3 class="mb-75 mt-2 pt-50">
-                            <span class="text-primary" id="welcome-total-locations">Chargement...</span>
+                            <span class="text-primary" id="welcome-total-locations">{{ __('common.loading') }}</span>
                         </h3>
                         <div class="d-flex">
                             <div class="d-flex align-items-center mr-2">
                                 <i data-feather="check-circle" class="text-success font-medium-2 mr-50"></i>
-                                <span class="font-weight-bold" id="welcome-active-count">-</span> Actif
+                                <span class="font-weight-bold" id="welcome-active-count">-</span> {{ __('common.active') }}
                             </div>
                             <span class="mx-1">|</span>
                             <div class="d-flex align-items-center ml-1">
                                 <i data-feather="x-circle" class="text-danger font-medium-2 mr-50"></i>
-                                <span class="font-weight-bold" id="welcome-offline-count">-</span> Hors ligne
+                                <span class="font-weight-bold" id="welcome-offline-count">-</span> {{ __('common.offline') }}
                             </div>
                         </div>
-                        <a type="button" class="btn btn-primary mt-1" href="/fr/locations">Voir les détails</a>
-                        <img src="/app-assets/images/illustration/badge.svg" class="congratulation-medal" alt="Médaille" />
+                        <a type="button" class="btn btn-primary mt-1" href="/{{ $locale }}/locations">{{ __('dashboard.view_details') }}</a>
+                        <img src="/app-assets/images/illustration/badge.svg" class="congratulation-medal" alt="{{ __('dashboard.medal_alt') }}" />
                     </div>
                 </div>
             </div>
@@ -183,9 +188,9 @@
             <div class="col-lg-8 col-12">
                 <div class="card card-statistics" id="network-stats">
                     <div class="card-header">
-                        <h4 class="card-title">Statistiques du réseau</h4>
+                        <h4 class="card-title">{{ __('dashboard.network_statistics') }}</h4>
                         <div class="d-flex align-items-center">
-                            <p class="card-text mr-25 mb-0">Mis à jour à l'instant</p>
+                            <p class="card-text mr-25 mb-0">{{ __('dashboard.updated_just_now') }}</p>
                         </div>
                     </div>
                     <div class="card-body statistics-body">
@@ -199,7 +204,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="routers-online-count">-/-</h4>
-                                        <p class="card-text font-small-3 mb-0">Routeurs en ligne</p>
+                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.routers_online') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -212,7 +217,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="active-users-count">-</h4>
-                                        <p class="card-text font-small-3 mb-0">Utilisateurs actifs</p>
+                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.active_users') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -225,7 +230,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="data-used-count">-</h4>
-                                        <p class="card-text font-small-3 mb-0">Données utilisées</p>
+                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.data_used') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -238,7 +243,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="uptime-percentage">-%</h4>
-                                        <p class="card-text font-small-3 mb-0">Temps de fonctionnement</p>
+                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.uptime') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -254,7 +259,7 @@
             <div class="col-lg-8 col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">Carte du réseau</h4>
+                        <h4 class="card-title">{{ __('dashboard.network_map') }}</h4>
                         <div class="d-flex">
                             <button id="fullscreen-btn" class="btn btn-sm btn-outline-primary mr-1">
                                 <i data-feather="maximize"></i>
@@ -266,9 +271,9 @@
                             <div class="d-flex align-items-center justify-content-center h-100" id="map-loading">
                                 <div class="text-center">
                                     <div class="spinner-border text-primary mb-2" role="status">
-                                        <span class="sr-only">Chargement...</span>
+                                        <span class="sr-only">{{ __('common.loading') }}</span>
                                     </div>
-                                    <p class="text-muted">Chargement de la carte du réseau...</p>
+                                    <p class="text-muted">{{ __('dashboard.loading_network_map') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -281,15 +286,15 @@
             <div class="col-lg-4 col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">Tendances d'utilisation des données</h4>
+                        <h4 class="card-title">{{ __('dashboard.data_usage_trends') }}</h4>
                         <div class="dropdown chart-dropdown">
                             <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dataUsageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                7 derniers jours
+                                {{ __('dashboard.last_7_days') }}
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dataUsageDropdown">
-                                <a class="dropdown-item" href="javascript:void(0);">7 derniers jours</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Mois dernier</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Année dernière</a>
+                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_7_days') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_month') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_year') }}</a>
                             </div>
                         </div>
                     </div>
@@ -297,7 +302,7 @@
                         <div class="row">
                             <div class="col-12 d-flex flex-column flex-wrap text-center mb-2">
                                 <h1 class="font-weight-bolder mt-2 mb-0" id="total-bandwidth-used">-</h1>
-                                <p class="card-text">Utilisation totale cette semaine</p>
+                                <p class="card-text">{{ __('dashboard.total_usage_this_week') }}</p>
                             </div>
                         </div>
                         <div id="data-usage-chart" class="mt-2" style="min-height: 270px;"></div>
@@ -312,7 +317,7 @@
                                     </div>
                                     <div>
                                         <h4 class="font-weight-bolder mb-0" id="download-usage">185 GB</h4>
-                                        <p class="card-text font-small-3 mb-0">Téléchargement</p>
+                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.download') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -325,7 +330,7 @@
                                     </div>
                                     <div>
                                         <h4 class="font-weight-bolder mb-0" id="upload-usage">60 GB</h4>
-                                        <p class="card-text font-small-3 mb-0">Upload</p>
+                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.upload') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -342,15 +347,15 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Aperçu des emplacements</h4>
+                        <h4 class="card-title">{{ __('dashboard.locations_overview') }}</h4>
                         <div class="dropdown">
                             <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Tous les emplacements
+                                {{ __('dashboard.all_locations') }}
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="locationDropdown">
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="all">Tous les emplacements</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="online">En ligne seulement</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="offline">Hors ligne seulement</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="all">{{ __('dashboard.all_locations') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="online">{{ __('dashboard.online_only') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="offline">{{ __('dashboard.offline_only') }}</a>
                             </div>
                         </div>
                     </div>
@@ -368,16 +373,16 @@
             <div class="col-12" style="width: 100%; max-width: 100%; flex: 0 0 100%;">
                 <div class="card" id="analytics-section" style="width: 100% !important; max-width: 100% !important;">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">Aperçu des analyses du réseau</h4>
+                        <h4 class="card-title">{{ __('dashboard.analytics_overview') }}</h4>
                         <div class="dropdown">
                             <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="analyticsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                7 derniers jours
+                                {{ __('dashboard.last_7_days') }}
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="analyticsDropdown">
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="1">Aujourd'hui</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="7">7 derniers jours</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="30">30 derniers jours</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="90">90 derniers jours</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="1">{{ __('dashboard.today') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="7">{{ __('dashboard.last_7_days') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="30">{{ __('dashboard.last_30_days') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="90">{{ __('dashboard.last_90_days') }}</a>
                             </div>
                         </div>
                     </div>
@@ -394,10 +399,10 @@
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-total-users">-</h4>
-                                        <span>Total utilisateurs</span>
+                                        <span>{{ __('dashboard.total_users') }}</span>
                                     </div>
                                 </div>
-                                <span class="text-muted">Utilisateurs uniques connectés</span>
+                                <span class="text-muted">{{ __('dashboard.unique_users_connected') }}</span>
                             </div>
                             
                             <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
@@ -409,10 +414,10 @@
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-data-usage">- GB</h4>
-                                        <span>Utilisation des données</span>
+                                        <span>{{ __('dashboard.data_usage') }}</span>
                                     </div>
                                 </div>
-                                <span class="text-muted">Bande passante totale consommée</span>
+                                <span class="text-muted">{{ __('dashboard.total_bandwidth_consumed') }}</span>
                             </div>
                             
                             <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
@@ -424,10 +429,10 @@
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-uptime">-%</h4>
-                                        <span>Temps de fonctionnement</span>
+                                        <span>{{ __('dashboard.uptime') }}</span>
                                     </div>
                                 </div>
-                                <span class="text-muted">Disponibilité du réseau</span>
+                                <span class="text-muted">{{ __('dashboard.network_availability') }}</span>
                             </div>
                             
                             <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
@@ -439,10 +444,10 @@
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-sessions">-</h4>
-                                        <span>Total sessions</span>
+                                        <span>{{ __('dashboard.total_sessions') }}</span>
                                     </div>
                                 </div>
-                                <span class="text-muted">Sessions de connexion</span>
+                                <span class="text-muted">{{ __('dashboard.connection_sessions') }}</span>
                             </div>
                         </div>
                     </div>
@@ -476,7 +481,7 @@
 <script src="/app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
 
 <!-- Dashboard JS -->
-<script src="/assets/js/dashboard-fr.js?v=11"></script>
+<script src="/assets/js/dashboard{{ $locale === 'fr' ? '-fr' : '' }}.js?v=12"></script>
 
 <script>
 $(window).on('load', function() {
@@ -511,7 +516,7 @@ $(window).on('load', function() {
             }
         },
         series: [{
-            name: 'Utilisateurs',
+            name: '{{ __('dashboard.chart_users') }}',
             data: [2100, 2300, 2500, 2700, 2600, 2800, 2856]
         }],
         tooltip: { fixed: { enabled: false } }
@@ -540,7 +545,7 @@ $(window).on('load', function() {
             }
         },
         series: [{
-            name: 'Appareils',
+            name: '{{ __('dashboard.chart_devices') }}',
             data: [42, 43, 45, 44, 45, 43, 45]
         }],
         tooltip: { fixed: { enabled: false } }
@@ -569,7 +574,7 @@ $(window).on('load', function() {
             }
         },
         series: [{
-            name: 'Bande passante',
+            name: '{{ __('dashboard.chart_bandwidth') }}',
             data: [1.8, 2.0, 2.2, 2.3, 2.1, 2.4, 2.4]
         }],
         tooltip: { fixed: { enabled: false } }
@@ -598,7 +603,7 @@ $(window).on('load', function() {
             }
         },
         series: [{
-            name: 'Alertes',
+            name: '{{ __('dashboard.chart_alerts') }}',
             data: [5, 4, 3, 5, 4, 3, 3]
         }],
         tooltip: { fixed: { enabled: false } }
@@ -635,7 +640,7 @@ $(document).ready(function() {
                 } else if (mapElement.msRequestFullscreen) {
                     mapElement.msRequestFullscreen();
                 }
-                this.innerHTML = '<i data-feather="minimize-2"></i> Quitter plein écran';
+                this.innerHTML = '<i data-feather="minimize-2"></i> {{ __('dashboard.exit_full_screen') }}';
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -646,7 +651,7 @@ $(document).ready(function() {
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
-                this.innerHTML = '<i data-feather="maximize-2"></i> Plein écran';
+                this.innerHTML = '<i data-feather="maximize-2"></i> {{ __('dashboard.full_screen') }}';
             }
             
             setTimeout(function() {
@@ -663,6 +668,3 @@ $(document).ready(function() {
 </script>
 @endpush
 
-@php
-    $locale = 'fr';
-@endphp

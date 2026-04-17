@@ -62,7 +62,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api')
 foreach (['en', 'fr'] as $loc) {
     Route::prefix($loc)->name($loc . '.')->group(function () use ($loc) {
         Route::get('/dashboard', function () {
-            return view('dashboard-' . app()->getLocale());
+            return view('dashboard');
         })->name('dashboard');
 
         Route::get('/devices', function () {
