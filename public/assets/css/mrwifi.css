@@ -6,7 +6,7 @@
     --mw-primary-hover:  #4F46E5;
     --mw-primary-tint:   #EEF2FF;
 
-    --mw-bg-page:        #F5F7FA;
+    --mw-bg-page:        #EDEEF2;
     --mw-bg-surface:     #FFFFFF;
     --mw-bg-hover:       #E8EBF0;
     --mw-bg-muted:       #F0F2F5;
@@ -37,7 +37,7 @@
     --mw-radius-badge:   12px;
     --mw-radius-full:    9999px;
 
-    --mw-shadow-card:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --mw-shadow-card:     0 1px 4px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
     --mw-shadow-elevated: 0 4px 12px rgba(0,0,0,0.08);
     --mw-shadow-modal:    0 16px 48px rgba(0,0,0,0.12);
 
@@ -76,7 +76,60 @@
 }
 
 /* ============================================================
-   KILL OLD VUEXY HEADER + SIDEBAR
+   GLOBAL CARD OVERRIDES
+   ============================================================ */
+.card {
+    border-radius: var(--mw-radius-lg) !important;
+    border: 1px solid var(--mw-border) !important;
+    box-shadow: var(--mw-shadow-card) !important;
+    background: var(--mw-bg-surface) !important;
+}
+
+.card .card-header {
+    border-bottom: 1px solid var(--mw-border-light) !important;
+    border-radius: var(--mw-radius-lg) var(--mw-radius-lg) 0 0 !important;
+    background: var(--mw-bg-surface) !important;
+}
+
+.card .card-footer {
+    border-top: 1px solid var(--mw-border-light) !important;
+    border-radius: 0 0 var(--mw-radius-lg) var(--mw-radius-lg) !important;
+    background: var(--mw-bg-surface) !important;
+}
+
+/* Elevate on hover when the card itself is a link/clickable */
+.card-clickable {
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, transform 0.15s ease !important;
+}
+
+.card-clickable:hover {
+    box-shadow: var(--mw-shadow-elevated) !important;
+    transform: translateY(-2px);
+}
+
+/* ============================================================
+   PAGE BACKGROUND
+   Apply the design-system page color globally so cards (white)
+   visually float above the surface.
+   ============================================================ */
+html,
+body,
+body.vertical-layout,
+body.vertical-menu-modern {
+    background-color: var(--mw-bg-page) !important;
+}
+
+.app-content.content,
+.content-wrapper,
+.content-body {
+    background-color: var(--mw-bg-page) !important;
+}
+
+/* ============================================================
+   PHASE 3 TOMBSTONE — remove this entire block once the Vuexy
+   HTML is excised from the Blade templates and /public/app-assets/
+   is deleted. Until then these hide the elements we've replaced.
    ============================================================ */
 .header-navbar,
 .header-navbar-shadow,
@@ -86,6 +139,11 @@
 .main-menu {
     display: none !important;
 }
+
+/* Vuexy uses .hidden to hide role-gated items before JS reveals them.
+   Without Vuexy's CSS loading that rule, hidden items sit in the DOM
+   and create layout gaps. This restores the behaviour. */
+.hidden { display: none !important; }
 
 /* ============================================================
    CONTENT AREA — offset for new sidebar
@@ -263,16 +321,37 @@ body.mw-sb-expanded .app-content.content {
 
 .mw-sb.expanded .mw-si-label { display: block; }
 
-/* --- Separator --- */
-.mw-si-sep {
+/* --- Section label (replaces bare separator) --- */
+.mw-sb-section {
     width: 28px;
     height: 1px;
     background: var(--mw-border-light);
-    margin: var(--mw-space-xs) 0;
+    margin: var(--mw-space-sm) auto var(--mw-space-xs);
     flex-shrink: 0;
+    overflow: visible;
 }
 
-.mw-sb.expanded .mw-si-sep { width: 100%; }
+.mw-sb-section span { display: none; }
+
+.mw-sb.expanded .mw-sb-section {
+    width: 100%;
+    height: auto;
+    background: none;
+    margin: var(--mw-space-md) 0 var(--mw-space-xs);
+    padding: 0 var(--mw-space-md);
+}
+
+.mw-sb.expanded .mw-sb-section span {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--mw-text-muted);
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--mw-border-light);
+    width: 100%;
+}
 
 /* --- Cart badge on icon --- */
 .mw-cart-badge {
@@ -429,4 +508,80 @@ body.mw-sb-expanded .mw-av-menu {
     width: 14px !important;
     height: 14px !important;
     flex-shrink: 0;
+}
+
+/* ============================================================
+   MOBILE — top bar + full sidebar overlay
+   ============================================================ */
+.mw-sb-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1025;
+    cursor: pointer;
+}
+
+.mw-sb-backdrop.open { display: block; }
+
+/* Mobile top bar — full-width header strip, hidden on desktop */
+.mw-mobile-bar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: var(--mw-bg-surface);
+    border-bottom: 1px solid var(--mw-border);
+    align-items: center;
+    padding: 0 var(--mw-space-md);
+    z-index: 1020;
+    box-shadow: var(--mw-shadow-card);
+}
+
+.mw-mobile-hamburger {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    border-radius: var(--mw-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--mw-text-secondary);
+    padding: 0;
+    transition: background 0.12s, color 0.12s;
+}
+.mw-mobile-hamburger:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+.mw-mobile-hamburger svg { width: 20px; height: 20px; }
+
+@media (max-width: 640px) {
+    /* Show mobile bar, not desktop sidebar strip */
+    .mw-mobile-bar { display: flex; }
+
+    /* Content full-width; push down for the top bar */
+    .app-content.content,
+    body.mw-sb-expanded .app-content.content {
+        margin-left: 0 !important;
+        padding-top: 64px !important;
+        padding-left: var(--mw-space-md) !important;
+        padding-right: var(--mw-space-md) !important;
+    }
+
+    /* Sidebar hidden off-screen by default */
+    .mw-sb {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease, width 0.2s ease;
+        box-shadow: var(--mw-shadow-modal);
+    }
+
+    /* When expanded on mobile: slide in as FULL sidebar with labels */
+    .mw-sb.expanded {
+        transform: translateX(0);
+        /* width/padding/alignment already set by .mw-sb.expanded above */
+    }
+
+    .mw-sb .mw-sb-chevron { display: none !important; }
 }

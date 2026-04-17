@@ -25,3 +25,6 @@ yarn-error.log
 # user uploads
 public/uploads/
 public/uploads/**
+
+# local-only UI mockups / design references
+/ui-mockups

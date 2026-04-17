@@ -62,7 +62,17 @@
             <span class="mw-si-label">{{ __('sidebar.shop') }}</span>
         </a>
 
-        <div class="mw-si-sep admin_and_above hidden"></div>
+        <a class="mw-si {{ request()->is('*/cart', '*/panier') ? 'active' : '' }}"
+           href="/{{ $locale }}/cart"
+           title="{{ __('navbar.my_cart') }}">
+            <i data-feather="shopping-cart"></i>
+            <span class="mw-si-label">{{ __('navbar.my_cart') }}</span>
+            <span class="mw-cart-badge cart-item-count" style="display: none;">0</span>
+        </a>
+
+        <div class="mw-sb-section admin_and_above hidden">
+            <span>{{ __('sidebar.section_admin') }}</span>
+        </div>
 
         <a class="mw-si admin_and_above hidden {{ request()->is('*/accounts') ? 'active' : '' }}"
            href="/{{ $locale }}/accounts"
@@ -106,7 +116,9 @@
             <span class="mw-si-label">{{ __('sidebar.manage_orders') }}</span>
         </a>
 
-        <div class="mw-si-sep only_superadmin hidden"></div>
+        <div class="mw-sb-section only_superadmin hidden">
+            <span>{{ __('sidebar.section_superadmin') }}</span>
+        </div>
 
         <a class="mw-si only_superadmin hidden {{ request()->is('*/firmware') ? 'active' : '' }}"
            href="/{{ $locale }}/firmware"
@@ -123,16 +135,8 @@
         </a>
     </nav>
 
-    {{-- Bottom: cart shortcut + avatar --}}
+    {{-- Bottom: avatar --}}
     <div class="mw-sb-bot">
-        <a class="mw-si {{ request()->is('*/cart', '*/panier') ? 'active' : '' }}"
-           href="/{{ $locale }}/cart"
-           title="{{ __('navbar.my_cart') }}">
-            <i data-feather="shopping-cart"></i>
-            <span class="mw-si-label">{{ __('navbar.my_cart') }}</span>
-            <span class="mw-cart-badge cart-item-count" style="display: none;">0</span>
-        </a>
-
         {{-- Avatar trigger --}}
         <button class="mw-av" id="mwAvBtn" title="{{ __('common.profile') }}">
             <span class="mw-av-initials">?</span>
@@ -178,3 +182,17 @@
     </div>
 
 </aside>
+
+{{-- Mobile overlay backdrop --}}
+<div class="mw-sb-backdrop" id="mwSbBackdrop"></div>
+
+{{-- Mobile top bar (hidden on desktop via CSS) --}}
+<div class="mw-mobile-bar" id="mwMobileBar">
+    <button class="mw-mobile-hamburger" id="mwHamburger" title="{{ __('sidebar.toggle') }}" aria-label="{{ __('sidebar.toggle') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
+</div>

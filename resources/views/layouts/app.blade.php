@@ -135,21 +135,43 @@
 
         // ── Sidebar expand / collapse ──────────────────────────────
         (function () {
-            const sb     = document.getElementById('mwSidebar');
-            const toggle = document.getElementById('mwSbToggle');
-            const avBtn  = document.getElementById('mwAvBtn');
-            const avMenu = document.getElementById('mwAvMenu');
+            const sb        = document.getElementById('mwSidebar');
+            const toggle    = document.getElementById('mwSbToggle');
+            const hamburger = document.getElementById('mwHamburger');
+            const avBtn     = document.getElementById('mwAvBtn');
+            const avMenu    = document.getElementById('mwAvMenu');
+            const backdrop  = document.getElementById('mwSbBackdrop');
 
-            if (localStorage.getItem('mwSbExpanded') === '1') {
-                sb.classList.add('expanded');
-                document.body.classList.add('mw-sb-expanded');
+            const isMobile = () => window.innerWidth <= 640;
+
+            function setSidebar(expanded) {
+                sb.classList.toggle('expanded', expanded);
+                // On desktop: shift content. On mobile: overlay only (no body class).
+                if (!isMobile()) {
+                    document.body.classList.toggle('mw-sb-expanded', expanded);
+                    localStorage.setItem('mwSbExpanded', expanded ? '1' : '0');
+                }
+                // Backdrop only on mobile
+                if (backdrop) backdrop.classList.toggle('open', expanded && isMobile());
             }
 
+            // Restore desktop expanded state on page load
+            if (!isMobile() && localStorage.getItem('mwSbExpanded') === '1') {
+                setSidebar(true);
+            }
+
+            // Desktop: logo/chevron area toggles expand
             toggle.addEventListener('click', () => {
-                const expanded = sb.classList.toggle('expanded');
-                document.body.classList.toggle('mw-sb-expanded', expanded);
-                localStorage.setItem('mwSbExpanded', expanded ? '1' : '0');
+                if (!isMobile()) setSidebar(!sb.classList.contains('expanded'));
             });
+
+            // Mobile: hamburger button toggles full sidebar overlay
+            if (hamburger) {
+                hamburger.addEventListener('click', () => setSidebar(!sb.classList.contains('expanded')));
+            }
+
+            // Backdrop always closes sidebar
+            if (backdrop) backdrop.addEventListener('click', () => setSidebar(false));
 
             avBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
