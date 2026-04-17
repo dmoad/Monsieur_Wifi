@@ -169,12 +169,12 @@
                         <div class="d-flex">
                             <div class="d-flex align-items-center mr-2">
                                 <i data-feather="check-circle" class="text-success font-medium-2 mr-50"></i>
-                                <span class="font-weight-bold" id="welcome-active-count">-</span> {{ __('common.active') }}
+                                <span class="font-weight-bold" id="welcome-active-count">-</span>&nbsp;{{ __('common.active') }}
                             </div>
                             <span class="mx-1">|</span>
                             <div class="d-flex align-items-center ml-1">
                                 <i data-feather="x-circle" class="text-danger font-medium-2 mr-50"></i>
-                                <span class="font-weight-bold" id="welcome-offline-count">-</span> {{ __('common.offline') }}
+                                <span class="font-weight-bold" id="welcome-offline-count">-</span>&nbsp;{{ __('common.offline') }}
                             </div>
                         </div>
                         <a type="button" class="btn btn-primary mt-1" href="/{{ $locale }}/locations">{{ __('dashboard.view_details') }}</a>
