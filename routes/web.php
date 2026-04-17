@@ -116,7 +116,7 @@ foreach (['en', 'fr'] as $loc) {
         })->name('location-guests');
 
         Route::get('/zones', function () {
-            return view('zones-' . app()->getLocale());
+            return view('zones');
         })->name('zones');
 
         Route::get('/zones/{zone}', function ($zone) {

@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Zones - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+@endphp
+
+@section('title', __('zones.page_title'))
 
 @push('styles')
 <link rel="stylesheet" href="/app-assets/vendors/css/forms/select/select2.min.css">
@@ -140,11 +144,11 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Zones</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('zones.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/en/dashboard">Home</a></li>
-                        <li class="breadcrumb-item active">Zones</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('zones.heading') }}</li>
                     </ol>
                 </div>
             </div>
@@ -152,7 +156,7 @@
     </div>
     <div class="content-header-right col-md-3 col-12 text-right">
         <button class="btn btn-primary" onclick="showZoneModal()">
-            <i data-feather="plus"></i> Create Zone
+            <i data-feather="plus"></i> {{ __('zones.create_zone') }}
         </button>
     </div>
 </div>
@@ -163,7 +167,7 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <div class="per-page-selector">
-                <label for="items-per-page">Items per page:</label>
+                <label for="items-per-page">{{ __('zones.items_per_page') }}</label>
                 <select id="items-per-page" class="form-control" onchange="changeItemsPerPage()">
                     <option value="10">10</option>
                     <option value="25" selected>25</option>
@@ -176,7 +180,7 @@
     
     <div id="zones-loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
+            <span class="sr-only">{{ __('common.loading') }}</span>
         </div>
     </div>
     
@@ -190,8 +194,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="zone-modal-title">Create Zone</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="zone-modal-title">{{ __('zones.create_zone') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -200,43 +204,43 @@
                 <form id="zone-form">
                     <input type="hidden" id="zone-id">
                     <div class="form-group" id="zone-owner-select-group" style="display: none;">
-                        <label for="zone-owner-select">Owner <span class="text-danger">*</span></label>
+                        <label for="zone-owner-select">{{ __('zones.owner') }} <span class="text-danger">*</span></label>
                         <select class="form-control" id="zone-owner-select">
-                            <option value="">Loading users...</option>
+                            <option value="">{{ __('zones.loading_users') }}</option>
                         </select>
-                        <small class="form-text text-muted">Select the owner for this zone.</small>
+                        <small class="form-text text-muted">{{ __('zones.select_owner_help') }}</small>
                     </div>
                     <div class="form-group">
-                        <label for="zone-name">Zone Name *</label>
-                        <input type="text" class="form-control" id="zone-name" required placeholder="Enter zone name">
+                        <label for="zone-name">{{ __('zones.zone_name') }} *</label>
+                        <input type="text" class="form-control" id="zone-name" required placeholder="{{ __('zones.zone_name_placeholder') }}">
                     </div>
                     <div class="form-group">
-                        <label for="zone-description">Description</label>
-                        <textarea class="form-control" id="zone-description" rows="3" placeholder="Enter zone description (optional)"></textarea>
+                        <label for="zone-description">{{ __('zones.description') }}</label>
+                        <textarea class="form-control" id="zone-description" rows="3" placeholder="{{ __('zones.description_placeholder') }}"></textarea>
                     </div>
                     <div class="form-group">
                         <div class="d-flex align-items-center mb-1">
-                            <label class="mb-0 font-weight-bold mr-2" for="zone-roaming-enabled">Roaming</label>
+                            <label class="mb-0 font-weight-bold mr-2" for="zone-roaming-enabled">{{ __('zones.roaming') }}</label>
                             <div class="custom-control custom-switch custom-control-primary">
                                 <input type="checkbox" class="custom-control-input" id="zone-roaming-enabled" name="zone-roaming-enabled" checked>
                                 <label class="custom-control-label" for="zone-roaming-enabled"></label>
                             </div>
                         </div>
-                        <p class="text-muted mb-0 small">When enabled, clients can move between access points in this zone without losing their session or signing in again.</p>
+                        <p class="text-muted mb-0 small">{{ __('zones.roaming_help') }}</p>
                     </div>
                     <div class="form-group" id="zone-shared-users-group" style="display:none;">
                         <label for="zone-shared-users">
-                            Shared Access
-                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">Admin</span>
+                            {{ __('zones.shared_access') }}
+                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">{{ __('zones.admin_badge') }}</span>
                         </label>
                         <select class="select2 form-control" id="zone-shared-users" multiple="multiple"></select>
-                        <small class="form-text text-muted">Search and select users who will have full access to this zone.</small>
+                        <small class="form-text text-muted">{{ __('zones.shared_users_help') }}</small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveZone()">Save Zone</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="saveZone()">{{ __('zones.save_zone') }}</button>
             </div>
         </div>
     </div>
@@ -248,6 +252,3 @@
 <script src="/assets/js/zones.js?v=<?php echo time(); ?>"></script>
 @endpush
 
-@php
-    $locale = 'en';
-@endphp
