@@ -57,66 +57,66 @@
                     <h4 class="text-gradient mb-1"><span class="location_name"></span></h4>
                     <p class="text-muted mb-0"><span class="location_address"></span></p>
                     <div class="d-flex align-items-center mt-1">
-                        <small class="text-muted mr-2">MAC: <span class="router_mac_address_header font-weight-bold">Loading...</span></small>
+                        <small class="text-muted mr-2">{{ __('location_details.mac_prefix') }} <span class="router_mac_address_header font-weight-bold">{{ __('common.loading') }}</span></small>
                         <button class="btn btn-sm btn-outline-secondary p-1" id="edit-mac-btn" style="font-size: 0.7rem; line-height: 1;">
-                            <i data-feather="edit" class="mr-1" style="width: 12px; height: 12px;"></i>Edit
+                            <i data-feather="edit" class="mr-1" style="width: 12px; height: 12px;"></i>{{ __('location_details.edit_button') }}
                         </button>
                     </div>
                 </div>
-                <span class="status-badge status-offline">Offline</span>
+                <span class="status-badge status-offline">{{ __('common.offline') }}</span>
             </div>
             <div class="row">
                 <div class="col-6">
-                    <div class="interface-detail"><span class="interface-label">Router Model</span><span class="interface-value router_model_updated"></span></div>
-                    <div class="interface-detail"><span class="interface-label">MAC Address</span><span class="interface-value router_mac_address"></span></div>
-                    <div class="interface-detail"><span class="interface-label">Firmware</span><span class="interface-value router_firmware"></span></div>
-                    <div class="interface-detail"><span class="interface-label">Total Users</span><span class="interface-value connected_users"></span></div>
+                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.router_model') }}</span><span class="interface-value router_model_updated"></span></div>
+                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.mac_address') }}</span><span class="interface-value router_mac_address"></span></div>
+                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.firmware') }}</span><span class="interface-value router_firmware"></span></div>
+                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.total_users') }}</span><span class="interface-value connected_users"></span></div>
                 </div>
                 <div class="col-6">
-                    <div class="interface-detail"><span class="interface-label">Daily Usage</span><span class="interface-value daily_usage"></span></div>
-                    <div class="interface-detail"><span class="interface-label">Uptime</span><span class="interface-value uptime"></span></div>
+                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.daily_usage') }}</span><span class="interface-value daily_usage"></span></div>
+                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.uptime') }}</span><span class="interface-value uptime"></span></div>
                 </div>
             </div>
             <div class="d-flex gap-2 mt-3">
-                <button class="btn custom-btn btn-sm flex-fill" id="device-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i> Restart</button>
-                <button class="btn btn-outline-primary btn-sm flex-fill" id="update-firmware-btn"><i data-feather="download" class="mr-1"></i> Update</button>
+                <button class="btn custom-btn btn-sm flex-fill" id="device-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i> {{ __('location_details.restart_button') }}</button>
+                <button class="btn btn-outline-primary btn-sm flex-fill" id="update-firmware-btn"><i data-feather="download" class="mr-1"></i> {{ __('location_details.update_button') }}</button>
             </div>
         </div>
 
         <!-- Usage Stats -->
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Current Usage</h5>
+                <h5 class="card-title mb-0">{{ __('location_details.current_usage') }}</h5>
                 <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" id="usage-period-btn">Today</button>
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" id="usage-period-btn">{{ __('location_details.period_today') }}</button>
                     <div class="dropdown-menu dropdown-menu-right" id="usage-period-dropdown">
-                        <a class="dropdown-item" href="javascript:void(0);" data-period="today">Today</a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-period="7days">Last 7 Days</a>
-                        <a class="dropdown-item" href="javascript:void(0);" data-period="30days">Last 30 Days</a>
+                        <a class="dropdown-item" href="javascript:void(0);" data-period="today">{{ __('location_details.period_today') }}</a>
+                        <a class="dropdown-item" href="javascript:void(0);" data-period="7days">{{ __('location_details.period_7days') }}</a>
+                        <a class="dropdown-item" href="javascript:void(0);" data-period="30days">{{ __('location_details.period_30days') }}</a>
                     </div>
                 </div>
             </div>
             <div id="usage-loading" class="text-center py-3" style="display: none;">
-                <div class="spinner-border spinner-border-sm text-primary" role="status"><span class="sr-only">Loading...</span></div>
-                <small class="d-block mt-2 text-muted">Loading usage data...</small>
+                <div class="spinner-border spinner-border-sm text-primary" role="status"><span class="sr-only">{{ __('common.loading') }}</span></div>
+                <small class="d-block mt-2 text-muted">{{ __('location_details.loading_usage_data') }}</small>
             </div>
             <div class="row text-center" id="usage-data">
                 <div class="col-6">
-                    <div class="mb-3"><div class="stat-value text-primary" id="download-usage"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">Download</div></div>
-                    <div><div class="stat-value text-info" id="users-sessions-count"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">Users / Sessions</div></div>
+                    <div class="mb-3"><div class="stat-value text-primary" id="download-usage"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">{{ __('location_details.stat_download') }}</div></div>
+                    <div><div class="stat-value text-info" id="users-sessions-count"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">{{ __('location_details.stat_users_sessions') }}</div></div>
                 </div>
                 <div class="col-6">
-                    <div class="mb-3"><div class="stat-value text-success" id="upload-usage"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">Upload</div></div>
-                    <div><div class="stat-value text-warning" id="avg-session-time"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">Avg. Session</div></div>
+                    <div class="mb-3"><div class="stat-value text-success" id="upload-usage"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">{{ __('location_details.stat_upload') }}</div></div>
+                    <div><div class="stat-value text-warning" id="avg-session-time"><i class="fas fa-spinner fa-spin" style="font-size:1rem;"></i></div><div class="stat-label">{{ __('location_details.stat_avg_session') }}</div></div>
                 </div>
             </div>
-            <div class="text-center mt-3"><small class="text-muted" id="usage-last-updated">Loading data...</small></div>
+            <div class="text-center mt-3"><small class="text-muted" id="usage-last-updated">{{ __('location_details.loading_data') }}</small></div>
         </div>
 
         <!-- Map Card -->
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Location</h5>
+                <h5 class="card-title mb-0">{{ __('location_details.location_map_title') }}</h5>
                 <small class="text-muted" id="map-coordinates" style="display: none;"></small>
             </div>
             <div id="location-map" class="location-map"></div>
@@ -127,7 +127,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header"><h4 class="card-title">Analytics</h4></div>
+                <div class="card-header"><h4 class="card-title">{{ __('location_details.analytics_title') }}</h4></div>
                 <div class="card-body p-4">
                     <div class="row g-4">
                         <div class="col-lg-8">
@@ -139,8 +139,8 @@
                                                 <i data-feather="bar-chart-2" style="color:white;"></i>
                                             </div>
                                             <div>
-                                                <h5 style="margin:0; font-weight:600; color:#2c3e50;">Daily Usage Analytics</h5>
-                                                <p style="margin:0; color:#6c757d; font-size:0.9rem;">Captive Portal User Activity</p>
+                                                <h5 style="margin:0; font-weight:600; color:#2c3e50;">{{ __('location_details.daily_usage_analytics') }}</h5>
+                                                <p style="margin:0; color:#6c757d; font-size:0.9rem;">{{ __('location_details.captive_portal_activity') }}</p>
                                             </div>
                                         </div>
                                         <div class="d-flex" style="background:rgba(0,0,0,0.05); border-radius:10px; padding:4px; border:1px solid rgba(0,0,0,0.1);">
@@ -151,9 +151,9 @@
                                     </div>
                                 </div>
                                 <div class="chart-stats">
-                                    <div class="stat-item"><div class="stat-icon stat-users"><i data-feather="users"></i></div><div><span class="stat-value" id="total-users">-</span><span class="stat-label d-block">Total Users</span></div></div>
-                                    <div class="stat-item"><div class="stat-icon stat-sessions"><i data-feather="activity"></i></div><div><span class="stat-value" id="total-sessions">-</span><span class="stat-label d-block">Sessions</span></div></div>
-                                    <div class="stat-item"><div class="stat-icon stat-avg"><i data-feather="trending-up"></i></div><div><span class="stat-value" id="avg-daily">-</span><span class="stat-label d-block">Daily Avg</span></div></div>
+                                    <div class="stat-item"><div class="stat-icon stat-users"><i data-feather="users"></i></div><div><span class="stat-value" id="total-users">-</span><span class="stat-label d-block">{{ __('location_details.total_users') }}</span></div></div>
+                                    <div class="stat-item"><div class="stat-icon stat-sessions"><i data-feather="activity"></i></div><div><span class="stat-value" id="total-sessions">-</span><span class="stat-label d-block">{{ __('location_details.stat_sessions') }}</span></div></div>
+                                    <div class="stat-item"><div class="stat-icon stat-avg"><i data-feather="trending-up"></i></div><div><span class="stat-value" id="avg-daily">-</span><span class="stat-label d-block">{{ __('location_details.stat_daily_avg') }}</span></div></div>
                                 </div>
                                 <div class="chart-container"><div id="daily-usage-chart"></div></div>
                             </div>
@@ -166,13 +166,13 @@
                                             <div class="users-icon" style="background: linear-gradient(135deg,#667eea,#764ba2);">
                                                 <i data-feather="wifi" style="color:white;"></i>
                                             </div>
-                                            <div><h5 style="margin:0; font-weight:600;">Live Users</h5><p style="margin:0; color:#6c757d; font-size:0.9rem;">Currently Connected</p></div>
+                                            <div><h5 style="margin:0; font-weight:600;">{{ __('location_details.live_users') }}</h5><p style="margin:0; color:#6c757d; font-size:0.9rem;">{{ __('location_details.currently_connected') }}</p></div>
                                         </div>
                                         <button class="refresh-btn" id="refresh-online-users"><i data-feather="refresh-cw"></i></button>
                                     </div>
                                     <div class="users-count">
                                         <span class="count-number" id="online-count">0</span>
-                                        <span style="color:#6c757d; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px;">Online</span>
+                                        <span style="color:#6c757d; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px;">{{ __('location_details.online_label') }}</span>
                                         <span id="count-range" style="display:none; font-size:0.75rem; color:#6c757d;"></span>
                                     </div>
                                 </div>
@@ -180,7 +180,7 @@
                                     <div id="online-users-list">
                                         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; text-align:center;">
                                             <i data-feather="loader" style="width:40px; height:40px; color:#667eea; animation:spin 1s linear infinite; margin-bottom:15px;"></i>
-                                            <p>Loading online users...</p>
+                                            <p>{{ __('location_details.loading_online_users') }}</p>
                                         </div>
                                     </div>
                                     <div class="pagination-container" id="users-pagination" style="display: none;">
@@ -206,19 +206,19 @@
             <div class="networks-shortcut-card">
                 <div class="row align-items-center">
                     <div class="col-md-7">
-                        <h4><i data-feather="wifi" style="width:24px;height:24px;margin-right:10px;vertical-align:middle;"></i> WiFi Networks</h4>
-                        <p>Manage all WiFi networks associated with this location — add, remove, or configure each network's security, captive portal, IP settings, and more.</p>
+                        <h4><i data-feather="wifi" style="width:24px;height:24px;margin-right:10px;vertical-align:middle;"></i> {{ __('location_details.wifi_networks') }}</h4>
+                        <p>{{ __('location_details.wifi_networks_description') }}</p>
                         <div id="zone-network-notice" class="alert alert-info py-1 px-2 mb-2" style="display:none;font-size:0.85rem;">
                             <i data-feather="layers" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
-                            Networks are managed by the zone's primary location.
+                            {{ __('location_details.zone_networks_notice') }}
                         </div>
                         <div id="network-summary-badges">
-                            <span class="network-summary-badge"><i data-feather="loader" style="width:12px;height:12px;"></i> Loading...</span>
+                            <span class="network-summary-badge"><i data-feather="loader" style="width:12px;height:12px;"></i> {{ __('common.loading') }}</span>
                         </div>
                     </div>
                     <div class="col-md-5 text-md-right mt-3 mt-md-0">
                         <a id="manage-networks-btn" href="#" class="btn btn-light btn-lg">
-                            <i data-feather="settings" class="mr-2"></i> Manage Networks
+                            <i data-feather="settings" class="mr-2"></i> {{ __('location_details.manage_networks_button') }}
                         </a>
                     </div>
                 </div>
@@ -230,18 +230,18 @@
     <div class="row" id="location-configuration">
         <div class="col-12">
             <div class="card">
-                <div class="card-header"><h4 class="card-title">Location Configuration</h4></div>
+                <div class="card-header"><h4 class="card-title">{{ __('location_details.config_title') }}</h4></div>
                 <div class="card-body">
 
                     <ul class="nav nav-tabs" role="tablist" id="main-tabs-nav">
                         <li class="nav-item">
                             <a class="nav-link active" id="location-settings-tab" data-toggle="tab" href="#location-settings" role="tab">
-                                <i class="fas fa-building mr-2"></i>Location Details
+                                <i class="fas fa-building mr-2"></i>{{ __('location_details.tab_location_details') }}
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="router-tab" data-toggle="tab" href="#router" role="tab">
-                                <i data-feather="hard-drive" class="mr-50"></i>Router Settings
+                                <i data-feather="hard-drive" class="mr-50"></i>{{ __('location_details.tab_router_settings') }}
                             </a>
                         </li>
                     </ul>
