@@ -536,13 +536,13 @@
                             <!-- Traffic Prioritization (QoS) -->
                             <div class="content-section" id="qos-settings-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
-                                    <h5 class="section-title">Traffic Prioritization (QoS)</h5>
-                                    <button type="button" class="btn custom-btn btn-sm" id="save-qos-settings"><i data-feather="save" class="mr-1"></i>Save QoS</button>
+                                    <h5 class="section-title">{{ __('location_details.qos_title') }}</h5>
+                                    <button type="button" class="btn custom-btn btn-sm" id="save-qos-settings"><i data-feather="save" class="mr-1"></i>{{ __('location_details.save_qos') }}</button>
                                 </div>
 
                                 <div id="zone-qos-notice" class="alert alert-info py-2 px-3 mb-3" style="display:none;">
                                     <i data-feather="layers" class="mr-50" style="width:16px;height:16px;vertical-align:text-bottom;"></i>
-                                    QoS is managed by the zone's primary location.
+                                    {{ __('location_details.qos_zone_notice') }}
                                 </div>
 
                                 <div class="loc-panel panel-qos mb-0">
@@ -550,26 +550,26 @@
                                         <span class="loc-panel-icon">
                                             <i data-feather="git-merge" style="color:#667eea;width:16px;height:16px;"></i>
                                         </span>
-                                        <h6 class="loc-panel-title">Classification</h6>
+                                        <h6 class="loc-panel-title">{{ __('location_details.qos_classification') }}</h6>
                                     </div>
                                     <div class="loc-panel-body">
                                         <div class="row align-items-start">
                                             <div class="col-md-7">
                                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <span class="mb-0 font-weight-bold">Enable traffic prioritization</span>
+                                                    <span class="mb-0 font-weight-bold">{{ __('location_details.qos_enable') }}</span>
                                                     <div class="custom-control custom-switch custom-control-primary">
                                                         <input type="checkbox" class="custom-control-input" id="qos-enabled">
                                                         <label class="custom-control-label" for="qos-enabled"></label>
                                                     </div>
                                                 </div>
-                                                <p class="text-muted mb-0 small">Classify traffic by hostname (SNI) and apply DSCP-based priority. Requires compatible router firmware.</p>
+                                                <p class="text-muted mb-0 small">{{ __('location_details.qos_enable_help') }}</p>
                                             </div>
                                             <div class="col-md-5 mt-3 mt-md-0 qos-classify-preview-col">
-                                                <div class="panel-sub-label mb-2">Active priority classes</div>
+                                                <div class="panel-sub-label mb-2">{{ __('location_details.qos_active_classes') }}</div>
                                                 <div id="qos-classes-preview" class="pt-0">
-                                                    <span class="text-muted small">Loading…</span>
+                                                    <span class="text-muted small">{{ __('common.loading') }}</span>
                                                 </div>
-                                                <small class="text-muted d-block mt-1" style="font-size:0.75rem;">Managed globally by SuperAdmin.</small>
+                                                <small class="text-muted d-block mt-1" style="font-size:0.75rem;">{{ __('location_details.qos_managed_globally') }}</small>
                                             </div>
                                         </div>
 
@@ -578,30 +578,30 @@
                                                 <span class="loc-panel-icon mr-2 mb-0" style="width:28px;height:28px;">
                                                     <i data-feather="bar-chart-2" style="color:#667eea;width:14px;height:14px;"></i>
                                                 </span>
-                                                <span class="panel-sub-label mb-0" style="font-size:0.8rem;">Bandwidth limits</span>
+                                                <span class="panel-sub-label mb-0" style="font-size:0.8rem;">{{ __('location_details.qos_bandwidth_limits') }}</span>
                                             </div>
-                                            <p class="small text-muted mb-3 mb-md-2">All values in <strong>Mbps</strong>. Set WAN capacity and optional reserved minimums per traffic class.</p>
+                                            <p class="small text-muted mb-3 mb-md-2">{!! __('location_details.qos_bandwidth_intro') !!}</p>
 
                                             <div id="qos-wan-override-group" class="rounded border px-3 py-2 mb-3 bg-light" style="display:none;">
                                                 <div class="custom-control custom-checkbox mb-0">
                                                     <input type="checkbox" class="custom-control-input" id="qos-wan-use-local">
-                                                    <label class="custom-control-label" for="qos-wan-use-local">Use this location's WAN speeds (instead of the zone default)</label>
+                                                    <label class="custom-control-label" for="qos-wan-use-local">{{ __('location_details.qos_wan_use_local') }}</label>
                                                 </div>
-                                                <small class="text-muted d-block mt-1">Class minimums follow the zone primary; only download/upload can differ here.</small>
+                                                <small class="text-muted d-block mt-1">{{ __('location_details.qos_wan_use_local_help') }}</small>
                                             </div>
 
                                             <div class="row qos-bw-split-row align-items-start">
                                             <div class="col-12 col-md-6">
-                                                <div class="panel-sub-label">WAN capacity</div>
+                                                <div class="panel-sub-label">{{ __('location_details.qos_wan_capacity') }}</div>
                                                 <div class="mb-2">
-                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-down-kbps">Download</label>
+                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-down-kbps">{{ __('location_details.stat_download') }}</label>
                                                     <div class="input-group input-group-sm">
                                                         <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-down-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
                                                         <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-up-kbps">Upload</label>
+                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-up-kbps">{{ __('location_details.stat_upload') }}</label>
                                                     <div class="input-group input-group-sm">
                                                         <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-up-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
                                                         <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
@@ -609,30 +609,30 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 qos-bw-min-col">
-                                                <div class="panel-sub-label">Minimum per class</div>
+                                                <div class="panel-sub-label">{{ __('location_details.qos_min_per_class') }}</div>
                                                 <div class="mb-2">
-                                                    <label class="small d-block mb-1" for="qos-voip-bw">VoIP <span class="text-muted">(EF)</span></label>
+                                                    <label class="small d-block mb-1" for="qos-voip-bw">{{ __('location_details.qos_voip') }} <span class="text-muted">(EF)</span></label>
                                                     <div class="input-group input-group-sm">
                                                         <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-voip-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
                                                         <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
                                                     </div>
                                                 </div>
                                                 <div class="mb-2">
-                                                    <label class="small d-block mb-1" for="qos-streaming-bw">Streaming <span class="text-muted">(AF41)</span></label>
+                                                    <label class="small d-block mb-1" for="qos-streaming-bw">{{ __('location_details.qos_streaming') }} <span class="text-muted">(AF41)</span></label>
                                                     <div class="input-group input-group-sm">
                                                         <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-streaming-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
                                                         <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
                                                     </div>
                                                 </div>
                                                 <div class="mb-2">
-                                                    <label class="small d-block mb-1" for="qos-be-bw">Best effort <span class="text-muted">(BE)</span></label>
+                                                    <label class="small d-block mb-1" for="qos-be-bw">{{ __('location_details.qos_best_effort') }} <span class="text-muted">(BE)</span></label>
                                                     <div class="input-group input-group-sm">
                                                         <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-be-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
                                                         <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label class="small d-block mb-1" for="qos-bulk-bw">Bulk <span class="text-muted">(CS1)</span></label>
+                                                    <label class="small d-block mb-1" for="qos-bulk-bw">{{ __('location_details.qos_bulk') }} <span class="text-muted">(CS1)</span></label>
                                                     <div class="input-group input-group-sm">
                                                         <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-bulk-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
                                                         <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
@@ -648,49 +648,49 @@
                             <!-- Web Filter -->
                             <div class="content-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
-                                    <h5 class="section-title">Web Content Filtering</h5>
-                                    <button class="btn custom-btn" id="save-web-filter-settings"><i data-feather="save" class="mr-2"></i>Save Web Filter Settings</button>
+                                    <h5 class="section-title">{{ __('location_details.web_content_filtering') }}</h5>
+                                    <button class="btn custom-btn" id="save-web-filter-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_web_filter') }}</button>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <label class="mb-0">Enable Content Filtering</label>
+                                                <label class="mb-0">{{ __('location_details.enable_content_filtering') }}</label>
                                                 <div class="custom-control custom-switch custom-control-primary">
                                                     <input type="checkbox" class="custom-control-input" id="global-web-filter">
                                                     <label class="custom-control-label" for="global-web-filter"></label>
                                                 </div>
                                             </div>
-                                            <small class="text-muted">Apply content filtering to all WiFi networks.</small>
+                                            <small class="text-muted">{{ __('location_details.web_filter_help') }}</small>
                                             <div id="web-filter-propagation-notice" class="alert alert-warning mt-2 mb-0 py-2 px-3" style="display:none; font-size:0.85rem;">
                                                 <i data-feather="clock" style="width:14px;height:14px;vertical-align:middle;" class="mr-1"></i>
-                                                <strong>Please note:</strong> After saving, it takes <strong>2–5 minutes</strong> for domain blocking to go live on the router.
+                                                {!! __('location_details.web_filter_propagation') !!}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="global-filter-categories">Block Categories</label>
+                                            <label for="global-filter-categories">{{ __('location_details.block_categories') }}</label>
                                             <select class="select2 form-control" id="global-filter-categories" multiple="multiple"></select>
-                                            <small class="text-muted">Select content categories to block across all networks.</small>
+                                            <small class="text-muted">{{ __('location_details.block_categories_help') }}</small>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row mt-2" id="wan-dns-row">
                                     <div class="col-md-3">
                                         <div class="form-group mb-0">
-                                            <label for="wan-dns1">WAN Primary DNS</label>
+                                            <label for="wan-dns1">{{ __('location_details.wan_primary_dns') }}</label>
                                             <input type="text" class="form-control" id="wan-dns1" placeholder="8.8.8.8">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group mb-0">
-                                            <label for="wan-dns2">WAN Secondary DNS <small class="text-muted font-weight-normal">(optional)</small></label>
+                                            <label for="wan-dns2">{{ __('location_details.wan_secondary_dns') }} <small class="text-muted font-weight-normal">{{ __('location_details.description_optional') }}</small></label>
                                             <input type="text" class="form-control" id="wan-dns2" placeholder="8.8.4.4">
                                         </div>
                                     </div>
                                     <div class="col-md-6 d-flex align-items-end">
-                                        <small class="text-muted" id="wan-dns-hint">Used as DNS server upstream when web filter is active. Leave empty to fall back to 8.8.8.8 / 8.8.4.4.</small>
+                                        <small class="text-muted" id="wan-dns-hint">{{ __('location_details.wan_dns_hint') }}</small>
                                     </div>
                                 </div>
                             </div>
