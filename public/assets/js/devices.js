@@ -161,63 +161,72 @@ async function loadDevices(page = 1) {
 
 function displayDevices(devices) {
     const container = document.getElementById('devices-list');
-    
+
     if (!devices || devices.length === 0) {
         container.innerHTML = `
             <div class="card">
-                <div class="card-body text-center py-5">
-                    <i data-feather="hard-drive" style="width: 64px; height: 64px; color: #ccc;"></i>
-                    <h4 class="mt-3">${T.noDevices}</h4>
-                    <p class="text-muted">${T.noDevicesDesc}</p>
+                <div class="card-body empty-state">
+                    <i data-feather="hard-drive" style="width:48px;height:48px;color:var(--mw-text-muted)"></i>
+                    <h5 class="mt-3" style="color:var(--mw-text-primary)">${T.noDevices}</h5>
+                    <p style="color:var(--mw-text-muted);font-size:13px">${T.noDevicesDesc}</p>
                 </div>
             </div>
         `;
         feather.replace();
         return;
     }
-    
-    const html = devices.map(device => {
-        const hasLocation = device.location;
-        const locationUrl = hasLocation ? `/${PAGE_LOCALE}/locations/${device.location.id}` : '#';
-        const canChangeOwner = UserManager.isAdminOrAbove();
-        
-        const deviceName = device.serial_number || device.mac_address;
-        const deviceSecondary = device.serial_number ? `${T.mac}: ${device.mac_address}` : `${T.serial}: N/A`;
-        
+
+    const canChangeOwner = UserManager.isAdminOrAbove();
+
+    const rows = devices.map(device => {
+        const hasLocation = !!device.location;
+        const locationUrl = hasLocation ? `/${PAGE_LOCALE}/locations/${device.location.id}` : null;
+        const serial = device.serial_number || '—';
+        const mac = device.mac_address || '—';
+
+        const ownerBadge = device.owner
+            ? `<span class="dc-badge dc-badge-owner">${device.owner.name}</span>`
+            : `<span class="dc-badge dc-badge-no-owner">${T.noOwner}</span>`;
+
+        const locationBadge = hasLocation
+            ? `<span class="dc-badge dc-badge-assigned">${device.location.name}</span>`
+            : `<span class="dc-badge dc-badge-unassigned">${T.unassigned}</span>`;
+
+        const actions = [];
+        if (hasLocation) {
+            actions.push(`<a class="dc-btn" href="${locationUrl}"><i data-feather="map-pin"></i>${T.viewLocation}</a>`);
+        }
+        if (canChangeOwner) {
+            actions.push(`<button class="dc-btn" onclick="showChangeOwnerModal(${device.id})"><i data-feather="user"></i>${T.changeOwner}</button>`);
+        }
+
         return `
-            <div class="device-card">
-                <div class="device-header">
-                    <div class="device-info">
-                        <div class="device-serial">${deviceName}</div>
-                        <div class="device-details">
-                            <strong>${deviceSecondary}</strong> | 
-                            <strong>${T.model}:</strong> ${device.model}
-                        </div>
-                        <div class="device-badges">
-                            ${device.owner ? `<span class="badge badge-info">${T.owner}: ${device.owner.name}</span>` : `<span class="badge badge-secondary">${T.noOwner}</span>`}
-                            ${hasLocation 
-                                ? `<span class="badge badge-success">${T.assigned}: ${device.location.name}</span>` 
-                                : `<span class="badge badge-warning">${T.unassigned}</span>`}
-                        </div>
-                    </div>
-                    <div class="device-actions">
-                        ${hasLocation ? `
-                            <a href="${locationUrl}" class="btn btn-sm btn-outline-primary">
-                                <i data-feather="map-pin"></i> ${T.viewLocation}
-                            </a>
-                        ` : ''}
-                        ${canChangeOwner ? `
-                            <button class="btn btn-sm btn-outline-secondary" onclick="showChangeOwnerModal(${device.id})">
-                                <i data-feather="user"></i> ${T.changeOwner}
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
+            <tr>
+                <td><span class="dc-serial">${serial}</span></td>
+                <td><span class="dc-mac">${mac}</span></td>
+                <td>${ownerBadge}</td>
+                <td>${locationBadge}</td>
+                <td><div class="dc-actions">${actions.join('')}</div></td>
+            </tr>
         `;
     }).join('');
-    
-    container.innerHTML = html;
+
+    container.innerHTML = `
+        <div class="card dc-table-wrap">
+            <table class="dc-table">
+                <thead>
+                    <tr>
+                        <th>${T.serial}</th>
+                        <th>${T.mac}</th>
+                        <th>${T.owner}</th>
+                        <th>${T.location}</th>
+                        <th>${T.status}</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+    `;
     feather.replace();
 }
 

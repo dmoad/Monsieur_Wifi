@@ -1,56 +1,71 @@
 @extends('layouts.app')
 
+@php $locale = 'en'; @endphp
+
 @section('title', 'Devices - Monsieur WiFi')
 
 @push('styles')
 <style>
-    .device-card {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        margin-bottom: 1.5rem;
-    }
-    .device-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(115, 103, 240, 0.15);
-    }
-    .device-header {
-        padding: 1.5rem;
+    .dc-filters {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .device-info {
-        flex: 1;
-    }
-    .device-serial {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.25rem;
-    }
-    .device-details {
-        color: #6c757d;
-        font-size: 0.9rem;
-    }
-    .device-badges {
-        display: flex;
-        gap: 0.5rem;
+        gap: var(--mw-space-md);
         flex-wrap: wrap;
-        margin-top: 0.5rem;
+        padding: var(--mw-space-lg) var(--mw-space-xl);
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-lg);
+        border: 1px solid var(--mw-border);
+        box-shadow: var(--mw-shadow-card);
+        margin-bottom: var(--mw-space-lg);
     }
-    .device-actions {
-        display: flex;
-        gap: 0.5rem;
+    .dc-filters input,
+    .dc-filters select { flex: 1; min-width: 160px; }
+
+    /* Table inside card */
+    .dc-table-wrap { overflow: hidden; }
+    .dc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .dc-table thead th {
+        padding: 10px 16px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--mw-text-muted);
+        background: var(--mw-bg-muted);
+        border-bottom: 1px solid var(--mw-border);
+        white-space: nowrap;
     }
-    .filter-section {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    .dc-table tbody tr {
+        border-bottom: 1px solid var(--mw-border-light);
+        transition: background 0.1s;
     }
+    .dc-table tbody tr:last-child { border-bottom: none; }
+    .dc-table tbody tr:hover { background: var(--mw-bg-hover); }
+    .dc-table td { padding: 11px 16px; vertical-align: middle; }
+    .dc-serial { font-weight: 700; color: var(--mw-text-primary); }
+    .dc-mac { font-family: 'SF Mono','Fira Code',monospace; font-size: 12px; color: var(--mw-text-muted); }
+    .dc-badge {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 11px; font-weight: 600; padding: 2px 8px;
+        border-radius: var(--mw-radius-badge); white-space: nowrap;
+    }
+    .dc-badge-assigned   { background: rgba(22,163,74,0.1);   color: var(--mw-success); }
+    .dc-badge-unassigned { background: rgba(234,139,9,0.1);   color: var(--mw-warning); }
+    .dc-badge-owner      { background: var(--mw-primary-tint); color: var(--mw-primary); }
+    .dc-badge-no-owner   { background: var(--mw-bg-muted);    color: var(--mw-text-muted); }
+    .dc-actions { display: flex; gap: var(--mw-space-sm); align-items: center; }
+    .dc-btn {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 4px 10px; border-radius: var(--mw-radius-sm);
+        font-size: 12px; font-weight: 500; cursor: pointer;
+        border: 1px solid var(--mw-border); background: var(--mw-bg-surface);
+        color: var(--mw-text-secondary); text-decoration: none !important;
+        transition: background 0.1s, color 0.1s;
+    }
+    .dc-btn:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+    .dc-btn [data-feather] { width: 11px !important; height: 11px !important; }
+
+    .empty-state { text-align: center; padding: 3rem 2rem; }
 </style>
 @endpush
 
@@ -72,32 +87,24 @@
 </div>
 
 <div class="content-body">
-    <div class="filter-section">
-        <div class="row">
-            <div class="col-md-4 mb-2">
-                <input type="text" id="search" class="form-control" placeholder="Search by serial, MAC, or model...">
-            </div>
-            <div class="col-md-3 mb-2">
-                <select id="location-status-filter" class="form-control">
-                    <option value="">All Devices</option>
-                    <option value="unassigned">Unassigned to Location</option>
-                    <option value="assigned">Assigned to Location</option>
-                </select>
-            </div>
-            <div class="col-md-3 mb-2">
-                <button class="btn btn-primary" onclick="loadDevices()">
-                    <i data-feather="search"></i> Search
-                </button>
-            </div>
-        </div>
+    <div class="dc-filters">
+        <input type="text" id="search" class="form-control" placeholder="Search by serial, MAC, or model…">
+        <select id="location-status-filter" class="form-control">
+            <option value="">All Devices</option>
+            <option value="unassigned">Unassigned to Location</option>
+            <option value="assigned">Assigned to Location</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadDevices()">
+            <i data-feather="search"></i> Search
+        </button>
     </div>
-    
+
     <div id="devices-loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
+            <span class="sr-only">Loading…</span>
         </div>
     </div>
-    
+
     <div id="devices-list"></div>
     <div id="pagination-container"></div>
 </div>
@@ -117,7 +124,7 @@
                 <div class="form-group">
                     <label for="new-owner">New Owner *</label>
                     <select id="new-owner" class="form-control">
-                        <option value="">Select owner...</option>
+                        <option value="">Select owner…</option>
                     </select>
                 </div>
                 <div id="device-info" class="alert alert-info"></div>
@@ -134,7 +141,3 @@
 @push('scripts')
 <script src="/assets/js/devices.js?v=<?php echo time(); ?>"></script>
 @endpush
-
-@php
-    $locale = 'en';
-@endphp

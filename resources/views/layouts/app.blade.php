@@ -155,10 +155,25 @@
                 if (backdrop) backdrop.classList.toggle('open', expanded && isMobile());
             }
 
-            // Restore desktop expanded state on page load
+            // Restore desktop expanded state on page load; force-close on mobile
             if (!isMobile() && localStorage.getItem('mwSbExpanded') === '1') {
                 setSidebar(true);
             }
+
+            // If viewport crosses the mobile breakpoint, reset sidebar state
+            window.addEventListener('resize', () => {
+                if (isMobile()) {
+                    sb.classList.remove('expanded');
+                    if (backdrop) backdrop.classList.remove('open');
+                } else {
+                    sb.classList.remove('expanded');
+                    document.body.classList.remove('mw-sb-expanded');
+                    if (backdrop) backdrop.classList.remove('open');
+                    if (localStorage.getItem('mwSbExpanded') === '1') {
+                        setSidebar(true);
+                    }
+                }
+            });
 
             // Desktop: logo/chevron area toggles expand
             toggle.addEventListener('click', () => {
