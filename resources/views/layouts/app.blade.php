@@ -230,7 +230,7 @@
                         const subtotal = (item.price_at_add * item.quantity).toFixed(2);
 
                         html += `
-                            <a class="d-flex" href="/${locale === 'fr' ? 'fr/boutique' : 'en/shop'}/${product.slug}">
+                            <a class="d-flex" href="/${locale}/shop/${product.slug}">
                                 <div class="media d-flex align-items-start">
                                     <div class="media-left">
                                         <div class="avatar bg-light-primary rounded" style="width: 50px; height: 50px;">

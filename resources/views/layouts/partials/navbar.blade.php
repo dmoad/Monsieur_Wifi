@@ -13,43 +13,10 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     @php
-                        $path = request()->path();
-                        $currentLocale = str_starts_with($path, 'fr/') ? 'fr' : 'en';
-                        
-                        // Remove locale prefix
-                        $pathWithoutLocale = preg_replace('/^(en|fr)\//', '', $path);
-                        
-                        // Translation map for route segments
-                        $frToEn = [
-                            'boutique'      => 'shop',
-                            'panier'        => 'cart',
-                            'commander'     => 'checkout',
-                            'commandes'     => 'orders',
-                            'inventaire'    => 'inventory',
-                            'modeles'       => 'models',
-                            'parametres-qos' => 'qos-settings',
-                            'appareils'     => 'devices',
-                            'emplacements'  => 'locations',
-                        ];
-                        $enToFr = array_flip($frToEn);
-                        
-                        // Convert to English path
-                        $enPath = $pathWithoutLocale;
-                        foreach ($frToEn as $fr => $en) {
-                            $enPath = str_replace($fr, $en, $enPath);
-                        }
-                        
-                        // Convert to French path
-                        $frPath = $pathWithoutLocale;
-                        foreach ($enToFr as $en => $fr) {
-                            $frPath = str_replace($en, $fr, $frPath);
-                        }
-                        
-                        $enUrl = '/en/' . $enPath;
-                        $frUrl = '/fr/' . $frPath;
+                        $pathWithoutLocale = preg_replace('/^(en|fr)\//', '', request()->path());
                     @endphp
-                    <a class="dropdown-item" href="{{ $enUrl }}"><i class="flag-icon flag-icon-us"></i> English</a>
-                    <a class="dropdown-item" href="{{ $frUrl }}"><i class="flag-icon flag-icon-fr"></i> Français</a>
+                    <a class="dropdown-item" href="/en/{{ $pathWithoutLocale }}"><i class="flag-icon flag-icon-us"></i> English</a>
+                    <a class="dropdown-item" href="/fr/{{ $pathWithoutLocale }}"><i class="flag-icon flag-icon-fr"></i> Français</a>
                 </div>
             </li>
             <li class="nav-item dropdown dropdown-cart mr-25">
@@ -70,7 +37,7 @@
                         </div>
                     </li>
                     <li class="dropdown-menu-footer">
-                        <a class="btn btn-primary btn-block" href="/{{ $locale === 'fr' ? 'fr/panier' : 'en/cart' }}">{{ __('navbar.view_cart') }}</a>
+                        <a class="btn btn-primary btn-block" href="/{{ $locale }}/cart">{{ __('navbar.view_cart') }}</a>
                     </li>
                 </ul>
             </li>
