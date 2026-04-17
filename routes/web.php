@@ -75,7 +75,7 @@ foreach (['en', 'fr'] as $loc) {
         })->name('accounts');
 
         Route::get('/locations', function () {
-            return view('locations-' . app()->getLocale());
+            return view('locations');
         })->name('locations');
 
         Route::get('/locations/{location}', function ($location) {
@@ -158,7 +158,7 @@ foreach (['en', 'fr'] as $loc) {
         if ($loc === 'fr') {
             // French-slug aliases for existing locations/guests URLs.
             Route::get('/emplacements', function () {
-                return view('locations-fr');
+                return view('locations');
             });
             Route::get('/emplacements/{location}', function ($location) {
                 $locale = 'fr';

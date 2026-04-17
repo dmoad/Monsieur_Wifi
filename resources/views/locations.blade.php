@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Locations - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+@endphp
+
+@section('title', __('locations.page_title'))
 
 @push('styles')
 <!-- DataTables CSS -->
@@ -120,11 +124,11 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Locations</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('locations.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/en/dashboard">Home</a></li>
-                        <li class="breadcrumb-item active">Locations</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('locations.heading') }}</li>
                     </ol>
                 </div>
             </div>
@@ -134,7 +138,7 @@
         <div class="form-group breadcrumb-right">
             <button class="btn btn-primary" data-toggle="modal" data-target="#add-location-modal">
                 <i data-feather="plus" class="mr-50"></i>
-                <span>Add Location</span>
+                <span>{{ __('locations.add_location') }}</span>
             </button>
         </div>
     </div>
@@ -149,7 +153,7 @@
                     <div class="card-header">
                         <div>
                             <h2 class="font-weight-bolder mb-0" id="total-locations"></h2>
-                            <p class="card-text">Total Locations</p>
+                            <p class="card-text">{{ __('locations.total_locations') }}</p>
                         </div>
                         <div class="avatar bg-light-primary p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                             <div class="avatar-content">
@@ -164,7 +168,7 @@
                     <div class="card-header">
                         <div>
                             <h2 class="font-weight-bolder mb-0" id="online-locations"></h2>
-                            <p class="card-text">Online Locations</p>
+                            <p class="card-text">{{ __('locations.online_locations') }}</p>
                         </div>
                         <div class="avatar bg-light-success p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                             <div class="avatar-content">
@@ -179,7 +183,7 @@
                     <div class="card-header">
                         <div>
                             <h2 class="font-weight-bolder mb-0" id="total-users"></h2>
-                            <p class="card-text">Total Users</p>
+                            <p class="card-text">{{ __('locations.total_users') }}</p>
                         </div>
                         <div class="avatar bg-light-info p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                             <div class="avatar-content">
@@ -194,7 +198,7 @@
                     <div class="card-header">
                         <div>
                             <h2 class="font-weight-bolder mb-0" id="total-data"></h2>
-                            <p class="card-text">Total Data Usage</p>
+                            <p class="card-text">{{ __('locations.total_data_usage') }}</p>
                         </div>
                         <div class="avatar bg-light-warning p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
                             <div class="avatar-content">
@@ -211,17 +215,17 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Locations List</h4>
+                        <h4 class="card-title">{{ __('locations.locations_list') }}</h4>
                         <div class="d-flex align-items-center">
                             <div class="form-group mb-0 mr-1">
                                 <select class="form-control" id="status-filter" disabled>
-                                    <option value="">All Status</option>
-                                    <option value="Online">Online</option>
-                                    <option value="Offline">Offline</option>
+                                    <option value="">{{ __('locations.all_status') }}</option>
+                                    <option value="{{ __('locations.status_online') }}">{{ __('locations.status_online') }}</option>
+                                    <option value="{{ __('locations.status_offline') }}">{{ __('locations.status_offline') }}</option>
                                 </select>
                             </div>
                             <div class="form-group mb-0">
-                                <input type="text" class="form-control" id="search-locations" placeholder="Search locations...">
+                                <input type="text" class="form-control" id="search-locations" placeholder="{{ __('locations.search_placeholder') }}">
                             </div>
                         </div>
                     </div>
@@ -229,12 +233,12 @@
                         <table class="table table-hover" id="locations-table">
                             <thead>
                                 <tr>
-                                    <th>Location</th>
-                                    <th>Address</th>
-                                    <th>Users</th>
-                                    <th>Data Usage</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>{{ __('locations.col_location') }}</th>
+                                    <th>{{ __('locations.col_address') }}</th>
+                                    <th>{{ __('locations.col_users') }}</th>
+                                    <th>{{ __('locations.col_data_usage') }}</th>
+                                    <th>{{ __('locations.col_status') }}</th>
+                                    <th>{{ __('locations.col_actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="locations-table-body"></tbody>
@@ -251,44 +255,44 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="add-location-title">Add New Location</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="add-location-title">{{ __('locations.add_new_location') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form id="add-location-form">
                     <div class="form-group" id="owner-select-group" style="display: none;">
-                        <label for="owner-select">Owner <span class="text-danger">*</span></label>
+                        <label for="owner-select">{{ __('locations.owner_label') }} <span class="text-danger">*</span></label>
                         <select class="form-control" id="owner-select">
-                            <option value="">Loading users...</option>
+                            <option value="">{{ __('locations.loading_users') }}</option>
                         </select>
-                        <small class="form-text text-muted">Select the owner for this location. Devices will load after selection.</small>
+                        <small class="form-text text-muted">{{ __('locations.owner_help') }}</small>
                     </div>
                     <div class="form-group">
-                        <label for="location-name">Location Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="location-name" placeholder="Enter location name">
+                        <label for="location-name">{{ __('locations.location_name_label') }} <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="location-name" placeholder="{{ __('locations.location_name_placeholder') }}">
                     </div>
                     <div class="form-group">
-                        <label for="location-address">Address</label>
-                        <input type="text" class="form-control" id="location-address" placeholder="Enter address">
+                        <label for="location-address">{{ __('locations.address_label') }}</label>
+                        <input type="text" class="form-control" id="location-address" placeholder="{{ __('locations.address_placeholder') }}">
                     </div>
                     <div class="form-group">
-                        <label for="device-select">Select Device <span class="text-danger">*</span></label>
+                        <label for="device-select">{{ __('locations.select_device_label') }} <span class="text-danger">*</span></label>
                         <select class="form-control" id="device-select" required>
-                            <option value="">— select a device —</option>
+                            <option value="">{{ __('locations.select_device_placeholder') }}</option>
                         </select>
-                        <small class="form-text text-muted" id="device-select-hint">Select an existing device to assign to this location.</small>
+                        <small class="form-text text-muted" id="device-select-hint">{{ __('locations.select_device_help') }}</small>
                     </div>
                     <div class="form-group">
-                        <label for="location-notes">Description</label>
-                        <textarea class="form-control" id="location-notes" rows="3" placeholder="Enter additional notes or description"></textarea>
+                        <label for="location-notes">{{ __('locations.description_label') }}</label>
+                        <textarea class="form-control" id="location-notes" rows="3" placeholder="{{ __('locations.description_placeholder') }}"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="add-location-btn">Add Location</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="add-location-btn">{{ __('locations.add_location') }}</button>
             </div>
         </div>
     </div>
@@ -317,13 +321,11 @@
 $(document).ready(function() {
     const user = UserManager.getUser();
     const token = UserManager.getToken();
-    
+
     if (!token || !user) {
         window.location.href = '/';
         return;
     }
-
-    console.log("token: " + token);
 
     // Make API call to get locations
     $.ajax({
@@ -335,36 +337,34 @@ $(document).ready(function() {
         success: function(response) {
             var locations = response.locations;
             var networkTotals = response.network_totals;
-            console.log("Locations list response: ", locations);
-            console.log("Network totals: ", networkTotals);
-            
+
             var total_locations = locations.length;
             var online_locations = locations.filter(loc => loc.online_status == "online").length;
             var total_users = locations.reduce((sum, loc) => sum + loc.users, 0);
             var total_data_gb = networkTotals.total_data_gb;
-            var total_data_formatted = total_data_gb > 1024 ? 
-                (total_data_gb / 1024).toFixed(1) + 'TB' : 
-                total_data_gb.toFixed(1) + 'GB';
+            var total_data_formatted = total_data_gb > 1024 ?
+                (total_data_gb / 1024).toFixed(1) + '{{ __('locations.unit_tb') }}' :
+                total_data_gb.toFixed(1) + '{{ __('locations.unit_gb') }}';
 
             $("#total-locations").text(total_locations);
             $("#online-locations").text(online_locations);
             $("#total-users").text(total_users);
             $("#total-data").text(total_data_formatted);
-            
+
             // Populate table with locations data
             var table_content = "";
             locations.forEach(function(location) {
                 table_content += '<tr>';
-                table_content += '<td><div class="d-flex align-items-center"><div class="avatar bg-light-primary mr-1"><div class="avatar-content"><img src="/assets/map-icon-1.png" alt="Marker Icon" width="40" height="40"></div></div><span>' + location.name + '</span></div></td>';
+                table_content += '<td><div class="d-flex align-items-center"><div class="avatar bg-light-primary mr-1"><div class="avatar-content"><img src="/assets/map-icon-1.png" alt="{{ __('locations.marker_icon_alt') }}" width="40" height="40"></div></div><span>' + location.name + '</span></div></td>';
                 table_content += '<td>' + location.address + '</td>';
                 table_content += '<td>' + location.users + '</td>';
                 table_content += '<td>' + location.data_usage + '</td>';
-                if (location.online_status == "online") {   
-                    table_content += '<td><span class="badge badge-pill badge-light-success">Online</span></td>';
+                if (location.online_status == "online") {
+                    table_content += '<td><span class="badge badge-pill badge-light-success">{{ __('locations.status_online') }}</span></td>';
                 } else {
-                    table_content += '<td><span class="badge badge-pill badge-light-danger">Offline</span></td>';
+                    table_content += '<td><span class="badge badge-pill badge-light-danger">{{ __('locations.status_offline') }}</span></td>';
                 }
-                table_content += '<td><a href="/en/locations/' + location.id + '" class="btn btn-sm btn-primary">View</a></td>';
+                table_content += '<td><a href="/{{ $locale }}/locations/' + location.id + '" class="btn btn-sm btn-primary">{{ __('locations.action_view') }}</a></td>';
                 table_content += '</tr>';
             });
             $('#locations-table-body').html(table_content);
@@ -372,12 +372,12 @@ $(document).ready(function() {
             if (typeof feather !== 'undefined') {
                 feather.replace();
             }
-            
+
             // Initialize or reinitialize DataTable after data is loaded
             if ($.fn.DataTable.isDataTable('#locations-table')) {
                 $('#locations-table').DataTable().destroy();
             }
-            
+
             $('#locations-table').DataTable({
                 responsive: true,
                 columnDefs: [
@@ -394,7 +394,7 @@ $(document).ready(function() {
                     }
                 }
             });
-            
+
             $('#status-filter').prop('disabled', false);
             $('#status-filter').val("");
         },
@@ -405,24 +405,24 @@ $(document).ready(function() {
             }
         }
     });
-    
+
     // Handle add location form submission
     $('#add-location-btn').on('click', function(e) {
         e.preventDefault();
-        
-        $(this).html('<i data-feather="loader" class="mr-2"></i>Adding Location...');
+
+        $(this).html('<i data-feather="loader" class="mr-2"></i>{{ __('locations.adding_location') }}');
         $(this).prop('disabled', true);
-        
+
         $('.form-error').remove();
         $('.is-invalid').removeClass('is-invalid');
-        
+
         const locationData = {
             name: $('#location-name').val(),
             address: $('#location-address').val(),
             device_id: $('#device-select').val(),
             description: $('#location-notes').val()
         };
-        
+
         // Set owner_id
         if (UserManager.isAdminOrAbove() && $('#owner-select').val()) {
             // Admin selected a specific owner
@@ -434,21 +434,21 @@ $(document).ready(function() {
 
         let hasErrors = false;
         if (!locationData.name) {
-            showFieldError('location-name', 'Location name is required');
+            showFieldError('location-name', '{{ __('locations.location_name_required') }}');
             hasErrors = true;
         }
 
         if (!locationData.device_id) {
-            showFieldError('device-select', 'Device selection is required');
+            showFieldError('device-select', '{{ __('locations.device_required') }}');
             hasErrors = true;
         }
 
         if (hasErrors) {
-            $('#add-location-btn').html('Add Location');
+            $('#add-location-btn').html('{{ __('locations.add_location') }}');
             $('#add-location-btn').prop('disabled', false);
             return;
         }
-        
+
         $.ajax({
             url: APP_CONFIG.API.BASE_URL + '/locations',
             type: 'POST',
@@ -457,55 +457,54 @@ $(document).ready(function() {
                 'Authorization': 'Bearer ' + token
             },
             success: function(response) {
-                console.log(response);
                 $('#add-location-btn').removeClass('btn-primary');
                 $('#add-location-btn').addClass('btn-success');
-                
-                let successMessage = 'Location created successfully';
+
+                let successMessage = '{{ __('locations.location_created') }}';
                 if (response.firmware) {
-                    successMessage += `<br><small>Assigned firmware: ${response.firmware.name}</small>`;
+                    successMessage += `<br><small>{{ __('locations.assigned_firmware_prefix') }} ${response.firmware.name}</small>`;
                 }
 
                 $('#add-location-btn').html(successMessage);
                 $('#add-location-btn').prop('disabled', true);
-                
+
                 setTimeout(function() {
                     $('#add-location-btn').removeClass('btn-success');
                     $('#add-location-btn').addClass('btn-primary');
-                    $('#add-location-btn').html('Add Location');
+                    $('#add-location-btn').html('{{ __('locations.add_location') }}');
                     $('#add-location-btn').prop('disabled', false);
                     $('#add-location-modal').modal('hide');
-                    
+
                     $('#add-location-form')[0].reset();
                     $('.form-error').remove();
                     $('.is-invalid').removeClass('is-invalid');
-                    
+
                     window.location.reload();
                 }, 4000);
             },
             error: function(xhr, status, error) {
                 $('#add-location-btn').removeClass('btn-primary');
                 $('#add-location-btn').addClass('btn-danger');
-                $('#add-location-btn').html('Error creating location');
+                $('#add-location-btn').html('{{ __('locations.error_creating_location') }}');
                 $('#add-location-btn').prop('disabled', true);
 
                 setTimeout(function() {
                     $('#add-location-btn').removeClass('btn-danger');
                     $('#add-location-btn').addClass('btn-primary');
-                    $('#add-location-btn').html('Add Location');
+                    $('#add-location-btn').html('{{ __('locations.add_location') }}');
                     $('#add-location-btn').prop('disabled', false);
                 }, 3000);
                 console.error('Error creating location:', error);
             }
         });
     });
-    
+
     function showFieldError(fieldId, message) {
         $(`#${fieldId}`)
             .addClass('is-invalid')
             .after(`<div class="invalid-feedback form-error">${message}</div>`);
     }
-    
+
     function isValidMacAddress(mac) {
         return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac);
     }
@@ -514,7 +513,7 @@ $(document).ready(function() {
 $('#status-filter').on('change', function() {
     var status = $(this).val();
     var table = $('#locations-table').DataTable();
-    
+
     if (status !== '') {
         table.column(4).search(status).draw();
     } else {
@@ -537,7 +536,7 @@ async function loadUsers() {
         const data = await response.json();
         const select = $('#owner-select');
 
-        let options = '<option value="">Select owner first...</option>';
+        let options = '<option value="">{{ __('locations.select_owner_first_option') }}</option>';
         data.users.forEach(u => {
             options += `<option value="${u.id}">${u.name} (${u.email})</option>`;
         });
@@ -546,8 +545,8 @@ async function loadUsers() {
         $('#owner-select-group').show();
 
         // Disable device select until an owner is chosen
-        $('#device-select').html('<option value="">Select an owner above first</option>').prop('disabled', true);
-        $('#device-select-hint').text('Please select an owner first — devices will load automatically.');
+        $('#device-select').html('<option value="">{{ __('locations.select_owner_above_first') }}</option>').prop('disabled', true);
+        $('#device-select-hint').text('{{ __('locations.select_owner_first_hint') }}');
     } catch (error) {
         console.error('Error loading users:', error);
     }
@@ -556,7 +555,7 @@ async function loadUsers() {
 async function loadAvailableDevices(ownerId = null) {
     const token = UserManager.getToken();
 
-    $('#device-select').html('<option value="">Loading devices...</option>').prop('disabled', true);
+    $('#device-select').html('<option value="">{{ __('locations.loading_devices') }}</option>').prop('disabled', true);
 
     let url = `${APP_CONFIG.API.BASE_URL}/v1/devices/available-for-location`;
     if (ownerId) url += `?owner_id=${ownerId}`;
@@ -571,34 +570,34 @@ async function loadAvailableDevices(ownerId = null) {
         const data = await response.json();
         const select = $('#device-select');
 
-        let options = '<option value="">Select a device...</option>';
+        let options = '<option value="">{{ __('locations.select_a_device') }}</option>';
 
         if (data.unassigned && data.unassigned.length > 0) {
-            options += '<optgroup label="Available Devices">';
+            options += '<optgroup label="{{ __('locations.available_devices_group') }}">';
             data.unassigned.forEach(device => {
-                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - Available</option>`;
+                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - {{ __('locations.available_suffix') }}</option>`;
             });
             options += '</optgroup>';
         }
 
         if (data.assigned && data.assigned.length > 0) {
-            options += '<optgroup label="Devices Assigned to Other Locations">';
+            options += '<optgroup label="{{ __('locations.devices_assigned_elsewhere_group') }}">';
             data.assigned.forEach(device => {
-                const locationName = device.location ? device.location.name : 'Unknown Location';
-                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - Assigned to: ${locationName}</option>`;
+                const locationName = device.location ? device.location.name : '{{ __('locations.unknown_location') }}';
+                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - {{ __('locations.assigned_to_prefix') }} ${locationName}</option>`;
             });
             options += '</optgroup>';
         }
 
         if ((!data.unassigned || data.unassigned.length === 0) && (!data.assigned || data.assigned.length === 0)) {
-            options = '<option value="">No devices found</option>';
+            options = '<option value="">{{ __('locations.no_devices_found') }}</option>';
         }
 
         select.html(options).prop('disabled', false);
-        $('#device-select-hint').text('Select an existing device to assign to this location.');
+        $('#device-select-hint').text('{{ __('locations.select_device_help') }}');
     } catch (error) {
         console.error('Error loading devices:', error);
-        $('#device-select').html('<option value="">Error loading devices</option>').prop('disabled', false);
+        $('#device-select').html('<option value="">{{ __('locations.error_loading_devices') }}</option>').prop('disabled', false);
     }
 }
 
@@ -617,12 +616,8 @@ $('#owner-select').on('change', function() {
     if (ownerId) {
         loadAvailableDevices(ownerId);
     } else {
-        $('#device-select').html('<option value="">Select an owner above first</option>').prop('disabled', true);
+        $('#device-select').html('<option value="">{{ __('locations.select_owner_above_first') }}</option>').prop('disabled', true);
     }
 });
 </script>
 @endpush
-
-@php
-    $locale = 'en';
-@endphp
