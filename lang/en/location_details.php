@@ -157,4 +157,48 @@ return [
     'wan_primary_dns' => 'WAN Primary DNS',
     'wan_secondary_dns' => 'WAN Secondary DNS',
     'wan_dns_hint' => 'Used as DNS server upstream when web filter is active. Leave empty to fall back to 8.8.8.8 / 8.8.4.4.',
+
+    // WAN Settings modal
+    'modal_wan_title' => 'Edit WAN Interface Settings',
+    'modal_wan_netmask' => 'Netmask',
+    'modal_wan_secondary_dns' => 'Secondary DNS',
+    'modal_wan_password' => 'Password',
+    'modal_wan_service_name_optional' => 'Service Name (Optional)',
+    'modal_save_changes' => 'Save Changes',
+
+    // Restart modal
+    'modal_restart_title' => 'Restart Device',
+    'modal_restart_tab_now' => 'Reboot Now',
+    'modal_restart_tab_schedule' => 'Schedule',
+    'modal_warning_label' => 'Warning:',
+    'modal_restart_warning' => 'This action will restart the device and temporarily interrupt internet access.',
+    'modal_device_info' => 'Device Information',
+    'modal_location_prefix' => 'Location:',
+    'modal_model_prefix' => 'Model:',
+    'modal_mac_prefix' => 'MAC Address:',
+    'modal_restart_confirm' => 'Are you sure you want to restart this device?',
+    'modal_schedule_info' => 'The device will reboot once at the specified date and time (server time). The schedule is cleared automatically after firing.',
+    'modal_reboot_datetime' => 'Reboot Date & Time',
+    'modal_reboot_datetime_help' => 'Device will reboot at this time (within 1–5 min). Schedule clears automatically after firing.',
+    'modal_currently_scheduled' => 'Currently scheduled:',
+    'modal_clear_schedule' => 'Clear Schedule',
+    'modal_restart_now_btn' => 'Restart Now',
+    'modal_save_schedule_btn' => 'Save Schedule',
+
+    // Firmware Update modal
+    'modal_firmware_title' => 'Update Firmware',
+    'modal_important_label' => 'Important:',
+    'modal_firmware_info' => 'Firmware update will restart the device and may take 5-10 minutes.',
+    'modal_current_device' => 'Current Device',
+    'modal_firmware_prefix' => 'Firmware:',
+    'modal_available_versions' => 'Available Versions',
+    'modal_loading_firmware_versions' => 'Loading firmware versions...',
+    'modal_firmware_desc_placeholder' => 'Select a version to view details.',
+    'modal_update_firmware_btn' => 'Update Firmware',
+
+    // Firmware Progress modal
+    'modal_firmware_progress_title' => 'Updating Firmware',
+    'modal_firmware_progress_warning' => 'Do not close this window or power off the device during update.',
+    'modal_firmware_preparing' => 'Preparing firmware update...',
+    'modal_firmware_taking_minutes' => 'This may take several minutes.',
 ];

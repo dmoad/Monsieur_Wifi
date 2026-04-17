@@ -157,4 +157,48 @@ return [
     'wan_primary_dns' => 'DNS principal WAN',
     'wan_secondary_dns' => 'DNS secondaire WAN',
     'wan_dns_hint' => 'Utilisé comme serveur DNS en amont lorsque le filtre Web est actif. Laissez vide pour utiliser 8.8.8.8 / 8.8.4.4 par défaut.',
+
+    // WAN Settings modal
+    'modal_wan_title' => 'Modifier les paramètres de l\'interface WAN',
+    'modal_wan_netmask' => 'Masque réseau',
+    'modal_wan_secondary_dns' => 'DNS secondaire',
+    'modal_wan_password' => 'Mot de passe',
+    'modal_wan_service_name_optional' => 'Nom du service (optionnel)',
+    'modal_save_changes' => 'Enregistrer les modifications',
+
+    // Restart modal
+    'modal_restart_title' => 'Redémarrer l\'appareil',
+    'modal_restart_tab_now' => 'Redémarrer maintenant',
+    'modal_restart_tab_schedule' => 'Planifier',
+    'modal_warning_label' => 'Attention :',
+    'modal_restart_warning' => 'Cette action va redémarrer l\'appareil et interrompre temporairement l\'accès à Internet.',
+    'modal_device_info' => 'Informations sur l\'appareil',
+    'modal_location_prefix' => 'Emplacement :',
+    'modal_model_prefix' => 'Modèle :',
+    'modal_mac_prefix' => 'Adresse MAC :',
+    'modal_restart_confirm' => 'Êtes-vous sûr de vouloir redémarrer cet appareil ?',
+    'modal_schedule_info' => 'L\'appareil redémarrera une fois à la date et l\'heure spécifiées (heure serveur). La planification est effacée automatiquement après exécution.',
+    'modal_reboot_datetime' => 'Date et heure du redémarrage',
+    'modal_reboot_datetime_help' => 'L\'appareil redémarrera à cette heure (sous 1 à 5 min). La planification s\'efface automatiquement après exécution.',
+    'modal_currently_scheduled' => 'Actuellement planifié :',
+    'modal_clear_schedule' => 'Effacer la planification',
+    'modal_restart_now_btn' => 'Redémarrer maintenant',
+    'modal_save_schedule_btn' => 'Enregistrer la planification',
+
+    // Firmware Update modal
+    'modal_firmware_title' => 'Mettre à jour le firmware',
+    'modal_important_label' => 'Important :',
+    'modal_firmware_info' => 'La mise à jour du firmware va redémarrer l\'appareil et peut prendre 5 à 10 minutes.',
+    'modal_current_device' => 'Appareil actuel',
+    'modal_firmware_prefix' => 'Firmware :',
+    'modal_available_versions' => 'Versions disponibles',
+    'modal_loading_firmware_versions' => 'Chargement des versions de firmware...',
+    'modal_firmware_desc_placeholder' => 'Sélectionnez une version pour voir les détails.',
+    'modal_update_firmware_btn' => 'Mettre à jour le firmware',
+
+    // Firmware Progress modal
+    'modal_firmware_progress_title' => 'Mise à jour du firmware',
+    'modal_firmware_progress_warning' => 'Ne fermez pas cette fenêtre et n\'éteignez pas l\'appareil pendant la mise à jour.',
+    'modal_firmware_preparing' => 'Préparation de la mise à jour du firmware...',
+    'modal_firmware_taking_minutes' => 'Cela peut prendre plusieurs minutes.',
 ];

@@ -715,12 +715,12 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="wan-settings-modal-title">Edit WAN Interface Settings</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title" id="wan-settings-modal-title">{{ __('location_details.modal_wan_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Connection Type</label>
+                    <label>{{ __('location_details.connection_type') }}</label>
                     <select class="form-control" id="wan-connection-type">
                         <option value="DHCP">DHCP</option>
                         <option value="STATIC">Static IP</option>
@@ -728,21 +728,21 @@
                     </select>
                 </div>
                 <div id="wan-static-fields" style="display:none;">
-                    <div class="form-group"><label>IP Address</label><input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10"></div>
-                    <div class="form-group"><label>Netmask</label><input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0"></div>
-                    <div class="form-group"><label>Gateway</label><input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1"></div>
-                    <div class="form-group"><label>Primary DNS</label><input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8"></div>
-                    <div class="form-group"><label>Secondary DNS</label><input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1"></div>
+                    <div class="form-group"><label>{{ __('location_details.ip_address') }}</label><input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10"></div>
+                    <div class="form-group"><label>{{ __('location_details.modal_wan_netmask') }}</label><input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0"></div>
+                    <div class="form-group"><label>{{ __('location_details.gateway') }}</label><input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1"></div>
+                    <div class="form-group"><label>{{ __('location_details.primary_dns') }}</label><input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8"></div>
+                    <div class="form-group"><label>{{ __('location_details.modal_wan_secondary_dns') }}</label><input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1"></div>
                 </div>
                 <div id="wan-pppoe-fields" style="display:none;">
-                    <div class="form-group"><label>Username</label><input type="text" class="form-control" id="wan-pppoe-username-modal" placeholder="Username"></div>
-                    <div class="form-group"><label>Password</label><input type="password" class="form-control" id="wan-pppoe-password" placeholder="Password"></div>
-                    <div class="form-group"><label>Service Name (Optional)</label><input type="text" class="form-control" id="wan-pppoe-service-name-modal" placeholder="Service Name"></div>
+                    <div class="form-group"><label>{{ __('location_details.username') }}</label><input type="text" class="form-control" id="wan-pppoe-username-modal" placeholder="{{ __('location_details.username') }}"></div>
+                    <div class="form-group"><label>{{ __('location_details.modal_wan_password') }}</label><input type="password" class="form-control" id="wan-pppoe-password" placeholder="{{ __('location_details.modal_wan_password') }}"></div>
+                    <div class="form-group"><label>{{ __('location_details.modal_wan_service_name_optional') }}</label><input type="text" class="form-control" id="wan-pppoe-service-name-modal" placeholder="{{ __('location_details.service_name') }}"></div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn custom-btn save-wan-settings">Save Changes</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn custom-btn save-wan-settings">{{ __('location_details.modal_save_changes') }}</button>
             </div>
         </div>
     </div>
@@ -753,60 +753,60 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i data-feather="refresh-cw" class="mr-2"></i>Restart Device</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title"><i data-feather="refresh-cw" class="mr-2"></i>{{ __('location_details.modal_restart_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <!-- Tab switcher -->
                 <ul class="nav nav-tabs mb-3" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-restart-tab="now" href="#">
-                            <i data-feather="zap" class="mr-1"></i>Reboot Now
+                            <i data-feather="zap" class="mr-1"></i>{{ __('location_details.modal_restart_tab_now') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-restart-tab="schedule" href="#">
-                            <i data-feather="clock" class="mr-1"></i>Schedule
+                            <i data-feather="clock" class="mr-1"></i>{{ __('location_details.modal_restart_tab_schedule') }}
                         </a>
                     </li>
                 </ul>
 
                 <!-- Reboot Now tab -->
                 <div id="reboot-now-section">
-                    <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>Warning:</strong> This action will restart the device and temporarily interrupt internet access.</div></div>
+                    <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>{{ __('location_details.modal_warning_label') }}</strong> {{ __('location_details.modal_restart_warning') }}</div></div>
                     <div class="d-flex align-items-center mb-3">
                         <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
                         <div>
-                            <h6 class="mb-0">Device Information</h6>
-                            <p class="card-text text-muted mb-0">Location: <span class="location_name font-weight-bold"></span></p>
-                            <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
-                            <p class="card-text text-muted mb-0">MAC Address: <span class="router_mac_address font-weight-bold"></span></p>
+                            <h6 class="mb-0">{{ __('location_details.modal_device_info') }}</h6>
+                            <p class="card-text text-muted mb-0">{{ __('location_details.modal_location_prefix') }} <span class="location_name font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">{{ __('location_details.modal_model_prefix') }} <span class="router_model font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">{{ __('location_details.modal_mac_prefix') }} <span class="router_mac_address font-weight-bold"></span></p>
                         </div>
                     </div>
-                    <p class="text-muted">Are you sure you want to restart this device?</p>
+                    <p class="text-muted">{{ __('location_details.modal_restart_confirm') }}</p>
                 </div>
 
                 <!-- Schedule tab -->
                 <div id="schedule-reboot-section" style="display:none;">
-                    <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i>The device will reboot once at the specified date and time (server time). The schedule is cleared automatically after firing.</div></div>
+                    <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i>{{ __('location_details.modal_schedule_info') }}</div></div>
                     <div class="form-group">
-                        <label for="scheduled-reboot-time">Reboot Date &amp; Time</label>
+                        <label for="scheduled-reboot-time">{{ __('location_details.modal_reboot_datetime') }}</label>
                         <input type="datetime-local" class="form-control" id="scheduled-reboot-time">
-                        <small class="text-muted">Device will reboot at this time (within 1–5 min). Schedule clears automatically after firing.</small>
+                        <small class="text-muted">{{ __('location_details.modal_reboot_datetime_help') }}</small>
                     </div>
                     <div id="scheduled-reboot-current" class="text-muted mb-2" style="font-size:0.85rem; display:none;">
                         <i data-feather="clock" style="width:13px;height:13px;vertical-align:middle;"></i>
-                        Currently scheduled: <strong id="scheduled-reboot-current-value"></strong>
+                        {{ __('location_details.modal_currently_scheduled') }} <strong id="scheduled-reboot-current-value"></strong>
                     </div>
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="clear-reboot-schedule-btn">
-                        <i data-feather="x" class="mr-1"></i>Clear Schedule
+                        <i data-feather="x" class="mr-1"></i>{{ __('location_details.modal_clear_schedule') }}
                     </button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirm-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i><span>Restart Now</span></button>
-                <button type="button" class="btn btn-primary" id="save-reboot-schedule-btn" style="display:none;"><i data-feather="save" class="mr-1"></i><span>Save Schedule</span></button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-danger" id="confirm-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i><span>{{ __('location_details.modal_restart_now_btn') }}</span></button>
+                <button type="button" class="btn btn-primary" id="save-reboot-schedule-btn" style="display:none;"><i data-feather="save" class="mr-1"></i><span>{{ __('location_details.modal_save_schedule_btn') }}</span></button>
             </div>
         </div>
     </div>
@@ -817,32 +817,32 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i data-feather="download" class="mr-2"></i>Update Firmware</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title"><i data-feather="download" class="mr-2"></i>{{ __('location_details.modal_firmware_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>Important:</strong> Firmware update will restart the device and may take 5-10 minutes.</div></div>
+                <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>{{ __('location_details.modal_important_label') }}</strong> {{ __('location_details.modal_firmware_info') }}</div></div>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
                     <div>
-                        <h6 class="mb-0">Current Device</h6>
-                        <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
-                        <p class="card-text text-muted mb-0">Firmware: <span class="router_firmware font-weight-bold"></span></p>
-                        <p class="card-text text-muted mb-0">MAC: <span class="router_mac_address font-weight-bold"></span></p>
+                        <h6 class="mb-0">{{ __('location_details.modal_current_device') }}</h6>
+                        <p class="card-text text-muted mb-0">{{ __('location_details.modal_model_prefix') }} <span class="router_model font-weight-bold"></span></p>
+                        <p class="card-text text-muted mb-0">{{ __('location_details.modal_firmware_prefix') }} <span class="router_firmware font-weight-bold"></span></p>
+                        <p class="card-text text-muted mb-0">{{ __('location_details.mac_prefix') }} <span class="router_mac_address font-weight-bold"></span></p>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="firmware-version-select">Available Versions</label>
-                    <select class="form-control" id="firmware-version-select"><option value="">Loading firmware versions...</option></select>
+                    <label for="firmware-version-select">{{ __('location_details.modal_available_versions') }}</label>
+                    <select class="form-control" id="firmware-version-select"><option value="">{{ __('location_details.modal_loading_firmware_versions') }}</option></select>
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
-                    <div class="card"><div class="card-body p-2"><div id="firmware-description"><p class="text-muted mb-0">Select a version to view details.</p></div></div></div>
+                    <label>{{ __('location_details.description_label') }}</label>
+                    <div class="card"><div class="card-body p-2"><div id="firmware-description"><p class="text-muted mb-0">{{ __('location_details.modal_firmware_desc_placeholder') }}</p></div></div></div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn custom-btn" id="start-firmware-update-btn" disabled><i data-feather="download" class="mr-1"></i><span>Update Firmware</span></button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn custom-btn" id="start-firmware-update-btn" disabled><i data-feather="download" class="mr-1"></i><span>{{ __('location_details.modal_update_firmware_btn') }}</span></button>
             </div>
         </div>
     </div>
@@ -852,16 +852,16 @@
 <div class="modal fade" id="firmware-progress-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title"><i data-feather="download" class="mr-2"></i>Updating Firmware</h5></div>
+            <div class="modal-header"><h5 class="modal-title"><i data-feather="download" class="mr-2"></i>{{ __('location_details.modal_firmware_progress_title') }}</h5></div>
             <div class="modal-body">
-                <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>Do not close this window or power off the device during update.</strong></div></div>
-                <div class="text-center mb-3"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div>
+                <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>{{ __('location_details.modal_firmware_progress_warning') }}</strong></div></div>
+                <div class="text-center mb-3"><div class="spinner-border text-primary" role="status"><span class="sr-only">{{ __('common.loading') }}</span></div></div>
                 <div class="progress progress-bar-primary mb-2">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="firmware-progress-bar"></div>
                 </div>
                 <div class="text-center">
-                    <h6 id="firmware-progress-status">Preparing firmware update...</h6>
-                    <p class="text-muted mb-0" id="firmware-progress-description">This may take several minutes.</p>
+                    <h6 id="firmware-progress-status">{{ __('location_details.modal_firmware_preparing') }}</h6>
+                    <p class="text-muted mb-0" id="firmware-progress-description">{{ __('location_details.modal_firmware_taking_minutes') }}</p>
                 </div>
             </div>
         </div>
