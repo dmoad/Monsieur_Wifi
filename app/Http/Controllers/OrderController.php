@@ -324,7 +324,7 @@ class OrderController extends Controller
      */
     public function successView(Request $request, $orderNumber)
     {
-        return view('order-success-' . app()->getLocale(), ['orderNumber' => $orderNumber]);
+        return view('order-success', ['orderNumber' => $orderNumber]);
     }
     
     /**
