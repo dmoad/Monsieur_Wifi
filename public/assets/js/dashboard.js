@@ -3,6 +3,8 @@
  * Uses JWT authentication for API calls
  */
 
+const locale = document.documentElement.lang || 'en';
+
 let dashboardData = {
     overview: null,
     analytics: null
@@ -265,7 +267,7 @@ function initializeNetworkMap(locations) {
                     </div>
                 </div>
                 <div class="mt-2">
-                    <a href="/locations/${location.id}" class="btn btn-sm btn-primary btn-block">
+                    <a href="/${locale}/locations/${location.id}" class="btn btn-sm btn-primary btn-block">
                         View Details
                     </a>
                 </div>
@@ -464,7 +466,7 @@ function renderLocationCards() {
                                 <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
                                 <small>Router ${statusText}</small>
                             </div>
-                            <a href="/en/locations/${location.id}" class="btn btn-sm btn-primary">View Details</a>
+                            <a href="/${locale}/locations/${location.id}" class="btn btn-sm btn-primary">View Details</a>
                         </div>
                     </div>
                 </div>
