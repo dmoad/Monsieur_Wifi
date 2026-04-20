@@ -13,7 +13,6 @@ class OrderDeliveredMail extends Mailable
     use Queueable;
 
     public $order;
-    public $locale;
 
     public function __construct(Order $order, string $locale = 'en')
     {
@@ -26,9 +25,7 @@ class OrderDeliveredMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->locale === 'fr' 
-                ? 'Votre Commande a été Livrée - Monsieur WiFi' 
-                : 'Your Order Has Been Delivered - Monsieur WiFi',
+            subject: __('emails/order-delivered.subject'),
         );
     }
 
@@ -38,12 +35,11 @@ class OrderDeliveredMail extends Mailable
         if (!$this->order->relationLoaded('user')) {
             $this->order->load(['user', 'shippingAddress']);
         }
-        
+
         return new Content(
-            view: $this->locale === 'fr' ? 'emails.order-delivered-fr' : 'emails.order-delivered-en',
+            view: 'emails.order-delivered',
             with: [
                 'order' => $this->order,
-                'locale' => $this->locale,
             ],
         );
     }

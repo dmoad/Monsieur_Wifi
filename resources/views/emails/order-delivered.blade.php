@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <style>
@@ -12,15 +12,19 @@
     </style>
 </head>
 <body>
+    @php
+        $orderUrl = url('/' . app()->getLocale() . '/orders/' . $order->order_number);
+        $orderLink = '<strong><a href="' . e($orderUrl) . '">#' . e($order->order_number) . '</a></strong>';
+    @endphp
     <div class="container">
-        <div class="header"><h1>✓ Order Delivered!</h1></div>
+        <div class="header"><h1>{{ __('emails/order-delivered.heading') }}</h1></div>
         <div class="content">
-            <p>Hello {{ $order->user->name }},</p>
-            <p>Your order <strong><a href="{{ url('/en/orders/' . $order->order_number) }}">#{{ $order->order_number }}</a></strong> has been successfully delivered!</p>
-            <p>We hope you enjoy your purchase. If you have any questions or concerns, please don't hesitate to contact us.</p>
-            <p>Thank you for choosing Monsieur WiFi!</p>
+            <p>{{ __('emails/order-delivered.greeting') }} {{ $order->user->name }},</p>
+            <p>{!! __('emails/order-delivered.intro_html', ['order_link' => $orderLink]) !!}</p>
+            <p>{{ __('emails/order-delivered.body_enjoy') }}</p>
+            <p>{{ __('emails/order-delivered.body_thanks') }}</p>
         </div>
-        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. All rights reserved.</p></div>
+        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/order-delivered.footer_rights') }}</p></div>
     </div>
 </body>
 </html>
