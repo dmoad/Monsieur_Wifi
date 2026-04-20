@@ -30,4 +30,51 @@ return [
     'form_upload_hint' => 'JPEG, PNG, JPG, GIF (max 2MB)',
 
     'btn_save_model' => 'Enregistrer le Modèle',
+
+    // JS-only strings (consumed via window.APP_I18N.admin_models)
+    'js_access_denied' => 'Accès refusé',
+    'js_error_load_models' => 'Erreur de chargement des modèles',
+    'js_no_models' => 'Aucun modèle trouvé',
+
+    'js_col_image' => 'Image',
+    'js_col_name' => 'Nom',
+    'js_col_type' => 'Type',
+    'js_col_price' => 'Prix',
+    'js_col_stock' => 'Stock',
+    'js_col_status' => 'Statut',
+    'js_col_actions' => 'Actions',
+
+    'js_badge_out_of_stock' => 'Épuisé',
+    'js_btn_edit' => 'Modifier',
+    'js_btn_delete' => 'Supprimer',
+
+    'js_modal_edit_title' => 'Modifier le Modèle',
+    'js_error_load_model' => 'Erreur de chargement du modèle',
+
+    'js_no_images' => 'Aucune image',
+    'js_badge_primary' => 'Principal',
+    'js_btn_set_primary' => 'Définir comme principal',
+
+    'js_fill_required' => 'Veuillez remplir tous les champs obligatoires',
+    'js_saved' => 'Modèle enregistré avec succès',
+    'js_error_save' => 'Erreur d\'enregistrement',
+
+    'js_confirm_delete_model' => 'Êtes-vous sûr de vouloir supprimer ce modèle ? Cette action ne peut pas être annulée.',
+    'js_deleted' => 'Modèle supprimé',
+    'js_error_delete_model' => 'Erreur de suppression',
+
+    'js_status_updated' => 'Statut mis à jour',
+    'js_error_update_status' => 'Erreur de mise à jour',
+
+    'js_image_too_large' => 'La taille de l\'image doit être inférieure à 2MB',
+    'js_save_model_first' => 'Veuillez d\'abord enregistrer le modèle',
+    'js_image_uploaded' => 'Image téléchargée',
+    'js_error_upload_image' => 'Erreur de téléchargement',
+
+    'js_confirm_delete_image' => 'Supprimer cette image ?',
+    'js_image_deleted' => 'Image supprimée',
+    'js_error_delete_image' => 'Erreur de suppression',
+
+    'js_primary_set' => 'Image principale définie',
+    'js_error_update_image' => 'Erreur de mise à jour',
 ];

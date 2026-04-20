@@ -3,6 +3,57 @@
 @php
     $locale = app()->getLocale();
     $shopUrl = "/{$locale}/shop";
+    $adminModelsJsT = [
+        'locale' => $locale,
+        'dashboard_url' => "/{$locale}/dashboard",
+
+        'access_denied' => __('admin_models.js_access_denied'),
+        'error_load_models' => __('admin_models.js_error_load_models'),
+        'no_models' => __('admin_models.js_no_models'),
+
+        'col_image' => __('admin_models.js_col_image'),
+        'col_name' => __('admin_models.js_col_name'),
+        'col_type' => __('admin_models.js_col_type'),
+        'col_price' => __('admin_models.js_col_price'),
+        'col_stock' => __('admin_models.js_col_stock'),
+        'col_status' => __('admin_models.js_col_status'),
+        'col_actions' => __('admin_models.js_col_actions'),
+
+        'badge_out_of_stock' => __('admin_models.js_badge_out_of_stock'),
+        'btn_edit' => __('admin_models.js_btn_edit'),
+        'btn_delete' => __('admin_models.js_btn_delete'),
+
+        'modal_add_title' => __('admin_models.modal_add_title'),
+        'modal_edit_title' => __('admin_models.js_modal_edit_title'),
+        'error_load_model' => __('admin_models.js_error_load_model'),
+
+        'no_images' => __('admin_models.js_no_images'),
+        'badge_primary' => __('admin_models.js_badge_primary'),
+        'btn_set_primary' => __('admin_models.js_btn_set_primary'),
+
+        'fill_required' => __('admin_models.js_fill_required'),
+        'saved' => __('admin_models.js_saved'),
+        'error_save' => __('admin_models.js_error_save'),
+
+        'confirm_delete_model' => __('admin_models.js_confirm_delete_model'),
+        'deleted' => __('admin_models.js_deleted'),
+        'error_delete_model' => __('admin_models.js_error_delete_model'),
+
+        'status_updated' => __('admin_models.js_status_updated'),
+        'error_update_status' => __('admin_models.js_error_update_status'),
+
+        'image_too_large' => __('admin_models.js_image_too_large'),
+        'save_model_first' => __('admin_models.js_save_model_first'),
+        'image_uploaded' => __('admin_models.js_image_uploaded'),
+        'error_upload_image' => __('admin_models.js_error_upload_image'),
+
+        'confirm_delete_image' => __('admin_models.js_confirm_delete_image'),
+        'image_deleted' => __('admin_models.js_image_deleted'),
+        'error_delete_image' => __('admin_models.js_error_delete_image'),
+
+        'primary_set' => __('admin_models.js_primary_set'),
+        'error_update_image' => __('admin_models.js_error_update_image'),
+    ];
 @endphp
 
 @section('title', __('admin_models.page_title'))
@@ -142,5 +193,9 @@
 @endsection
 
 @push('scripts')
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.admin_models = @json($adminModelsJsT);
+</script>
 <script src="/assets/js/admin-models.js?v=<?php echo time() + 1; ?>"></script>
 @endpush
