@@ -316,9 +316,7 @@ class OrderController extends Controller
      */
     public function listView(Request $request)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        return view("orders-{$locale}");
+        return view('orders');
     }
 
     /**
