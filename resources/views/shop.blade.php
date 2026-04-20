@@ -1,6 +1,31 @@
 @extends('layouts.app')
 
-@php $locale = app()->getLocale(); @endphp
+@php
+    $locale = app()->getLocale();
+    $shopT = [
+        'locale' => $locale,
+        'cart_url' => $locale === 'fr' ? '/fr/panier' : '/en/cart',
+        'product_url_base' => $locale === 'fr' ? '/fr/boutique' : '/en/shop',
+        'error_loading_products' => __('shop.js_error_loading_products'),
+        'no_products' => __('shop.js_no_products'),
+        'badge_out_of_stock' => __('shop.js_badge_out_of_stock'),
+        'badge_low_stock' => __('shop.js_badge_low_stock'),
+        'badge_in_stock' => __('shop.js_badge_in_stock'),
+        'qty_in_cart' => __('shop.js_qty_in_cart'),
+        'default_description' => __('shop.js_default_description'),
+        'title_decrease_qty' => __('shop.js_title_decrease_qty'),
+        'title_max_reached' => __('shop.js_title_max_reached'),
+        'title_increase_qty' => __('shop.js_title_increase_qty'),
+        'title_add_to_cart' => __('shop.js_title_add_to_cart'),
+        'toast_login_required' => __('shop.js_toast_login_required'),
+        'toast_added_html' => __('shop.js_toast_added_html'),
+        'toast_add_failed' => __('shop.js_toast_add_failed'),
+        'toast_cart_updated' => __('shop.js_toast_cart_updated'),
+        'toast_update_failed' => __('shop.js_toast_update_failed'),
+        'toast_item_removed' => __('shop.js_toast_item_removed'),
+        'toast_remove_failed' => __('shop.js_toast_remove_failed'),
+    ];
+@endphp
 
 @section('title', __('shop.page_title'))
 
@@ -222,5 +247,9 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/shop{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() }}"></script>
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.shop = @json($shopT);
+</script>
+<script src="/assets/js/shop.js?v={{ time() }}"></script>
 @endpush

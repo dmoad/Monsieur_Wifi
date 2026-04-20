@@ -1,5 +1,5 @@
-// Shop listing page (English)
-const LOCALE = 'en';
+// Shop listing page — translations injected by blade (lang/{en,fr}/shop.php)
+const t = window.APP_I18N.shop;
 let currentCart = null;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -69,7 +69,7 @@ async function loadProducts() {
         console.error('Error loading products:', error);
         document.getElementById('products-grid').innerHTML = `
             <div class="col-12 text-center">
-                <p class="text-danger">Failed to load products. Please try again later.</p>
+                <p class="text-danger">${t.error_loading_products}</p>
             </div>
         `;
     }
@@ -81,7 +81,7 @@ function displayProducts(products) {
     if (products.length === 0) {
         grid.innerHTML = `
             <div class="col-12 text-center py-5">
-                <p>No products available at the moment.</p>
+                <p>${t.no_products}</p>
             </div>
         `;
         return;
@@ -95,42 +95,43 @@ function displayProducts(products) {
 
         console.log(`Product ${product.id}: cartQty=${cartQty}, available=${availableInventory}, total=${totalAvailable}, canAddMore=${canAddMore}`);
 
+        const description = product['description_' + t.locale] || t.default_description;
         return `
         <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="/en/shop/${product.slug}" class="product-card-link">
+            <a href="${t.product_url_base}/${product.slug}" class="product-card-link">
                 <div class="product-card ${!product.is_in_stock ? 'out-of-stock' : ''}">
                     <div class="product-image-wrapper">
                         <img src="${product.primary_image || '/app-assets/images/placeholder.png'}"
                              alt="${product.name}"
                              class="product-image">
                         ${!product.is_in_stock
-                            ? '<span class="stock-badge badge-danger">Out of Stock</span>'
+                            ? `<span class="stock-badge badge-danger">${t.badge_out_of_stock}</span>`
                             : (product.inventory && totalAvailable <= (product.inventory.low_stock_threshold || 0)
-                                ? `<span class="stock-badge badge-warning">Low Stock</span>`
-                                : `<span class="stock-badge badge-success">In Stock</span>`)}
+                                ? `<span class="stock-badge badge-warning">${t.badge_low_stock}</span>`
+                                : `<span class="stock-badge badge-success">${t.badge_in_stock}</span>`)}
                         ${cartQty > 0
-                            ? `<span class="cart-qty-badge">${cartQty} in cart</span>`
+                            ? `<span class="cart-qty-badge">${t.qty_in_cart.replace('{n}', cartQty)}</span>`
                             : ''}
                     </div>
                     <div class="product-body">
                         <h5 class="product-title">${product.name}</h5>
-                        <p class="product-description">${product.description_en || 'High-quality WiFi equipment for your network needs.'}</p>
+                        <p class="product-description">${description}</p>
                         <div class="product-footer">
                             <h3 class="product-price">€${parseFloat(product.price).toFixed(2)}</h3>
                             <div class="product-actions">
                                 ${cartQty > 0
                                     ? `<div class="qty-controls" onclick="event.preventDefault(); event.stopPropagation();">
-                                        <button onclick="event.preventDefault(); event.stopPropagation(); decreaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" title="Decrease quantity">
+                                        <button onclick="event.preventDefault(); event.stopPropagation(); decreaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn" title="${t.title_decrease_qty}">
                                             <i data-feather="minus" style="width: 14px; height: 14px;"></i>
                                         </button>
                                         <span class="qty-display">${cartQty}</span>
                                         <button onclick="event.preventDefault(); event.stopPropagation(); increaseCartQuantity(${product.id})" class="btn btn-outline-secondary btn-sm qty-btn"
-                                            ${!canAddMore ? 'disabled title="Maximum quantity reached"' : 'title="Increase quantity"'}>
+                                            ${!canAddMore ? `disabled title="${t.title_max_reached}"` : `title="${t.title_increase_qty}"`}>
                                             <i data-feather="plus" style="width: 14px; height: 14px;"></i>
                                         </button>
                                     </div>`
                                     : (product.is_in_stock
-                                        ? `<button onclick="event.preventDefault(); event.stopPropagation(); addToCart(${product.id})" class="btn btn-success btn-sm product-btn" title="Add to Cart">
+                                        ? `<button onclick="event.preventDefault(); event.stopPropagation(); addToCart(${product.id})" class="btn btn-success btn-sm product-btn" title="${t.title_add_to_cart}">
                                             <i data-feather="shopping-cart" style="width: 14px; height: 14px;"></i>
                                         </button>`
                                         : '')}
@@ -153,7 +154,7 @@ async function addToCart(productId) {
     const token = UserManager.getToken();
 
     if (!token) {
-        toastr.warning('Please login to add items to cart');
+        toastr.warning(t.toast_login_required);
         window.location.href = '/login';
         return;
     }
@@ -175,7 +176,7 @@ async function addToCart(productId) {
         const data = await response.json();
 
         if (response.ok) {
-            toastr.success('Product added to cart! <a href="/en/cart">View cart</a>');
+            toastr.success(t.toast_added_html.replace('{url}', t.cart_url));
             updateCartCount();
             // Refresh navbar cart if function exists
             if (typeof loadNavbarCart === 'function') {
@@ -191,12 +192,12 @@ async function addToCart(productId) {
                     toastr.error(Array.isArray(err) ? err[0] : err);
                 });
             } else {
-                toastr.error(data.message || 'Failed to add to cart');
+                toastr.error(data.message || t.toast_add_failed);
             }
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
-        toastr.error('Failed to add to cart');
+        toastr.error(t.toast_add_failed);
     }
 }
 
@@ -237,7 +238,7 @@ async function updateCartItemQuantity(productId, newQuantity) {
         const data = await response.json();
 
         if (response.ok) {
-            toastr.success('Cart updated!');
+            toastr.success(t.toast_cart_updated);
             updateCartCount();
             if (typeof loadNavbarCart === 'function') {
                 loadNavbarCart();
@@ -245,11 +246,11 @@ async function updateCartItemQuantity(productId, newQuantity) {
             await loadCartData();
             await loadProducts();
         } else {
-            toastr.error(data.message || 'Failed to update cart');
+            toastr.error(data.message || t.toast_update_failed);
         }
     } catch (error) {
         console.error('Error updating cart:', error);
-        toastr.error('Failed to update cart');
+        toastr.error(t.toast_update_failed);
     }
 }
 
@@ -270,7 +271,7 @@ async function removeFromCart(productId) {
         });
 
         if (response.ok) {
-            toastr.success('Item removed from cart');
+            toastr.success(t.toast_item_removed);
             updateCartCount();
             if (typeof loadNavbarCart === 'function') {
                 loadNavbarCart();
@@ -279,11 +280,11 @@ async function removeFromCart(productId) {
             await loadProducts();
         } else {
             const data = await response.json();
-            toastr.error(data.message || 'Failed to remove item');
+            toastr.error(data.message || t.toast_remove_failed);
         }
     } catch (error) {
         console.error('Error removing item:', error);
-        toastr.error('Failed to remove item');
+        toastr.error(t.toast_remove_failed);
     }
 }
 
