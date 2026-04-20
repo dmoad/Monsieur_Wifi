@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <style>
@@ -16,20 +16,20 @@
 </head>
 <body>
     <div class="container">
-        <div class="header"><h1>📦 Your Order Has Been Shipped!</h1></div>
+        <div class="header"><h1>{{ __('emails/shipping-tracking.heading') }}</h1></div>
         <div class="content">
-            <p>Hello {{ $order->user->name }},</p>
-            <p>Great news! Your order <strong>#{{ $order->order_number }}</strong> has been shipped and is on its way to you.</p>
+            <p>{{ __('emails/shipping-tracking.greeting') }} {{ $order->user->name }},</p>
+            <p>{!! __('emails/shipping-tracking.intro_html', ['order_number' => e($order->order_number)]) !!}</p>
             <div class="tracking-box">
-                <p style="margin: 0 0 10px 0;"><strong>Shipping Provider:</strong> {{ $order->shipping_provider }}</p>
-                <p style="margin: 0 0 10px 0;"><strong>Tracking Number:</strong></p>
+                <p style="margin: 0 0 10px 0;"><strong>{{ __('emails/shipping-tracking.label_provider') }}</strong> {{ $order->shipping_provider }}</p>
+                <p style="margin: 0 0 10px 0;"><strong>{{ __('emails/shipping-tracking.label_tracking') }}</strong></p>
                 <div class="tracking-number">{{ $order->tracking_id }}</div>
             </div>
             <div style="text-align: center;">
-                <a href="{{ url('/en/orders/' . $order->order_number) }}" class="button">Track Your Order</a>
+                <a href="{{ url('/' . app()->getLocale() . '/orders/' . $order->order_number) }}" class="button">{{ __('emails/shipping-tracking.btn_track') }}</a>
             </div>
         </div>
-        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. All rights reserved.</p></div>
+        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/shipping-tracking.footer_rights') }}</p></div>
     </div>
 </body>
 </html>
