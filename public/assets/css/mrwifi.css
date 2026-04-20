@@ -578,6 +578,14 @@ body.mw-sb-expanded .mw-av-menu {
 .mw-av-item.mw-av-logout { color: var(--mw-danger); }
 .mw-av-item.mw-av-logout:hover { background: rgba(220, 38, 38, 0.06); }
 
+button.mw-av-item {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    font-family: inherit;
+}
+
 .mw-av-item [data-feather] {
     width: 14px !important;
     height: 14px !important;
