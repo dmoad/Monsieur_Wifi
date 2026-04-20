@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Boutique - Monsieur WiFi')
+@php $locale = app()->getLocale(); @endphp
+
+@section('title', __('shop.page_title'))
 
 @push('styles')
 <style>
@@ -196,28 +198,22 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Boutique</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('shop.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item active">Boutique</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('shop.breadcrumb') }}</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
-    <!-- <div class="content-header-right col-md-3 col-12">
-        <a href="/fr/panier" class="btn btn-primary">
-            <i data-feather="shopping-cart"></i>
-            Panier (<span id="cart-count">0</span>)
-        </a>
-    </div> -->
 </div>
 <div class="content-body">
     <div id="products-grid" class="row match-height">
         <div class="col-12 text-center py-5">
             <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Chargement...</span>
+                <span class="sr-only">{{ __('common.loading') }}</span>
             </div>
         </div>
     </div>
@@ -226,9 +222,5 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/shop-fr.js?v=<?php echo time(); ?>"></script>
+<script src="/assets/js/shop{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() }}"></script>
 @endpush
-
-@php
-    $locale = 'fr';
-@endphp

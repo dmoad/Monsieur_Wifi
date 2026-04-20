@@ -75,10 +75,7 @@ class ShopController extends Controller
      */
     public function indexView(Request $request)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        \Log::info("Shop listing page view for locale: {$locale}, path: {$path}");
-        return view("shop-{$locale}");
+        return view('shop');
     }
 
     /**
