@@ -1,6 +1,57 @@
 @extends('layouts.app')
 
-@php $locale = app()->getLocale(); @endphp
+@php
+    $locale = app()->getLocale();
+    $captivePortalsT = [
+        'welcome_default' => __('captive_portals.welcome_default'),
+        'button_default' => __('captive_portals.button_default'),
+        'instructions_default' => __('captive_portals.instructions_default'),
+        'terms_default' => __('captive_portals.terms_default'),
+        'privacy_default' => __('captive_portals.privacy_default'),
+        'design_default' => __('captive_portals.design_default'),
+        'terms_link_html' => __('captive_portals.terms_link_html'),
+        'none' => __('captive_portals.none'),
+        'none_image_active' => __('captive_portals.js_none_image_active'),
+        'saving' => __('captive_portals.js_saving'),
+        'deleting' => __('captive_portals.js_deleting'),
+        'changing' => __('captive_portals.js_changing'),
+        'loading' => __('captive_portals.js_loading'),
+        'loading_spinner' => __('captive_portals.js_loading_spinner'),
+        'no_designs' => __('captive_portals.js_no_designs'),
+        'create_first' => __('captive_portals.js_create_first'),
+        'error_loading' => __('captive_portals.js_error_loading'),
+        'saved_success' => __('captive_portals.js_saved_success'),
+        'deleted_success' => __('captive_portals.js_deleted_success'),
+        'owner_changed_success' => __('captive_portals.js_owner_changed_success'),
+        'invalid_design_id' => __('captive_portals.js_invalid_design_id'),
+        'select_new_owner' => __('captive_portals.js_select_new_owner'),
+        'loading_users' => __('captive_portals.js_loading_users'),
+        'no_users_found' => __('captive_portals.js_no_users_found'),
+        'error_loading_users' => __('captive_portals.js_error_loading_users'),
+        'failed_load_users' => __('captive_portals.js_failed_load_users'),
+        'error_required_name' => __('captive_portals.js_error_required_name'),
+        'error_required_theme' => __('captive_portals.js_error_required_theme'),
+        'error_required_welcome' => __('captive_portals.js_error_required_welcome'),
+        'error_required_button' => __('captive_portals.js_error_required_button'),
+        'error_saving' => __('captive_portals.js_error_saving'),
+        'error_deleting' => __('captive_portals.js_error_deleting'),
+        'error_changing_owner' => __('captive_portals.js_error_changing_owner'),
+        'error_loading_details' => __('captive_portals.js_error_loading_details'),
+        'error_validation' => __('captive_portals.js_error_validation'),
+        'error_invalid_response' => __('captive_portals.js_error_invalid_response'),
+        'owner' => __('captive_portals.js_owner'),
+        'creator' => __('captive_portals.js_creator'),
+        'current_owner' => __('captive_portals.js_current_owner'),
+        'last_modified' => __('captive_portals.js_last_modified'),
+        'edit' => __('captive_portals.js_edit'),
+        'delete_button_title' => __('captive_portals.js_delete_button_title'),
+        'logged_out' => __('captive_portals.js_logged_out'),
+        'cta_title' => __('captive_portals.js_cta_title'),
+        'cta_text' => __('captive_portals.js_cta_text'),
+        'cta_button' => __('captive_portals.js_cta_button'),
+        'change_owner_body_with_owner' => __('captive_portals.js_change_owner_body_with_owner'),
+    ];
+@endphp
 
 @section('title', __('captive_portals.page_title'))
 
@@ -980,7 +1031,8 @@
 
 @push('scripts')
 <script>
-    const locale = '{{ $locale }}';
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.captive_portals = @json($captivePortalsT);
 </script>
 <script src="/assets/js/captive-portals.js?v={{ time() }}"></script>
 @endpush

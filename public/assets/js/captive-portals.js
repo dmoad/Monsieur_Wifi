@@ -41,111 +41,8 @@ function updateOnboardingTimeline(hasDesigns) {
     }
 }
 
-// Translations for bilingual support
-const TRANSLATIONS = {
-    en: {
-        welcomeDefault: 'Welcome to our WiFi',
-        instructionsDefault: 'Enter your email to connect to our WiFi network',
-        buttonDefault: 'Connect to WiFi',
-        designDefault: 'New Design',
-        termsDefault: 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.',
-        privacyDefault: 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.',
-        termsLink: 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#previewTermsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Privacy Policy</a>.',
-        saving: 'Saving...',
-        deleting: 'Deleting...',
-        changing: 'Changing...',
-        loading: 'Loading designs...',
-        loadingSpinner: 'Loading...',
-        noDesigns: 'No captive portal designs found',
-        createFirst: 'Create your first design to get started',
-        errorLoading: 'Failed to load designs. Please try again later.',
-        savedSuccess: 'Captive portal design saved successfully',
-        deletedSuccess: 'Design deleted successfully',
-        ownerChangedSuccess: 'Owner changed successfully',
-        invalidDesignId: 'Invalid design ID',
-        selectNewOwner: 'Please select a new owner',
-        loadingUsers: 'Loading users...',
-        noUsersFound: 'No users found',
-        errorLoadingUsers: 'Error loading users',
-        failedLoadUsers: 'Failed to load users list',
-        noneImageActive: 'None (Image Active)',
-        none: 'None',
-        errorRequired: {
-            name: 'Portal name is required',
-            theme: 'Theme color is required',
-            welcome: 'Welcome message is required',
-            button: 'Button text is required'
-        },
-        errorSaving: 'Failed to save design. Please try again.',
-        errorDeleting: 'Failed to delete design. Please try again.',
-        errorChangingOwner: 'Failed to change owner. Please try again.',
-        errorLoadingDetails: 'Failed to load design details. Please try again.',
-        errorValidation: 'Please correct the following errors:<br>',
-        errorInvalidResponse: 'Could not load design details. Invalid response format.',
-        owner: 'Owner',
-        creator: 'Creator',
-        currentOwner: 'Current Owner',
-        lastModified: 'Last modified',
-        edit: 'Edit',
-        loggedOut: 'You appear to be logged out. Please refresh the page and log in again.',
-        ctaTitle: 'Ready to use your captive portal?',
-        ctaText: 'Get a MrWiFi device to deploy your custom captive portal on your WiFi network.',
-        ctaButton: 'See our offers'
-    },
-    fr: {
-        welcomeDefault: 'Bienvenue sur notre WiFi',
-        instructionsDefault: 'Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi',
-        buttonDefault: 'Se connecter au WiFi',
-        designDefault: 'Nouvelle conception',
-        termsDefault: 'En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d\'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l\'accès en cas de violations de ces conditions.',
-        privacyDefault: 'Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d\'appareils, les heures de connexion et les données d\'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.',
-        termsLink: 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.',
-        saving: 'Enregistrement...',
-        deleting: 'Suppression...',
-        changing: 'Changement...',
-        loading: 'Chargement des conceptions...',
-        loadingSpinner: 'Chargement...',
-        noDesigns: 'Aucune conception de portail captif trouvée',
-        createFirst: 'Créez votre première conception pour commencer',
-        errorLoading: 'Échec du chargement des conceptions. Veuillez réessayer plus tard.',
-        savedSuccess: 'Conception de portail captif enregistrée avec succès',
-        deletedSuccess: 'Conception supprimée avec succès',
-        ownerChangedSuccess: 'Propriétaire changé avec succès',
-        invalidDesignId: 'ID de conception invalide',
-        selectNewOwner: 'Veuillez sélectionner un nouveau propriétaire',
-        loadingUsers: 'Chargement des utilisateurs...',
-        noUsersFound: 'Aucun utilisateur trouvé',
-        errorLoadingUsers: 'Erreur lors du chargement des utilisateurs',
-        failedLoadUsers: 'Échec du chargement de la liste des utilisateurs',
-        noneImageActive: 'Aucun (Image active)',
-        none: 'Aucun',
-        errorRequired: {
-            name: 'Le nom du portail est requis',
-            theme: 'La couleur du thème est requise',
-            welcome: 'Le message de bienvenue est requis',
-            button: 'Le texte du bouton est requis'
-        },
-        errorSaving: 'Échec de l\'enregistrement de la conception. Veuillez réessayer.',
-        errorDeleting: 'Échec de la suppression de la conception. Veuillez réessayer.',
-        errorChangingOwner: 'Échec du changement de propriétaire. Veuillez réessayer.',
-        errorLoadingDetails: 'Échec du chargement des détails de la conception. Veuillez réessayer.',
-        errorValidation: 'Veuillez corriger les erreurs suivantes :<br>',
-        errorInvalidResponse: 'Impossible de charger les détails de la conception. Format de réponse invalide.',
-        owner: 'Propriétaire',
-        creator: 'Créateur',
-        currentOwner: 'Propriétaire actuel',
-        lastModified: 'Dernière modification',
-        edit: 'Modifier',
-        loggedOut: 'Vous semblez être déconnecté. Veuillez actualiser la page et vous reconnecter.',
-        ctaTitle: 'Prêt à utiliser votre portail captif ?',
-        ctaText: 'Procurez-vous un boîtier MrWiFi pour déployer votre portail captif personnalisé sur votre réseau WiFi.',
-        ctaButton: 'Voir nos offres'
-    }
-};
-
-// Get locale from page
-const PAGE_LOCALE = typeof locale !== 'undefined' ? locale : 'en';
-const t = TRANSLATIONS[PAGE_LOCALE];
+// Translation bundle injected by the blade (lang/{en,fr}/captive_portals.php)
+const t = window.APP_I18N.captive_portals;
 
 function updatePreviewBackground() {
     const startColor = $('#gradient-start').val();
@@ -194,9 +91,9 @@ function updatePreviewBackground() {
 }
 
 function initializePreview() {
-    const welcomeText = $('#welcome-message').val() || t.welcomeDefault;
-    const instructions = $('#login-instructions').val() || t.instructionsDefault;
-    const buttonText = $('#button-text').val() || t.buttonDefault;
+    const welcomeText = $('#welcome-message').val() || t.welcome_default;
+    const instructions = $('#login-instructions').val() || t.instructions_default;
+    const buttonText = $('#button-text').val() || t.button_default;
     const themeColor = $('#theme-color').val() || '#7367f0';
     const showTerms = $('#show-terms').is(':checked');
     
@@ -209,7 +106,7 @@ function initializePreview() {
     });
     
     if (showTerms) {
-        $('#preview-terms-container').html(`<small>${t.termsLink}</small>`).show();
+        $('#preview-terms-container').html(`<small>${t.terms_link_html}</small>`).show();
     } else {
         $('#preview-terms-container').hide();
     }
@@ -242,7 +139,7 @@ function fetchDesignDetails(designId) {
     $('#captive-portal-designer').prepend(
         `<div class="loading-overlay">
             <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">${t.loadingSpinner}</span>
+                <span class="sr-only">${t.loading_spinner}</span>
             </div>
         </div>`
     );
@@ -264,18 +161,18 @@ function fetchDesignDetails(designId) {
             if (response.success && response.data) {
                 const design = response.data;
                 
-                $('#portal-name').val(design.name || t.designDefault);
+                $('#portal-name').val(design.name || t.design_default);
                 $('#portal-description').val(design.description || '');
                 $('#theme-color').val(design.theme_color || '#7367f0');
                 $('.color-preview').css('background-color', design.theme_color || '#7367f0');
                 $('.color-value').text(design.theme_color || '#7367f0');
-                $('#welcome-message').val(design.welcome_message || t.welcomeDefault);
-                $('#login-instructions').val(design.login_instructions || t.instructionsDefault);
-                $('#button-text').val(design.button_text || t.buttonDefault);
+                $('#welcome-message').val(design.welcome_message || t.welcome_default);
+                $('#login-instructions').val(design.login_instructions || t.instructions_default);
+                $('#button-text').val(design.button_text || t.button_default);
                 $('#show-terms').prop('checked', design.show_terms === undefined ? true : !!design.show_terms);
                 
-                $('#terms-of-service').val(design.terms_content || t.termsDefault);
-                $('#privacy-policy').val(design.privacy_content || t.privacyDefault);
+                $('#terms-of-service').val(design.terms_content || t.terms_default);
+                $('#privacy-policy').val(design.privacy_content || t.privacy_default);
                 
                 const hasBackgroundImage = design.background_image_path || design.background_image_url;
                 
@@ -302,16 +199,16 @@ function fetchDesignDetails(designId) {
                 if (hasBackgroundImage) {
                     $('#gradient-start').data('disabled', true);
                     $('#gradient-end').data('disabled', true);
-                    $('#gradient-start-value').text(t.noneImageActive);
-                    $('#gradient-end-value').text(t.noneImageActive);
+                    $('#gradient-start-value').text(t.none_image_active);
+                    $('#gradient-end-value').text(t.none_image_active);
                 } else {
                     $('#gradient-start').data('disabled', false);
                     $('#gradient-end').data('disabled', false);
                 }
                 
-                $('#preview-welcome').text(design.welcome_message || t.welcomeDefault);
-                $('#preview-instructions').text(design.login_instructions || t.instructionsDefault);
-                $('#preview-button').text(design.button_text || t.buttonDefault);
+                $('#preview-welcome').text(design.welcome_message || t.welcome_default);
+                $('#preview-instructions').text(design.login_instructions || t.instructions_default);
+                $('#preview-button').text(design.button_text || t.button_default);
                 $('#preview-button').css({
                     'background-color': design.theme_color || '#7367f0',
                     'border-color': design.theme_color || '#7367f0'
@@ -319,13 +216,13 @@ function fetchDesignDetails(designId) {
                 
                 const showTermsPreview = design.show_terms === undefined ? true : !!design.show_terms;
                 if (showTermsPreview) {
-                    $('#preview-terms-container').html(`<small>${t.termsLink}</small>`).show();
+                    $('#preview-terms-container').html(`<small>${t.terms_link_html}</small>`).show();
                 } else {
                     $('#preview-terms-container').hide();
                 }
                 
-                $('#preview-terms-content').text(design.terms_content || t.termsDefault);
-                $('#preview-privacy-content').text(design.privacy_content || t.privacyDefault);
+                $('#preview-terms-content').text(design.terms_content || t.terms_default);
+                $('#preview-privacy-content').text(design.privacy_content || t.privacy_default);
                 
                 if (design.location_logo_url) {
                     $('#location-logo-preview').attr('src', design.location_logo_url).show();
@@ -343,14 +240,14 @@ function fetchDesignDetails(designId) {
                 
                 updatePreviewBackground();
             } else {
-                toastr.error(t.errorInvalidResponse);
+                toastr.error(t.error_invalid_response);
             }
             
             $('.loading-overlay').remove();
         },
         error: function(xhr) {
             console.error('Error fetching design details:', xhr.responseText);
-            toastr.error(t.errorLoadingDetails);
+            toastr.error(t.error_loading_details);
             $('.loading-overlay').remove();
             $('#captive-portal-designer').hide();
             $('#captive-portal-designs-list').show();
@@ -366,12 +263,12 @@ function checkUserSubscription() {
                     <i data-feather="wifi" style="width: 24px; height: 24px; color: #7367f0;"></i>
                 </div>
                 <div>
-                    <h5 class="mb-0" style="color: #7367f0;">${t.ctaTitle}</h5>
-                    <p class="mb-0 text-muted">${t.ctaText}</p>
+                    <h5 class="mb-0" style="color: #7367f0;">${t.cta_title}</h5>
+                    <p class="mb-0 text-muted">${t.cta_text}</p>
                 </div>
             </div>
             <a href="/pricing" class="btn btn-primary ml-2 d-flex align-items-center" style="white-space: nowrap; padding: 0.6rem 1.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; gap: 0.4rem;">
-                <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.ctaButton}
+                <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.cta_button}
             </a>
         </div>
     `;
@@ -447,7 +344,7 @@ function fetchDesigns(openFirstDesign = false) {
                         `;
                     }
                     actionButtons += `
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDesign(${design.id})" title="Delete">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDesign(${design.id})" title="${t.delete_button_title}">
                             <i data-feather="trash-2"></i>
                         </button>
                     `;
@@ -473,7 +370,7 @@ function fetchDesigns(openFirstDesign = false) {
                                     </div>
                                     <div class="mt-1">
                                         <h5 class="mb-0">${design.name}</h5>
-                                        <small class="text-muted">${t.lastModified}: ${formattedDate}</small>
+                                        <small class="text-muted">${t.last_modified}: ${formattedDate}</small>
                                         ${ownerInfo}
                                     </div>
                                     <div class="design-actions mt-1 d-flex justify-content-between align-items-center">
@@ -494,8 +391,8 @@ function fetchDesigns(openFirstDesign = false) {
                     `<div class="col-12 text-center py-5">
                         <div class="empty-state">
                             <i data-feather="layout" style="height: 64px; width: 64px; color: #d0d0d0;"></i>
-                            <h4 class="mt-2">${t.noDesigns}</h4>
-                            <p>${t.createFirst}</p>
+                            <h4 class="mt-2">${t.no_designs}</h4>
+                            <p>${t.create_first}</p>
                         </div>
                     </div>`
                 );
@@ -509,7 +406,7 @@ function fetchDesigns(openFirstDesign = false) {
             console.error('Error fetching designs:', xhr.responseText);
             $('#portal-designs-container').html(
                 `<div class="col-12 text-center py-3">
-                    <div class="alert alert-danger">${t.errorLoading}</div>
+                    <div class="alert alert-danger">${t.error_loading}</div>
                 </div>`
             );
         }
@@ -537,7 +434,7 @@ function saveDesign(formData, url) {
             'Authorization': 'Bearer ' + token
         },
         success: function(response) {
-            toastr.success(t.savedSuccess);
+            toastr.success(t.saved_success);
             $('#captive-portal-designer').hide();
             $('#captive-portal-designs-list').show();
             fetchDesigns();
@@ -553,16 +450,16 @@ function saveDesign(formData, url) {
             try {
                 const responseObj = JSON.parse(xhr.responseText);
                 if (xhr.status === 422 && responseObj.errors) {
-                    let errorMessage = t.errorValidation;
+                    let errorMessage = t.error_validation;
                     for (const field in responseObj.errors) {
                         errorMessage += `- ${responseObj.errors[field][0]}<br>`;
                     }
                     toastr.error(errorMessage);
                 } else {
-                    toastr.error(responseObj.message || t.errorSaving);
+                    toastr.error(responseObj.message || t.error_saving);
                 }
             } catch (e) {
-                toastr.error(t.errorSaving);
+                toastr.error(t.error_saving);
             }
         },
         complete: function() {
@@ -578,18 +475,18 @@ function getRandomBgColorClass() {
 }
 
 function resetDesignForm() {
-    $('#portal-name').val(t.designDefault);
+    $('#portal-name').val(t.design_default);
     $('#portal-description').val('');
     $('#theme-color').val('#7367f0');
     $('.color-preview').css('background-color', '#7367f0');
     $('.color-value').text('#7367f0');
-    $('#welcome-message').val(t.welcomeDefault);
-    $('#login-instructions').val(t.instructionsDefault);
-    $('#button-text').val(t.buttonDefault);
+    $('#welcome-message').val(t.welcome_default);
+    $('#login-instructions').val(t.instructions_default);
+    $('#button-text').val(t.button_default);
     $('#show-terms').prop('checked', true);
     
-    $('#terms-of-service').val(t.termsDefault);
-    $('#privacy-policy').val(t.privacyDefault);
+    $('#terms-of-service').val(t.terms_default);
+    $('#privacy-policy').val(t.privacy_default);
     
     $('#location-logo-file').val('');
     $('#background-file').val('');
@@ -609,11 +506,11 @@ function resetDesignForm() {
         'background': '#fff'
     });
     
-    $('#preview-welcome').text(t.welcomeDefault);
-    $('#preview-instructions').text(t.instructionsDefault);
-    $('#preview-button').text(t.buttonDefault);
+    $('#preview-welcome').text(t.welcome_default);
+    $('#preview-instructions').text(t.instructions_default);
+    $('#preview-button').text(t.button_default);
     $('#preview-button').css({ 'background-color': '#7367f0', 'border-color': '#7367f0' });
-    $('#preview-terms-container').html(`<small>${t.termsLink}</small>`).show();
+    $('#preview-terms-container').html(`<small>${t.terms_link_html}</small>`).show();
     $('#preview-logo').attr('src', '').hide();
     
     updatePreviewBackground();
@@ -621,7 +518,7 @@ function resetDesignForm() {
 
 function deleteDesign(designId) {
     if (!designId) {
-        toastr.error(t.invalidDesignId);
+        toastr.error(t.invalid_design_id);
         return;
     }
     $('#deleteDesignModal').data('designId', designId);
@@ -631,10 +528,7 @@ function deleteDesign(designId) {
 function showChangeOwnerModal(designId, currentOwnerName, currentOwnerId) {
     $('#changeOwnerModal').data('designId', designId);
     
-    const ownerText = PAGE_LOCALE === 'fr' 
-        ? `Sélectionnez un nouveau propriétaire pour cette conception de portail captif (actuellement détenue par ${currentOwnerName}) :`
-        : `Select a new owner for this captive portal design (currently owned by ${currentOwnerName}):`;
-    $('#changeOwnerText').text(ownerText);
+    $('#changeOwnerText').text(t.change_owner_body_with_owner.replace('{name}', currentOwnerName));
     
     loadUsersForOwnerChange(currentOwnerId);
     $('#changeOwnerModal').modal('show');
@@ -642,7 +536,7 @@ function showChangeOwnerModal(designId, currentOwnerName, currentOwnerId) {
 
 function loadUsersForOwnerChange(currentOwnerId) {
     const $select = $('#newOwnerSelect');
-    $select.html(`<option value="">${t.loadingUsers}</option>`);
+    $select.html(`<option value="">${t.loading_users}</option>`);
     
     $.ajax({
         url: '/api/accounts/users',
@@ -658,7 +552,7 @@ function loadUsersForOwnerChange(currentOwnerId) {
                     const isCurrentOwner = user.id == currentOwnerId;
                     const selected = isCurrentOwner ? 'selected' : '';
                     const disabled = isCurrentOwner ? 'disabled' : '';
-                    const label = isCurrentOwner ? ` - ${t.currentOwner}` : '';
+                    const label = isCurrentOwner ? ` - ${t.current_owner}` : '';
                     
                     $select.append(`
                         <option value="${user.id}" ${selected} ${disabled}>
@@ -667,13 +561,13 @@ function loadUsersForOwnerChange(currentOwnerId) {
                     `);
                 });
             } else {
-                $select.append(`<option value="">${t.noUsersFound}</option>`);
+                $select.append(`<option value="">${t.no_users_found}</option>`);
             }
         },
         error: function(xhr) {
             console.error('Error loading users:', xhr.responseText);
-            $select.html(`<option value="">${t.errorLoadingUsers}</option>`);
-            toastr.error(t.failedLoadUsers);
+            $select.html(`<option value="">${t.error_loading_users}</option>`);
+            toastr.error(t.failed_load_users);
         }
     });
 }
@@ -690,7 +584,7 @@ $(document).ready(function() {
             token = localStorage.getItem('jwt_token');
         }
         if (!token) {
-            toastr.error(t.loggedOut);
+            toastr.error(t.logged_out);
         }
     } catch (e) {
         console.error("Error getting token:", e);
@@ -727,15 +621,15 @@ $(document).ready(function() {
     });
 
     $('#welcome-message').on('input', function() {
-        $('#preview-welcome').text($(this).val() || t.welcomeDefault);
+        $('#preview-welcome').text($(this).val() || t.welcome_default);
     });
 
     $('#login-instructions').on('input', function() {
-        $('#preview-instructions').text($(this).val() || t.instructionsDefault);
+        $('#preview-instructions').text($(this).val() || t.instructions_default);
     });
 
     $('#button-text').on('input', function() {
-        $('#preview-button').text($(this).val() || t.buttonDefault);
+        $('#preview-button').text($(this).val() || t.button_default);
     });
 
     $('#theme-color').on('change', function() {
@@ -747,18 +641,18 @@ $(document).ready(function() {
 
     $('#show-terms').on('change', function() {
         if (this.checked) {
-            $('#preview-terms-container').html(`<small>${t.termsLink}</small>`).show();
+            $('#preview-terms-container').html(`<small>${t.terms_link_html}</small>`).show();
         } else {
             $('#preview-terms-container').hide();
         }
     });
     
     $('#terms-of-service').on('input', function() {
-        $('#preview-terms-content').text($(this).val() || t.termsDefault);
+        $('#preview-terms-content').text($(this).val() || t.terms_default);
     });
     
     $('#privacy-policy').on('input', function() {
-        $('#preview-privacy-content').text($(this).val() || t.privacyDefault);
+        $('#preview-privacy-content').text($(this).val() || t.privacy_default);
     });
 
     $('#gradient-start, #gradient-end').on('change', function() {
@@ -801,7 +695,7 @@ $(document).ready(function() {
                 } else if (previewId === 'background-preview') {
                     $('#gradient-start, #gradient-end').data('disabled', true);
                     $('#gradient-start-preview, #gradient-end-preview').css('background-color', 'transparent');
-                    $('#gradient-start-value, #gradient-end-value').text(t.noneImageActive);
+                    $('#gradient-start-value, #gradient-end-value').text(t.none_image_active);
                     setTimeout(() => updatePreviewBackground(), 50);
                 }
             };
@@ -847,7 +741,7 @@ $(document).ready(function() {
         
         if (!name) {
             hasErrors = true;
-            errorMessages.push(t.errorRequired.name);
+            errorMessages.push(t.error_required_name);
             $('#portal-name').addClass('is-invalid');
         } else {
             $('#portal-name').removeClass('is-invalid');
@@ -855,7 +749,7 @@ $(document).ready(function() {
         
         if (!themeColor) {
             hasErrors = true;
-            errorMessages.push(t.errorRequired.theme);
+            errorMessages.push(t.error_required_theme);
             $('#theme-color').addClass('is-invalid');
         } else {
             $('#theme-color').removeClass('is-invalid');
@@ -863,7 +757,7 @@ $(document).ready(function() {
         
         if (!welcomeMessage) {
             hasErrors = true;
-            errorMessages.push(t.errorRequired.welcome);
+            errorMessages.push(t.error_required_welcome);
             $('#welcome-message').addClass('is-invalid');
         } else {
             $('#welcome-message').removeClass('is-invalid');
@@ -871,7 +765,7 @@ $(document).ready(function() {
         
         if (!buttonText) {
             hasErrors = true;
-            errorMessages.push(t.errorRequired.button);
+            errorMessages.push(t.error_required_button);
             $('#button-text').addClass('is-invalid');
         } else {
             $('#button-text').removeClass('is-invalid');
@@ -960,15 +854,15 @@ $(document).ready(function() {
             contentType: false,
             headers: { 'Authorization': 'Bearer ' + token },
             success: function(response) {
-                toastr.success(t.deletedSuccess);
+                toastr.success(t.deleted_success);
                 fetchDesigns();
             },
             error: function(xhr) {
                 try {
                     const responseObj = JSON.parse(xhr.responseText);
-                    toastr.error(responseObj.message || t.errorDeleting);
+                    toastr.error(responseObj.message || t.error_deleting);
                 } catch (e) {
-                    toastr.error(t.errorDeleting);
+                    toastr.error(t.error_deleting);
                 }
                 designCard.removeClass('opacity-50').find('.position-absolute').remove();
             }
@@ -980,7 +874,7 @@ $(document).ready(function() {
         const newOwnerId = $('#newOwnerSelect').val();
         
         if (!newOwnerId) {
-            toastr.error(t.selectNewOwner);
+            toastr.error(t.select_new_owner);
             return;
         }
         
@@ -997,16 +891,16 @@ $(document).ready(function() {
             },
             headers: { 'Authorization': 'Bearer ' + token },
             success: function(response) {
-                toastr.success(t.ownerChangedSuccess);
+                toastr.success(t.owner_changed_success);
                 $('#changeOwnerModal').modal('hide');
                 fetchDesigns();
             },
             error: function(xhr) {
                 try {
                     const responseObj = JSON.parse(xhr.responseText);
-                    toastr.error(responseObj.message || t.errorChangingOwner);
+                    toastr.error(responseObj.message || t.error_changing_owner);
                 } catch (e) {
-                    toastr.error(t.errorChangingOwner);
+                    toastr.error(t.error_changing_owner);
                 }
             },
             complete: function() {
