@@ -61,10 +61,6 @@ Route::prefix('en')->name('en.')->group(function () {
         return view('dashboard-en');
     })->name('dashboard');
     
-    Route::get('/devices', function () {
-        return view('devices');
-    })->name('devices');
-    
     Route::get('/accounts', function () {
         $locale = 'en';
         return view('accounts-en', compact('locale'));
@@ -155,10 +151,6 @@ Route::prefix('fr')->name('fr.')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard-fr');
     })->name('dashboard');
-    
-    Route::get('/devices', function () {
-        return view('devices');
-    })->name('devices');
     
     Route::get('/accounts', function () {
         $locale = 'fr';
@@ -262,10 +254,6 @@ Route::get('/tos', function () {
 Route::get('/privacy-policy', function () {
     return view('privacy-policy');
 })->name('privacy-policy');
-
-Route::get('/terms-of-service', function () {
-    return view('terms-of-service');
-})->name('terms-of-service');
 
 // Legacy routes (redirect to English by default or handle backward compatibility)
 Route::get('/dashboard', function () {
