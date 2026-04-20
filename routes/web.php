@@ -119,7 +119,7 @@ foreach (['en', 'fr'] as $loc) {
         })->name('zone-details');
 
         Route::get('/firmware', function () {
-            return view('firmware-' . app()->getLocale());
+            return view('firmware');
         })->name('firmware');
 
         Route::get('/analytics', function () {

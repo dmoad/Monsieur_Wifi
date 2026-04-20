@@ -1,8 +1,46 @@
 @extends('layouts.app')
 
-@section('title', 'Firmware Management - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+    $firmwareT = [
+        'select_status_placeholder' => __('firmware.select_status_placeholder'),
+        'select_model_placeholder' => __('firmware.select_model_placeholder'),
+        'select_model_option' => __('firmware.select_model_option'),
+        'loading' => __('firmware.loading'),
+        'choose_file' => __('firmware.choose_file'),
+        'choose_firmware_file' => __('firmware.choose_firmware_file'),
+        'badge_enabled' => __('firmware.badge_enabled'),
+        'badge_disabled' => __('firmware.badge_disabled'),
+        'badge_default' => __('firmware.badge_default'),
+        'action_edit' => __('firmware.action_edit'),
+        'action_download' => __('firmware.action_download'),
+        'action_set_default' => __('firmware.action_set_default'),
+        'action_delete' => __('firmware.action_delete'),
+        'please_select_file' => __('firmware.please_select_file'),
+        'upload_success' => __('firmware.upload_success'),
+        'upload_error' => __('firmware.upload_error'),
+        'update_success' => __('firmware.update_success'),
+        'update_error' => __('firmware.update_error'),
+        'delete_confirm' => __('firmware.delete_confirm'),
+        'delete_success' => __('firmware.delete_success'),
+        'delete_error' => __('firmware.delete_error'),
+        'set_default_confirm' => __('firmware.set_default_confirm'),
+        'set_default_success' => __('firmware.set_default_success'),
+        'set_default_error' => __('firmware.set_default_error'),
+        'load_error' => __('firmware.load_error'),
+        'model_not_specified' => __('firmware.model_not_specified'),
+        'dt_info' => __('firmware.dt_info'),
+        'dt_info_empty' => __('firmware.dt_info_empty'),
+        'dt_info_filtered' => __('firmware.dt_info_filtered'),
+        'dt_length_menu' => __('firmware.dt_length_menu'),
+        'dt_search' => __('firmware.dt_search'),
+        'dt_zero_records' => __('firmware.dt_zero_records'),
+        'dt_empty_table' => __('firmware.dt_empty_table'),
+        'dt_loading_records' => __('firmware.dt_loading_records'),
+    ];
+@endphp
 
-@php $locale = 'en'; @endphp
+@section('title', __('firmware.page_title'))
 
 @push('styles')
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
@@ -23,11 +61,11 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Firmware Management</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('firmware.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/en/dashboard">Home</a></li>
-                        <li class="breadcrumb-item active">Firmware</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('firmware.breadcrumb') }}</li>
                     </ol>
                 </div>
             </div>
@@ -37,7 +75,7 @@
         <div class="form-group breadcrumb-right">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-firmware">
                 <i data-feather="upload-cloud" class="mr-25"></i>
-                <span>Upload New Firmware</span>
+                <span>{{ __('firmware.upload_new') }}</span>
             </button>
         </div>
     </div>
@@ -51,7 +89,7 @@
                 <div class="card-body">
                     <div class="avatar bg-light-primary p-50 mb-1"><div class="avatar-content"><i data-feather="hard-drive"></i></div></div>
                     <h2 class="font-weight-bolder" id="total-firmware">0</h2>
-                    <p class="card-text">Total Firmware Versions</p>
+                    <p class="card-text">{{ __('firmware.total_versions') }}</p>
                 </div>
             </div>
         </div>
@@ -60,7 +98,7 @@
                 <div class="card-body">
                     <div class="avatar bg-light-success p-50 mb-1"><div class="avatar-content"><i data-feather="check-circle"></i></div></div>
                     <h2 class="font-weight-bolder" id="enabled-firmware">0</h2>
-                    <p class="card-text">Enabled Firmware</p>
+                    <p class="card-text">{{ __('firmware.enabled_firmware') }}</p>
                 </div>
             </div>
         </div>
@@ -69,7 +107,7 @@
                 <div class="card-body">
                     <div class="avatar bg-light-secondary p-50 mb-1"><div class="avatar-content"><i data-feather="x-circle"></i></div></div>
                     <h2 class="font-weight-bolder" id="disabled-firmware">0</h2>
-                    <p class="card-text">Disabled Firmware</p>
+                    <p class="card-text">{{ __('firmware.disabled_firmware') }}</p>
                 </div>
             </div>
         </div>
@@ -78,7 +116,7 @@
                 <div class="card-body">
                     <div class="avatar bg-light-info p-50 mb-1"><div class="avatar-content"><i data-feather="hard-drive"></i></div></div>
                     <h2 class="font-weight-bolder" id="total-size">0 MB</h2>
-                    <p class="card-text">Total Size</p>
+                    <p class="card-text">{{ __('firmware.total_size') }}</p>
                 </div>
             </div>
         </div>
@@ -89,18 +127,18 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header"><h4 class="card-title">All Firmware Versions</h4></div>
+                    <div class="card-header"><h4 class="card-title">{{ __('firmware.table_card_title') }}</h4></div>
                     <div class="card-body">
                         <div class="card-datatable table-responsive">
                             <table class="datatables-firmware table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Status</th>
-                                        <th>Device Model</th>
-                                        <th>Default</th>
-                                        <th>Size</th>
-                                        <th>Actions</th>
+                                        <th>{{ __('firmware.col_name') }}</th>
+                                        <th>{{ __('firmware.col_status') }}</th>
+                                        <th>{{ __('firmware.col_model') }}</th>
+                                        <th>{{ __('firmware.col_default') }}</th>
+                                        <th>{{ __('firmware.col_size') }}</th>
+                                        <th>{{ __('firmware.col_actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -118,7 +156,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Upload New Firmware</h4>
+                <h4 class="modal-title">{{ __('firmware.modal_upload_title') }}</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
             </div>
             <form action="#">
@@ -126,55 +164,55 @@
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label for="firmware-name">Firmware Name</label>
-                                <input type="text" class="form-control" id="firmware-name" placeholder="e.g. v2.1.5 Security Update" required />
+                                <label for="firmware-name">{{ __('firmware.name_label') }}</label>
+                                <input type="text" class="form-control" id="firmware-name" placeholder="{{ __('firmware.name_placeholder') }}" required />
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label for="status">Status</label>
+                                <label for="status">{{ __('firmware.status_label') }}</label>
                                 <select class="form-control" id="status" required>
-                                    <option value="1">Enable</option>
-                                    <option value="0">Disable</option>
+                                    <option value="1">{{ __('firmware.status_enable') }}</option>
+                                    <option value="0">{{ __('firmware.status_disable') }}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label for="model">Device Model</label>
-                                <select class="form-control" id="model"><option value="">Loading...</option></select>
+                                <label for="model">{{ __('firmware.model_label') }}</label>
+                                <select class="form-control" id="model"><option value="">{{ __('firmware.loading') }}</option></select>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="default-firmware">
-                                    <label class="custom-control-label" for="default-firmware">Set as default firmware for this model</label>
+                                    <label class="custom-control-label" for="default-firmware">{{ __('firmware.default_checkbox') }}</label>
                                 </div>
-                                <small class="text-muted">When enabled, this firmware will be automatically assigned to new devices of this model.</small>
+                                <small class="text-muted">{{ __('firmware.default_help') }}</small>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea class="form-control" id="description" rows="3" placeholder="Firmware description and changelog"></textarea>
+                                <label for="description">{{ __('firmware.description_label') }}</label>
+                                <textarea class="form-control" id="description" rows="3" placeholder="{{ __('firmware.description_placeholder') }}"></textarea>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="firmware-file">Firmware File</label>
+                                <label for="firmware-file">{{ __('firmware.file_label') }}</label>
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input" id="firmware-file" accept=".tar.gz,.tgz,.tar" required>
-                                    <label class="custom-file-label" for="firmware-file">Choose file</label>
+                                    <label class="custom-file-label" for="firmware-file">{{ __('firmware.choose_file') }}</label>
                                 </div>
-                                <small class="form-text text-muted">Max file size: 100MB. Accepted formats: .tar.gz, .tgz, .tar</small>
+                                <small class="form-text text-muted">{{ __('firmware.file_help_upload') }}</small>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Upload Firmware</button>
+                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('firmware.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('firmware.upload_btn') }}</button>
                 </div>
             </form>
         </div>
@@ -186,7 +224,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Edit Firmware</h4>
+                <h4 class="modal-title">{{ __('firmware.modal_edit_title') }}</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
             </div>
             <form action="#">
@@ -194,55 +232,55 @@
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label for="edit-firmware-name">Firmware Name</label>
+                                <label for="edit-firmware-name">{{ __('firmware.name_label') }}</label>
                                 <input type="text" class="form-control" id="edit-firmware-name" />
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label for="edit-status">Status</label>
+                                <label for="edit-status">{{ __('firmware.status_label') }}</label>
                                 <select class="form-control" id="edit-status">
-                                    <option value="1">Enable</option>
-                                    <option value="0">Disable</option>
+                                    <option value="1">{{ __('firmware.status_enable') }}</option>
+                                    <option value="0">{{ __('firmware.status_disable') }}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
-                                <label for="edit-model">Device Model</label>
-                                <select class="form-control" id="edit-model"><option value="">Loading...</option></select>
+                                <label for="edit-model">{{ __('firmware.model_label') }}</label>
+                                <select class="form-control" id="edit-model"><option value="">{{ __('firmware.loading') }}</option></select>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="edit-default-firmware">
-                                    <label class="custom-control-label" for="edit-default-firmware">Set as default firmware for this model</label>
+                                    <label class="custom-control-label" for="edit-default-firmware">{{ __('firmware.default_checkbox') }}</label>
                                 </div>
-                                <small class="text-muted">When enabled, this firmware will be automatically assigned to new devices of this model.</small>
+                                <small class="text-muted">{{ __('firmware.default_help') }}</small>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="edit-description">Description</label>
+                                <label for="edit-description">{{ __('firmware.description_label') }}</label>
                                 <textarea class="form-control" id="edit-description" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Firmware File (Optional)</label>
+                                <label>{{ __('firmware.file_optional_label') }}</label>
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input" id="edit-firmware-file" accept=".tar.gz,.tgz,.tar">
-                                    <label class="custom-file-label" for="edit-firmware-file">Choose firmware file</label>
+                                    <label class="custom-file-label" for="edit-firmware-file">{{ __('firmware.choose_firmware_file') }}</label>
                                 </div>
-                                <small class="form-text text-muted">Accepted formats: .tar.gz, .tgz, .tar</small>
+                                <small class="form-text text-muted">{{ __('firmware.file_help_edit') }}</small>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('firmware.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('firmware.save_changes') }}</button>
                 </div>
             </form>
         </div>
@@ -262,6 +300,9 @@
 <script src="/app-assets/js/scripts/forms/form-file-uploader.js"></script>
 
 <script>
+    window.FIRMWARE_T = {!! json_encode($firmwareT) !!};
+    const T = window.FIRMWARE_T;
+
     let firmwareData = [];
     let currentEditingId = null;
     let productModels = [];
@@ -274,7 +315,17 @@
             order: [[0, 'desc']],
             columnDefs: [{ targets: [5], orderable: false }],
             dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-            language: { paginate: { previous: '&nbsp;', next: '&nbsp;' } },
+            language: {
+                paginate: { previous: '&nbsp;', next: '&nbsp;' },
+                info: T.dt_info,
+                infoEmpty: T.dt_info_empty,
+                infoFiltered: T.dt_info_filtered,
+                lengthMenu: T.dt_length_menu,
+                search: T.dt_search,
+                zeroRecords: T.dt_zero_records,
+                emptyTable: T.dt_empty_table,
+                loadingRecords: T.dt_loading_records
+            },
             drawCallback: function() {
                 if (feather) feather.replace({ width: 14, height: 14 });
                 $('[data-toggle="dropdown"]').dropdown();
@@ -289,7 +340,7 @@
         initializeSelect2();
 
         $('.custom-file-input').on('change', function() {
-            $(this).next('.custom-file-label').html($(this).val().split('\\').pop() || 'Choose file');
+            $(this).next('.custom-file-label').html($(this).val().split('\\').pop() || T.choose_file);
         });
 
         loadProductModels();
@@ -302,13 +353,13 @@
 
         $('#add-new-firmware').on('hidden.bs.modal', function() {
             $(this).find('form')[0].reset();
-            $('.custom-file-label').text('Choose file');
+            $('.custom-file-label').text(T.choose_file);
             $('#status, #model').val('').trigger('change');
         });
         $('#edit-firmware').on('hidden.bs.modal', function() {
             currentEditingId = null;
             $(this).find('form')[0].reset();
-            $('.custom-file-label').text('Choose firmware file');
+            $('.custom-file-label').text(T.choose_firmware_file);
             $('#edit-status, #edit-model').val('').trigger('change');
         });
         $('#add-new-firmware, #edit-firmware').on('shown.bs.modal', function() { initializeSelect2(); });
@@ -318,8 +369,8 @@
         $('#status, #edit-status, #model, #edit-model').each(function() {
             if ($(this).hasClass('select2-hidden-accessible')) $(this).select2('destroy');
         });
-        $('#status, #edit-status').select2({ minimumResultsForSearch: Infinity, placeholder: 'Select status', allowClear: false, width: '100%' });
-        $('#model, #edit-model').select2({ minimumResultsForSearch: Infinity, placeholder: 'Select device model', allowClear: false, width: '100%' });
+        $('#status, #edit-status').select2({ minimumResultsForSearch: Infinity, placeholder: T.select_status_placeholder, allowClear: false, width: '100%' });
+        $('#model, #edit-model').select2({ minimumResultsForSearch: Infinity, placeholder: T.select_model_placeholder, allowClear: false, width: '100%' });
     }
 
     function getAuthHeaders() {
@@ -332,7 +383,7 @@
             success: function(response) {
                 if (response.status === 'success') { firmwareData = response.data; updateFirmwareTable(); updateStats(); }
             },
-            error: function() { showToast('Error loading firmware data', 'error'); }
+            error: function() { showToast(T.load_error, 'error'); }
         });
     }
 
@@ -341,12 +392,12 @@
         table.clear();
         const sorted = [...firmwareData].sort((a, b) => a.created_at && b.created_at ? new Date(b.created_at) - new Date(a.created_at) : b.id - a.id);
         sorted.forEach(function(fw) {
-            const statusBadge  = fw.is_enabled ? '<span class="badge badge-pill badge-light-success">Enable</span>' : '<span class="badge badge-pill badge-light-secondary">Disable</span>';
-            const defaultBadge = fw.default_model_firmware ? '<span class="badge badge-pill badge-light-primary">Default</span>' : '<span class="badge badge-pill badge-light-secondary">-</span>';
+            const statusBadge  = fw.is_enabled ? `<span class="badge badge-pill badge-light-success">${T.badge_enabled}</span>` : `<span class="badge badge-pill badge-light-secondary">${T.badge_disabled}</span>`;
+            const defaultBadge = fw.default_model_firmware ? `<span class="badge badge-pill badge-light-primary">${T.badge_default}</span>` : '<span class="badge badge-pill badge-light-secondary">-</span>';
             table.row.add([
                 `<div class="d-flex align-items-center"><div class="avatar bg-light-primary mr-1 p-25"><div class="avatar-content"><i data-feather="hard-drive"></i></div></div><div><div class="font-weight-bold">${fw.name}</div><div class="small text-truncate text-muted">${fw.description || ''}</div></div></div>`,
                 statusBadge, getModelName(fw.model), defaultBadge, formatFileSize(fw.file_size),
-                `<div class="dropdown"><button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown"><i data-feather="more-vertical"></i></button><div class="dropdown-menu"><a class="dropdown-item firmware-edit" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="edit-2" class="mr-50"></i><span>Edit</span></a><a class="dropdown-item firmware-download" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="download" class="mr-50"></i><span>Download</span></a>${!fw.default_model_firmware ? `<a class="dropdown-item firmware-set-default" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="star" class="mr-50"></i><span>Set as Default</span></a>` : ''}<a class="dropdown-item firmware-delete" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="trash" class="mr-50"></i><span>Delete</span></a></div></div>`
+                `<div class="dropdown"><button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown"><i data-feather="more-vertical"></i></button><div class="dropdown-menu"><a class="dropdown-item firmware-edit" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="edit-2" class="mr-50"></i><span>${T.action_edit}</span></a><a class="dropdown-item firmware-download" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="download" class="mr-50"></i><span>${T.action_download}</span></a>${!fw.default_model_firmware ? `<a class="dropdown-item firmware-set-default" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="star" class="mr-50"></i><span>${T.action_set_default}</span></a>` : ''}<a class="dropdown-item firmware-delete" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="trash" class="mr-50"></i><span>${T.action_delete}</span></a></div></div>`
             ]);
         });
         table.draw();
@@ -362,7 +413,7 @@
 
     function uploadFirmware() {
         const fileInput = document.getElementById('firmware-file');
-        if (!fileInput.files[0]) { showToast('Please select a firmware file', 'error'); return; }
+        if (!fileInput.files[0]) { showToast(T.please_select_file, 'error'); return; }
         const formData = new FormData();
         formData.append('name', $('#firmware-name').val());
         formData.append('model', $('#model').val());
@@ -375,9 +426,9 @@
             headers: { 'Authorization': 'Bearer ' + UserManager.getToken(), 'Accept': 'application/json' },
             data: formData, processData: false, contentType: false,
             success: function(response) {
-                if (response.status === 'success') { showToast('Firmware uploaded successfully', 'success'); $('#add-new-firmware').modal('hide'); $('#add-new-firmware form')[0].reset(); $('.custom-file-label').text('Choose file'); loadFirmwareData(); }
+                if (response.status === 'success') { showToast(T.upload_success, 'success'); $('#add-new-firmware').modal('hide'); $('#add-new-firmware form')[0].reset(); $('.custom-file-label').text(T.choose_file); loadFirmwareData(); }
             },
-            error: function(xhr) { showToast(xhr.responseJSON?.message || 'Error uploading firmware', 'error'); }
+            error: function(xhr) { showToast(xhr.responseJSON?.message || T.upload_error, 'error'); }
         });
     }
 
@@ -393,7 +444,7 @@
             $('#edit-model').val(fw.model || '').trigger('change.select2');
             $('#edit-default-firmware').prop('checked', fw.default_model_firmware || false);
             $('#edit-firmware-file').val('');
-            $('.custom-file-label').text('Choose firmware file');
+            $('.custom-file-label').text(T.choose_firmware_file);
         }, 300);
     }
 
@@ -413,18 +464,18 @@
             headers: { 'Authorization': 'Bearer ' + UserManager.getToken(), 'Accept': 'application/json' },
             data: formData, processData: false, contentType: false,
             success: function(response) {
-                if (response.status === 'success') { showToast('Firmware updated successfully', 'success'); $('#edit-firmware').modal('hide'); loadFirmwareData(); currentEditingId = null; }
+                if (response.status === 'success') { showToast(T.update_success, 'success'); $('#edit-firmware').modal('hide'); loadFirmwareData(); currentEditingId = null; }
             },
-            error: function(xhr) { showToast(xhr.responseJSON?.message || 'Error updating firmware', 'error'); }
+            error: function(xhr) { showToast(xhr.responseJSON?.message || T.update_error, 'error'); }
         });
     }
 
     function deleteFirmware(id) {
-        if (!confirm('Are you sure you want to delete this firmware?')) return;
+        if (!confirm(T.delete_confirm)) return;
         $.ajax({
             url: `/api/firmware/${id}`, method: 'DELETE', headers: getAuthHeaders(),
-            success: function(response) { if (response.status === 'success') { showToast('Firmware deleted successfully', 'success'); loadFirmwareData(); } },
-            error: function() { showToast('Error deleting firmware', 'error'); }
+            success: function(response) { if (response.status === 'success') { showToast(T.delete_success, 'success'); loadFirmwareData(); } },
+            error: function() { showToast(T.delete_error, 'error'); }
         });
     }
 
@@ -440,11 +491,14 @@
     function setAsDefault(id) {
         const fw = firmwareData.find(f => f.id === id);
         if (!fw) return;
-        if (!confirm(`Are you sure you want to set "${fw.name}" as the default firmware for ${getModelName(fw.model)} devices?`)) return;
+        const confirmMsg = T.set_default_confirm
+            .replace('{name}', fw.name)
+            .replace('{model}', getModelName(fw.model));
+        if (!confirm(confirmMsg)) return;
         $.ajax({
             url: `/api/firmware/${id}/set-default`, method: 'POST', headers: getAuthHeaders(),
-            success: function(response) { if (response.status === 'success') { showToast('Firmware set as default successfully', 'success'); loadFirmwareData(); } },
-            error: function(xhr) { showToast(xhr.responseJSON?.message || 'Error setting firmware as default', 'error'); }
+            success: function(response) { if (response.status === 'success') { showToast(T.set_default_success, 'success'); loadFirmwareData(); } },
+            error: function(xhr) { showToast(xhr.responseJSON?.message || T.set_default_error, 'error'); }
         });
     }
 
@@ -458,14 +512,14 @@
 
     function populateModelDropdowns() {
         const $selects = $('#model, #edit-model');
-        $selects.empty().append('<option value="">Select Model</option>');
+        $selects.empty().append(`<option value="">${T.select_model_option}</option>`);
         productModels.forEach(pm => $selects.append(`<option value="${pm.device_type}">${pm.name}</option>`));
         $selects.trigger('change');
     }
 
     function getModelName(deviceType) {
         const pm = productModels.find(m => m.device_type === deviceType);
-        return pm ? pm.name : (deviceType || 'Not specified');
+        return pm ? pm.name : (deviceType || T.model_not_specified);
     }
 
     function formatFileSize(bytes) {
