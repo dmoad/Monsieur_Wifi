@@ -158,7 +158,7 @@ foreach (['en', 'fr'] as $loc) {
 
         // E-commerce admin (blades still per-locale pending merge)
         Route::get('/admin/orders', function () {
-            return view('admin-orders-' . app()->getLocale());
+            return view('admin-orders');
         })->name('admin-orders');
         Route::get('/admin/inventory', function () {
             return view('admin-inventory-' . app()->getLocale());

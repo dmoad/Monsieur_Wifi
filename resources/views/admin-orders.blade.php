@@ -1,18 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Gérer les Commandes - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+    $shopUrl = "/{$locale}/shop";
+@endphp
+
+@section('title', __('admin_orders.page_title'))
 
 @section('content')
 <div class="content-header row">
     <div class="content-header-left col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Gérer les Commandes</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('admin_orders.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="/fr/shop">Boutique</a></li>
-                        <li class="breadcrumb-item active">Gérer les Commandes</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ $shopUrl }}">{{ __('shop.breadcrumb') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('admin_orders.breadcrumb') }}</li>
                     </ol>
                 </div>
             </div>
@@ -22,49 +27,49 @@
 <div class="content-body">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Filtrer les Commandes</h4>
+            <h4 class="card-title">{{ __('admin_orders.filter_orders') }}</h4>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
                     <select id="status-filter" class="form-control">
-                        <option value="">Tous les Statuts</option>
-                        <option value="pending">En attente</option>
-                        <option value="processing">En traitement</option>
-                        <option value="shipped">Expédiée</option>
-                        <option value="delivered">Livrée</option>
-                        <option value="cancelled">Annulée</option>
-                        <option value="payment_failed">Paiement échoué</option>
+                        <option value="">{{ __('admin_orders.status_all') }}</option>
+                        <option value="pending">{{ __('admin_orders.status_pending') }}</option>
+                        <option value="processing">{{ __('admin_orders.status_processing') }}</option>
+                        <option value="shipped">{{ __('admin_orders.status_shipped') }}</option>
+                        <option value="delivered">{{ __('admin_orders.status_delivered') }}</option>
+                        <option value="cancelled">{{ __('admin_orders.status_cancelled') }}</option>
+                        <option value="payment_failed">{{ __('admin_orders.status_payment_failed') }}</option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" id="search" class="form-control" placeholder="Rechercher un numéro de commande...">
+                    <input type="text" id="search" class="form-control" placeholder="{{ __('admin_orders.search_placeholder') }}">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn btn-primary" onclick="loadOrders()">Appliquer le Filtre</button>
+                    <button class="btn btn-primary" onclick="loadOrders()">{{ __('admin_orders.btn_apply_filter') }}</button>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div id="orders-loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status"></div>
     </div>
-    
+
     <div id="orders-list"></div>
-    
+
     <div id="order-modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body" id="modal-content"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">{{ __('common.close') }}</button>
                 </div>
             </div>
         </div>
@@ -77,8 +82,8 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Assigner l'Inventaire à la Commande</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                <h5 class="modal-title">{{ __('admin_orders.modal_assign_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -86,8 +91,8 @@
                 <div id="assign-inventory-content"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" onclick="assignInventoryToOrder()">Assigner et Créer les Appareils</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="assignInventoryToOrder()">{{ __('admin_orders.btn_assign_devices') }}</button>
             </div>
         </div>
     </div>
@@ -405,6 +410,7 @@
 
 #order-modal .modal-header .close {
     padding: 0.5rem;
+    margin: 0;
     text-shadow: 0 1px 3px rgba(0,0,0,0.2);
     opacity: 0.9;
 }
@@ -481,9 +487,5 @@
 @endpush
 
 @push('scripts')
-<script src="/assets/js/admin-orders.js?v=<?php echo time(); ?>"></script>
+<script src="/assets/js/admin-orders.js?v={{ time() }}"></script>
 @endpush
-
-@php
-    $locale = 'fr';
-@endphp
