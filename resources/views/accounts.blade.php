@@ -307,7 +307,6 @@
 <script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
 <script src="/app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
 <script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
-<script src="/app-assets/js/scripts/pages/app-user-list.js"></script>
 
 <script>
     const locale = '{{ $locale }}';

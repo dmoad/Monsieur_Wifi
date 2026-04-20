@@ -7,10 +7,6 @@
 @section('title', __('profile.page_title'))
 
 @push('styles')
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/pickers/form-pickadate.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/pickers/form-flat-pickr.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/form-validation.css">
 
 <style>
@@ -141,9 +137,6 @@
 @endsection
 
 @push('scripts')
-<script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
-<script src="/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
-<script src="/app-assets/js/scripts/pages/page-account-settings.js"></script>
 
 <script>
     const locale = '{{ $locale }}';

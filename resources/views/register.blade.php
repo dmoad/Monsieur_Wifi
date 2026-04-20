@@ -576,9 +576,6 @@
     <script src="app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
-    <!-- BEGIN: Page JS-->
-    <script src="app-assets/js/scripts/pages/page-auth-login.js"></script>
-    <!-- END: Page JS-->
 
     <!-- Add this right after the Page JS scripts -->
     <script src="/assets/js/config.js?v=3"></script>

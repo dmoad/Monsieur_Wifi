@@ -9,7 +9,6 @@
 @push('styles')
 <!-- Dashboard-specific CSS -->
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/pages/dashboard-ecommerce.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/maps/leaflet.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
@@ -458,7 +457,6 @@
 
 <!-- Charts -->
 <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
-<script src="/app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
 
 <!-- Dashboard JS -->
 <script src="/assets/js/dashboard{{ $locale === 'fr' ? '-fr' : '' }}.js?v=12"></script>
