@@ -210,6 +210,8 @@
 
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
+            $('.mw-av-display-name').text(user.name || '');
+            $('.mw-av-display-email').text(user.email || '');
 
             // Avatar initials
             if (user.name) {

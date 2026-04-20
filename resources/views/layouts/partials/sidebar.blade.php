@@ -137,9 +137,15 @@
 
     {{-- Bottom: avatar --}}
     <div class="mw-sb-bot">
-        {{-- Avatar trigger --}}
-        <button class="mw-av" id="mwAvBtn" title="{{ __('common.profile') }}">
-            <span class="mw-av-initials">?</span>
+        {{-- Avatar trigger: circle + (expanded only) name + email --}}
+        <button class="mw-av-trigger" id="mwAvBtn" title="{{ __('common.profile') }}">
+            <span class="mw-av">
+                <span class="mw-av-initials">?</span>
+            </span>
+            <span class="mw-av-text">
+                <span class="mw-av-display-name"></span>
+                <span class="mw-av-display-email"></span>
+            </span>
         </button>
 
         {{-- Avatar dropdown (opens upward) --}}

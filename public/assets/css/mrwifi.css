@@ -428,7 +428,22 @@ body.mw-sb-expanded .app-content.content {
     width: 100%;
 }
 
-/* --- Avatar button --- */
+/* --- Avatar trigger (circle + name/email when expanded) --- */
+.mw-av-trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    padding: var(--mw-space-sm);
+    background: transparent;
+    border: none;
+    border-radius: var(--mw-radius-md);
+    cursor: pointer;
+    width: auto;
+    transition: background 0.12s;
+}
+
+.mw-av-trigger:hover { background: var(--mw-bg-hover); }
+
 .mw-av {
     width: 36px;
     height: 36px;
@@ -440,14 +455,49 @@ body.mw-sb-expanded .app-content.content {
     font-size: 11px;
     font-weight: 700;
     color: #fff;
-    cursor: pointer;
-    border: none;
     flex-shrink: 0;
-    transition: background 0.12s, transform 0.12s;
-    align-self: center;
+    transition: background 0.12s;
 }
 
-.mw-av:hover { background: var(--mw-primary-hover); transform: scale(1.05); }
+.mw-av-trigger:hover .mw-av { background: var(--mw-primary-hover); }
+
+/* Name + email block — hidden when collapsed, visible when sidebar is expanded */
+.mw-av-text {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    min-width: 0;
+    line-height: 1.2;
+}
+
+.mw-sb.expanded .mw-av-text { display: flex; }
+.mw-sb.expanded .mw-av-trigger { width: 100%; }
+
+.mw-av-display-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mw-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.mw-av-display-email {
+    font-size: 11px;
+    color: var(--mw-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Separator line above the avatar row when sidebar is expanded */
+.mw-sb.expanded .mw-sb-bot {
+    border-top: 1px solid var(--mw-border-light);
+    padding-top: var(--mw-space-sm);
+}
 
 /* --- Avatar dropdown --- */
 .mw-av-menu {
