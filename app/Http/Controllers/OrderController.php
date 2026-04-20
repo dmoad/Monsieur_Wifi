@@ -308,9 +308,7 @@ class OrderController extends Controller
      */
     public function checkoutView(Request $request)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        return view("checkout-{$locale}");
+        return view('checkout');
     }
 
     /**
