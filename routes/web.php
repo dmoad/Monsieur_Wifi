@@ -374,11 +374,7 @@ Route::get('/fr/admin/modeles', function () {
     return view('admin-models-fr');
 })->name('admin.models.fr');
 
-// Devices
-Route::get('/en/devices', function () {
-    return view('devices-en');
-})->name('devices');
-
+// French-slug alias for devices (EN/FR canonical handled inside the locale loop)
 Route::get('/fr/appareils', function () {
-    return view('devices-fr');
-})->name('fr.devices');
+    return view('devices');
+});
