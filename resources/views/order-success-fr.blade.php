@@ -11,8 +11,8 @@
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="/fr/boutique">Boutique</a></li>
-                        <li class="breadcrumb-item"><a href="/fr/commandes">Mes Commandes</a></li>
+                        <li class="breadcrumb-item"><a href="/fr/shop">Boutique</a></li>
+                        <li class="breadcrumb-item"><a href="/fr/orders">Mes Commandes</a></li>
                         <li class="breadcrumb-item active">Confirmation</li>
                     </ol>
                 </div>
@@ -41,8 +41,8 @@
                         <h4 class="mb-4">Commande #<span id="order-number"></span></h4>
                         <p>Un email de confirmation a été envoyé à votre adresse email.</p>
                         <div class="mt-4">
-                            <a href="/fr/commandes" class="btn btn-primary mr-2">Voir Mes Commandes</a>
-                            <a href="/fr/boutique" class="btn btn-outline-primary">Continuer mes Achats</a>
+                            <a href="/fr/orders" class="btn btn-primary mr-2">Voir Mes Commandes</a>
+                            <a href="/fr/shop" class="btn btn-outline-primary">Continuer mes Achats</a>
                         </div>
                     </div>
                 </div>

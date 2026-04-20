@@ -29,7 +29,7 @@
                 <strong>Total: €{{ number_format($cart->getTotal(), 2) }}</strong>
             </p>
             <div style="text-align: center;">
-                <a href="{{ url('/fr/panier') }}" class="button">Finaliser Votre Commande</a>
+                <a href="{{ url('/fr/cart') }}" class="button">Finaliser Votre Commande</a>
             </div>
         </div>
         <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. Tous droits réservés.</p></div>

@@ -2,8 +2,8 @@
 
 @php
     $locale = app()->getLocale();
-    $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
-    $checkoutUrl = $locale === 'fr' ? '/fr/commander' : '/en/checkout';
+    $shopUrl = "/{$locale}/shop";
+    $checkoutUrl = "/{$locale}/checkout";
     $cartT = [
         'toast_login_required' => __('cart.js_toast_login_required'),
         'toast_load_failed' => __('cart.js_toast_load_failed'),

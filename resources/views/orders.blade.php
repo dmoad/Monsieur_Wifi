@@ -2,8 +2,8 @@
 
 @php
     $locale = app()->getLocale();
-    $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
-    $ordersBase = $locale === 'fr' ? '/fr/commandes' : '/en/orders';
+    $shopUrl = "/{$locale}/shop";
+    $ordersBase = "/{$locale}/orders";
     $ordersJsT = [
         'locale' => $locale,
         'date_locale' => $locale === 'fr' ? 'fr-FR' : 'en-US',

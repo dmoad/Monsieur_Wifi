@@ -4,8 +4,8 @@
     $locale = app()->getLocale();
     $shopT = [
         'locale' => $locale,
-        'cart_url' => $locale === 'fr' ? '/fr/panier' : '/en/cart',
-        'product_url_base' => $locale === 'fr' ? '/fr/boutique' : '/en/shop',
+        'cart_url' => "/{$locale}/cart",
+        'product_url_base' => "/{$locale}/shop",
         'error_loading_products' => __('shop.js_error_loading_products'),
         'no_products' => __('shop.js_no_products'),
         'badge_out_of_stock' => __('shop.js_badge_out_of_stock'),

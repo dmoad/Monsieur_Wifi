@@ -2,11 +2,11 @@
 
 @php
     $locale = app()->getLocale();
-    $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
+    $shopUrl = "/{$locale}/shop";
     $productT = [
         'locale' => $locale,
         'shop_url' => $shopUrl,
-        'cart_url' => $locale === 'fr' ? '/fr/panier' : '/en/cart',
+        'cart_url' => "/{$locale}/cart",
         'not_found' => __('product.js_not_found'),
         'btn_back_to_shop' => __('product.btn_back_to_shop'),
         'alt_thumbnail' => __('product.js_alt_thumbnail'),

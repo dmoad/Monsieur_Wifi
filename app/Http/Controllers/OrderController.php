@@ -324,9 +324,7 @@ class OrderController extends Controller
      */
     public function successView(Request $request, $orderNumber)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        return view("order-success-{$locale}", ['orderNumber' => $orderNumber]);
+        return view('order-success-' . app()->getLocale(), ['orderNumber' => $orderNumber]);
     }
     
     /**

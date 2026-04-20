@@ -26,7 +26,7 @@
                 <div class="tracking-number">{{ $order->tracking_id }}</div>
             </div>
             <div style="text-align: center;">
-                <a href="{{ url('/fr/commandes/' . $order->order_number) }}" class="button">Suivre Votre Commande</a>
+                <a href="{{ url('/fr/orders/' . $order->order_number) }}" class="button">Suivre Votre Commande</a>
             </div>
         </div>
         <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. Tous droits réservés.</p></div>

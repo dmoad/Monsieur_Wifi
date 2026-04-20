@@ -45,7 +45,7 @@ async function loadOrder(orderNumber) {
         document.getElementById('order-loading').innerHTML = `
             <div class="col-12 text-center">
                 <p class="text-danger">Commande non trouvée.</p>
-                <a href="/fr/commandes" class="btn btn-primary">Voir Mes Commandes</a>
+                <a href="/fr/orders" class="btn btn-primary">Voir Mes Commandes</a>
             </div>
         `;
     }

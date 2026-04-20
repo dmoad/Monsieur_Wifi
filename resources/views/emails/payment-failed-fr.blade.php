@@ -20,7 +20,7 @@
             <p>Malheureusement, le paiement de la commande <strong>#{{ $order->order_number }}</strong> a échoué.</p>
             <p>Veuillez réessayer ou contacter notre équipe de support.</p>
             <div style="text-align: center;">
-                <a href="{{ url('/fr/commandes/' . $order->order_number) }}" class="button">Réessayer le Paiement</a>
+                <a href="{{ url('/fr/orders/' . $order->order_number) }}" class="button">Réessayer le Paiement</a>
             </div>
         </div>
         <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. Tous droits réservés.</p></div>

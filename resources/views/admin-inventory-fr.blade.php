@@ -11,7 +11,7 @@
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="/fr/boutique">Boutique</a></li>
+                        <li class="breadcrumb-item"><a href="/fr/shop">Boutique</a></li>
                         <li class="breadcrumb-item active">Gérer l'inventaire</li>
                     </ol>
                 </div>
@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="content-header-right col-md-3 col-12 text-right">
-        <a href="/fr/admin/modeles" class="btn btn-outline-primary">
+        <a href="/fr/admin/models" class="btn btn-outline-primary">
             <i data-feather="cpu"></i> Gérer les Modèles
         </a>
     </div>

@@ -2,9 +2,9 @@
 
 @php
     $locale = app()->getLocale();
-    $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
-    $cartUrl = $locale === 'fr' ? '/fr/panier' : '/en/cart';
-    $ordersBase = $locale === 'fr' ? '/fr/commandes' : '/en/orders';
+    $shopUrl = "/{$locale}/shop";
+    $cartUrl = "/{$locale}/cart";
+    $ordersBase = "/{$locale}/orders";
     $checkoutT = [
         'locale' => $locale,
         'shop_url' => $shopUrl,

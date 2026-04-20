@@ -11,7 +11,7 @@
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="/fr/boutique">Boutique</a></li>
+                        <li class="breadcrumb-item"><a href="/fr/shop">Boutique</a></li>
                         <li class="breadcrumb-item active">Gérer les Modèles</li>
                     </ol>
                 </div>

@@ -65,7 +65,7 @@
             </p>
             
             <div style="text-align: center;">
-                <a href="{{ url('/fr/commandes/' . $order->order_number) }}" class="button">Voir les Détails</a>
+                <a href="{{ url('/fr/orders/' . $order->order_number) }}" class="button">Voir les Détails</a>
             </div>
         </div>
         <div class="footer">

@@ -48,21 +48,21 @@
             <span class="mw-si-label">{{ __('sidebar.captive_portals') }}</span>
         </a>
 
-        <a class="mw-si {{ request()->is('*/devices', '*/appareils') ? 'active' : '' }}"
+        <a class="mw-si {{ request()->is('*/devices') ? 'active' : '' }}"
            href="/{{ $locale }}/devices"
            title="{{ __('sidebar.devices') }}">
             <i data-feather="hard-drive"></i>
             <span class="mw-si-label">{{ __('sidebar.devices') }}</span>
         </a>
 
-        <a class="mw-si {{ request()->is('*/shop', '*/boutique', '*/cart', '*/panier', '*/checkout', '*/commander') ? 'active' : '' }}"
+        <a class="mw-si {{ request()->is('*/shop', '*/cart', '*/checkout') ? 'active' : '' }}"
            href="/{{ $locale }}/shop"
            title="{{ __('sidebar.shop') }}">
             <i data-feather="shopping-bag"></i>
             <span class="mw-si-label">{{ __('sidebar.shop') }}</span>
         </a>
 
-        <a class="mw-si {{ request()->is('*/cart', '*/panier') ? 'active' : '' }}"
+        <a class="mw-si {{ request()->is('*/cart') ? 'active' : '' }}"
            href="/{{ $locale }}/cart"
            title="{{ __('navbar.my_cart') }}">
             <i data-feather="shopping-cart"></i>
@@ -88,28 +88,28 @@
             <span class="mw-si-label">{{ __('sidebar.domain_blocking') }}</span>
         </a>
 
-        <a class="mw-si only_superadmin hidden {{ request()->is('*/qos-settings', '*/parametres-qos') ? 'active' : '' }}"
+        <a class="mw-si only_superadmin hidden {{ request()->is('*/qos-settings') ? 'active' : '' }}"
            href="/{{ $locale }}/qos-settings"
            title="{{ __('sidebar.traffic_priority') }}">
             <i data-feather="sliders"></i>
             <span class="mw-si-label">{{ __('sidebar.traffic_priority') }}</span>
         </a>
 
-        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/models', '*/admin/modeles') ? 'active' : '' }}"
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/models') ? 'active' : '' }}"
            href="/{{ $locale }}/admin/models"
            title="{{ __('sidebar.manage_models') }}">
             <i data-feather="cpu"></i>
             <span class="mw-si-label">{{ __('sidebar.manage_models') }}</span>
         </a>
 
-        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/inventory', '*/admin/inventaire') ? 'active' : '' }}"
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/inventory') ? 'active' : '' }}"
            href="/{{ $locale }}/admin/inventory"
            title="{{ __('sidebar.manage_inventory') }}">
             <i data-feather="box"></i>
             <span class="mw-si-label">{{ __('sidebar.manage_inventory') }}</span>
         </a>
 
-        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/orders', '*/admin/commandes') ? 'active' : '' }}"
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/admin/orders') ? 'active' : '' }}"
            href="/{{ $locale }}/admin/orders"
            title="{{ __('sidebar.manage_orders') }}">
             <i data-feather="package"></i>
@@ -160,7 +160,7 @@
                 <i data-feather="user"></i>
                 {{ __('common.profile') }}
             </a>
-            <a class="mw-av-item {{ request()->is('*/orders', '*/commandes') ? 'active' : '' }}"
+            <a class="mw-av-item {{ request()->is('*/orders') ? 'active' : '' }}"
                href="/{{ $locale }}/orders">
                 <i data-feather="list"></i>
                 {{ __('sidebar.my_orders') }}
