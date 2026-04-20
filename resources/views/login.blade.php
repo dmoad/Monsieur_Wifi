@@ -576,7 +576,7 @@
 
 
     <!-- Add this right after the Page JS scripts -->
-    <script src="/assets/js/config.js?v=1"></script>
+    <script src="/assets/js/config.js?v={{ filemtime(public_path('assets/js/config.js')) }}"></script>
 
     <script>
         // Language support system

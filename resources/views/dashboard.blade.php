@@ -429,7 +429,7 @@
 <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
 
 <!-- Dashboard JS -->
-<script src="/assets/js/dashboard.js?v=1"></script>
+<script src="/assets/js/dashboard.js?v={{ filemtime(public_path('assets/js/dashboard.js')) }}"></script>
 
 <script>
 $(document).ready(function() {

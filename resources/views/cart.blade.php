@@ -93,5 +93,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.cart = @json($cartT);
 </script>
-<script src="/assets/js/cart.js?v={{ time() }}"></script>
+<script src="/assets/js/cart.js?v={{ filemtime(public_path('assets/js/cart.js')) }}"></script>
 @endpush

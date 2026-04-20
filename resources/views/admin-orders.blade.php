@@ -564,5 +564,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.admin_orders = @json($adminOrdersJsT);
 </script>
-<script src="/assets/js/admin-orders.js?v={{ time() }}"></script>
+<script src="/assets/js/admin-orders.js?v={{ filemtime(public_path('assets/js/admin-orders.js')) }}"></script>
 @endpush

@@ -1004,5 +1004,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-details.js?v=1"></script>
+<script src="/assets/js/location-details.js?v={{ filemtime(public_path('assets/js/location-details.js')) }}"></script>
 @endpush

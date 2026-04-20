@@ -320,6 +320,6 @@
 
 @push('scripts')
 <script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
-<script src="/assets/js/zones.js?v=<?php echo time(); ?>"></script>
+<script src="/assets/js/zones.js?v={{ filemtime(public_path('assets/js/zones.js')) }}"></script>
 @endpush
 

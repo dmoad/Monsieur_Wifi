@@ -141,5 +141,5 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/devices.js?v=<?php echo time(); ?>"></script>
+<script src="/assets/js/devices.js?v={{ filemtime(public_path('assets/js/devices.js')) }} echo time(); ?>"></script>
 @endpush

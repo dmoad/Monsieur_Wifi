@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
 <link rel="stylesheet" type="text/css" href="/working-hours/interactive-schedule.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/location-networks.css?v=6">
+<link rel="stylesheet" type="text/css" href="/assets/css/location-networks.css?v={{ filemtime(public_path('assets/css/location-networks.css')) }}">
 @endpush
 
 @section('content')
@@ -666,5 +666,5 @@
         typeLabels: @json(__('location_networks.js_type_labels')),
     };
 </script>
-<script src="/assets/js/location-networks.js?v=1"></script>
+<script src="/assets/js/location-networks.js?v={{ filemtime(public_path('assets/js/location-networks.js')) }}"></script>
 @endpush

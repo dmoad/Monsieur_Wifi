@@ -197,5 +197,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.admin_models = @json($adminModelsJsT);
 </script>
-<script src="/assets/js/admin-models.js?v=<?php echo time() + 1; ?>"></script>
+<script src="/assets/js/admin-models.js?v={{ filemtime(public_path('assets/js/admin-models.js')) }}"></script>
 @endpush

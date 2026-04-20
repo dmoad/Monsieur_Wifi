@@ -437,5 +437,5 @@
 <script>
     window.LOCATIONS_T = {!! json_encode($locationsT) !!};
 </script>
-<script src="/assets/js/locations.js?v=<?php echo time(); ?>"></script>
+<script src="/assets/js/locations.js?v={{ filemtime(public_path('assets/js/locations.js')) }} echo time(); ?>"></script>
 @endpush

@@ -151,5 +151,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.order_success = @json($orderSuccessJsT);
 </script>
-<script src="/assets/js/order-success.js?v={{ time() }}"></script>
+<script src="/assets/js/order-success.js?v={{ filemtime(public_path('assets/js/order-success.js')) }}"></script>
 @endpush

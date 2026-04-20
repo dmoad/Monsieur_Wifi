@@ -82,5 +82,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.orders = @json($ordersJsT);
 </script>
-<script src="/assets/js/orders.js?v={{ time() }}"></script>
+<script src="/assets/js/orders.js?v={{ filemtime(public_path('assets/js/orders.js')) }}"></script>
 @endpush

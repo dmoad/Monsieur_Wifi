@@ -1034,5 +1034,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.captive_portals = @json($captivePortalsT);
 </script>
-<script src="/assets/js/captive-portals.js?v={{ time() }}"></script>
+<script src="/assets/js/captive-portals.js?v={{ filemtime(public_path('assets/js/captive-portals.js')) }}"></script>
 @endpush

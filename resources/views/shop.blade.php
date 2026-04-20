@@ -251,5 +251,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.shop = @json($shopT);
 </script>
-<script src="/assets/js/shop.js?v={{ time() }}"></script>
+<script src="/assets/js/shop.js?v={{ filemtime(public_path('assets/js/shop.js')) }}"></script>
 @endpush

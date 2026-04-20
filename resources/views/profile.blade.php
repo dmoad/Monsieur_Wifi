@@ -141,5 +141,5 @@
 <script>
     const locale = '{{ $locale }}';
 </script>
-<script src="/assets/js/profile.js?v={{ time() }}"></script>
+<script src="/assets/js/profile.js?v={{ filemtime(public_path('assets/js/profile.js')) }}"></script>
 @endpush

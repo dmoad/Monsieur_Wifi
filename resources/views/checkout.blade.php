@@ -359,5 +359,5 @@
     window.APP_I18N.checkout = @json($checkoutT);
 </script>
 <script src="https://js.stripe.com/v3/"></script>
-<script src="/assets/js/checkout.js?v={{ time() }}"></script>
+<script src="/assets/js/checkout.js?v={{ filemtime(public_path('assets/js/checkout.js')) }}"></script>
 @endpush

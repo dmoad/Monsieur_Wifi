@@ -118,5 +118,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.product = @json($productT);
 </script>
-<script src="/assets/js/product.js?v={{ time() + 2 }}"></script>
+<script src="/assets/js/product.js?v={{ filemtime(public_path('assets/js/product.js')) }}"></script>
 @endpush

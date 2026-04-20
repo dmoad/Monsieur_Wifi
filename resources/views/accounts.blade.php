@@ -311,5 +311,5 @@
 <script>
     const locale = '{{ $locale }}';
 </script>
-<script src="/assets/js/accounts.js?v={{ time() }}"></script>
+<script src="/assets/js/accounts.js?v={{ filemtime(public_path('assets/js/accounts.js')) }}"></script>
 @endpush

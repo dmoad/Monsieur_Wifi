@@ -307,5 +307,5 @@
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.admin_inventory = @json($adminInventoryJsT);
 </script>
-<script src="/assets/js/admin-inventory.js?v=<?php echo time(); ?>"></script>
+<script src="/assets/js/admin-inventory.js?v={{ filemtime(public_path('assets/js/admin-inventory.js')) }}"></script>
 @endpush

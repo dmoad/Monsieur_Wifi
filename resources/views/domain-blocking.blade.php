@@ -491,5 +491,5 @@
 <script>
     const locale = '{{ $locale }}';
 </script>
-<script src="/assets/js/domain-blocking.js?v={{ time() }}"></script>
+<script src="/assets/js/domain-blocking.js?v={{ filemtime(public_path('assets/js/domain-blocking.js')) }}"></script>
 @endpush

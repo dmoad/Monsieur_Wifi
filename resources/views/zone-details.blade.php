@@ -272,5 +272,5 @@
 <script>
     const ZONE_ID = {{ $zone }};
 </script>
-<script src="/assets/js/zone-details.js?v=<?php echo time(); ?>"></script>
+<script src="/assets/js/zone-details.js?v={{ filemtime(public_path('assets/js/zone-details.js')) }}"></script>
 @endpush
