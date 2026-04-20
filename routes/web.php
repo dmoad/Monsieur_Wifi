@@ -139,15 +139,14 @@ foreach (['en', 'fr'] as $loc) {
         Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
         Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
 
+        Route::get('/qos-settings', function () {
+            return view('qos-settings');
+        })->name('qos-settings');
+
         if ($loc === 'en') {
             Route::get('/v2/locations/{location}', function ($location) {
                 return view('location-details-v2-en');
             })->name('location-details-v2');
-
-            Route::get('/qos-settings', function () {
-                $locale = app()->getLocale();
-                return view('qos-settings-' . $locale, compact('locale'));
-            })->name('qos-settings');
         }
 
         if ($loc === 'fr') {
@@ -168,9 +167,8 @@ foreach (['en', 'fr'] as $loc) {
             });
 
             Route::get('/parametres-qos', function () {
-                $locale = 'fr';
-                return view('qos-settings-fr', compact('locale'));
-            })->name('qos-settings');
+                return view('qos-settings');
+            });
         }
     });
 }
