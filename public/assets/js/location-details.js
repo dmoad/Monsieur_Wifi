@@ -1050,9 +1050,19 @@ function initMap(lat, lng, label) {
     if (locationMap) { locationMap.remove(); locationMap = null; }
     try {
         locationMap = L.map('location-map', { zoomControl: true }).setView([lat, lng], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-        }).addTo(locationMap);
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        L.tileLayer(
+            dark
+                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution: dark
+                    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    : '&copy; OpenStreetMap contributors',
+                subdomains: dark ? 'abcd' : 'abc',
+                maxZoom: 19
+            }
+        ).addTo(locationMap);
         L.marker([lat, lng]).addTo(locationMap).bindPopup(label || '').openPopup();
         $('#map-coordinates').text(`${lat.toFixed(4)}, ${lng.toFixed(4)}`).show();
     } catch (e) {
