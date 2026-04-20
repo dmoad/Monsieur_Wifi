@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Concepteur de portail captif - Monsieur WiFi')
+@php $locale = app()->getLocale(); @endphp
+
+@section('title', __('captive_portals.page_title'))
 
 @push('styles')
 <style>
@@ -13,37 +15,37 @@
         transition: all 0.3s;
         margin-bottom: 1rem;
     }
-    
+
     .upload-area:hover {
         border-color: #7367f0;
         background-color: rgba(115, 103, 240, 0.05);
     }
-    
+
     .upload-area.highlight {
         border-color: #7367f0;
         background-color: rgba(115, 103, 240, 0.1);
         transform: scale(1.02);
     }
-    
+
     .upload-icon {
         font-size: 2.5rem;
         color: #7367f0;
         margin-bottom: 1rem;
     }
-    
+
     .color-picker-container {
         display: flex;
         align-items: center;
         gap: 10px;
     }
-    
+
     .color-preview {
         width: 30px;
         height: 30px;
         border-radius: 4px;
         border: 1px solid #dee2e6;
     }
-    
+
     .image-preview {
         width: 100%;
         max-height: 150px;
@@ -52,19 +54,19 @@
         border-radius: 5px;
         display: none;
     }
-    
+
     .preview-container {
         border: 1px solid #dee2e6;
         border-radius: 8px;
         overflow: hidden;
     }
-    
+
     .preview-header {
         background-color: #f8f9fa;
         padding: 0.75rem;
         border-bottom: 1px solid #dee2e6;
     }
-    
+
     .portal-preview {
         background: #fff;
         border-radius: 16px;
@@ -79,7 +81,7 @@
         align-items: center;
         min-height: 500px;
     }
-    
+
     .portal-preview.has-background-image::before {
         content: '';
         position: absolute;
@@ -91,12 +93,12 @@
         border-radius: 8px;
         z-index: 0;
     }
-    
+
     .portal-preview.has-background-image > * {
         position: relative;
         z-index: 1;
     }
-    
+
     .portal-preview.has-gradient {
         background: var(--gradient-bg) !important;
     }
@@ -108,7 +110,7 @@
         flex-direction: column;
         min-height: 100%;
     }
-    
+
     .logo-container {
         height: 80px;
         display: flex;
@@ -116,13 +118,13 @@
         justify-content: center;
         margin-bottom: 2rem;
     }
-    
+
     .preview-logo {
         max-height: 80px;
         max-width: 200px;
         object-fit: contain;
     }
-    
+
     #preview-welcome {
         font-size: 24px;
         font-weight: 600;
@@ -131,7 +133,7 @@
         text-align: center;
         width: 100%;
     }
-    
+
     #preview-instructions {
         font-size: 16px;
         color: #666;
@@ -140,7 +142,7 @@
         line-height: 1.6;
         width: 100%;
     }
-    
+
     .input-container {
         width: 100%;
         display: flex;
@@ -148,7 +150,7 @@
         gap: 15px;
         margin-bottom: 1rem;
     }
-    
+
     .preview-input {
         width: 100%;
         padding: 10px 15px;
@@ -156,7 +158,7 @@
         border-radius: 5px;
         font-size: 14px;
     }
-    
+
     .preview-button {
         width: 100%;
         padding: 12px 20px;
@@ -168,24 +170,24 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
+
     .preview-terms {
         font-size: 12px;
         color: #666;
         margin-top: 15px;
         text-align: center;
     }
-    
+
     .preview-terms a {
         color: #7367f0;
         text-decoration: none;
     }
-    
+
     .header {
         text-align: center;
         margin-bottom: 32px;
     }
-    
+
     .location-logo {
         height: 64px;
         width: auto;
@@ -199,7 +201,7 @@
         color: #666;
         padding: 0 16px;
     }
-    
+
     .welcome-text {
         color: #333;
         font-size: 0.65rem;
@@ -207,7 +209,7 @@
         margin: 24px 0 32px;
         text-align: center;
     }
-    
+
     .login-placeholder {
         background: #f8f8f8;
         border: 2px dashed #ddd;
@@ -229,7 +231,7 @@
         margin-bottom: 10px;
         flex-grow: 1;
     }
-    
+
     .portal-preview .footer,
     .preview-main .footer {
         margin-top: auto;
@@ -247,7 +249,7 @@
         align-items: center;
         justify-content: center;
     }
-    
+
     .brand-logo {
         margin-bottom: 1rem;
         margin-left: 0;
@@ -256,7 +258,7 @@
         width: 100%;
         text-align: center;
     }
-    
+
     .brand-logo img {
         max-height: 32px;
         max-width: 150px;
@@ -264,7 +266,7 @@
         display: inline-block;
         margin: 0;
     }
-    
+
     .terms {
         font-size: 0.8rem;
         color: #666;
@@ -276,38 +278,38 @@
         padding-left: 0;
         padding-right: 0;
     }
-    
+
     #preview-terms-container {
         margin-bottom: 0.5rem !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
     }
-    
+
     #preview-powered-by {
         margin-left: 0 !important;
         margin-right: 0 !important;
     }
-    
+
     .terms a {
         color: #007bff;
         text-decoration: none;
     }
-    
+
     .terms a:hover {
         text-decoration: underline;
     }
-    
+
     .design-card {
         cursor: pointer;
         transition: transform 0.2s, box-shadow 0.2s;
         border: 1px solid #e0e0e0;
     }
-    
+
     .design-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    
+
     .design-preview {
         height: 180px;
         background: #fff;
@@ -315,7 +317,7 @@
         overflow: hidden;
         position: relative;
     }
-    
+
     .design-preview .preview-content {
         width: 100%;
         height: 100%;
@@ -326,7 +328,7 @@
         flex-direction: column;
         justify-content: space-between;
     }
-    
+
     .location-logo-mini {
         height: 24px;
         background: transparent;
@@ -335,7 +337,7 @@
         justify-content: center;
         margin-bottom: 10px;
     }
-    
+
     .login-area-mini {
         flex-grow: 1;
         background: rgba(248, 248, 248, 0.8);
@@ -348,7 +350,7 @@
         color: #666;
         margin: 8px 0;
     }
-    
+
     .brand-logo-mini {
         height: 20px;
         background: transparent;
@@ -357,7 +359,7 @@
         justify-content: center;
         margin-top: 10px;
     }
-    
+
     .design-card:hover .design-preview {
         transform: scale(1.02);
         transition: transform 0.2s ease;
@@ -411,11 +413,11 @@
         padding-top: 0.5rem;
         border-top: 1px solid #ebe9f1;
     }
-    
+
     .design-actions .btn-group .btn {
         padding: 0.25rem 0.5rem;
     }
-    
+
     .design-actions .btn-group .btn + .btn {
         margin-left: 0;
     }
@@ -457,7 +459,7 @@
         width: 60px;
         padding: 0.2rem;
         height: 38px;
-    }   
+    }
 
     .card-fullscreen {
         position: fixed !important;
@@ -478,7 +480,7 @@
     .modal {
         z-index: 2100 !important;
     }
-    
+
     .modal-backdrop {
         z-index: 2050 !important;
     }
@@ -527,32 +529,32 @@
         .preview-container {
             margin-top: 2rem;
         }
-        
+
         .portal-preview {
             min-height: 350px;
         }
     }
-    
+
     @media (max-width: 767px) {
         .portal-preview {
             padding: 20px;
             min-height: 320px;
         }
-        
+
         #preview-welcome {
             font-size: 20px;
         }
-        
+
         #preview-instructions {
             font-size: 14px;
         }
-        
+
         .preview-input, .preview-button {
             padding: 8px 15px;
             font-size: 14px;
         }
     }
-    
+
     @media (max-width: 575px) {
         .preview-main {
             max-width: 100%;
@@ -566,11 +568,11 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Concepteur de portail captif</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('captive_portals.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item active">Portails captifs</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('captive_portals.breadcrumb') }}</li>
                     </ol>
                 </div>
             </div>
@@ -585,18 +587,18 @@
             <div style="position:absolute; top:24px; left:calc(16.66% + 20px); right:calc(16.66% + 20px); height:3px; background:#e0e0e0; z-index:0;"></div>
             <div id="timeline-step-1" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
                 <div id="timeline-circle-1" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:linear-gradient(135deg,#7367f0,#9e95f5); color:white; box-shadow:0 4px 15px rgba(115,103,240,0.4);">1</div>
-                <div style="font-size:0.85rem; font-weight:600; color:#333; text-align:center;">Je design mon portail</div>
-                <div style="font-size:0.75rem; color:#888; text-align:center; margin-top:4px;">Portail captif personnalisé</div>
+                <div style="font-size:0.85rem; font-weight:600; color:#333; text-align:center;">{{ __('captive_portals.timeline_step1_label') }}</div>
+                <div style="font-size:0.75rem; color:#888; text-align:center; margin-top:4px;">{{ __('captive_portals.timeline_step1_sub') }}</div>
             </div>
             <a id="timeline-step-2" href="/pricing" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1; text-decoration:none; cursor:pointer;">
                 <div id="timeline-circle-2" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:#f0f0f0; color:#999; border:2px solid #ddd;">2</div>
-                <div id="timeline-label-2" style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">Je m'abonne</div>
-                <div id="timeline-sub-2" style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">Choix de l'offre et paiement</div>
+                <div id="timeline-label-2" style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">{{ __('captive_portals.timeline_step2_label') }}</div>
+                <div id="timeline-sub-2" style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">{{ __('captive_portals.timeline_step2_sub') }}</div>
             </a>
             <div id="timeline-step-3" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
                 <div id="timeline-circle-3" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:#f0f0f0; color:#999; border:2px solid #ddd;">3</div>
-                <div style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">Je reçois ma borne</div>
-                <div style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">Livraison + assistance mise en service</div>
+                <div style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">{{ __('captive_portals.timeline_step3_label') }}</div>
+                <div style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">{{ __('captive_portals.timeline_step3_sub') }}</div>
             </div>
         </div>
     </div>
@@ -610,13 +612,13 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Vos conceptions de portail captif</h4>
+                        <h4 class="card-title">{{ __('captive_portals.your_designs_title') }}</h4>
                         <div class="heading-elements">
                             <ul class="list-inline mb-0">
                                 <li>
                                     <button type="button" class="btn btn-primary waves-effect waves-float waves-light" id="create-new-design">
                                         <i data-feather="plus" class="mr-50"></i>
-                                        <span>Créer une nouvelle conception</span>
+                                        <span>{{ __('captive_portals.create_new_design') }}</span>
                                     </button>
                                 </li>
                             </ul>
@@ -638,7 +640,7 @@
             <div class="col-12 mb-1">
                 <button class="btn btn-outline-secondary waves-effect" id="back-to-list">
                     <i data-feather="arrow-left" class="mr-50"></i>
-                    <span>Retour aux conceptions</span>
+                    <span>{{ __('captive_portals.back_to_designs') }}</span>
                 </button>
             </div>
         </div>
@@ -646,20 +648,20 @@
             <div class="col-lg-8 col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Concevez votre page de connexion</h4>
+                        <h4 class="card-title">{{ __('captive_portals.designer_title') }}</h4>
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" aria-controls="general" role="tab" aria-selected="true">
                                     <i data-feather="settings" class="mr-25"></i>
-                                    <span class="font-weight-bold">Général</span>
+                                    <span class="font-weight-bold">{{ __('captive_portals.tab_general') }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="branding-tab" data-toggle="tab" href="#branding" aria-controls="branding" role="tab" aria-selected="false">
                                     <i data-feather="image" class="mr-25"></i>
-                                    <span class="font-weight-bold">Image de marque</span>
+                                    <span class="font-weight-bold">{{ __('captive_portals.tab_branding') }}</span>
                                 </a>
                             </li>
                         </ul>
@@ -669,23 +671,23 @@
                                 <form class="mt-2">
                                     <div class="row">
                                         <div class="col-12 mb-1">
-                                            <h6 class="mb-1">Informations de base</h6>
+                                            <h6 class="mb-1">{{ __('captive_portals.section_basic_info') }}</h6>
                                         </div>
                                         <div class="col-md-6 col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="portal-name">Nom du portail</label>
-                                                <input type="text" class="form-control" id="portal-name" placeholder="Entrez un nom pour cette page de connexion">
+                                                <label for="portal-name">{{ __('captive_portals.label_portal_name') }}</label>
+                                                <input type="text" class="form-control" id="portal-name" placeholder="{{ __('captive_portals.placeholder_portal_name') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="portal-description">Description</label>
-                                                <textarea class="form-control" id="portal-description" rows="2" placeholder="Brève description de cette conception"></textarea>
+                                                <label for="portal-description">{{ __('captive_portals.label_description') }}</label>
+                                                <textarea class="form-control" id="portal-description" rows="2" placeholder="{{ __('captive_portals.placeholder_description') }}"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="theme-color">Couleur du thème</label>
+                                                <label for="theme-color">{{ __('captive_portals.label_theme_color') }}</label>
                                                 <div class="color-picker-container">
                                                     <input type="color" class="form-control form-control-color" id="theme-color" value="#7367f0">
                                                     <div class="color-preview" style="background-color: #7367f0;"></div>
@@ -695,105 +697,105 @@
                                         </div>
 
                                         <div class="col-12 mt-2 mb-1">
-                                            <h6 class="mb-1">Contenu du portail</h6>
+                                            <h6 class="mb-1">{{ __('captive_portals.section_portal_content') }}</h6>
                                         </div>
                                         <div class="col-md-6 col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="welcome-message">Message de bienvenue</label>
-                                                <input type="text" class="form-control" id="welcome-message" placeholder="Bienvenue sur notre WiFi" value="Bienvenue sur notre WiFi">
+                                                <label for="welcome-message">{{ __('captive_portals.label_welcome_message') }}</label>
+                                                <input type="text" class="form-control" id="welcome-message" placeholder="{{ __('captive_portals.welcome_default') }}" value="{{ __('captive_portals.welcome_default') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="button-text">Texte du bouton</label>
-                                                <input type="text" class="form-control" id="button-text" placeholder="Se connecter au WiFi" value="Se connecter au WiFi">
+                                                <label for="button-text">{{ __('captive_portals.label_button_text') }}</label>
+                                                <input type="text" class="form-control" id="button-text" placeholder="{{ __('captive_portals.button_default') }}" value="{{ __('captive_portals.button_default') }}">
                                             </div>
                                         </div>
                                         <div class="col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="login-instructions">Instructions de connexion</label>
-                                                <textarea class="form-control" id="login-instructions" rows="2" placeholder="Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</textarea>
+                                                <label for="login-instructions">{{ __('captive_portals.label_login_instructions') }}</label>
+                                                <textarea class="form-control" id="login-instructions" rows="2" placeholder="{{ __('captive_portals.instructions_default') }}">{{ __('captive_portals.instructions_default') }}</textarea>
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input" id="show-terms" checked>
-                                                    <label class="custom-control-label" for="show-terms">Afficher le lien Conditions générales</label>
+                                                    <label class="custom-control-label" for="show-terms">{{ __('captive_portals.label_show_terms') }}</label>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-12 mt-2 mb-1">
-                                            <h6 class="mb-1">Contenu légal</h6>
+                                            <h6 class="mb-1">{{ __('captive_portals.section_legal_content') }}</h6>
                                         </div>
                                         <div class="col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="terms-of-service">Contenu des conditions de service</label>
-                                                <textarea class="form-control" id="terms-of-service" rows="3" placeholder="Entrez le contenu de vos conditions de service">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</textarea>
+                                                <label for="terms-of-service">{{ __('captive_portals.label_terms_content') }}</label>
+                                                <textarea class="form-control" id="terms-of-service" rows="3" placeholder="{{ __('captive_portals.placeholder_terms_content') }}">{{ __('captive_portals.terms_default') }}</textarea>
                                             </div>
                                         </div>
                                         <div class="col-12 mb-1">
                                             <div class="form-group">
-                                                <label for="privacy-policy">Contenu de la politique de confidentialité</label>
-                                                <textarea class="form-control" id="privacy-policy" rows="3" placeholder="Entrez le contenu de votre politique de confidentialité">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</textarea>
+                                                <label for="privacy-policy">{{ __('captive_portals.label_privacy_content') }}</label>
+                                                <textarea class="form-control" id="privacy-policy" rows="3" placeholder="{{ __('captive_portals.placeholder_privacy_content') }}">{{ __('captive_portals.privacy_default') }}</textarea>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
                             </div>
-                            
+
                             <!-- Branding Tab -->
                             <div class="tab-pane" id="branding" aria-labelledby="branding-tab" role="tabpanel">
                                 <form class="mt-2">
                                     <div class="row">
                                         <div class="col-12 mb-2">
                                             <div class="form-group">
-                                                <label for="location-logo">Logo de l'emplacement</label>
+                                                <label for="location-logo">{{ __('captive_portals.label_location_logo') }}</label>
                                                 <div class="upload-area" id="location-logo-upload">
                                                     <i data-feather="upload-cloud" class="upload-icon"></i>
-                                                    <h5 class="upload-text">Déposez votre logo d'emplacement ici ou cliquez pour parcourir</h5>
-                                                    <p class="text-muted small">Recommandé : PNG ou SVG, 200x100px</p>
+                                                    <h5 class="upload-text">{{ __('captive_portals.upload_location_logo') }}</h5>
+                                                    <p class="text-muted small">{{ __('captive_portals.recommended_logo') }}</p>
                                                 </div>
                                                 <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
                                                 <img src="" id="location-logo-preview" class="image-preview">
-                                                <p class="note">Votre logo d'emplacement apparaîtra en haut de la page de connexion.</p>
+                                                <p class="note">{{ __('captive_portals.note_location_logo') }}</p>
                                             </div>
                                         </div>
                                         <div class="col-12 mb-2">
                                             <div class="form-group">
-                                                <label for="background-image">Image d'arrière-plan</label>
+                                                <label for="background-image">{{ __('captive_portals.label_background_image') }}</label>
                                                 <div class="upload-area" id="background-upload">
                                                     <i data-feather="image" class="upload-icon"></i>
-                                                    <h5 class="upload-text">Déposez votre image d'arrière-plan ici ou cliquez pour parcourir</h5>
-                                                    <p class="text-muted small">Recommandé : JPG ou PNG, 1920x1080px</p>
+                                                    <h5 class="upload-text">{{ __('captive_portals.upload_background') }}</h5>
+                                                    <p class="text-muted small">{{ __('captive_portals.recommended_background') }}</p>
                                                 </div>
                                                 <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
                                                 <img src="" id="background-preview" class="image-preview">
-                                                <p class="note">Cette image sera affichée comme arrière-plan de la page.</p>
+                                                <p class="note">{{ __('captive_portals.note_background') }}</p>
                                             </div>
                                         </div>
                                         <div class="col-12 mb-2">
-                                            <h6 class="mb-1">Dégradé d'arrière-plan (Alternative à l'image)</h6>
-                                            <p class="text-muted small mb-2">Créez un arrière-plan dégradé au lieu d'utiliser une image. Cela remplacera l'image d'arrière-plan si les deux sont définis.</p>
+                                            <h6 class="mb-1">{{ __('captive_portals.section_gradient') }}</h6>
+                                            <p class="text-muted small mb-2">{{ __('captive_portals.note_gradient') }}</p>
                                             <div class="row">
                                                 <div class="col-md-6 col-12 mb-1">
                                                     <div class="form-group">
-                                                        <label for="gradient-start">Couleur de début du dégradé</label>
+                                                        <label for="gradient-start">{{ __('captive_portals.label_gradient_start') }}</label>
                                                         <div class="color-picker-container">
                                                             <input type="color" class="form-control form-control-color" id="gradient-start">
                                                             <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
-                                                            <span class="color-value" id="gradient-start-value">Aucun</span>
+                                                            <span class="color-value" id="gradient-start-value">{{ __('captive_portals.none') }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 col-12 mb-1">
                                                     <div class="form-group">
-                                                        <label for="gradient-end">Couleur de fin du dégradé</label>
+                                                        <label for="gradient-end">{{ __('captive_portals.label_gradient_end') }}</label>
                                                         <div class="color-picker-container">
                                                             <input type="color" class="form-control form-control-color" id="gradient-end">
                                                             <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
-                                                            <span class="color-value" id="gradient-end-value">Aucun</span>
+                                                            <span class="color-value" id="gradient-end-value">{{ __('captive_portals.none') }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -801,16 +803,16 @@
                                             <div class="row">
                                                 <div class="col-12">
                                                     <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
-                                                        <i data-feather="x" class="mr-25"></i>Effacer le dégradé
+                                                        <i data-feather="x" class="mr-25"></i>{{ __('captive_portals.btn_clear_gradient') }}
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
-                                                        Bleu vers violet
+                                                        {{ __('captive_portals.btn_preset_blue_purple') }}
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
-                                                        Orange vers rose
+                                                        {{ __('captive_portals.btn_preset_orange_pink') }}
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
-                                                        Tester le dégradé
+                                                        {{ __('captive_portals.btn_test_gradient') }}
                                                     </button>
                                                 </div>
                                             </div>
@@ -822,7 +824,7 @@
                         <div class="row mt-2">
                             <div class="col-12 d-flex justify-content-end">
                                 <button id="save-design" class="btn btn-primary">
-                                    <i data-feather="save" class="mr-50"></i>Enregistrer la conception
+                                    <i data-feather="save" class="mr-50"></i>{{ __('captive_portals.save_design') }}
                                 </button>
                             </div>
                         </div>
@@ -834,7 +836,7 @@
             <div class="col-lg-4 col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Aperçu</h4>
+                        <h4 class="card-title">{{ __('captive_portals.preview_title') }}</h4>
                         <div class="heading-elements">
                             <ul class="list-inline mb-0">
                                 <li>
@@ -851,29 +853,29 @@
                             <div class="preview-main">
                                 <!-- Header with Location Logo -->
                                 <div class="logo-container">
-                                    <img src="/img/wifi-placeholder.png" alt="Logo de l'emplacement" id="preview-logo" class="preview-logo">
+                                    <img src="/img/wifi-placeholder.png" alt="{{ __('captive_portals.alt_location_logo') }}" id="preview-logo" class="preview-logo">
                                 </div>
-                                
+
                                 <!-- Welcome Text -->
-                                <h2 id="preview-welcome">Bienvenue sur notre WiFi</h2>
-                                <p id="preview-instructions">Entrez votre adresse e-mail pour vous connecter à notre réseau WiFi</p>
-                                
+                                <h2 id="preview-welcome">{{ __('captive_portals.welcome_default') }}</h2>
+                                <p id="preview-instructions">{{ __('captive_portals.instructions_default') }}</p>
+
                                 <!-- Login Form -->
                                 <div class="input-container">
-                                    <input type="text" class="preview-input" placeholder="Adresse e-mail">
-                                    <button id="preview-button" class="preview-button">Se connecter au WiFi</button>
+                                    <input type="text" class="preview-input" placeholder="{{ __('captive_portals.placeholder_email') }}">
+                                    <button id="preview-button" class="preview-button">{{ __('captive_portals.button_default') }}</button>
                                 </div>
-                                
+
                                 <!-- Footer with Brand Logo and Terms -->
                                 <div class="footer">
                                     <div class="brand-logo">
-                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Logo de marque">
+                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="{{ __('captive_portals.alt_brand_logo') }}">
                                     </div>
                                     <div class="terms" id="preview-terms-container" style="display: none; margin-bottom: 0.5rem;">
                                         <!-- Terms links will be inserted here when show_terms is enabled -->
                                     </div>
                                     <div class="terms" id="preview-powered-by">
-                                        Propulsé par Monsieur WiFi
+                                        {{ __('captive_portals.powered_by') }}
                                     </div>
                                 </div>
                             </div>
@@ -890,16 +892,16 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="termsModalLabel">Conditions de service</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="termsModalLabel">{{ __('captive_portals.modal_terms_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p id="preview-terms-content">En accédant à ce service WiFi, vous acceptez de vous conformer à toutes les lois applicables et à la politique d'utilisation acceptable du réseau. Nous nous réservons le droit de surveiller le trafic et le contenu accessible via notre réseau, et de résilier l'accès en cas de violations de ces conditions.</p>
+                <p id="preview-terms-content">{{ __('captive_portals.terms_default') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.close') }}</button>
             </div>
         </div>
     </div>
@@ -909,16 +911,16 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="privacyModalLabel">Politique de confidentialité</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="privacyModalLabel">{{ __('captive_portals.modal_privacy_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p id="preview-privacy-content">Nous collectons des informations limitées lorsque vous utilisez notre service WiFi, y compris les identifiants d'appareils, les heures de connexion et les données d'utilisation. Ces informations sont utilisées pour améliorer notre service, résoudre les problèmes techniques et respecter les exigences légales. Nous ne vendons pas vos informations personnelles à des tiers.</p>
+                <p id="preview-privacy-content">{{ __('captive_portals.privacy_default') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.close') }}</button>
             </div>
         </div>
     </div>
@@ -929,17 +931,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteDesignModalLabel">Confirmer la suppression</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="deleteDesignModalLabel">{{ __('captive_portals.modal_delete_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer cette conception ? Cette action ne peut pas être annulée.</p>
+                <p>{{ __('captive_portals.modal_delete_body') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">{{ __('captive_portals.modal_delete_confirm') }}</button>
             </div>
         </div>
     </div>
@@ -950,26 +952,26 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="changeOwnerModalLabel">Changer le propriétaire de la conception</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="changeOwnerModalLabel">{{ __('captive_portals.modal_change_owner_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p id="changeOwnerText">Sélectionnez un nouveau propriétaire pour cette conception de portail captif :</p>
+                <p id="changeOwnerText">{{ __('captive_portals.modal_change_owner_body') }}</p>
                 <div class="form-group">
-                    <label for="newOwnerSelect">Nouveau propriétaire</label>
+                    <label for="newOwnerSelect">{{ __('captive_portals.label_new_owner') }}</label>
                     <select class="form-control" id="newOwnerSelect">
-                        <option value="">Chargement des utilisateurs...</option>
+                        <option value="">{{ __('captive_portals.loading_users') }}</option>
                     </select>
                 </div>
                 <div class="alert alert-info mt-2">
-                    <strong>Note :</strong> Cette action transférera la propriété de la conception à l'utilisateur sélectionné. Les informations du créateur original seront préservées.
+                    {!! __('captive_portals.note_change_owner_html') !!}
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="confirmChangeOwnerBtn">Changer le propriétaire</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="confirmChangeOwnerBtn">{{ __('captive_portals.btn_change_owner') }}</button>
             </div>
         </div>
     </div>
@@ -982,7 +984,3 @@
 </script>
 <script src="/assets/js/captive-portals.js?v={{ time() }}"></script>
 @endpush
-
-@php
-    $locale = 'fr';
-@endphp

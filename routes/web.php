@@ -124,8 +124,7 @@ foreach (['en', 'fr'] as $loc) {
         })->name('analytics');
 
         Route::get('/captive-portals', function () {
-            $locale = app()->getLocale();
-            return view('captive-portals-' . $locale, compact('locale'));
+            return view('captive-portals');
         })->name('captive-portals');
 
         Route::get('/domain-blocking', [DomainBlockingController::class, 'show_page'])
