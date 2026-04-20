@@ -17,8 +17,7 @@ class SystemSettingController extends Controller
      */
     public function index()
     {
-        // Only admin can view system settings
-        if (!auth()->user()->is_admin) {
+        if (auth()->user()->role !== 'superadmin') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'You are not authorized to view system settings'
@@ -40,14 +39,13 @@ class SystemSettingController extends Controller
      */
     public function update(Request $request)
     {
-        // Only admin can update system settings
-        if (!auth()->user()->is_admin) {
+        if (auth()->user()->role !== 'superadmin') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'You are not authorized to update system settings'
             ], 403);
         }
-        
+
         Log::info('Update system settings request received');
         Log::info($request->all());
         $validator = Validator::make($request->all(), [
