@@ -13,7 +13,6 @@ class CartAbandonmentMail extends Mailable
     use Queueable;
 
     public $cart;
-    public $locale;
 
     public function __construct(Cart $cart, string $locale = 'en')
     {
@@ -24,19 +23,16 @@ class CartAbandonmentMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->locale === 'fr' 
-                ? 'Vous avez oublié quelque chose - Monsieur WiFi' 
-                : 'You Left Something Behind - Monsieur WiFi',
+            subject: __('emails/cart-abandonment.subject'),
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: $this->locale === 'fr' ? 'emails.cart-abandonment-fr' : 'emails.cart-abandonment-en',
+            view: 'emails.cart-abandonment',
             with: [
                 'cart' => $this->cart,
-                'locale' => $this->locale,
             ],
         );
     }

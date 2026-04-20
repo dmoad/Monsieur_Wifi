@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <style>
@@ -15,24 +15,24 @@
 </head>
 <body>
     <div class="container">
-        <div class="header"><h1>🛒 Vous avez oublié quelque chose!</h1></div>
+        <div class="header"><h1>{{ __('emails/cart-abandonment.heading') }}</h1></div>
         <div class="content">
-            <p>Bonjour {{ $cart->user->name }},</p>
-            <p>Nous avons remarqué que vous avez laissé des articles dans votre panier. Ils vous attendent encore!</p>
+            <p>{{ __('emails/cart-abandonment.greeting') }} {{ $cart->user->name }},</p>
+            <p>{{ __('emails/cart-abandonment.intro') }}</p>
             @foreach($cart->items as $item)
             <div class="product-box">
-                <span>{{ $item->product->name }} × {{ $item->quantity }}</span>
+                <span>{{ $item->productModel->name }} × {{ $item->quantity }}</span>
                 <span>€{{ number_format($item->subtotal, 2) }}</span>
             </div>
             @endforeach
             <p style="text-align: center; margin-top: 30px; font-size: 18px; color: #7367f0;">
-                <strong>Total: €{{ number_format($cart->getTotal(), 2) }}</strong>
+                <strong>{{ __('emails/cart-abandonment.label_total') }} €{{ number_format($cart->getTotal(), 2) }}</strong>
             </p>
             <div style="text-align: center;">
-                <a href="{{ url('/fr/cart') }}" class="button">Finaliser Votre Commande</a>
+                <a href="{{ url('/' . app()->getLocale() . '/cart') }}" class="button">{{ __('emails/cart-abandonment.btn_complete') }}</a>
             </div>
         </div>
-        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. Tous droits réservés.</p></div>
+        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/cart-abandonment.footer_rights') }}</p></div>
     </div>
 </body>
 </html>
