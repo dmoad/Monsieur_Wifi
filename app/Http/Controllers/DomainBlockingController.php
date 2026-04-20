@@ -75,7 +75,7 @@ class DomainBlockingController extends Controller
 
         $domains = $query->orderBy('created_at', 'desc')->paginate(15);
         
-        return view('domain-blocking-' . $locale, compact('categories', 'domains', 'locale'));
+        return view('domain-blocking', compact('categories', 'domains', 'locale'));
     }
 
     /**

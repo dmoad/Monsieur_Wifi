@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Blocage de domaines - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+@endphp
+
+@section('title', __('domain_blocking.page_title'))
 
 @push('styles')
 <!-- DataTables CSS -->
@@ -16,7 +20,7 @@
         stroke-width: 2;
         display: block !important;
     }
-    
+
     [data-feather] {
         display: inline-block !important;
         vertical-align: middle;
@@ -59,11 +63,11 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Blocage de domaines</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('domain_blocking.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item active">Blocage de domaines</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('domain_blocking.heading') }}</li>
                     </ol>
                 </div>
             </div>
@@ -73,7 +77,7 @@
         <div class="form-group breadcrumb-right">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#domain-blocking-info">
                 <i data-feather="info" class="mr-25"></i>
-                <span>Info</span>
+                <span>{{ __('domain_blocking.info_btn') }}</span>
             </button>
         </div>
     </div>
@@ -85,8 +89,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Catégories de blocage</h4>
-                    <p class="card-text">Activez ou désactivez les catégories pour activer ou désactiver le blocage de domaines par catégorie.</p>
+                    <h4 class="card-title">{{ __('domain_blocking.categories_title') }}</h4>
+                    <p class="card-text">{{ __('domain_blocking.categories_help') }}</p>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -101,8 +105,8 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 class="mb-0">Contenu adulte</h4>
-                                                <span>1,024 domaines</span>
+                                                <h4 class="mb-0">{{ __('domain_blocking.cat_adult') }}</h4>
+                                                <span>1,024 {{ __('domain_blocking.domains_suffix') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -124,8 +128,8 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 class="mb-0">Jeux d'argent</h4>
-                                                <span>856 domaines</span>
+                                                <h4 class="mb-0">{{ __('domain_blocking.cat_gambling') }}</h4>
+                                                <span>856 {{ __('domain_blocking.domains_suffix') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -147,8 +151,8 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 class="mb-0">Logiciels malveillants</h4>
-                                                <span>2,345 domaines</span>
+                                                <h4 class="mb-0">{{ __('domain_blocking.cat_malware') }}</h4>
+                                                <span>2,345 {{ __('domain_blocking.domains_suffix') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -170,8 +174,8 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 class="mb-0">Réseaux sociaux</h4>
-                                                <span>342 domaines</span>
+                                                <h4 class="mb-0">{{ __('domain_blocking.cat_social') }}</h4>
+                                                <span>342 {{ __('domain_blocking.domains_suffix') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -193,8 +197,8 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 class="mb-0">Streaming</h4>
-                                                <span>128 domaines</span>
+                                                <h4 class="mb-0">{{ __('domain_blocking.cat_streaming') }}</h4>
+                                                <span>128 {{ __('domain_blocking.domains_suffix') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -216,8 +220,8 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h4 class="mb-0">Liste personnalisée</h4>
-                                                <span>43 domaines</span>
+                                                <h4 class="mb-0">{{ __('domain_blocking.cat_custom') }}</h4>
+                                                <span>43 {{ __('domain_blocking.domains_suffix') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -240,11 +244,11 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">Domaines bloqués</h4>
+                        <h4 class="card-title">{{ __('domain_blocking.blocked_domains_title') }}</h4>
                         <div>
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-domain">
                                 <i data-feather="plus" class="mr-25"></i>
-                                <span>Ajouter un domaine</span>
+                                <span>{{ __('domain_blocking.add_domain') }}</span>
                             </button>
                         </div>
                     </div>
@@ -253,11 +257,11 @@
                             <table class="datatables-domains table">
                                 <thead>
                                     <tr>
-                                        <th>Domaine</th>
-                                        <th>Catégorie</th>
-                                        <th>Date d'ajout</th>
-                                        <th>Dernière mise à jour</th>
-                                        <th>Actions</th>
+                                        <th>{{ __('domain_blocking.col_domain') }}</th>
+                                        <th>{{ __('domain_blocking.col_category') }}</th>
+                                        <th>{{ __('domain_blocking.col_added_date') }}</th>
+                                        <th>{{ __('domain_blocking.col_last_updated') }}</th>
+                                        <th>{{ __('domain_blocking.col_actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -276,37 +280,37 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel34">Ajouter un nouveau domaine</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title" id="myModalLabel34">{{ __('domain_blocking.add_modal_title') }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <form action="#">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="domain-name">Domaine</label>
-                        <input type="text" class="form-control" id="domain-name" placeholder="exemple.com" />
-                        <small class="form-text text-muted">Entrez un domaine sans http:// ou https://</small>
+                        <label for="domain-name">{{ __('domain_blocking.domain_label') }}</label>
+                        <input type="text" class="form-control" id="domain-name" placeholder="{{ __('domain_blocking.domain_placeholder') }}" />
+                        <small class="form-text text-muted">{{ __('domain_blocking.domain_help') }}</small>
                     </div>
                     <div class="form-group">
-                        <label for="domain-category">Catégorie</label>
+                        <label for="domain-category">{{ __('domain_blocking.category_label') }}</label>
                         <select class="form-control" id="domain-category">
-                            <option value="1">Contenu adulte</option>
-                            <option value="2">Jeux d'argent</option>
-                            <option value="3">Logiciels malveillants</option>
-                            <option value="4">Réseaux sociaux</option>
-                            <option value="5">Streaming</option>
-                            <option value="6">Liste personnalisée</option>
+                            <option value="1">{{ __('domain_blocking.cat_adult') }}</option>
+                            <option value="2">{{ __('domain_blocking.cat_gambling') }}</option>
+                            <option value="3">{{ __('domain_blocking.cat_malware') }}</option>
+                            <option value="4">{{ __('domain_blocking.cat_social') }}</option>
+                            <option value="5">{{ __('domain_blocking.cat_streaming') }}</option>
+                            <option value="6">{{ __('domain_blocking.cat_custom') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="domain-notes">Notes</label>
-                        <textarea class="form-control" id="domain-notes" rows="3" placeholder="Entrez des notes"></textarea>
+                        <label for="domain-notes">{{ __('domain_blocking.notes_label') }}</label>
+                        <textarea class="form-control" id="domain-notes" rows="3" placeholder="{{ __('domain_blocking.notes_placeholder') }}"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Ajouter le domaine</button>
+                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('domain_blocking.add_btn') }}</button>
                 </div>
             </form>
         </div>
@@ -318,42 +322,43 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel35">Modifier le domaine</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title" id="myModalLabel35">{{ __('domain_blocking.edit_modal_title') }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <form action="#">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="edit-domain-name">Domaine</label>
+                        <label for="edit-domain-name">{{ __('domain_blocking.domain_label') }}</label>
                         <input type="text" class="form-control" id="edit-domain-name" readonly />
                     </div>
                     <div class="form-group">
-                        <label for="edit-domain-category">Catégorie</label>
+                        <label for="edit-domain-category">{{ __('domain_blocking.category_label') }}</label>
                         <select class="form-control" id="edit-domain-category">
-                            <option value="1">Contenu adulte</option>
-                            <option value="2">Jeux d'argent</option>
-                            <option value="3">Logiciels malveillants</option>
-                            <option value="4">Réseaux sociaux</option>
-                            <option value="5">Streaming</option>
-                            <option value="6">Liste personnalisée</option>
+                            <option value="1">{{ __('domain_blocking.cat_adult') }}</option>
+                            <option value="2">{{ __('domain_blocking.cat_gambling') }}</option>
+                            <option value="3">{{ __('domain_blocking.cat_malware') }}</option>
+                            <option value="4">{{ __('domain_blocking.cat_social') }}</option>
+                            <option value="5">{{ __('domain_blocking.cat_streaming') }}</option>
+                            <option value="6">{{ __('domain_blocking.cat_custom') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="edit-domain-notes">Notes</label>
+                        <label for="edit-domain-notes">{{ __('domain_blocking.notes_label') }}</label>
                         <textarea class="form-control" id="edit-domain-notes" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <div class="custom-control custom-checkbox">
+                        <div class="custom-control custom-checkbox hidden">
                             <input type="checkbox" class="custom-control-input" id="edit-block-subdomains" checked>
-                            <label class="custom-control-label" for="edit-block-subdomains">Bloquer tous les sous-domaines</label>
+                            <label class="custom-control-label" for="edit-block-subdomains">{{ __('domain_blocking.block_all_subdomains') }}</label>
                         </div>
+                        <small class="form-text text-muted">{{ __('domain_blocking.block_subdomains_help') }}</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
+                    <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('domain_blocking.save_changes') }}</button>
                 </div>
             </form>
         </div>
@@ -367,9 +372,9 @@
             <div class="modal-header">
                 <h4 class="modal-title" id="myModalLabel37">
                     <i data-feather="info" class="mr-1"></i>
-                    Comment fonctionne le blocage de domaines
+                    {{ __('domain_blocking.info_modal_title') }}
                 </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -380,13 +385,9 @@
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <i data-feather="shield" class="mr-1"></i>
-                                    Qu'est-ce que le blocage de domaines ?
+                                    {{ __('domain_blocking.what_is_title') }}
                                 </h5>
-                                <p class="card-text">
-                                    Le blocage de domaines empêche les utilisateurs de votre réseau d'accéder à des sites web spécifiques en bloquant leurs noms de domaine. 
-                                    Lorsqu'un utilisateur tente de visiter un domaine bloqué, la demande est interceptée et refusée, protégeant votre réseau contre 
-                                    le contenu indésirable, les menaces de sécurité ou les distractions de productivité.
-                                </p>
+                                <p class="card-text">{{ __('domain_blocking.what_is_body') }}</p>
                             </div>
                         </div>
 
@@ -394,11 +395,11 @@
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <i data-feather="plus-circle" class="mr-1"></i>
-                                    Comment ajouter des domaines
+                                    {{ __('domain_blocking.how_to_add_title') }}
                                 </h5>
                                 <ol class="mb-0">
-                                    <li><strong>Domaine unique :</strong> Cliquez sur le bouton "Ajouter un domaine" pour ajouter des sites web individuels</li>
-                                    <li><strong>Catégories :</strong> Organisez les domaines en catégories prédéfinies pour une meilleure gestion</li>
+                                    <li><strong>{{ __('domain_blocking.how_to_single') }}</strong> {{ __('domain_blocking.how_to_single_body') }}</li>
+                                    <li><strong>{{ __('domain_blocking.how_to_categories') }}</strong> {{ __('domain_blocking.how_to_categories_body') }}</li>
                                 </ol>
                             </div>
                         </div>
@@ -407,19 +408,16 @@
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <i data-feather="alert-triangle" class="mr-1"></i>
-                                    Pourquoi plusieurs domaines sont nécessaires
+                                    {{ __('domain_blocking.why_multiple_title') }}
                                 </h5>
-                                <p class="card-text">
-                                    De nombreux sites web utilisent plusieurs domaines pour distribuer le contenu, éviter le blocage ou améliorer les performances. 
-                                    Pour bloquer efficacement un service, vous devez souvent bloquer plusieurs domaines associés :
-                                </p>
-                                
+                                <p class="card-text">{{ __('domain_blocking.why_multiple_body') }}</p>
+
                                 <div class="table-responsive">
                                     <table class="table table-sm table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Service</th>
-                                                <th>Domaines à bloquer</th>
+                                                <th>{{ __('domain_blocking.service_col') }}</th>
+                                                <th>{{ __('domain_blocking.domains_to_block_col') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -453,13 +451,13 @@
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <i data-feather="check-circle" class="mr-1"></i>
-                                    Meilleures pratiques
+                                    {{ __('domain_blocking.best_practices_title') }}
                                 </h5>
                                 <ul class="mb-0">
-                                    <li><strong>Utiliser les catégories :</strong> Regroupez les domaines associés pour une gestion plus facile</li>
-                                    <li><strong>Recherchez minutieusement :</strong> Recherchez tous les domaines utilisés par un service avant de bloquer</li>
-                                    <li><strong>Tester le blocage :</strong> Vérifiez que le blocage fonctionne comme prévu</li>
-                                    <li><strong>Mises à jour régulières :</strong> Maintenez vos listes de blocage à jour car les services changent de domaines</li>
+                                    <li><strong>{{ __('domain_blocking.bp_use_cats') }}</strong> {{ __('domain_blocking.bp_use_cats_body') }}</li>
+                                    <li><strong>{{ __('domain_blocking.bp_research') }}</strong> {{ __('domain_blocking.bp_research_body') }}</li>
+                                    <li><strong>{{ __('domain_blocking.bp_test') }}</strong> {{ __('domain_blocking.bp_test_body') }}</li>
+                                    <li><strong>{{ __('domain_blocking.bp_updates') }}</strong> {{ __('domain_blocking.bp_updates_body') }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -467,15 +465,14 @@
                         <div class="alert alert-info mt-3">
                             <div class="alert-body">
                                 <i data-feather="zap" class="mr-1"></i>
-                                <strong>Astuce :</strong> Utilisez les outils de développement du navigateur (F12) pour inspecter les requêtes réseau et identifier 
-                                tous les domaines utilisés par un site web. Cela permet d'assurer un blocage complet.
+                                <strong>{{ __('domain_blocking.pro_tip') }}</strong> {{ __('domain_blocking.pro_tip_body') }}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Compris !</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">{{ __('domain_blocking.got_it') }}</button>
             </div>
         </div>
     </div>
@@ -496,7 +493,3 @@
 </script>
 <script src="/assets/js/domain-blocking.js?v={{ time() }}"></script>
 @endpush
-
-@php
-    $locale = 'fr';
-@endphp
