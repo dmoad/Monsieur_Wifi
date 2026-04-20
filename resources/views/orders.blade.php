@@ -3,6 +3,32 @@
 @php
     $locale = app()->getLocale();
     $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
+    $ordersBase = $locale === 'fr' ? '/fr/commandes' : '/en/orders';
+    $ordersJsT = [
+        'locale' => $locale,
+        'date_locale' => $locale === 'fr' ? 'fr-FR' : 'en-US',
+        'orders_base' => $ordersBase,
+        'toast_login_required' => __('orders.js_toast_login_required'),
+        'toast_load_failed' => __('orders.js_toast_load_failed'),
+        'order_number_prefix' => __('orders.js_order_number_prefix'),
+        'label_ordered' => __('orders.js_label_ordered'),
+        'label_delivered_on' => __('orders.js_label_delivered_on'),
+        'label_status' => __('orders.js_label_status'),
+        'label_total' => __('orders.js_label_total'),
+        'label_tax' => __('orders.js_label_tax'),
+        'btn_view_details' => __('orders.js_btn_view_details'),
+        'btn_invoice' => __('orders.js_btn_invoice'),
+        'tracking_html' => __('orders.js_tracking_html'),
+        'status_cancelled' => __('orders.js_status_cancelled'),
+        'status_awaiting_payment' => __('orders.js_status_awaiting_payment'),
+        'status_delivered' => __('orders.js_status_delivered'),
+        'status_shipped' => __('orders.js_status_shipped'),
+        'status_paid' => __('orders.js_status_paid'),
+        'toast_session_expired' => __('orders.js_toast_session_expired'),
+        'toast_invoice_failed' => __('orders.js_toast_invoice_failed'),
+        'toast_invoice_downloaded' => __('orders.js_toast_invoice_downloaded'),
+        'invoice_filename' => __('orders.js_invoice_filename'),
+    ];
 @endphp
 
 @section('title', __('orders.page_title'))
@@ -52,5 +78,9 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/orders{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() }}"></script>
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.orders = @json($ordersJsT);
+</script>
+<script src="/assets/js/orders.js?v={{ time() }}"></script>
 @endpush
