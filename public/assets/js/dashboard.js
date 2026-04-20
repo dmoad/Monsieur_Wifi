@@ -185,19 +185,20 @@ function initializeNetworkMap(locations) {
     }
 
     networkMap = L.map('network-map').setView([0, 0], 2);
-    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    L.tileLayer(
-        dark
-            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-            : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-            attribution: dark
-                ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            subdomains: dark ? 'abcd' : 'abc',
-            maxZoom: 19
-        }
-    ).addTo(networkMap);
+    let mapTileLayer = null;
+    function applyMapTiles(map) {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (mapTileLayer) map.removeLayer(mapTileLayer);
+        mapTileLayer = L.tileLayer(
+            dark ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                 : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            { attribution: dark ? '&copy; OpenStreetMap contributors &copy; CARTO' : '&copy; OpenStreetMap contributors',
+              subdomains: dark ? 'abcd' : 'abc', maxZoom: 19 }
+        ).addTo(map);
+    }
+    applyMapTiles(networkMap);
+    new MutationObserver(() => applyMapTiles(networkMap))
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     const mkIcon = function(color) {
         return L.divIcon({
