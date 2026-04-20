@@ -4,6 +4,15 @@
     $locale = app()->getLocale();
     $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
     $checkoutUrl = $locale === 'fr' ? '/fr/commander' : '/en/checkout';
+    $cartT = [
+        'toast_login_required' => __('cart.js_toast_login_required'),
+        'toast_load_failed' => __('cart.js_toast_load_failed'),
+        'each' => __('cart.js_each'),
+        'toast_update_failed' => __('cart.js_toast_update_failed'),
+        'confirm_remove' => __('cart.js_confirm_remove'),
+        'toast_item_removed' => __('cart.js_toast_item_removed'),
+        'toast_remove_failed' => __('cart.js_toast_remove_failed'),
+    ];
 @endphp
 
 @section('title', __('cart.page_title'))
@@ -80,5 +89,9 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/cart{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() }}"></script>
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.cart = @json($cartT);
+</script>
+<script src="/assets/js/cart.js?v={{ time() }}"></script>
 @endpush

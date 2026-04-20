@@ -14,4 +14,13 @@ return [
     'subtotal' => 'Subtotal:',
     'total' => 'Total:',
     'btn_checkout' => 'Proceed to Checkout',
+
+    // JS-only strings (consumed via window.APP_I18N.cart)
+    'js_toast_login_required' => 'Please login to view your cart',
+    'js_toast_load_failed' => 'Failed to load cart',
+    'js_each' => 'each',
+    'js_toast_update_failed' => 'Failed to update quantity',
+    'js_confirm_remove' => 'Are you sure you want to remove this item?',
+    'js_toast_item_removed' => 'Item removed from cart',
+    'js_toast_remove_failed' => 'Failed to remove item',
 ];
