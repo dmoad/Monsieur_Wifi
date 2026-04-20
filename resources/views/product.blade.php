@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Détails du Produit - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+    $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
+@endphp
+
+@section('title', __('product.page_title'))
 
 @push('styles')
 <style>
@@ -48,12 +53,12 @@
     <div class="content-header-left col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Détails du Produit</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('product.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="/fr/boutique">Boutique</a></li>
-                        <li class="breadcrumb-item active">Produit</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ $shopUrl }}">{{ __('shop.breadcrumb') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('product.breadcrumb') }}</li>
                     </ol>
                 </div>
             </div>
@@ -64,13 +69,13 @@
     <div id="product-loading" class="row">
         <div class="col-12 text-center py-5">
             <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Chargement...</span>
+                <span class="sr-only">{{ __('common.loading') }}</span>
             </div>
         </div>
     </div>
     <div id="product-details" class="row" style="display: none;">
         <div class="col-lg-6">
-            <img id="main-image" src="" alt="Image du Produit" class="product-main-image mb-3">
+            <img id="main-image" src="" alt="{{ __('product.alt_product_image') }}" class="product-main-image mb-3">
             <div id="thumbnails" class="d-flex gap-2"></div>
         </div>
         <div class="col-lg-6">
@@ -79,15 +84,15 @@
             <div id="stock-status" class="mb-3"></div>
             <div id="product-description" class="mb-4"></div>
             <div class="mb-4">
-                <label for="quantity" class="form-label"><strong>Quantité:</strong></label>
+                <label for="quantity" class="form-label"><strong>{{ __('product.label_quantity') }}</strong></label>
                 <input type="number" id="quantity" class="form-control quantity-input" value="1" min="1">
             </div>
             <div class="product-actions-row">
                 <button id="add-to-cart-btn" class="btn btn-primary btn-lg">
-                    <i data-feather="shopping-cart"></i> Ajouter au Panier
+                    <i data-feather="shopping-cart"></i> {{ __('product.btn_add_to_cart') }}
                 </button>
-                <a href="/fr/boutique" class="btn btn-outline-secondary btn-lg">
-                    <i data-feather="arrow-left"></i> Retour à la Boutique
+                <a href="{{ $shopUrl }}" class="btn btn-outline-secondary btn-lg">
+                    <i data-feather="arrow-left"></i> {{ __('product.btn_back_to_shop') }}
                 </a>
             </div>
         </div>
@@ -96,9 +101,5 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/product-fr.js?v=<?php echo time() + 2; ?>"></script>
+<script src="/assets/js/product{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() + 2 }}"></script>
 @endpush
-
-@php
-    $locale = 'fr';
-@endphp

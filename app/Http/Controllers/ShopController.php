@@ -83,9 +83,6 @@ class ShopController extends Controller
      */
     public function detailView(Request $request, $slug)
     {
-        $path = $request->path();
-        $locale = (str_contains($path, 'fr/') || str_starts_with($path, 'fr/')) ? 'fr' : 'en';
-        \Log::info("Product detail page view for locale: {$locale}, path: {$path}");
-        return view("product-{$locale}", ['slug' => $slug]);
+        return view('product', ['slug' => $slug]);
     }
 }
