@@ -115,17 +115,15 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 #channel-scan-modal .progress-bar { transition: width 0.5s linear; }
 
 /* Networks shortcut card */
-.networks-shortcut-card { border-radius: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 8px 30px rgba(102,126,234,0.4); position: relative; overflow: hidden; }
-.networks-shortcut-card::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,0.08); }
-.networks-shortcut-card::after { content: ''; position: absolute; bottom: -60px; left: -20px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,0.05); }
-.networks-shortcut-card h4 { color: white; font-weight: 700; margin-bottom: 0.5rem; }
-.networks-shortcut-card p { color: rgba(255,255,255,0.85); margin-bottom: 1.5rem; }
-.networks-shortcut-card .btn-light { background: white; color: #764ba2; font-weight: 600; border: none; }
-.networks-shortcut-card .btn-light:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
-.network-summary-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.35); border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; font-weight: 600; margin-right: 8px; margin-bottom: 8px; }
-.network-summary-badge.badge-password { background: rgba(255,255,255,0.95); color: #7367f0; border-color: rgba(255,255,255,0.9); }
-.network-summary-badge.badge-captive { background: rgba(40,199,111,0.85); color: #fff; border-color: rgba(40,199,111,0.6); }
-.network-summary-badge.badge-open { background: rgba(255,159,67,0.9); color: #fff; border-color: rgba(255,159,67,0.6); }
+.networks-shortcut-card { border-radius: 12px; background: #fff; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #ebe9f1; }
+.networks-shortcut-card h4 { color: var(--mw-primary); font-weight: 700; margin-bottom: 0.5rem; }
+.networks-shortcut-card p { color: #6e6b7b; margin-bottom: 1.5rem; }
+.networks-shortcut-card .btn-light { background: rgba(99,102,241,0.08); color: var(--mw-primary); font-weight: 600; border: 1px solid rgba(99,102,241,0.2); }
+.networks-shortcut-card .btn-light:hover { background: rgba(99,102,241,0.15); transform: translateY(-1px); }
+.network-summary-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.08); color: var(--mw-primary); border: 1px solid rgba(99,102,241,0.2); border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; font-weight: 600; margin-right: 8px; margin-bottom: 8px; }
+.network-summary-badge.badge-password { background: rgba(99,102,241,0.08); color: var(--mw-primary); border-color: rgba(99,102,241,0.2); }
+.network-summary-badge.badge-captive { background: rgba(40,199,111,0.1); color: #28c76f; border-color: rgba(40,199,111,0.3); }
+.network-summary-badge.badge-open { background: rgba(255,159,67,0.1); color: #ff9f43; border-color: rgba(255,159,67,0.3); }
 .network-summary-badge.badge-disabled { opacity: 0.65; }
 
 /* Dark/semi-dark overrides */
