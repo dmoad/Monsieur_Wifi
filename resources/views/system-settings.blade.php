@@ -1,8 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Paramètres globaux - Monsieur WiFi')
+@php
+    $locale = app()->getLocale();
+    $systemSettingsT = [
+        'saving' => __('system_settings.saving'),
+        'sending' => __('system_settings.sending'),
+        'choose_file' => __('system_settings.choose_file'),
+        'toast_saved_title' => __('system_settings.toast_saved_title'),
+        'toast_saved_body' => __('system_settings.toast_saved_body'),
+        'toast_save_failed' => __('system_settings.toast_save_failed'),
+        'toast_error_title' => __('system_settings.toast_error_title'),
+        'toast_test_email_title' => __('system_settings.toast_test_email_title'),
+        'toast_test_email_body' => __('system_settings.toast_test_email_body'),
+        'toast_test_email_failed' => __('system_settings.toast_test_email_failed'),
+        'toast_load_failed' => __('system_settings.toast_load_failed'),
+    ];
+@endphp
 
-@php $locale = 'fr'; @endphp
+@section('title', __('system_settings.page_title'))
 
 @push('styles')
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
@@ -32,11 +47,11 @@
     <div class="content-header-left col-md-9 col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h2 class="content-header-title float-left mb-0">Paramètres globaux</h2>
+                <h2 class="content-header-title float-left mb-0">{{ __('system_settings.heading') }}</h2>
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/fr/dashboard">Accueil</a></li>
-                        <li class="breadcrumb-item active">Paramètres</li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('system_settings.breadcrumb') }}</li>
                     </ol>
                 </div>
             </div>
@@ -53,62 +68,62 @@
                         <ul class="nav nav-pills mb-3" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="captive-portal-tab" data-toggle="pill" href="#captive-portal" role="tab" aria-selected="true">
-                                    <i data-feather="wifi" class="mr-50"></i><span class="font-weight-bold">Portail captif</span>
+                                    <i data-feather="wifi" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_captive_portal') }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="radius-tab" data-toggle="pill" href="#radius" role="tab" aria-selected="false">
-                                    <i data-feather="shield" class="mr-50"></i><span class="font-weight-bold">Configuration RADIUS</span>
+                                    <i data-feather="shield" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_radius') }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="branding-tab" data-toggle="pill" href="#branding" role="tab" aria-selected="false">
-                                    <i data-feather="image" class="mr-50"></i><span class="font-weight-bold">Image de marque</span>
+                                    <i data-feather="image" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_branding') }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="system-tab" data-toggle="pill" href="#system" role="tab" aria-selected="false">
-                                    <i data-feather="server" class="mr-50"></i><span class="font-weight-bold">Système</span>
+                                    <i data-feather="server" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_system') }}</span>
                                 </a>
                             </li>
                         </ul>
 
                         <div class="tab-content">
-                            <!-- Portail captif -->
+                            <!-- Captive Portal Tab -->
                             <div role="tabpanel" class="tab-pane active" id="captive-portal" aria-labelledby="captive-portal-tab">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
                                             <div class="avatar bg-light-primary p-50 mr-1"><div class="avatar-content"><i data-feather="wifi"></i></div></div>
-                                            <h3 class="setting-section-title">Paramètres WiFi par défaut</h3>
+                                            <h3 class="setting-section-title">{{ __('system_settings.section_default_wifi') }}</h3>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="default_essid">ESSID par défaut</label>
+                                                    <label for="default_essid">{{ __('system_settings.label_default_essid') }}</label>
                                                     <input type="text" id="default_essid" class="form-control" name="default_essid" placeholder="MrWiFi-Guest" />
-                                                    <small>Cet ESSID sera utilisé par défaut pour tous les nouveaux points d'accès</small>
+                                                    <small>{{ __('system_settings.help_default_essid') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="default_guest_essid">ESSID invité par défaut</label>
+                                                    <label for="default_guest_essid">{{ __('system_settings.label_default_guest_essid') }}</label>
                                                     <input type="text" id="default_guest_essid" class="form-control" name="default_guest_essid" placeholder="MrWiFi-Guest" />
-                                                    <small>Cet ESSID sera utilisé par défaut pour les réseaux invités</small>
+                                                    <small>{{ __('system_settings.help_default_guest_essid') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="default_password">Mot de passe par défaut</label>
+                                                    <label for="default_password">{{ __('system_settings.label_default_password') }}</label>
                                                     <div class="input-group input-group-merge form-password-toggle">
                                                         <input type="password" id="default_password" class="form-control" name="default_password" placeholder="············" />
                                                         <div class="input-group-append">
                                                             <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                                         </div>
                                                     </div>
-                                                    <small>Mot de passe par défaut pour les nouveaux points d'accès (minimum 8 caractères)</small>
+                                                    <small>{{ __('system_settings.help_default_password') }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -117,46 +132,46 @@
                                     <div class="setting-section">
                                         <div class="setting-section-header">
                                             <div class="avatar bg-light-info p-50 mr-1"><div class="avatar-content"><i data-feather="layout"></i></div></div>
-                                            <h3 class="setting-section-title">Comportement du portail captif</h3>
+                                            <h3 class="setting-section-title">{{ __('system_settings.section_portal_behavior') }}</h3>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="portal_timeout">Délai d'expiration de session par défaut</label>
+                                                    <label for="portal_timeout">{{ __('system_settings.label_portal_timeout') }}</label>
                                                     <div class="input-group">
                                                         <input type="number" id="portal_timeout" class="form-control" name="portal_timeout" min="1" max="168" />
-                                                        <div class="input-group-append"><span class="input-group-text">Heures</span></div>
+                                                        <div class="input-group-append"><span class="input-group-text">{{ __('system_settings.unit_hours') }}</span></div>
                                                     </div>
-                                                    <small>Durée pendant laquelle les utilisateurs restent authentifiés avant de devoir se reconnecter</small>
+                                                    <small>{{ __('system_settings.help_portal_timeout') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="idle_timeout">Délai d'inactivité par défaut</label>
+                                                    <label for="idle_timeout">{{ __('system_settings.label_idle_timeout') }}</label>
                                                     <div class="input-group">
                                                         <input type="number" id="idle_timeout" class="form-control" name="idle_timeout" min="5" max="180" />
-                                                        <div class="input-group-append"><span class="input-group-text">Minutes</span></div>
+                                                        <div class="input-group-append"><span class="input-group-text">{{ __('system_settings.unit_minutes') }}</span></div>
                                                     </div>
-                                                    <small>Déconnecter les utilisateurs inactifs après cette période</small>
+                                                    <small>{{ __('system_settings.help_idle_timeout') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="bandwidth_limit">Limite de bande passante par défaut</label>
+                                                    <label for="bandwidth_limit">{{ __('system_settings.label_bandwidth_limit') }}</label>
                                                     <div class="input-group">
                                                         <input type="number" id="bandwidth_limit" class="form-control" name="bandwidth_limit" min="1" max="1000" />
-                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                        <div class="input-group-append"><span class="input-group-text">{{ __('system_settings.unit_mbps') }}</span></div>
                                                     </div>
-                                                    <small>Limite de bande passante par défaut par utilisateur</small>
+                                                    <small>{{ __('system_settings.help_bandwidth_limit') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="user_limit">Nombre maximum d'utilisateurs par défaut</label>
+                                                    <label for="user_limit">{{ __('system_settings.label_user_limit') }}</label>
                                                     <input type="number" id="user_limit" class="form-control" name="user_limit" min="1" max="500" />
-                                                    <small>Nombre maximum d'utilisateurs simultanés par point d'accès</small>
+                                                    <small>{{ __('system_settings.help_user_limit') }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -165,113 +180,113 @@
                                                 <div class="form-group">
                                                     <div class="custom-control custom-switch custom-control-inline">
                                                         <input type="checkbox" class="custom-control-input" id="enable_terms" name="enable_terms" />
-                                                        <label class="custom-control-label" for="enable_terms">Afficher les Conditions d'utilisation</label>
+                                                        <label class="custom-control-label" for="enable_terms">{{ __('system_settings.label_enable_terms') }}</label>
                                                     </div>
-                                                    <small>Exiger l'acceptation des Conditions d'utilisation avant la connexion</small>
+                                                    <small>{{ __('system_settings.help_enable_terms') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-primary mr-1">Enregistrer les modifications</button>
+                                            <button type="submit" class="btn btn-primary mr-1">{{ __('system_settings.save_changes') }}</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
 
-                            <!-- RADIUS -->
+                            <!-- RADIUS Tab -->
                             <div class="tab-pane" id="radius" role="tabpanel" aria-labelledby="radius-tab">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
                                             <div class="avatar bg-light-primary p-50 mr-1"><div class="avatar-content"><i data-feather="shield"></i></div></div>
-                                            <h3 class="setting-section-title">Serveur RADIUS principal</h3>
+                                            <h3 class="setting-section-title">{{ __('system_settings.section_primary_radius') }}</h3>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="radius_ip">Adresse IP du serveur</label>
+                                                    <label for="radius_ip">{{ __('system_settings.label_radius_ip') }}</label>
                                                     <input type="text" id="radius_ip" class="form-control" name="radius_ip" placeholder="192.168.1.100" />
-                                                    <small>Adresse IP de votre serveur RADIUS principal</small>
+                                                    <small>{{ __('system_settings.help_radius_ip') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="radius_port">Port d'authentification</label>
+                                                    <label for="radius_port">{{ __('system_settings.label_radius_port') }}</label>
                                                     <input type="number" id="radius_port" class="form-control" name="radius_port" placeholder="1812" min="1" max="65535" />
-                                                    <small>Port utilisé pour l'authentification RADIUS (par défaut : 1812)</small>
+                                                    <small>{{ __('system_settings.help_radius_port') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="radius_secret">Secret partagé</label>
+                                                    <label for="radius_secret">{{ __('system_settings.label_radius_secret') }}</label>
                                                     <div class="input-group input-group-merge form-password-toggle">
                                                         <input type="password" id="radius_secret" class="form-control" name="radius_secret" placeholder="············" />
                                                         <div class="input-group-append">
                                                             <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                                         </div>
                                                     </div>
-                                                    <small>Secret partagé pour l'authentification RADIUS</small>
+                                                    <small>{{ __('system_settings.help_radius_secret') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="accounting_port">Port de comptabilité</label>
+                                                    <label for="accounting_port">{{ __('system_settings.label_accounting_port') }}</label>
                                                     <input type="number" id="accounting_port" class="form-control" name="accounting_port" placeholder="1813" min="1" max="65535" />
-                                                    <small>Port utilisé pour la comptabilité RADIUS (par défaut : 1813)</small>
+                                                    <small>{{ __('system_settings.help_accounting_port') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-primary mr-1">Enregistrer les modifications</button>
-                                            <button type="reset" class="btn btn-outline-secondary">Réinitialiser</button>
+                                            <button type="submit" class="btn btn-primary mr-1">{{ __('system_settings.save_changes') }}</button>
+                                            <button type="reset" class="btn btn-outline-secondary">{{ __('common.reset') }}</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
 
-                            <!-- Image de marque -->
+                            <!-- Branding Tab -->
                             <div class="tab-pane" id="branding" role="tabpanel" aria-labelledby="branding-tab">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
                                             <div class="avatar bg-light-primary p-50 mr-1"><div class="avatar-content"><i data-feather="type"></i></div></div>
-                                            <h3 class="setting-section-title">Informations de l'entreprise</h3>
+                                            <h3 class="setting-section-title">{{ __('system_settings.section_company_info') }}</h3>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="company_name">Nom de l'entreprise</label>
+                                                    <label for="company_name">{{ __('system_settings.label_company_name') }}</label>
                                                     <input type="text" id="company_name" class="form-control" name="company_name" placeholder="monsieur-wifi" />
-                                                    <small>Le nom de votre entreprise tel qu'affiché sur le portail captif</small>
+                                                    <small>{{ __('system_settings.help_company_name') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="company_website">Site web de l'entreprise</label>
+                                                    <label for="company_website">{{ __('system_settings.label_company_website') }}</label>
                                                     <input type="url" id="company_website" class="form-control" name="company_website" placeholder="https://www.example.com" />
-                                                    <small>L'URL du site web de votre entreprise</small>
+                                                    <small>{{ __('system_settings.help_company_website') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="contact_email">Email de contact</label>
+                                                    <label for="contact_email">{{ __('system_settings.label_contact_email') }}</label>
                                                     <input type="email" id="contact_email" class="form-control" name="contact_email" placeholder="support@example.com" />
-                                                    <small>Email de contact affiché sur le portail captif</small>
+                                                    <small>{{ __('system_settings.help_contact_email') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="support_phone">Téléphone de support</label>
+                                                    <label for="support_phone">{{ __('system_settings.label_support_phone') }}</label>
                                                     <input type="tel" id="support_phone" class="form-control" name="support_phone" placeholder="+1 (555) 123-4567" />
-                                                    <small>Numéro de téléphone de support affiché sur le portail captif</small>
+                                                    <small>{{ __('system_settings.help_support_phone') }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -280,38 +295,38 @@
                                     <div class="setting-section">
                                         <div class="setting-section-header">
                                             <div class="avatar bg-light-info p-50 mr-1"><div class="avatar-content"><i data-feather="image"></i></div></div>
-                                            <h3 class="setting-section-title">Logo et images</h3>
+                                            <h3 class="setting-section-title">{{ __('system_settings.section_logo_images') }}</h3>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="logo-upload">Logo de l'entreprise</label>
+                                                    <label for="logo-upload">{{ __('system_settings.label_logo') }}</label>
                                                     <div class="custom-file">
                                                         <input type="file" class="custom-file-input" id="logo-upload" accept="image/*" />
-                                                        <label class="custom-file-label" for="logo-upload">Choisir un fichier</label>
+                                                        <label class="custom-file-label" for="logo-upload">{{ __('system_settings.choose_file') }}</label>
                                                     </div>
-                                                    <small>Taille recommandée : 300px x 100px (PNG ou SVG avec transparence)</small>
+                                                    <small>{{ __('system_settings.help_logo') }}</small>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Logo actuel</label>
+                                                    <label>{{ __('system_settings.label_current_logo') }}</label>
                                                     <div class="d-flex justify-content-center p-2 border rounded mb-1">
-                                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Logo actuel" height="50" />
+                                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="{{ __('system_settings.alt_current_logo') }}" height="50" />
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="favicon-upload">Favicon</label>
+                                                    <label for="favicon-upload">{{ __('system_settings.label_favicon') }}</label>
                                                     <div class="custom-file">
                                                         <input type="file" class="custom-file-input" id="favicon-upload" accept="image/x-icon,image/png,image/gif" />
-                                                        <label class="custom-file-label" for="favicon-upload">Choisir un fichier</label>
+                                                        <label class="custom-file-label" for="favicon-upload">{{ __('system_settings.choose_file') }}</label>
                                                     </div>
-                                                    <small>Taille recommandée : 32px x 32px (ICO, PNG ou GIF)</small>
+                                                    <small>{{ __('system_settings.help_favicon') }}</small>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Favicon actuel</label>
+                                                    <label>{{ __('system_settings.label_current_favicon') }}</label>
                                                     <div class="d-flex justify-content-center p-2 border rounded mb-1">
-                                                        <img src="/app-assets/mrwifi-assets/MrWifi.png" alt="Favicon actuel" height="32" />
+                                                        <img src="/app-assets/mrwifi-assets/MrWifi.png" alt="{{ __('system_settings.alt_current_favicon') }}" height="32" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -319,12 +334,12 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="form-group">
-                                                    <label for="splash-background">Arrière-plan du portail captif</label>
+                                                    <label for="splash-background">{{ __('system_settings.label_splash_background') }}</label>
                                                     <div class="custom-file">
                                                         <input type="file" class="custom-file-input" id="splash-background" accept="image/*" />
-                                                        <label class="custom-file-label" for="splash-background">Choisir un fichier</label>
+                                                        <label class="custom-file-label" for="splash-background">{{ __('system_settings.choose_file') }}</label>
                                                     </div>
-                                                    <small>Taille recommandée : 1920px x 1080px (JPG ou PNG)</small>
+                                                    <small>{{ __('system_settings.help_splash_background') }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -333,34 +348,34 @@
                                     <div class="setting-section">
                                         <div class="setting-section-header">
                                             <div class="avatar bg-light-warning p-50 mr-1"><div class="avatar-content"><i data-feather="layers"></i></div></div>
-                                            <h3 class="setting-section-title">Personnalisation du portail</h3>
+                                            <h3 class="setting-section-title">{{ __('system_settings.section_portal_customization') }}</h3>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="primary_color">Couleur principale</label>
+                                                    <label for="primary_color">{{ __('system_settings.label_primary_color') }}</label>
                                                     <div class="input-group">
                                                         <input type="color" id="primary_color" class="form-control" name="primary_color" value="#7367f0" />
                                                         <div class="input-group-append"><span class="input-group-text">#7367f0</span></div>
                                                     </div>
-                                                    <small>Couleur principale pour les boutons et les mises en évidence</small>
+                                                    <small>{{ __('system_settings.help_primary_color') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="secondary_color">Couleur secondaire</label>
+                                                    <label for="secondary_color">{{ __('system_settings.label_secondary_color') }}</label>
                                                     <div class="input-group">
                                                         <input type="color" id="secondary_color" class="form-control" name="secondary_color" value="#82868b" />
                                                         <div class="input-group-append"><span class="input-group-text">#82868b</span></div>
                                                     </div>
-                                                    <small>Couleur secondaire pour les accents et les éléments alternatifs</small>
+                                                    <small>{{ __('system_settings.help_secondary_color') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="font_family">Police principale</label>
+                                                    <label for="font_family">{{ __('system_settings.label_font_family') }}</label>
                                                     <select id="font_family" class="form-control" name="font_family">
                                                         <option value="montserrat" selected>Montserrat</option>
                                                         <option value="roboto">Roboto</option>
@@ -368,88 +383,88 @@
                                                         <option value="lato">Lato</option>
                                                         <option value="poppins">Poppins</option>
                                                     </select>
-                                                    <small>Famille de police utilisée dans tout le portail</small>
+                                                    <small>{{ __('system_settings.help_font_family') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="portal_theme">Thème du portail</label>
+                                                    <label for="portal_theme">{{ __('system_settings.label_portal_theme') }}</label>
                                                     <select id="portal_theme" class="form-control" name="portal_theme">
-                                                        <option value="light" selected>Clair</option>
-                                                        <option value="dark">Sombre</option>
-                                                        <option value="auto">Automatique (préférence système)</option>
+                                                        <option value="light" selected>{{ __('system_settings.theme_light') }}</option>
+                                                        <option value="dark">{{ __('system_settings.theme_dark') }}</option>
+                                                        <option value="auto">{{ __('system_settings.theme_auto') }}</option>
                                                     </select>
-                                                    <small>Thème par défaut pour le portail captif</small>
+                                                    <small>{{ __('system_settings.help_portal_theme') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-primary mr-1">Enregistrer les modifications</button>
-                                            <button type="reset" class="btn btn-outline-secondary">Réinitialiser</button>
+                                            <button type="submit" class="btn btn-primary mr-1">{{ __('system_settings.save_changes') }}</button>
+                                            <button type="reset" class="btn btn-outline-secondary">{{ __('common.reset') }}</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
 
-                            <!-- Système -->
+                            <!-- System Tab -->
                             <div class="tab-pane" id="system" role="tabpanel" aria-labelledby="system-tab">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
                                             <div class="avatar bg-light-warning p-50 mr-1"><div class="avatar-content"><i data-feather="mail"></i></div></div>
-                                            <h3 class="setting-section-title">Configuration email</h3>
+                                            <h3 class="setting-section-title">{{ __('system_settings.section_email_config') }}</h3>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="smtp_server">Serveur SMTP</label>
+                                                    <label for="smtp_server">{{ __('system_settings.label_smtp_server') }}</label>
                                                     <input type="text" id="smtp_server" class="form-control" name="smtp_server" placeholder="smtp.example.com" />
-                                                    <small>Serveur SMTP pour l'envoi de notifications par email</small>
+                                                    <small>{{ __('system_settings.help_smtp_server') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="smtp_port">Port SMTP</label>
+                                                    <label for="smtp_port">{{ __('system_settings.label_smtp_port') }}</label>
                                                     <input type="number" id="smtp_port" class="form-control" name="smtp_port" placeholder="587" min="1" max="65535" />
-                                                    <small>Port pour la connexion au serveur SMTP</small>
+                                                    <small>{{ __('system_settings.help_smtp_port') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="sender_email">Email expéditeur</label>
+                                                    <label for="sender_email">{{ __('system_settings.label_sender_email') }}</label>
                                                     <input type="email" id="sender_email" class="form-control" name="sender_email" placeholder="notifications@example.com" />
-                                                    <small>Adresse email à partir de laquelle les notifications sont envoyées</small>
+                                                    <small>{{ __('system_settings.help_sender_email') }}</small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="smtp_password">Mot de passe SMTP</label>
+                                                    <label for="smtp_password">{{ __('system_settings.label_smtp_password') }}</label>
                                                     <div class="input-group input-group-merge form-password-toggle">
                                                         <input type="password" id="smtp_password" class="form-control" name="smtp_password" placeholder="············" />
                                                         <div class="input-group-append">
                                                             <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                                         </div>
                                                     </div>
-                                                    <small>Mot de passe pour l'authentification avec le serveur SMTP</small>
+                                                    <small>{{ __('system_settings.help_smtp_password') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-12">
                                                 <button type="button" id="send-test-email" class="btn btn-outline-primary btn-sm">
-                                                    <i data-feather="send" class="mr-25"></i><span>Envoyer un email de test</span>
+                                                    <i data-feather="send" class="mr-25"></i><span>{{ __('system_settings.send_test_email') }}</span>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-primary mr-1">Enregistrer les modifications</button>
-                                            <button type="reset" class="btn btn-outline-secondary">Réinitialiser</button>
+                                            <button type="submit" class="btn btn-primary mr-1">{{ __('system_settings.save_changes') }}</button>
+                                            <button type="reset" class="btn btn-outline-secondary">{{ __('common.reset') }}</button>
                                         </div>
                                     </div>
                                 </form>
@@ -469,13 +484,16 @@
 <script src="/app-assets/js/scripts/forms/form-validation.js"></script>
 
 <script>
+    const T = @json($systemSettingsT);
+    const LOCALE = @json($locale);
+
     $(window).on('load', function() {
         if ($.fn.select2) {
             $('#font_family, #portal_theme').select2({ minimumResultsForSearch: Infinity });
         }
 
         $('.custom-file-input').on('change', function() {
-            $(this).next('.custom-file-label').html($(this).val().split('\\').pop() || 'Choisir un fichier');
+            $(this).next('.custom-file-label').html($(this).val().split('\\').pop() || T.choose_file);
         });
 
         $('#primary_color, #secondary_color').on('input change', function() {
@@ -484,7 +502,7 @@
 
         $('.form-password-toggle .input-group-text').on('click', function(e) {
             e.preventDefault();
-            var passwordInput = $(this).closest('.form-password-toggle').find('input');
+            const passwordInput = $(this).closest('.form-password-toggle').find('input');
             if (passwordInput.attr('type') === 'text') {
                 passwordInput.attr('type', 'password');
                 $(this).find('svg').replaceWith(feather.icons['eye'].toSvg());
@@ -494,7 +512,7 @@
             }
         });
 
-        var hash = window.location.hash;
+        const hash = window.location.hash;
         if (hash) $('.nav-pills a[href="' + hash + '"]').tab('show');
 
         $('.nav-pills a').on('shown.bs.tab', function(e) {
@@ -508,14 +526,14 @@
     $(document).ready(function() {
         $('.validate-form').on('submit', function(e) {
             e.preventDefault();
-            var form = $(this);
-            var submitBtn = form.find('button[type="submit"]');
-            var originalText = submitBtn.html();
-            var tabId = form.closest('.tab-pane').attr('id');
+            const form = $(this);
+            const submitBtn = form.find('button[type="submit"]');
+            const originalText = submitBtn.html();
+            const tabId = form.closest('.tab-pane').attr('id');
 
-            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enregistrement...').attr('disabled', true);
+            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + T.saving).attr('disabled', true);
 
-            var formData = new FormData();
+            const formData = new FormData();
             switch(tabId) {
                 case 'captive-portal':
                     formData.append('default_essid', $('#default_essid').val());
@@ -558,32 +576,32 @@
                 url: '/api/system-settings', type: 'POST', data: formData, processData: false, contentType: false,
                 headers: { 'Authorization': 'Bearer ' + UserManager.getToken(), 'Accept': 'application/json' },
                 success: function(response) {
-                    toastr.success('Vos paramètres ont été enregistrés avec succès.', 'Paramètres enregistrés');
+                    toastr.success(T.toast_saved_body, T.toast_saved_title);
                     if (response.settings) populateFormFields(response.settings);
                     submitBtn.html(originalText).attr('disabled', false);
                 },
                 error: function(xhr) {
-                    var msg = xhr.responseJSON?.errors ? Object.values(xhr.responseJSON.errors)[0][0] : (xhr.responseJSON?.message || 'Échec de l\'enregistrement des paramètres.');
-                    toastr.error(msg, 'Erreur');
+                    const msg = xhr.responseJSON?.errors ? Object.values(xhr.responseJSON.errors)[0][0] : (xhr.responseJSON?.message || T.toast_save_failed);
+                    toastr.error(msg, T.toast_error_title);
                     submitBtn.html(originalText).attr('disabled', false);
                 }
             });
         });
 
         $('#send-test-email').on('click', function() {
-            var btn = $(this);
-            var originalText = btn.html();
-            btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Envoi...').attr('disabled', true);
+            const btn = $(this);
+            const originalText = btn.html();
+            btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + T.sending).attr('disabled', true);
             $.ajax({
                 url: '/api/system-settings/test-email', type: 'POST',
                 headers: { 'Authorization': 'Bearer ' + UserManager.getToken(), 'Accept': 'application/json', 'Content-Type': 'application/json' },
                 data: JSON.stringify({ email: $('#sender_email').val() }),
                 success: function() {
-                    toastr.info('Email de test envoyé à ' + $('#sender_email').val(), 'Email envoyé');
+                    toastr.info(T.toast_test_email_body.replace('{email}', $('#sender_email').val()), T.toast_test_email_title);
                     btn.html(originalText).attr('disabled', false);
                 },
                 error: function(xhr) {
-                    toastr.error(xhr.responseJSON?.message || 'Échec de l\'envoi de l\'email de test. Vérifiez vos paramètres SMTP.', 'Erreur');
+                    toastr.error(xhr.responseJSON?.message || T.toast_test_email_failed, T.toast_error_title);
                     btn.html(originalText).attr('disabled', false);
                 }
             });
@@ -595,19 +613,18 @@
             url: '/api/system-settings', type: 'GET',
             headers: { 'Authorization': 'Bearer ' + UserManager.getToken(), 'Accept': 'application/json' },
             success: function(response) {
-                if (response.status === 'success'){
+                if (response.status === 'success') {
                     populateFormFields(response.settings);
                 } else {
-                    if (response.message && response.message==='You are not authorized to view system settings') {
-                        window.location.href = '/fr/dashboard';
+                    if (response.message && response.message === 'You are not authorized to view system settings') {
+                        window.location.href = '/' + LOCALE + '/dashboard';
                     }
                 }
             },
-            error: function(xhr) { 
-                toastr.error('Impossible de charger les paramètres. Veuillez réessayer.', 'Erreur'); 
-                // alert(xhr.responseJSON.message);
-                if (xhr.responseJSON.message && xhr.responseJSON.message==='You are not authorized to view system settings') {
-                    window.location.href = '/fr/dashboard';
+            error: function(xhr) {
+                toastr.error(T.toast_load_failed, T.toast_error_title);
+                if (xhr.responseJSON && xhr.responseJSON.message && xhr.responseJSON.message === 'You are not authorized to view system settings') {
+                    window.location.href = '/' + LOCALE + '/dashboard';
                 }
             }
         });

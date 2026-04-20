@@ -92,7 +92,7 @@ foreach (['en', 'fr'] as $loc) {
         })->name('location-analytics');
 
         Route::get('/system-settings', function () {
-            return view('system-settings-' . app()->getLocale());
+            return view('system-settings');
         })->name('system-settings');
 
         Route::get('/profile', function () {
