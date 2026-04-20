@@ -44,6 +44,8 @@ const MSG = Object.assign({
     macFilterHintPassword: 'Only blocking is available on password-protected networks. Bypassing authentication is not applicable here.',
     macFilterHintOpen:     'Only blocking is available on open networks. There is no portal or password to bypass.',
     macFilterHintCaptive:  'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
+    bridgeWanTaken:        'Bridge to WAN is already used by another network on this location.',
+    bridgeLanTaken:        'Bridge to LAN Port is already used by another network on this location.',
 }, window.APP_CONFIG_V5?.messages || {});
 
 const TYPE_LABELS = Object.assign(
@@ -293,9 +295,14 @@ function populatePaneData(nets) {
         $pane.find('.network-qos-policy').prop('checked', (net.qos_policy || 'scavenger') === 'full');
         $pane.find('.network-radio').val(net.radio || 'all');
 
-        // Set bridge_lan_dhcp_mode BEFORE showTypeSections so the captive portal
-        // guard inside it reads the correct saved value, not the default.
+        // Normalize ip_mode for captive portal (bridge variants not allowed).
+        // Set both sub-mode and ip_mode BEFORE showTypeSections so its coercion
+        // logic runs against the actual loaded values, not the template defaults.
+        const rawIpMode = net.ip_mode || 'static';
+        const effectiveIpMode = (net.type === 'captive_portal' && (rawIpMode === 'bridge' || rawIpMode === 'bridge_lan'))
+            ? 'static' : rawIpMode;
         $pane.find('.network-bridge-lan-dhcp-mode').val(net.bridge_lan_dhcp_mode || 'dhcp_client');
+        $pane.find('.network-ip-mode').val(effectiveIpMode);
 
         showTypeSections($pane, net.type);
         syncTypePills($pane, net.type);
@@ -326,12 +333,10 @@ function populatePaneData(nets) {
             $designSelect.append(`<option value="${d.id}" ${d.id == net.portal_design_id ? 'selected' : ''}>${escapeHtml(d.name)}</option>`);
         });
 
-        // IP / DHCP
-        const loadedIpMode = net.ip_mode || 'static';
+        // IP / DHCP (effectiveIpMode and ip-mode select already set above)
         const loadedBridgeLanDhcpMode = net.bridge_lan_dhcp_mode || 'dhcp_client';
-        const noDhcpServer = loadedIpMode === 'bridge'
-            || (loadedIpMode === 'bridge_lan' && loadedBridgeLanDhcpMode === 'dhcp_client');
-        $pane.find('.network-ip-mode').val(loadedIpMode);
+        const noDhcpServer = effectiveIpMode === 'bridge'
+            || (effectiveIpMode === 'bridge_lan' && loadedBridgeLanDhcpMode === 'dhcp_client');
         $pane.find('.network-ip-address').val(net.ip_address || '');
         $pane.find('.network-netmask').val(net.netmask || '255.255.255.0');
         $pane.find('.network-gateway').val(net.gateway || '');
@@ -343,7 +348,6 @@ function populatePaneData(nets) {
             $pane.find('.network-dhcp-start').val('');
             $pane.find('.network-dhcp-end').val('');
         }
-        applyIpModeState($pane, loadedIpMode);
 
         // VLAN
         $pane.find('.network-vlan-id').prop('disabled', !vlanEnabled).val(net.vlan_id || '');
@@ -360,6 +364,9 @@ function populatePaneData(nets) {
             initScheduler(net.id, net.working_hours || []);
         }
     });
+
+    // Apply after all panes are populated so cross-pane ownership is accurate.
+    applyBridgeExclusivityUi();
 }
 
 function initScheduler(netId, scheduleData) {
@@ -412,27 +419,20 @@ function showTypeSections($pane, type) {
         .addClass(`network-type-${type}`)
         .text(TYPE_LABELS[type] || type);
 
-    // Bridge to WAN is not available for captive portal networks.
-    // bridge_lan + dhcp_client is also not available for captive portal (portal needs a routable IP).
-    const $ipModeSelect      = $pane.find('.network-ip-mode');
-    const $bridgeOption      = $ipModeSelect.find('option[value="bridge"]');
-    const $dhcpClientOption  = $pane.find('.network-bridge-lan-dhcp-mode option[value="dhcp_client"]');
-    const $bridgeLanSubMode  = $pane.find('.network-bridge-lan-dhcp-mode');
+    // Captive portal cannot use bridge (WAN) or bridge_lan (LAN) — it needs a routable IP.
+    const $ipModeSelect    = $pane.find('.network-ip-mode');
+    const $bridgeOption    = $ipModeSelect.find('option[value="bridge"]');
+    const $bridgeLanOption = $ipModeSelect.find('option[value="bridge_lan"]');
 
     if (type === 'captive_portal') {
-        if ($ipModeSelect.val() === 'bridge') {
+        if ($ipModeSelect.val() === 'bridge' || $ipModeSelect.val() === 'bridge_lan') {
             $ipModeSelect.val('static');
         }
         $bridgeOption.hide().prop('disabled', true);
-
-        // Force dhcp_server if currently on dhcp_client
-        if ($bridgeLanSubMode.val() === 'dhcp_client') {
-            $bridgeLanSubMode.val('dhcp_server');
-        }
-        $dhcpClientOption.hide().prop('disabled', true);
+        $bridgeLanOption.hide().prop('disabled', true);
     } else {
         $bridgeOption.show().prop('disabled', false);
-        $dhcpClientOption.show().prop('disabled', false);
+        $bridgeLanOption.show().prop('disabled', false);
     }
     applyIpModeState($pane, $ipModeSelect.val());
     applyMacFilterBypassUi($pane);
@@ -485,6 +485,53 @@ function applyIpModeState($pane, mode) {
     }
 
     applyReservationsVisibility($pane);
+}
+
+/**
+ * Enforce at most one WAN bridge and one LAN bridge per location.
+ * Scans every non-captive-portal pane and, for each bridge mode that is
+ * already claimed by another pane, disables that option and shows a hint.
+ * Called after populate, after ip-mode change, and after a successful save.
+ */
+function applyBridgeExclusivityUi() {
+    const panes = $('.dynamic-network-pane');
+
+    // Collect which pane ID (if any) currently owns each bridge mode.
+    const owners = { bridge: null, bridge_lan: null };
+    panes.each(function () {
+        const $p = $(this);
+        const type = $p.find('.network-type-select').val();
+        if (type === 'captive_portal') return; // bridge options hidden for captive
+        const mode = $p.find('.network-ip-mode').val();
+        if (mode === 'bridge' || mode === 'bridge_lan') {
+            owners[mode] = $p.data('network-id');
+        }
+    });
+
+    panes.each(function () {
+        const $p   = $(this);
+        const type = $p.find('.network-type-select').val();
+        if (type === 'captive_portal') return;
+
+        const thisId = $p.data('network-id');
+        const $sel   = $p.find('.network-ip-mode');
+        const $hint  = $p.find('.network-ip-mode-bridge-hint');
+
+        const hintParts = [];
+
+        ['bridge', 'bridge_lan'].forEach(mode => {
+            const owner = owners[mode];
+            const $opt  = $sel.find(`option[value="${mode}"]`);
+            const takenByOther = owner !== null && String(owner) !== String(thisId);
+            $opt.prop('disabled', takenByOther);
+            if (takenByOther && $sel.val() !== mode) {
+                hintParts.push(MSG[mode === 'bridge' ? 'bridgeWanTaken' : 'bridgeLanTaken'] || '');
+            }
+        });
+
+        const hintText = hintParts.join(' ');
+        $hint.text(hintText).toggle(!!hintText);
+    });
 }
 
 function syncTypePills($pane, type) {
@@ -890,6 +937,9 @@ async function saveNetwork(netId) {
         // Update tab label
         $(`#network-tab-${netId} .network-tab-label`).text(data.ssid || 'Network');
         $pane.find('.network-pane-title').text(data.ssid || 'Network');
+
+        // Re-evaluate bridge exclusivity — ip_mode may have changed.
+        applyBridgeExclusivityUi();
     } catch (err) {
         handleApiError(err, 'saveNetwork');
     } finally {
@@ -1004,11 +1054,14 @@ function bindPaneEvents() {
             const net = networks.find(n => n.id == netId);
             initScheduler(netId, net?.working_hours || []);
         }
+        // Changing type to/from captive affects bridge option availability cross-pane.
+        applyBridgeExclusivityUi();
     });
 
-    // IP mode change → apply field state for static / bridge_lan / bridge
+    // IP mode change → apply field state; re-evaluate cross-pane bridge exclusivity
     $(document).off('change.nmgr', '.network-ip-mode').on('change.nmgr', '.network-ip-mode', function () {
         applyIpModeState($(this).closest('.tab-pane'), $(this).val());
+        applyBridgeExclusivityUi();
     });
 
     // bridge_lan DHCP sub-mode change → re-apply field state

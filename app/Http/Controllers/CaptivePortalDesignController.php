@@ -141,7 +141,7 @@ class CaptivePortalDesignController extends Controller
         }
         
         // Check if the user owns this design or is an admin
-        if (auth()->user()->id !== $design->user_id && auth()->user()->role !== 'admin') {
+        if (auth()->user()->id !== $design->user_id && !auth()->user()->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -193,7 +193,7 @@ class CaptivePortalDesignController extends Controller
         }
         
         // Check if the user owns this design or is an admin
-        if (auth()->user()->id !== $design->user_id && auth()->user()->role !== 'admin') {
+        if (auth()->user()->id !== $design->user_id && !auth()->user()->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -264,7 +264,7 @@ class CaptivePortalDesignController extends Controller
     public function duplicate(CaptivePortalDesign $design)
     {
         // Check if the user owns this design or is an admin
-        if (auth()->user()->id !== $design->user_id && auth()->user()->role !== 'admin') {
+        if (auth()->user()->id !== $design->user_id && !auth()->user()->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access'
@@ -292,7 +292,7 @@ class CaptivePortalDesignController extends Controller
         Log::info('Design to delete: ' . $design_id);
         Log::info($design);
         // Check if the user owns this design or is an admin
-        if (auth()->user()->id !== $design->user_id && auth()->user()->role !== 'admin') {
+        if (auth()->user()->id !== $design->user_id && !auth()->user()->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -332,7 +332,7 @@ class CaptivePortalDesignController extends Controller
     public function changeOwner(Request $request, $design_id)
     {
         // Check if the current user is an admin
-        if (auth()->user()->role !== 'admin') {
+        if (!auth()->user()->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Only admins can change ownership.'

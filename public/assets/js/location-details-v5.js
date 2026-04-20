@@ -495,9 +495,11 @@ async function loadLocationSettings() {
         if (!res.success) return;
         const s = res.data.settings;
 
-        // WAN display
+        // WAN display — reset both detail rows first so type changes are reflected cleanly
         const wanType = (s.wan_connection_type || 'dhcp').toUpperCase();
         $('#wan-type-display').text(wanType);
+        $('.wan-static-ip-display_div').addClass('hidden');
+        $('.wan-pppoe-display_div').addClass('hidden');
         if (wanType === 'STATIC') {
             $('.wan-static-ip-display_div').removeClass('hidden');
             $('#wan-ip-display').text(s.wan_ip_address || '-');
@@ -599,16 +601,8 @@ async function loadLocationSettings() {
 
 function toggleWanFields(type) {
     const t = (type || '').toUpperCase();
-    if (t === 'STATIC') {
-        $('#wan-static-fields').removeClass('hidden').show();
-        $('#wan-pppoe-fields').hide();
-    } else if (t === 'PPPOE') {
-        $('#wan-static-fields').addClass('hidden').hide();
-        $('#wan-pppoe-fields').show();
-    } else {
-        $('#wan-static-fields').addClass('hidden').hide();
-        $('#wan-pppoe-fields').hide();
-    }
+    $('#wan-static-fields').toggle(t === 'STATIC');
+    $('#wan-pppoe-fields').toggle(t === 'PPPOE');
 }
 
 function isValidIPv4(val) {
@@ -627,22 +621,91 @@ function syncDnsFieldStates(filterOn) {
 async function saveWanSettings() {
     const $btn = $('.save-wan-settings');
     const origHtml = $btn.html();
+
+    const connType = $('#wan-connection-type').val();
+
+    // Validate required fields before touching the button state
+    if (connType === 'STATIC') {
+        const ip      = $('#wan-ip-address').val().trim();
+        const netmask = $('#wan-netmask').val().trim();
+        const gateway = $('#wan-gateway').val().trim();
+        const dns1    = $('#wan-primary-dns').val().trim();
+        const dns2    = $('#wan-secondary-dns').val().trim();
+        if (!ip || !isValidIPv4(ip)) {
+            toastr.warning('A valid IP address is required for Static IP mode.');
+            $('#wan-ip-address').focus();
+            return;
+        }
+        if (!netmask || !isValidIPv4(netmask)) {
+            toastr.warning('A valid netmask is required for Static IP mode.');
+            $('#wan-netmask').focus();
+            return;
+        }
+        if (!gateway || !isValidIPv4(gateway)) {
+            toastr.warning('A valid gateway address is required for Static IP mode.');
+            $('#wan-gateway').focus();
+            return;
+        }
+        if (dns1 && !isValidIPv4(dns1)) {
+            toastr.warning('Primary DNS must be a valid IPv4 address.');
+            $('#wan-primary-dns').focus();
+            return;
+        }
+        if (dns2 && !isValidIPv4(dns2)) {
+            toastr.warning('Secondary DNS must be a valid IPv4 address.');
+            $('#wan-secondary-dns').focus();
+            return;
+        }
+    } else if (connType === 'PPPOE') {
+        if (!$('#wan-pppoe-username-modal').val().trim()) {
+            toastr.warning('A username is required for PPPoE mode.');
+            $('#wan-pppoe-username-modal').focus();
+            return;
+        }
+        if (!$('#wan-pppoe-password').val()) {
+            toastr.warning('A password is required for PPPoE mode.');
+            $('#wan-pppoe-password').focus();
+            return;
+        }
+    }
+
     $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
 
     try {
-        const connType = $('#wan-connection-type').val();
         const data = { wan_connection_type: connType };
+
         if (connType === 'STATIC') {
-            data.wan_ip_address = $('#wan-ip-address').val();
-            data.wan_netmask = $('#wan-netmask').val();
-            data.wan_gateway = $('#wan-gateway').val();
-            data.wan_primary_dns = $('#wan-primary-dns').val();
-            data.wan_secondary_dns = $('#wan-secondary-dns').val();
+            data.wan_ip_address      = $('#wan-ip-address').val().trim();
+            data.wan_netmask         = $('#wan-netmask').val().trim();
+            data.wan_gateway         = $('#wan-gateway').val().trim();
+            data.wan_primary_dns     = $('#wan-primary-dns').val().trim() || null;
+            data.wan_secondary_dns   = $('#wan-secondary-dns').val().trim() || null;
+            // Clear any stale PPPoE credentials
+            data.wan_pppoe_username  = null;
+            data.wan_pppoe_password  = null;
+            data.wan_pppoe_service_name = null;
         } else if (connType === 'PPPOE') {
-            data.wan_pppoe_username = $('#wan-pppoe-username-modal').val();
-            data.wan_pppoe_password = $('#wan-pppoe-password').val();
-            data.wan_pppoe_service_name = $('#wan-pppoe-service-name-modal').val();
+            data.wan_pppoe_username     = $('#wan-pppoe-username-modal').val().trim();
+            data.wan_pppoe_password     = $('#wan-pppoe-password').val();
+            data.wan_pppoe_service_name = $('#wan-pppoe-service-name-modal').val().trim() || null;
+            // Clear any stale static IP fields
+            data.wan_ip_address    = null;
+            data.wan_netmask       = null;
+            data.wan_gateway       = null;
+            data.wan_primary_dns   = null;
+            data.wan_secondary_dns = null;
+        } else {
+            // DHCP — clear both sets of type-specific fields
+            data.wan_ip_address      = null;
+            data.wan_netmask         = null;
+            data.wan_gateway         = null;
+            data.wan_primary_dns     = null;
+            data.wan_secondary_dns   = null;
+            data.wan_pppoe_username  = null;
+            data.wan_pppoe_password  = null;
+            data.wan_pppoe_service_name = null;
         }
+
         await apiFetch(`${API}/locations/${location_id}/settings`, { method: 'PUT', body: JSON.stringify(data) });
         toastr.success('WAN settings saved.');
         $('#wan-settings-modal').modal('hide');

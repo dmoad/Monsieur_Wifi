@@ -725,14 +725,14 @@
                         <option value="PPPOE">PPPoE</option>
                     </select>
                 </div>
-                <div id="wan-static-fields" class="hidden">
+                <div id="wan-static-fields" style="display:none;">
                     <div class="form-group"><label>IP Address</label><input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10"></div>
                     <div class="form-group"><label>Netmask</label><input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0"></div>
                     <div class="form-group"><label>Gateway</label><input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1"></div>
                     <div class="form-group"><label>Primary DNS</label><input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8"></div>
                     <div class="form-group"><label>Secondary DNS</label><input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1"></div>
                 </div>
-                <div id="wan-pppoe-fields" style="display: none;">
+                <div id="wan-pppoe-fields" style="display:none;">
                     <div class="form-group"><label>Username</label><input type="text" class="form-control" id="wan-pppoe-username-modal" placeholder="Username"></div>
                     <div class="form-group"><label>Password</label><input type="password" class="form-control" id="wan-pppoe-password" placeholder="Password"></div>
                     <div class="form-group"><label>Service Name (Optional)</label><input type="text" class="form-control" id="wan-pppoe-service-name-modal" placeholder="Service Name"></div>
@@ -1002,5 +1002,5 @@
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=21"></script>
+<script src="/assets/js/location-details-v5.js?v=22"></script>
 @endpush

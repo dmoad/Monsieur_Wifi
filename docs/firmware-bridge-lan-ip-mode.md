@@ -36,11 +36,15 @@ Only present (non-null) when `ip_mode == "bridge_lan"`.
 
 ### Captive Portal constraint
 
-**`bridge_lan` + `dhcp_client` is not permitted for Captive Portal networks.**
+**`bridge_lan` is not permitted for Captive Portal networks.**
 
-The captive portal requires a routable IP on the interface to redirect unauthenticated clients. The UI enforces this — the `dhcp_client` sub-mode option is hidden/disabled when the network type is `captive_portal`, and any saved `dhcp_client` value is coerced to `dhcp_server` on load.
+The captive portal requires a routable IP on the interface to redirect unauthenticated clients. Both `bridge` (WAN) and `bridge_lan` (LAN) are hidden and disabled in the UI for `captive_portal` networks. Any network whose stored `ip_mode` is `bridge` or `bridge_lan` but whose type is `captive_portal` is coerced to `static` on load in the UI and rejected with a 422 error at the API layer.
 
-> **Firmware defensive check:** if a payload ever arrives with `type == "captive_portal"` and `bridge_lan_dhcp_mode == "dhcp_client"`, treat it as `dhcp_server` and log a warning. This combination should never reach the firmware but is worth guarding against.
+> **Firmware defensive check:** if a payload ever arrives with `type == "captive_portal"` and `ip_mode == "bridge_lan"` or `ip_mode == "bridge"`, treat it as `ip_mode == "static"` and log a warning.
+
+### Per-location bridge exclusivity
+
+Each bridge mode (`bridge` and `bridge_lan`) may be used by **at most one network per location**. The API returns a 422 error if a second network attempts to claim an already-used bridge mode. The UI disables the conflicting option and shows an explanatory note on any pane that cannot use it.
 
 ---
 

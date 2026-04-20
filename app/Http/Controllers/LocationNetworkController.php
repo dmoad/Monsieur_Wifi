@@ -159,6 +159,16 @@ class LocationNetworkController extends Controller
             $validated['dhcp_enabled'] = false;
         }
 
+        // Each bridge mode may only be used by one network per location.
+        $bridgeErr = $this->assertBridgeModeUnique($locationId, $resolvedIpMode);
+        if ($bridgeErr !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => $bridgeErr,
+                'errors'  => ['ip_mode' => [$bridgeErr]],
+            ], 422);
+        }
+
         $dhcpErr = $this->assertDhcpPoolValid($validated, null);
         if ($dhcpErr !== null) {
             return response()->json([
@@ -319,6 +329,16 @@ class LocationNetworkController extends Controller
             $validated['dhcp_enabled'] = false;
         }
 
+        // Each bridge mode may only be used by one network per location (exclude current row).
+        $bridgeErr = $this->assertBridgeModeUnique($locationId, $resolvedIpMode, $network->id);
+        if ($bridgeErr !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => $bridgeErr,
+                'errors'  => ['ip_mode' => [$bridgeErr]],
+            ], 422);
+        }
+
         $dhcpErr = $this->assertDhcpPoolValid($validated, $network);
         if ($dhcpErr !== null) {
             return response()->json([
@@ -462,6 +482,36 @@ class LocationNetworkController extends Controller
         $r = IPv4Subnet::validateDhcpPool($ip, $mask, $start, $pool);
         if (! $r['valid']) {
             return ['message' => $r['message'] ?? 'Invalid DHCP pool.'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns an error message string if another network at the same location
+     * already uses the given bridge ip_mode, otherwise null.
+     *
+     * @param int      $locationId
+     * @param string|null $ipMode        The ip_mode being set on the current row.
+     * @param int|null $excludeNetworkId The network being updated (excluded from the check).
+     */
+    private function assertBridgeModeUnique(int $locationId, ?string $ipMode, ?int $excludeNetworkId = null): ?string
+    {
+        if (! in_array($ipMode, ['bridge', 'bridge_lan'], true)) {
+            return null;
+        }
+
+        $query = LocationNetwork::where('location_id', $locationId)
+            ->where('ip_mode', $ipMode);
+
+        if ($excludeNetworkId !== null) {
+            $query->where('id', '!=', $excludeNetworkId);
+        }
+
+        if ($query->exists()) {
+            return $ipMode === 'bridge'
+                ? 'Bridge to WAN is already used by another network on this location.'
+                : 'Bridge to LAN Port is already used by another network on this location.';
         }
 
         return null;

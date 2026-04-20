@@ -390,6 +390,7 @@
                                                 <option value="bridge_lan">Pont vers port LAN</option>
                                                 <option value="bridge">Pont vers WAN</option>
                                             </select>
+                                            <small class="form-text text-muted network-ip-mode-bridge-hint" style="display:none;"></small>
                                         </div>
                                     </div>
                                     <div class="network-bridge-lan-dhcp-mode-wrap col-md-3" style="display:none;">
@@ -399,7 +400,6 @@
                                                 <option value="dhcp_client">Client DHCP</option>
                                                 <option value="dhcp_server">Serveur DHCP</option>
                                             </select>
-                                            <small class="form-text text-muted">Le mode Client DHCP n'est pas disponible pour les réseaux Portail Captif.</small>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -672,6 +672,8 @@
             macFilterHintOpen:       'Seul le blocage est disponible sur les réseaux ouverts. Il n\'y a pas de portail ni de mot de passe à contourner.',
             macFilterHintCaptive:    'Le blocage (refus d\'accès) et le contournement (accès au réseau sans passer par le portail captif) sont disponibles pour les réseaux à portail captif.',
             portalPasswordRequired:  'Un mot de passe partagé est requis lorsque la méthode de connexion par mot de passe est activée.',
+            bridgeWanTaken:          'Le pont vers WAN est déjà utilisé par un autre réseau sur cet emplacement.',
+            bridgeLanTaken:          'Le pont vers port LAN est déjà utilisé par un autre réseau sur cet emplacement.',
         },
         schedulerLabels: {
             title:              'Heures de travail',
@@ -704,5 +706,5 @@
         },
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=11"></script>
+<script src="/assets/js/location-networks-v5.js?v=12"></script>
 @endpush

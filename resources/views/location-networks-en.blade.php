@@ -390,6 +390,7 @@
                                                 <option value="bridge_lan">Bridge to LAN Port</option>
                                                 <option value="bridge">Bridge to WAN</option>
                                             </select>
+                                            <small class="form-text text-muted network-ip-mode-bridge-hint" style="display:none;"></small>
                                         </div>
                                     </div>
                                     <div class="network-bridge-lan-dhcp-mode-wrap col-md-3" style="display:none;">
@@ -399,7 +400,6 @@
                                                 <option value="dhcp_client">DHCP Client</option>
                                                 <option value="dhcp_server">DHCP Server</option>
                                             </select>
-                                            <small class="form-text text-muted">DHCP Client is not available for Captive Portal networks.</small>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -657,8 +657,10 @@
             macFilterHintOpen:       'Only blocking is available on open networks. There is no portal or password to bypass.',
             macFilterHintCaptive:    'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
             portalPasswordRequired:  'A shared password is required when the Password login method is enabled.',
+            bridgeWanTaken:          'Bridge to WAN is already used by another network on this location.',
+            bridgeLanTaken:          'Bridge to LAN Port is already used by another network on this location.',
         }
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=11"></script>
+<script src="/assets/js/location-networks-v5.js?v=12"></script>
 @endpush

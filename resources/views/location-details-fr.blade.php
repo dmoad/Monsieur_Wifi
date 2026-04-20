@@ -884,14 +884,14 @@
                         <option value="PPPOE">PPPoE</option>
                     </select>
                 </div>
-                <div id="wan-static-fields" class="hidden">
+                <div id="wan-static-fields" style="display:none;">
                     <div class="form-group"><label>Adresse IP</label><input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10"></div>
                     <div class="form-group"><label>Masque de réseau</label><input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0"></div>
                     <div class="form-group"><label>Passerelle</label><input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1"></div>
                     <div class="form-group"><label>DNS primaire</label><input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8"></div>
                     <div class="form-group"><label>DNS secondaire</label><input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1"></div>
                 </div>
-                <div id="wan-pppoe-fields" style="display: none;">
+                <div id="wan-pppoe-fields" style="display:none;">
                     <div class="form-group"><label>Nom d'utilisateur</label><input type="text" class="form-control" id="wan-pppoe-username-modal" placeholder="Nom d'utilisateur"></div>
                     <div class="form-group"><label>Mot de passe</label><input type="password" class="form-control" id="wan-pppoe-password" placeholder="Mot de passe"></div>
                     <div class="form-group"><label>Nom du service (optionnel)</label><input type="text" class="form-control" id="wan-pppoe-service-name-modal" placeholder="Nom du service"></div>
@@ -1162,5 +1162,5 @@
         locale: 'fr'
     };
 </script>
-<script src="/assets/js/location-details-v5.js?v=21"></script>
+<script src="/assets/js/location-details-v5.js?v=22"></script>
 @endpush
