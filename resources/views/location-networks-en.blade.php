@@ -262,6 +262,13 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group network-email-otp-group" style="display:none;">
+                                        <div class="custom-control custom-switch mb-0">
+                                            <input type="checkbox" class="custom-control-input network-email-require-otp" id="network-email-otp-__ID__" checked>
+                                            <label class="custom-control-label" for="network-email-otp-__ID__">Require email verification code (OTP)</label>
+                                        </div>
+                                        <small class="form-text text-muted mt-1">When disabled, guests enter their email without receiving a verification code.</small>
+                                    </div>
                                     <div class="form-group network-social-group" style="display:none;">
                                         <label>Social Provider</label>
                                         <select class="form-control network-social-method">
@@ -659,8 +666,18 @@
             portalPasswordRequired:  'A shared password is required when the Password login method is enabled.',
             bridgeWanTaken:          'Bridge to WAN is already used by another network on this location.',
             bridgeLanTaken:          'Bridge to LAN Port is already used by another network on this location.',
+            reservationInvalidIp:       'Invalid IP address.',
+            reservationOutsideSubnet:   "IP {ip} is outside this network's subnet ({gateway} / {netmask}).",
+            reservationIsGateway:       'Reserved IP cannot be the gateway address.',
+            reservationOutsideDhcpPool: 'IP {ip} is outside the DHCP pool range ({start} – {end}).',
+            reservationDuplicateMac:    'A reservation for this MAC address already exists.',
+            reservationDuplicateIp:     'This IP address is already reserved for another device.',
+            macAlreadyInList:           'This MAC address is already in the list.',
+            invalidPrimaryDns:          'Invalid Primary DNS address.',
+            invalidSecondaryDns:        'Invalid Secondary DNS address.',
+            primaryDnsRequiredFirst:    'Set a primary DNS before adding a secondary.',
         }
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=12"></script>
+<script src="/assets/js/location-networks-v5.js?v=15"></script>
 @endpush

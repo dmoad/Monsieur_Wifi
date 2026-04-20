@@ -345,11 +345,13 @@
         const translations = {
             en: {
                 welcomeText:          'Please enter your email address to receive a one-time verification code and connect to our WiFi network.',
+                welcomeTextNoOtp:     'Please enter your email address to connect to our WiFi network.',
                 emailLabel:           'Email Address',
                 emailPlaceholder:     'Enter your email address',
                 nameLabel:            'Name (Optional)',
                 namePlaceholder:      'Enter your name',
                 sendCode:             'Send Verification Code',
+                connectDirectly:      'Connect to WiFi',
                 verificationCodeLabel:'Verification Code',
                 requestAgainIn:       'Request code again in',
                 didntReceive:         "Didn't receive the code?",
@@ -383,11 +385,13 @@
             },
             fr: {
                 welcomeText:          'Veuillez entrer votre adresse e-mail pour recevoir un code de vérification unique et vous connecter à notre réseau WiFi.',
+                welcomeTextNoOtp:     'Veuillez entrer votre adresse e-mail pour vous connecter à notre réseau WiFi.',
                 emailLabel:           'Adresse e-mail',
                 emailPlaceholder:     'Entrez votre adresse e-mail',
                 nameLabel:            'Nom (Optionnel)',
                 namePlaceholder:      'Entrez votre nom',
                 sendCode:             'Envoyer le code de vérification',
+                connectDirectly:      'Se connecter au WiFi',
                 verificationCodeLabel:'Code de vérification',
                 requestAgainIn:       'Demander à nouveau dans',
                 didntReceive:         'Code non reçu ?',
@@ -477,6 +481,25 @@
         const currentLang = getLanguage();
         applyTranslations(currentLang);
 
+        // Whether this network requires an OTP for email login (default: true)
+        window.emailRequireOtp = true;
+
+        /**
+         * Switch the page between OTP-required and email-only modes.
+         * Called once the network settings are fetched from the API.
+         */
+        function applyEmailOtpMode(requireOtp) {
+            window.emailRequireOtp = requireOtp;
+            const lang = getLanguage();
+            if (!requireOtp) {
+                const welcomeEl = document.getElementById('welcome-text');
+                if (welcomeEl && welcomeEl.getAttribute('data-is-custom') !== 'true') {
+                    welcomeEl.textContent = translations[lang].welcomeTextNoOtp;
+                }
+                $('#send-code-button').text(translations[lang].connectDirectly);
+            }
+        }
+
         // ── Main logic ────────────────────────────────────────────────────────
         $(document).ready(function () {
             const locationData     = JSON.parse(localStorage.getItem('location_data') || '{}');
@@ -545,24 +568,70 @@
                 $('#alert-container').hide();
             });
 
-            // ── Step 1: Send verification code ───────────────────────────────
+            // ── Step 1: Send verification code (or connect directly) ─────────
             $('#email-form').on('submit', function (e) {
                 e.preventDefault();
                 const lang  = getLanguage();
                 const email = $('#email').val().trim();
+                const name  = $('#name').val().trim();
 
                 if (!email) {
                     showAlert(translations[lang].enterValidEmail, 'danger');
                     return;
                 }
 
+                const $btn     = $('#send-code-button');
+                const origHtml = $btn.html();
+
+                // ── No-OTP path: connect directly without sending a code ──────
+                if (!window.emailRequireOtp) {
+                    const challenge  = localStorage.getItem('challenge');
+                    const ipAddress  = localStorage.getItem('nas_ip');
+                    $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].verifying).prop('disabled', true);
+
+                    $.ajax({
+                        url: '/api/guest/login',
+                        method: 'POST',
+                        data: {
+                            network_id:   networkId,
+                            zone_id:      zoneId,
+                            mac_address:  macAddress,
+                            login_method: 'email',
+                            email:        email,
+                            name:         name,
+                            challenge:    challenge,
+                            ip_address:   ipAddress,
+                        },
+                        success: function (response) {
+                            const lang = getLanguage();
+                            if (response.success) {
+                                $btn.removeClass('btn-primary').addClass('btn-success')
+                                    .html(translations[lang].verifiedSuccess + ' <i class="fa fa-check"></i>')
+                                    .prop('disabled', true);
+                                setTimeout(function () {
+                                    $btn.html(translations[lang].connectingWifi + ' <i class="fa fa-wifi"></i>');
+                                    setTimeout(function () { window.location.href = response.login_url; }, 1500);
+                                }, 1500);
+                            } else {
+                                $btn.html(origHtml).prop('disabled', false);
+                                showAlert(response.message || translations[lang].connectionError, 'danger');
+                            }
+                        },
+                        error: function (xhr) {
+                            const lang = getLanguage();
+                            $btn.html(origHtml).prop('disabled', false);
+                            showAlert(xhr.responseJSON?.message || translations[lang].connectionError, 'danger');
+                        },
+                    });
+                    return;
+                }
+
+                // ── OTP path: send code then transition to step 2 ────────────
                 if (sendCount >= MAX_SENDS) {
                     showAlert(translations[lang].maxResendLimit, 'warning');
                     return;
                 }
 
-                const $btn = $('#send-code-button');
-                const origHtml = $btn.html();
                 $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].sending).prop('disabled', true);
 
                 $.ajax({
@@ -845,6 +914,8 @@
                             }
                         }
                         applyDesignSettings(locationInfo.location.settings || {}, locationInfo.location.design || {});
+                        const requireOtp = locationInfo.location.settings?.email_require_otp !== false;
+                        applyEmailOtpMode(requireOtp);
                     }
                 },
                 error: function (xhr, status, error) {

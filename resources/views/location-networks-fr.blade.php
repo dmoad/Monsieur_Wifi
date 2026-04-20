@@ -262,6 +262,13 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group network-email-otp-group" style="display:none;">
+                                        <div class="custom-control custom-switch mb-0">
+                                            <input type="checkbox" class="custom-control-input network-email-require-otp" id="network-email-otp-__ID__" checked>
+                                            <label class="custom-control-label" for="network-email-otp-__ID__">Exiger un code de vérification par e-mail (OTP)</label>
+                                        </div>
+                                        <small class="form-text text-muted mt-1">Si désactivé, les invités saisissent uniquement leur adresse e-mail sans recevoir de code de vérification.</small>
+                                    </div>
                                     <div class="form-group network-social-group" style="display:none;">
                                         <label>Réseau social</label>
                                         <select class="form-control network-social-method">
@@ -674,6 +681,16 @@
             portalPasswordRequired:  'Un mot de passe partagé est requis lorsque la méthode de connexion par mot de passe est activée.',
             bridgeWanTaken:          'Le pont vers WAN est déjà utilisé par un autre réseau sur cet emplacement.',
             bridgeLanTaken:          'Le pont vers port LAN est déjà utilisé par un autre réseau sur cet emplacement.',
+            reservationInvalidIp:       'Adresse IP invalide.',
+            reservationOutsideSubnet:   "L'adresse IP {ip} est en dehors du sous-réseau ({gateway} / {netmask}).",
+            reservationIsGateway:       "L'IP réservée ne peut pas être l'adresse de la passerelle.",
+            reservationOutsideDhcpPool: "L'adresse IP {ip} est en dehors de la plage DHCP ({start} – {end}).",
+            reservationDuplicateMac:    'Une réservation existe déjà pour cette adresse MAC.',
+            reservationDuplicateIp:     'Cette adresse IP est déjà réservée pour un autre appareil.',
+            macAlreadyInList:           'Cette adresse MAC est déjà dans la liste.',
+            invalidPrimaryDns:          'Adresse DNS primaire invalide.',
+            invalidSecondaryDns:        'Adresse DNS secondaire invalide.',
+            primaryDnsRequiredFirst:    "Définissez d'abord un DNS primaire avant d'ajouter un secondaire.",
         },
         schedulerLabels: {
             title:              'Heures de travail',
@@ -706,5 +723,5 @@
         },
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=12"></script>
+<script src="/assets/js/location-networks-v5.js?v=15"></script>
 @endpush

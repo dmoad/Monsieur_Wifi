@@ -26,6 +26,7 @@ class LocationNetwork extends Model
         // Captive Portal fields
         'auth_method',
         'auth_methods',
+        'email_require_otp',
         'portal_password',
         'social_auth_method',
         'session_timeout',
@@ -69,6 +70,7 @@ class LocationNetwork extends Model
         'dhcp_reservations'  => 'array',
         'working_hours'      => 'array',
         'auth_methods'       => 'array',
+        'email_require_otp'  => 'boolean',
         'vlan_id'       => 'integer',
         'session_timeout' => 'integer',
         'idle_timeout'  => 'integer',

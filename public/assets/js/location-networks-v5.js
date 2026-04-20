@@ -46,6 +46,16 @@ const MSG = Object.assign({
     macFilterHintCaptive:  'Both block (deny access) and bypass (allow through the portal without authentication) are available for captive portal networks.',
     bridgeWanTaken:        'Bridge to WAN is already used by another network on this location.',
     bridgeLanTaken:        'Bridge to LAN Port is already used by another network on this location.',
+    reservationInvalidIp:       'Invalid IP address.',
+    reservationOutsideSubnet:   "IP {ip} is outside this network's subnet ({gateway} / {netmask}).",
+    reservationIsGateway:       'Reserved IP cannot be the gateway address.',
+    reservationOutsideDhcpPool: 'IP {ip} is outside the DHCP pool range ({start} – {end}).',
+    reservationDuplicateMac:    'A reservation for this MAC address already exists.',
+    reservationDuplicateIp:     'This IP address is already reserved for another device.',
+    macAlreadyInList:           'This MAC address is already in the list.',
+    invalidPrimaryDns:          'Invalid Primary DNS address.',
+    invalidSecondaryDns:        'Invalid Secondary DNS address.',
+    primaryDnsRequiredFirst:    'Set a primary DNS before adding a secondary.',
 }, window.APP_CONFIG_V5?.messages || {});
 
 const TYPE_LABELS = Object.assign(
@@ -319,6 +329,7 @@ function populatePaneData(nets) {
             : [net.auth_method || 'click-through'];
         setActiveAuthMethods($pane, loadedAuthMethods);
         $pane.find('.network-portal-password').val(net.portal_password || '');
+        $pane.find('.network-email-require-otp').prop('checked', net.email_require_otp !== false);
         $pane.find('.network-social-method').val(net.social_auth_method || 'facebook');
         $pane.find('.network-session-timeout').val(net.session_timeout || 60);
         $pane.find('.network-idle-timeout').val(net.idle_timeout || 15);
@@ -548,6 +559,7 @@ function syncTypePills($pane, type) {
 function showAuthSubFields($pane, methods) {
     const active = Array.isArray(methods) ? methods : [methods];
     $pane.find('.network-captive-password-group').toggle(active.includes('password'));
+    $pane.find('.network-email-otp-group').toggle(active.includes('email'));
     $pane.find('.network-social-group').toggle(active.includes('social'));
 }
 
@@ -832,6 +844,9 @@ function getFormData(netId, $pane) {
         data.auth_methods  = activeMethods;
         data.auth_method   = activeMethods[0] || 'click-through'; // backward compat
         data.portal_password = $pane.find('.network-portal-password').val() || null;
+        data.email_require_otp = activeMethods.includes('email')
+            ? $pane.find('.network-email-require-otp').prop('checked')
+            : null;
         data.social_auth_method = $pane.find('.network-social-method').val() || null;
         data.session_timeout = parseInt($pane.find('.network-session-timeout').val()) || 60;
         data.idle_timeout = parseInt($pane.find('.network-idle-timeout').val()) || 15;
@@ -902,19 +917,19 @@ async function saveNetwork(netId) {
 
         // DNS validation (only relevant when web filter is off; skip if disabled)
         if (data.dns1 && !isValidIPv4(data.dns1)) {
-            toastr.warning('Invalid Primary DNS address.');
+            toastr.warning(MSG.invalidPrimaryDns);
             $btn.prop('disabled', false).html(origHtml);
             $pane.find('.network-dns1').focus();
             return;
         }
         if (data.dns2 && !isValidIPv4(data.dns2)) {
-            toastr.warning('Invalid Secondary DNS address.');
+            toastr.warning(MSG.invalidSecondaryDns);
             $btn.prop('disabled', false).html(origHtml);
             $pane.find('.network-dns2').focus();
             return;
         }
         if (data.dns2 && !data.dns1) {
-            toastr.warning('Set a primary DNS before adding a secondary.');
+            toastr.warning(MSG.primaryDnsRequiredFirst);
             $btn.prop('disabled', false).html(origHtml);
             $pane.find('.network-dns1').focus();
             return;
@@ -1090,7 +1105,7 @@ function bindPaneEvents() {
 
         // — Basic IPv4 syntax check
         if (!isValidIPv4(ip)) {
-            toastr.warning('Invalid IP address.');
+            toastr.warning(MSG.reservationInvalidIp);
             return;
         }
 
@@ -1104,12 +1119,43 @@ function bindPaneEvents() {
 
         if (gatewayIp && netmask) {
             if (!ipInSubnet(ip, gatewayIp, netmask)) {
-                toastr.warning(`IP ${ip} is outside this network's subnet (${gatewayIp} / ${netmask}).`);
+                toastr.warning(
+                    MSG.reservationOutsideSubnet
+                        .replace('{ip}', ip)
+                        .replace('{gateway}', gatewayIp)
+                        .replace('{netmask}', netmask)
+                );
                 return;
             }
             // Reserved IP must not be the gateway itself
             if (ip === gatewayIp) {
-                toastr.warning('Reserved IP cannot be the gateway address.');
+                toastr.warning(MSG.reservationIsGateway);
+                return;
+            }
+        }
+
+        // — If DHCP is enabled, reserved IP must fall within the pool range
+        const dhcpEnabled = $pane.find('.network-dhcp-enabled').is(':checked');
+        const dhcpStart   = $pane.find('.network-dhcp-start').val().trim();
+        const dhcpSize    = parseInt($pane.find('.network-dhcp-end').val(), 10);
+
+        if (dhcpEnabled && isValidIPv4(dhcpStart) && dhcpSize >= 1) {
+            const startInt = ipToInt(dhcpStart);
+            const lastInt  = startInt + dhcpSize - 1;
+            const ipInt    = ipToInt(ip);
+            if (ipInt < startInt || ipInt > lastInt) {
+                const lastIp = [
+                    (lastInt >>> 24) & 0xff,
+                    (lastInt >>> 16) & 0xff,
+                    (lastInt >>>  8) & 0xff,
+                     lastInt         & 0xff,
+                ].join('.');
+                toastr.warning(
+                    MSG.reservationOutsideDhcpPool
+                        .replace('{ip}', ip)
+                        .replace('{start}', dhcpStart)
+                        .replace('{end}', lastIp)
+                );
                 return;
             }
         }
@@ -1118,11 +1164,11 @@ function bindPaneEvents() {
         net.dhcp_reservations = net.dhcp_reservations || [];
         const normMac = mac.toUpperCase();
         if (net.dhcp_reservations.some(r => r.mac.toUpperCase() === normMac)) {
-            toastr.warning('A reservation for this MAC address already exists.');
+            toastr.warning(MSG.reservationDuplicateMac);
             return;
         }
         if (net.dhcp_reservations.some(r => r.ip === ip)) {
-            toastr.warning('This IP address is already reserved for another device.');
+            toastr.warning(MSG.reservationDuplicateIp);
             return;
         }
 
@@ -1248,7 +1294,7 @@ function bindPaneEvents() {
         net.mac_filter_list = (net.mac_filter_list || []).map(normaliseMacEntry);
 
         if (net.mac_filter_list.some(e => e.mac === mac)) {
-            toastr.warning('This MAC address is already in the list.');
+            toastr.warning(MSG.macAlreadyInList);
             return;
         }
 

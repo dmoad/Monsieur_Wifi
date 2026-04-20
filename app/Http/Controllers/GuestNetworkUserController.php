@@ -137,6 +137,7 @@ class GuestNetworkUserController extends Controller
             'captive_portal_visible'      => $network->visible,
             'captive_auth_method'         => $network->auth_method,   // kept for backward compat
             'captive_auth_methods'        => $authMethodsArray,       // multi-method array
+            'email_require_otp'           => $network->email_require_otp ?? true,
             'session_timeout'             => $network->session_timeout,
             'idle_timeout'                => $network->idle_timeout,
             'captive_portal_redirect'     => $network->redirect_url,
@@ -278,12 +279,19 @@ class GuestNetworkUserController extends Controller
 
         // ── Method-specific pre-checks ───────────────────────────────────────
         if ($loginMethod === 'email') {
-            if (empty($input['email']) || empty($input['otp'])) {
-                return response()->json(['success' => false, 'message' => 'Email and verification code are required'], 422);
+            if (empty($input['email'])) {
+                return response()->json(['success' => false, 'message' => 'Email address is required'], 422);
             }
-            if (!OtpVerification::verifyOtp($input['email'], $input['otp'], $networkId)) {
-                Log::info('Invalid or expired email OTP');
-                return response()->json(['success' => false, 'message' => 'Invalid or expired verification code'], 422);
+            $emailNetwork = LocationNetwork::find($networkId);
+            $requireOtp   = $emailNetwork ? ($emailNetwork->email_require_otp ?? true) : true;
+            if ($requireOtp) {
+                if (empty($input['otp'])) {
+                    return response()->json(['success' => false, 'message' => 'Email and verification code are required'], 422);
+                }
+                if (!OtpVerification::verifyOtp($input['email'], $input['otp'], $networkId)) {
+                    Log::info('Invalid or expired email OTP');
+                    return response()->json(['success' => false, 'message' => 'Invalid or expired verification code'], 422);
+                }
             }
         }
 
