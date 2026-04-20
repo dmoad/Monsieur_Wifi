@@ -4,6 +4,32 @@
     $locale = app()->getLocale();
     $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
     $cartUrl = $locale === 'fr' ? '/fr/panier' : '/en/cart';
+    $ordersBase = $locale === 'fr' ? '/fr/commandes' : '/en/orders';
+    $checkoutT = [
+        'locale' => $locale,
+        'shop_url' => $shopUrl,
+        'orders_base' => $ordersBase,
+        'btn_place_order' => __('checkout.btn_place_order'),
+        'btn_pay_now' => __('checkout.btn_pay_now'),
+        'toast_login_required' => __('checkout.js_toast_login_required'),
+        'toast_cart_empty' => __('checkout.js_toast_cart_empty'),
+        'shipping_days_suffix' => __('checkout.js_shipping_days_suffix'),
+        'toast_session_expired' => __('checkout.js_toast_session_expired'),
+        'processing' => __('checkout.js_processing'),
+        'error_save_shipping' => __('checkout.js_error_save_shipping'),
+        'error_save_billing' => __('checkout.js_error_save_billing'),
+        'error_place_order' => __('checkout.js_error_place_order'),
+        'toast_order_success' => __('checkout.js_toast_order_success'),
+        'error_init_payment' => __('checkout.js_error_init_payment'),
+        'toast_init_payment_failed' => __('checkout.js_toast_init_payment_failed'),
+        'toast_payment_success' => __('checkout.js_toast_payment_success'),
+        'toast_order_confirmed' => __('checkout.js_toast_order_confirmed'),
+        'toast_payment_confirmation_pending' => __('checkout.js_toast_payment_confirmation_pending'),
+        'toast_payment_processed' => __('checkout.js_toast_payment_processed'),
+        'toast_payment_processing' => __('checkout.js_toast_payment_processing'),
+        'toast_payment_failed' => __('checkout.js_toast_payment_failed'),
+        'confirm_cancel_payment' => __('checkout.js_confirm_cancel_payment'),
+    ];
 @endphp
 
 @section('title', __('checkout.page_title'))
@@ -328,6 +354,10 @@
 @endsection
 
 @push('scripts')
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.checkout = @json($checkoutT);
+</script>
 <script src="https://js.stripe.com/v3/"></script>
-<script src="/assets/js/checkout{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() }}"></script>
+<script src="/assets/js/checkout.js?v={{ time() }}"></script>
 @endpush
