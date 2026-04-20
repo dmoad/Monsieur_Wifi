@@ -103,10 +103,8 @@ foreach (['en', 'fr'] as $loc) {
             return view('location-analytics');
         })->name('location-analytics');
 
-        // Asymmetric: EN returns the bare view, FR returns the -fr suffixed view.
         Route::get('/locations/{location}/guests', function ($location) {
-            $view = app()->getLocale() === 'fr' ? 'location-guests-fr' : 'location-guests';
-            return view($view, compact('location'));
+            return view('location-guests', compact('location'));
         })->name('location-guests');
 
         Route::get('/zones', function () {
@@ -162,7 +160,7 @@ foreach (['en', 'fr'] as $loc) {
                 return view('location-networks', compact('location', 'locale'));
             });
             Route::get('/emplacements/{location}/guests', function ($location) {
-                return view('location-guests-fr', compact('location'));
+                return view('location-guests', compact('location'));
             });
 
             Route::get('/parametres-qos', function () {
