@@ -29,25 +29,21 @@
     margin-top: 1rem !important;
     padding: 1rem !important;
 }
-
 .pagination {
     display: flex;
     justify-content: flex-end;
 }
-
 .page-link {
     padding: 0.5rem 0.75rem;
     margin-left: -1px;
     border: 1px solid #ddd;
-    color: #7367f0;
+    color: var(--mw-primary);
 }
-
 .page-item.active .page-link {
-    background-color: #7367f0;
-    border-color: #7367f0;
+    background-color: var(--mw-primary);
+    border-color: var(--mw-primary);
     color: #fff;
 }
-
 .page-item.disabled .page-link {
     color: #b9b9c3;
     pointer-events: none;
@@ -56,69 +52,43 @@
 }
 
 .location-card {
-    border-radius: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--mw-radius-lg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .location-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: var(--mw-shadow-elevated);
 }
 
 .status-badge {
-    padding: 5px 10px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: var(--mw-radius-full);
+    font-size: 11px;
+    font-weight: 600;
 }
-
 .status-online {
-    background-color: rgba(40, 199, 111, 0.12);
-    color: #28c76f;
+    background-color: rgba(22, 163, 74, 0.12);
+    color: var(--mw-success);
 }
-
 .status-offline {
-    background-color: rgba(234, 84, 85, 0.12);
-    color: #ea5455;
+    background-color: rgba(220, 38, 38, 0.10);
+    color: var(--mw-danger);
 }
-
 .status-warning {
-    background-color: rgba(255, 159, 67, 0.12);
-    color: #ff9f43;
+    background-color: rgba(234, 139, 9, 0.12);
+    color: var(--mw-warning);
 }
 
-.network-stat-icon {
-    height: 45px;
-    width: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-}
+.marker-icon { display: flex; align-items: center; justify-content: center; }
+.leaflet-map { z-index: 1; }
+.leaflet-container { font-family: inherit; font-size: inherit; }
+.leaflet-popup-content { margin: 0; padding: 0; }
+.custom-div-icon, .marker-icon { background: transparent; border: none; }
 
-.marker-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.leaflet-map {
-    z-index: 1;
-}
-
-.leaflet-container {
-    font-family: inherit;
-    font-size: inherit;
-}
-
-.leaflet-popup-content {
-    margin: 0;
-    padding: 0;
-}
-
-.custom-div-icon, .marker-icon {
-    background: transparent;
-    border: none;
+#locations-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--mw-space-md);
 }
 </style>
 @endpush
@@ -161,9 +131,9 @@
                 <div class="card card-congratulation-medal" id="welcome-card">
                     <div class="card-body">
                         <h5>{{ __('dashboard.welcome_title') }}</h5>
-                        <p class="card-text font-small-3">{{ __('dashboard.status_overview') }}</p>
+                        <p class="card-text" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.status_overview') }}</p>
                         <h3 class="mb-75 mt-2 pt-50">
-                            <span class="text-primary" id="welcome-total-locations">{{ __('common.loading') }}</span>
+                            <span id="welcome-total-locations" style="color:var(--mw-primary);">{{ __('common.loading') }}</span>
                         </h3>
                         <div class="d-flex">
                             <div class="d-flex align-items-center mr-2">
@@ -200,8 +170,8 @@
                                         <i data-feather="wifi"></i>
                                     </div>
                                     <div class="media-body my-auto">
-                                        <h4 class="font-weight-bolder mb-0" id="routers-online-count">-/-</h4>
-                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.routers_online') }}</p>
+                                        <h4 class="mb-0" id="routers-online-count">-/-</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.routers_online') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -211,8 +181,8 @@
                                         <i data-feather="users"></i>
                                     </div>
                                     <div class="media-body my-auto">
-                                        <h4 class="font-weight-bolder mb-0" id="active-users-count">-</h4>
-                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.active_users') }}</p>
+                                        <h4 class="mb-0" id="active-users-count">-</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.active_users') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -222,8 +192,8 @@
                                         <i data-feather="download"></i>
                                     </div>
                                     <div class="media-body my-auto">
-                                        <h4 class="font-weight-bolder mb-0" id="data-used-count">-</h4>
-                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.data_used') }}</p>
+                                        <h4 class="mb-0" id="data-used-count">-</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.data_used') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -233,8 +203,8 @@
                                         <i data-feather="activity"></i>
                                     </div>
                                     <div class="media-body my-auto">
-                                        <h4 class="font-weight-bolder mb-0" id="uptime-percentage">-%</h4>
-                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.uptime') }}</p>
+                                        <h4 class="mb-0" id="uptime-percentage">-%</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.uptime') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -292,7 +262,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 d-flex flex-column flex-wrap text-center mb-2">
-                                <h1 class="font-weight-bolder mt-2 mb-0" id="total-bandwidth-used">-</h1>
+                                <h1 class="mt-2 mb-0" id="total-bandwidth-used">-</h1>
                                 <p class="card-text">{{ __('dashboard.total_usage_this_week') }}</p>
                             </div>
                         </div>
@@ -305,8 +275,8 @@
                                         <i data-feather="download"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-weight-bolder mb-0" id="download-usage">185 GB</h4>
-                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.download') }}</p>
+                                        <h4 class="mb-0" id="download-usage">185 GB</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.download') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -316,8 +286,8 @@
                                         <i data-feather="upload"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-weight-bolder mb-0" id="upload-usage">60 GB</h4>
-                                        <p class="card-text font-small-3 mb-0">{{ __('dashboard.upload') }}</p>
+                                        <h4 class="mb-0" id="upload-usage">60 GB</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.upload') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -347,8 +317,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="row" id="locations-container">
-                            <!-- Location cards will be dynamically populated here -->
+                        <div id="locations-container">
+                            <!-- Location cards populated by dashboard.js -->
                         </div>
                     </div>
                 </div>
@@ -356,9 +326,9 @@
         </div>
 
         <!-- Network Analytics Overview -->
-        <div class="row" style="width: 100%; margin: 0; padding: 0;">
-            <div class="col-12" style="width: 100%; max-width: 100%; flex: 0 0 100%;">
-                <div class="card" id="analytics-section" style="width: 100% !important; max-width: 100% !important;">
+        <div class="row">
+            <div class="col-12">
+                <div class="card" id="analytics-section">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">{{ __('dashboard.analytics_overview') }}</h4>
                         <div class="dropdown">
@@ -459,186 +429,25 @@
 <script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
 
 <!-- Dashboard JS -->
-<script src="/assets/js/dashboard{{ $locale === 'fr' ? '-fr' : '' }}.js?v=12"></script>
+<script src="/assets/js/dashboard.js?v=1"></script>
 
 <script>
-$(window).on('load', function() {
-    if (feather) {
-        feather.replace({
-            width: 14,
-            height: 14
-        });
-    }
-
-    // Initialize small charts
-    var usersOptions = {
-        chart: {
-            type: 'line',
-            height: 40,
-            sparkline: { enabled: true },
-            toolbar: { show: false }
-        },
-        colors: ['#7367F0'],
-        dataLabels: { enabled: false },
-        stroke: {
-            curve: 'smooth',
-            width: 2.5
-        },
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 0.9,
-                opacityFrom: 0.7,
-                opacityTo: 0.5,
-                stops: [0, 80, 100]
-            }
-        },
-        series: [{
-            name: '{{ __('dashboard.chart_users') }}',
-            data: [2100, 2300, 2500, 2700, 2600, 2800, 2856]
-        }],
-        tooltip: { fixed: { enabled: false } }
-    };
-
-    var devicesOptions = {
-        chart: {
-            type: 'line',
-            height: 40,
-            sparkline: { enabled: true },
-            toolbar: { show: false }
-        },
-        colors: ['#28C76F'],
-        dataLabels: { enabled: false },
-        stroke: {
-            curve: 'smooth',
-            width: 2.5
-        },
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 0.9,
-                opacityFrom: 0.7,
-                opacityTo: 0.5,
-                stops: [0, 80, 100]
-            }
-        },
-        series: [{
-            name: '{{ __('dashboard.chart_devices') }}',
-            data: [42, 43, 45, 44, 45, 43, 45]
-        }],
-        tooltip: { fixed: { enabled: false } }
-    };
-
-    var bandwidthOptions = {
-        chart: {
-            type: 'line',
-            height: 40,
-            sparkline: { enabled: true },
-            toolbar: { show: false }
-        },
-        colors: ['#FF9F43'],
-        dataLabels: { enabled: false },
-        stroke: {
-            curve: 'smooth',
-            width: 2.5
-        },
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 0.9,
-                opacityFrom: 0.7,
-                opacityTo: 0.5,
-                stops: [0, 80, 100]
-            }
-        },
-        series: [{
-            name: '{{ __('dashboard.chart_bandwidth') }}',
-            data: [1.8, 2.0, 2.2, 2.3, 2.1, 2.4, 2.4]
-        }],
-        tooltip: { fixed: { enabled: false } }
-    };
-
-    var alertsOptions = {
-        chart: {
-            type: 'line',
-            height: 40,
-            sparkline: { enabled: true },
-            toolbar: { show: false }
-        },
-        colors: ['#EA5455'],
-        dataLabels: { enabled: false },
-        stroke: {
-            curve: 'smooth',
-            width: 2.5
-        },
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 0.9,
-                opacityFrom: 0.7,
-                opacityTo: 0.5,
-                stops: [0, 80, 100]
-            }
-        },
-        series: [{
-            name: '{{ __('dashboard.chart_alerts') }}',
-            data: [5, 4, 3, 5, 4, 3, 3]
-        }],
-        tooltip: { fixed: { enabled: false } }
-    };
-
-    // Initialize charts
-    if (document.querySelector('#users-online-chart')) {
-        new ApexCharts(document.querySelector('#users-online-chart'), usersOptions).render();
-    }
-    if (document.querySelector('#devices-online-chart')) {
-        new ApexCharts(document.querySelector('#devices-online-chart'), devicesOptions).render();
-    }
-    if (document.querySelector('#bandwidth-chart')) {
-        new ApexCharts(document.querySelector('#bandwidth-chart'), bandwidthOptions).render();
-    }
-    if (document.querySelector('#alerts-chart')) {
-        new ApexCharts(document.querySelector('#alerts-chart'), alertsOptions).render();
-    }
-});
-
-// Fullscreen button functionality
 $(document).ready(function() {
-    if (document.getElementById('fullscreen-btn')) {
-        document.getElementById('fullscreen-btn').addEventListener('click', function() {
-            var mapElement = document.getElementById('network-map');
-            
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', function() {
+            const mapElement = document.getElementById('network-map');
             if (!document.fullscreenElement) {
-                if (mapElement.requestFullscreen) {
-                    mapElement.requestFullscreen();
-                } else if (mapElement.mozRequestFullScreen) {
-                    mapElement.mozRequestFullScreen();
-                } else if (mapElement.webkitRequestFullscreen) {
-                    mapElement.webkitRequestFullscreen();
-                } else if (mapElement.msRequestFullscreen) {
-                    mapElement.msRequestFullscreen();
-                }
+                (mapElement.requestFullscreen || mapElement.mozRequestFullScreen ||
+                 mapElement.webkitRequestFullscreen || mapElement.msRequestFullscreen).call(mapElement);
                 this.innerHTML = '<i data-feather="minimize-2"></i> {{ __('dashboard.exit_full_screen') }}';
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
+                (document.exitFullscreen || document.mozCancelFullScreen ||
+                 document.webkitExitFullscreen || document.msExitFullscreen).call(document);
                 this.innerHTML = '<i data-feather="maximize-2"></i> {{ __('dashboard.full_screen') }}';
             }
-            
             setTimeout(function() {
-                if (typeof feather !== 'undefined') {
-                    feather.replace({
-                        width: 14,
-                        height: 14
-                    });
-                }
+                if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
             }, 100);
         });
     }
