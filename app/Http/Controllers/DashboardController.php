@@ -48,7 +48,7 @@ class DashboardController extends Controller
             ], 401);
         }
         try {
-            if (in_array($user->role, ['admin', 'superadmin'])) {
+            if ($user->isAdminOrAbove()) {
                 $locations = Location::with('device')->get();
             } else {
                 $locations = Location::with('device')->where(function ($q) use ($user) {
@@ -171,7 +171,7 @@ class DashboardController extends Controller
             }
             
             
-            if (in_array($user->role, ['admin', 'superadmin'])) {
+            if ($user->isAdminOrAbove()) {
                 $locations = Location::with('device')->get();
             } else {
                 $locations = Location::with('device')->where(function ($q) use ($user) {
@@ -270,7 +270,7 @@ class DashboardController extends Controller
                 default:
                     $startDate = Carbon::now()->subDays(6);
             }
-            if (in_array($user->role, ['admin', 'superadmin'])) {
+            if ($user->isAdminOrAbove()) {
                 $locations = Location::all();
             } else {
                 $locations = Location::where(function ($q) use ($user) {

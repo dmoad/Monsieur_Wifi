@@ -70,7 +70,7 @@ class OrderController extends Controller
             'user_email' => $user->email
         ]);
 
-        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+        $isAdmin = $user->isAdminOrAbove();
 
         $query = Order::with(['items.productModel.images', 'shippingAddress', 'billingAddress'])
             ->where('order_number', $orderNumber);
@@ -239,7 +239,7 @@ class OrderController extends Controller
         Log::info($orderNumber);
         
         $user = Auth::user();
-        $isAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+        $isAdmin = $user && $user->isAdminOrAbove();
         
         // Admin can process any order, regular users can only process their own
         $query = Order::with([

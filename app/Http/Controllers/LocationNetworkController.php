@@ -26,7 +26,7 @@ class LocationNetworkController extends Controller
     private function authorizeLocation(int $locationId): ?Location
     {
         $user = Auth::user();
-        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+        $isAdmin = $user->isAdminOrAbove();
 
         $location = $isAdmin
             ? Location::find($locationId)

@@ -18,7 +18,7 @@ class ZoneController extends Controller
     {
         $user = Auth::user();
 
-        if (in_array($user->role, ['admin', 'superadmin'])) {
+        if ($user->isAdminOrAbove()) {
             // Admin can see all zones
             $zones = Zone::with(['owner', 'locations', 'primaryLocation'])
                 ->orderBy('created_at', 'desc')
@@ -65,7 +65,7 @@ class ZoneController extends Controller
         $ownerId = $request->owner_id;
         
         // If not admin, force owner_id to be the current user
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$user->isAdminOrAbove()) {
             $ownerId = $user->id;
         } else if (!$ownerId) {
             // If admin doesn't specify owner_id, use current user
@@ -149,7 +149,7 @@ class ZoneController extends Controller
         ];
 
         // Only admin/superadmin may manage shared_users and change owner
-        if (in_array($user->role, ['admin', 'superadmin'])) {
+        if ($user->isAdminOrAbove()) {
             $rules['owner_id']                    = 'sometimes|nullable|integer|exists:users,id';
             $rules['shared_users']               = 'sometimes|nullable|array';
             $rules['shared_users.*.user_id']     = 'required_with:shared_users|integer|exists:users,id';
@@ -170,7 +170,7 @@ class ZoneController extends Controller
         $roamingBefore = $zone->roaming_enabled;
 
         // Persist shared_users separately so JSON casting is applied correctly
-        if (in_array($user->role, ['admin', 'superadmin'])) {
+        if ($user->isAdminOrAbove()) {
             if (array_key_exists('shared_users', $validated)) {
                 $zone->shared_users = $validated['shared_users'];
                 unset($validated['shared_users']);

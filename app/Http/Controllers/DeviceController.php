@@ -1181,7 +1181,7 @@ class DeviceController extends Controller
         $query = Device::with(['owner', 'location', 'inventoryItem']);
         
         // Admin/superadmin sees all devices, regular users see only their own
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$user->isAdminOrAbove()) {
             $query->where('owner_id', $user->id);
         }
         
@@ -1237,7 +1237,7 @@ class DeviceController extends Controller
         }
         
         // Check permission: owner can see their device, admin/superadmin can see all
-        if ($device->owner_id !== $user->id && !in_array($user->role, ['admin', 'superadmin'])) {
+        if ($device->owner_id !== $user->id && !$user->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -1257,7 +1257,7 @@ class DeviceController extends Controller
     {
         $user = auth()->user();
         
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$user->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -1294,7 +1294,7 @@ class DeviceController extends Controller
     public function getAvailableForLocation(Request $request)
     {
         $user = auth()->user();
-        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+        $isAdmin = $user->isAdminOrAbove();
 
         // Get unassigned devices
         $unassignedQuery = Device::with('owner')

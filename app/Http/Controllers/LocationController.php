@@ -45,7 +45,7 @@ class LocationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if (in_array($user->role, ['admin', 'superadmin'])) {
+        if ($user->isAdminOrAbove()) {
             // Get locations with their associated devices and zones
             $locations = Location::with(['device', 'zone'])->get();
         } else {
@@ -218,7 +218,7 @@ class LocationController extends Controller
         $ownerId = $request->owner_id;
         
         // If not admin, force owner_id to be the current user
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$user->isAdminOrAbove()) {
             $ownerId = $user->id;
         } else if (!$ownerId) {
             // If admin doesn't specify owner_id, use current user
@@ -275,13 +275,13 @@ class LocationController extends Controller
         }
 
         // Only allow cloning own location (or any location for admins)
-        if (!in_array($user->role, ['admin', 'superadmin']) && $source->owner_id !== $user->id) {
+        if (!$user->isAdminOrAbove() && $source->owner_id !== $user->id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
         // Determine owner for the cloned location
         $ownerId = $user->id;
-        if (in_array($user->role, ['admin', 'superadmin']) && $request->filled('owner_id')) {
+        if ($user->isAdminOrAbove() && $request->filled('owner_id')) {
             $request->validate(['owner_id' => 'exists:users,id']);
             $ownerId = $request->owner_id;
         }
@@ -341,7 +341,7 @@ class LocationController extends Controller
                 'message' => 'User not authenticated'
             ], 401);
         }
-        if (in_array($user->role, ['admin', 'superadmin'])) {
+        if ($user->isAdminOrAbove()) {
             $location = Location::with(['device', 'zone', 'settings'])->find($id);
         } else {
             $location = Location::with(['device', 'zone', 'settings'])->where(function ($q) use ($user) {
@@ -1650,7 +1650,7 @@ class LocationController extends Controller
             // Check if owner_id or shared_users are being updated — admin/superadmin only
             if ($request->hasAny(['owner_id', 'shared_users'])) {
                 $currentUser = Auth::guard('api')->user();
-                if (!$currentUser || !in_array($currentUser->role, ['admin', 'superadmin'])) {
+                if (!$currentUser || !$currentUser->isAdminOrAbove()) {
                     // Log::warning('Non-admin user attempted to change location owner via updateGeneral', [
                     //     'user_id' => $currentUser ? $currentUser->id : null,
                     //     'user_role' => $currentUser ? $currentUser->role : null,
