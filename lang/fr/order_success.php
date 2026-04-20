@@ -25,4 +25,15 @@ return [
     'label_subtotal' => 'Sous-total :',
     'label_shipping' => 'Livraison :',
     'label_tax' => 'Taxe :',
+
+    // JS-only strings (consumed via window.APP_I18N.order_success)
+    'js_toast_login_required' => 'Veuillez vous connecter pour voir les détails de la commande',
+    'js_error_not_found' => 'Commande non trouvée.',
+    'js_status_pending' => 'En Attente',
+    'js_status_processing' => 'En Traitement',
+    'js_status_completed' => 'Terminée',
+    'js_status_shipped' => 'Expédiée',
+    'js_status_delivered' => 'Livrée',
+    'js_status_cancelled' => 'Annulée',
+    'js_status_payment_failed' => 'Échec du Paiement',
 ];

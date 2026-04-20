@@ -25,4 +25,15 @@ return [
     'label_subtotal' => 'Subtotal:',
     'label_shipping' => 'Shipping:',
     'label_tax' => 'Tax:',
+
+    // JS-only strings (consumed via window.APP_I18N.order_success)
+    'js_toast_login_required' => 'Please login to view order details',
+    'js_error_not_found' => 'Order not found.',
+    'js_status_pending' => 'Pending',
+    'js_status_processing' => 'Processing',
+    'js_status_completed' => 'Completed',
+    'js_status_shipped' => 'Shipped',
+    'js_status_delivered' => 'Delivered',
+    'js_status_cancelled' => 'Cancelled',
+    'js_status_payment_failed' => 'Payment Failed',
 ];

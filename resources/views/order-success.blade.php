@@ -4,6 +4,21 @@
     $locale = app()->getLocale();
     $shopUrl = "/{$locale}/shop";
     $ordersUrl = "/{$locale}/orders";
+    $orderSuccessJsT = [
+        'locale' => $locale,
+        'date_locale' => $locale === 'fr' ? 'fr-FR' : 'en-US',
+        'orders_url' => $ordersUrl,
+        'btn_view_orders' => __('order_success.btn_view_orders'),
+        'toast_login_required' => __('order_success.js_toast_login_required'),
+        'error_not_found' => __('order_success.js_error_not_found'),
+        'status_pending' => __('order_success.js_status_pending'),
+        'status_processing' => __('order_success.js_status_processing'),
+        'status_completed' => __('order_success.js_status_completed'),
+        'status_shipped' => __('order_success.js_status_shipped'),
+        'status_delivered' => __('order_success.js_status_delivered'),
+        'status_cancelled' => __('order_success.js_status_cancelled'),
+        'status_payment_failed' => __('order_success.js_status_payment_failed'),
+    ];
 @endphp
 
 @section('title', __('order_success.page_title'))
@@ -132,5 +147,9 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/order-success{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() }}"></script>
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.order_success = @json($orderSuccessJsT);
+</script>
+<script src="/assets/js/order-success.js?v={{ time() }}"></script>
 @endpush
