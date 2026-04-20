@@ -3,6 +3,122 @@
 @php
     $locale = app()->getLocale();
     $shopUrl = "/{$locale}/shop";
+    $adminInventoryJsT = [
+        'locale' => $locale,
+        'dashboard_url' => "/{$locale}/dashboard",
+
+        'session_expired' => __('admin_inventory.js_session_expired'),
+        'no_permission' => __('admin_inventory.js_no_permission'),
+        'load_summary_failed' => __('admin_inventory.js_load_summary_failed'),
+        'load_inventory_failed' => __('admin_inventory.js_load_inventory_failed'),
+        'load_devices_failed' => __('admin_inventory.js_load_devices_failed'),
+        'load_devices_failed_prefix' => __('admin_inventory.js_load_devices_failed_prefix'),
+
+        'no_products' => __('admin_inventory.js_no_products'),
+        'no_devices' => __('admin_inventory.js_no_devices'),
+
+        'label_in_stock' => __('admin_inventory.js_label_in_stock'),
+        'label_reserved' => __('admin_inventory.js_label_reserved'),
+        'label_available' => __('admin_inventory.js_label_available'),
+        'label_threshold' => __('admin_inventory.js_label_threshold'),
+
+        'btn_add_view_devices' => __('admin_inventory.js_btn_add_view_devices'),
+        'btn_add_view_devices_title' => __('admin_inventory.js_btn_add_view_devices_title'),
+
+        'badge_out_of_stock' => __('admin_inventory.js_badge_out_of_stock'),
+        'badge_low_stock' => __('admin_inventory.js_badge_low_stock'),
+        'badge_in_stock' => __('admin_inventory.js_badge_in_stock'),
+
+        'device_based_tracking' => __('admin_inventory.js_device_based_tracking'),
+        'device_based_tracking_desc' => __('admin_inventory.js_device_based_tracking_desc'),
+        'label_devices_in_stock' => __('admin_inventory.js_label_devices_in_stock'),
+        'label_low_stock_threshold' => __('admin_inventory.js_label_low_stock_threshold'),
+        'threshold_hint' => __('admin_inventory.js_threshold_hint'),
+        'modify_stock_heading' => __('admin_inventory.js_modify_stock_heading'),
+        'btn_add_manage_devices' => __('admin_inventory.js_btn_add_manage_devices'),
+        'btn_save_threshold' => __('admin_inventory.js_btn_save_threshold'),
+        'btn_cancel' => __('common.cancel'),
+
+        'threshold_updated' => __('admin_inventory.js_threshold_updated'),
+        'threshold_update_failed' => __('admin_inventory.js_threshold_update_failed'),
+        'save_failed_prefix' => __('admin_inventory.js_save_failed_prefix'),
+
+        'pagination_page' => __('admin_inventory.js_pagination_page'),
+        'pagination_of' => __('admin_inventory.js_pagination_of'),
+        'pagination_devices' => __('admin_inventory.js_pagination_devices'),
+        'btn_previous' => __('admin_inventory.js_btn_previous'),
+        'btn_next' => __('admin_inventory.js_btn_next'),
+
+        'devices_modal_desc' => __('admin_inventory.js_devices_modal_desc'),
+        'btn_add_device' => __('admin_inventory.js_btn_add_device'),
+        'btn_import_csv' => __('admin_inventory.js_btn_import_csv'),
+
+        'col_mac_address' => __('admin_inventory.js_col_mac_address'),
+        'col_serial_number' => __('admin_inventory.js_col_serial_number'),
+        'col_status' => __('admin_inventory.js_col_status'),
+        'col_notes' => __('admin_inventory.js_col_notes'),
+        'col_actions' => __('admin_inventory.js_col_actions'),
+
+        'btn_close' => __('common.close'),
+        'btn_edit' => __('admin_inventory.js_btn_edit'),
+        'btn_delete' => __('admin_inventory.js_btn_delete'),
+
+        'device_status_available' => __('admin_inventory.js_device_status_available'),
+        'device_status_reserved' => __('admin_inventory.js_device_status_reserved'),
+        'device_status_sold' => __('admin_inventory.js_device_status_sold'),
+        'device_status_defective' => __('admin_inventory.js_device_status_defective'),
+
+        'form_add_heading' => __('admin_inventory.js_form_add_heading'),
+        'form_edit_heading' => __('admin_inventory.js_form_edit_heading'),
+        'mac_formats_hint' => __('admin_inventory.js_mac_formats_hint'),
+        'notes_placeholder' => __('admin_inventory.js_notes_placeholder'),
+        'form_received_date' => __('admin_inventory.js_form_received_date'),
+        'btn_add_device_submit' => __('admin_inventory.js_btn_add_device_submit'),
+        'btn_update_device' => __('admin_inventory.js_btn_update_device'),
+
+        'mac_serial_required' => __('admin_inventory.js_mac_serial_required'),
+        'device_added' => __('admin_inventory.js_device_added'),
+        'add_device_failed' => __('admin_inventory.js_add_device_failed'),
+        'add_device_failed_prefix' => __('admin_inventory.js_add_device_failed_prefix'),
+        'device_updated' => __('admin_inventory.js_device_updated'),
+        'update_device_failed' => __('admin_inventory.js_update_device_failed'),
+        'update_device_failed_prefix' => __('admin_inventory.js_update_device_failed_prefix'),
+        'confirm_delete_device' => __('admin_inventory.js_confirm_delete_device'),
+        'device_deleted' => __('admin_inventory.js_device_deleted'),
+        'delete_device_failed' => __('admin_inventory.js_delete_device_failed'),
+        'delete_device_failed_prefix' => __('admin_inventory.js_delete_device_failed_prefix'),
+
+        'csv_upload_heading' => __('admin_inventory.js_csv_upload_heading'),
+        'btn_download_template' => __('admin_inventory.js_btn_download_template'),
+        'csv_format_label' => __('admin_inventory.js_csv_format_label'),
+        'csv_format_desc' => __('admin_inventory.js_csv_format_desc'),
+        'csv_col_mac_desc' => __('admin_inventory.js_csv_col_mac_desc'),
+        'csv_col_serial_desc' => __('admin_inventory.js_csv_col_serial_desc'),
+        'csv_col_notes_desc' => __('admin_inventory.js_csv_col_notes_desc'),
+        'csv_example_label' => __('admin_inventory.js_csv_example_label'),
+        'csv_mac_normalize_note' => __('admin_inventory.js_csv_mac_normalize_note'),
+        'csv_select_label' => __('admin_inventory.js_csv_select_label'),
+        'csv_max_size' => __('admin_inventory.js_csv_max_size'),
+        'csv_skip_duplicates' => __('admin_inventory.js_csv_skip_duplicates'),
+        'btn_upload_import' => __('admin_inventory.js_btn_upload_import'),
+
+        'csv_select_file_error' => __('admin_inventory.js_csv_select_file_error'),
+        'csv_too_large' => __('admin_inventory.js_csv_too_large'),
+        'csv_invalid_file' => __('admin_inventory.js_csv_invalid_file'),
+        'csv_uploading' => __('admin_inventory.js_csv_uploading'),
+        'csv_processing' => __('admin_inventory.js_csv_processing'),
+        'csv_import_failed' => __('admin_inventory.js_csv_import_failed'),
+        'csv_upload_failed_prefix' => __('admin_inventory.js_csv_upload_failed_prefix'),
+
+        'import_results_heading' => __('admin_inventory.js_import_results_heading'),
+        'stat_imported' => __('admin_inventory.js_stat_imported'),
+        'stat_duplicates' => __('admin_inventory.js_stat_duplicates'),
+        'stat_errors' => __('admin_inventory.js_stat_errors'),
+        'error_details' => __('admin_inventory.js_error_details'),
+        'btn_back_to_list' => __('admin_inventory.js_btn_back_to_list'),
+
+        'csv_template_downloaded' => __('admin_inventory.js_csv_template_downloaded'),
+    ];
 @endphp
 
 @section('title', __('admin_inventory.page_title'))
@@ -187,5 +303,9 @@
 @endpush
 
 @push('scripts')
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.admin_inventory = @json($adminInventoryJsT);
+</script>
 <script src="/assets/js/admin-inventory.js?v=<?php echo time(); ?>"></script>
 @endpush
