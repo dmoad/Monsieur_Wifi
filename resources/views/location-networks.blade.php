@@ -666,5 +666,5 @@
         typeLabels: @json(__('location_networks.js_type_labels')),
     };
 </script>
-<script src="/assets/js/location-networks-v5.js?v=15"></script>
+<script src="/assets/js/location-networks.js?v=1"></script>
 @endpush
