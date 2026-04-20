@@ -80,15 +80,6 @@ Route::prefix('en')->name('en.')->group(function () {
         return view('location-networks-en', compact('location', 'locale'));
     })->name('location-networks');
     
-    Route::get('/v2/locations/{location}', function ($location) {
-        return view('location-details-v2-en');
-    })->name('location-details-v2');
-    
-
-    Route::get('/locations/analytics/{location_id}', function ($location_id) {
-        return view('location-analytics', compact('location_id'));
-    })->name('location-analytics');
-    
     Route::get('/system-settings', function () {
         return view('system-settings-en');
     })->name('system-settings');
@@ -101,10 +92,6 @@ Route::prefix('en')->name('en.')->group(function () {
     Route::get('/location-details', function () {
         return view('location-details');
     })->name('location-details');
-    
-    Route::get('/location-analytics', function () {
-        return view('location-analytics');
-    })->name('location-analytics');
 
     Route::get('/locations/{location}/guests', function ($location) {
         return view('location-guests', compact('location'));
@@ -122,10 +109,6 @@ Route::prefix('en')->name('en.')->group(function () {
     Route::get('/firmware', function () {
         return view('firmware-en');
     })->name('firmware');
-    
-    Route::get('/analytics', function () {
-        return view('analytics');
-    })->name('analytics');
     
     Route::get('/captive-portals', function () {
         $locale = 'en';
@@ -198,10 +181,6 @@ Route::prefix('fr')->name('fr.')->group(function () {
         return view('zone-details-fr', compact('zone'));
     })->name('zone-details');
 
-    Route::get('/locations/analytics/{location_id}', function ($location_id) {
-        return view('location-analytics', compact('location_id'));
-    })->name('location-analytics');
-    
     Route::get('/system-settings', function () {
         return view('system-settings-fr');
     })->name('system-settings');
@@ -215,17 +194,9 @@ Route::prefix('fr')->name('fr.')->group(function () {
         return view('location-details');
     })->name('location-details');
     
-    Route::get('/location-analytics', function () {
-        return view('location-analytics');
-    })->name('location-analytics');
-    
     Route::get('/firmware', function () {
         return view('firmware-fr');
     })->name('firmware');
-    
-    Route::get('/analytics', function () {
-        return view('analytics');
-    })->name('analytics');
     
     Route::get('/captive-portals', function () {
         $locale = 'fr';
@@ -282,10 +253,6 @@ Route::get('/profile', function () {
 
 Route::get('/firmware', function () {
     return redirect('/en/firmware');
-});
-
-Route::get('/analytics', function () {
-    return redirect('/en/analytics');
 });
 
 Route::get('/captive-portals', function () {

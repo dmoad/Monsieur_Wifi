@@ -142,7 +142,6 @@
                 <div class="dropdown-menu dropdown-menu-right">
                     <a class="dropdown-item" href="/fr/locations"><i class="mr-1" data-feather="plus"></i><span class="align-middle">Ajouter un emplacement</span></a>
                     <a class="dropdown-item" href="/fr/accounts"><i class="mr-1" data-feather="user-plus"></i><span class="align-middle">Ajouter un utilisateur</span></a>
-                    <a class="dropdown-item" href="/fr/analytics"><i class="mr-1" data-feather="bar-chart-2"></i><span class="align-middle">Rapports</span></a>
                 </div>
             </div>
         </div>
