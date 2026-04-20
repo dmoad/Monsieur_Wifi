@@ -197,10 +197,8 @@
                         <div class="row">
                             <div class="col-md-3 col-sm-6 col-12 mb-2 mb-md-0">
                                 <div class="media">
-                                    <div class="avatar bg-light-primary mr-2">
-                                        <div class="avatar-content">
-                                            <i data-feather="wifi" class="avatar-icon"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-primary mr-2">
+                                        <i data-feather="wifi"></i>
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="routers-online-count">-/-</h4>
@@ -210,10 +208,8 @@
                             </div>
                             <div class="col-md-3 col-sm-6 col-12 mb-2 mb-md-0">
                                 <div class="media">
-                                    <div class="avatar bg-light-info mr-2">
-                                        <div class="avatar-content">
-                                            <i data-feather="users" class="avatar-icon"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-info mr-2">
+                                        <i data-feather="users"></i>
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="active-users-count">-</h4>
@@ -223,10 +219,8 @@
                             </div>
                             <div class="col-md-3 col-sm-6 col-12 mb-2 mb-sm-0">
                                 <div class="media">
-                                    <div class="avatar bg-light-warning mr-2">
-                                        <div class="avatar-content">
-                                            <i data-feather="download" class="avatar-icon"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-warning mr-2">
+                                        <i data-feather="download"></i>
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="data-used-count">-</h4>
@@ -236,10 +230,8 @@
                             </div>
                             <div class="col-md-3 col-sm-6 col-12">
                                 <div class="media">
-                                    <div class="avatar bg-light-success mr-2">
-                                        <div class="avatar-content">
-                                            <i data-feather="activity" class="avatar-icon"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-success mr-2">
+                                        <i data-feather="activity"></i>
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="font-weight-bolder mb-0" id="uptime-percentage">-%</h4>
@@ -310,10 +302,8 @@
                         <div class="row mt-3">
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar bg-light-info mr-1 p-50">
-                                        <div class="avatar-content">
-                                            <i data-feather="download" class="font-medium-4"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-info mr-1">
+                                        <i data-feather="download"></i>
                                     </div>
                                     <div>
                                         <h4 class="font-weight-bolder mb-0" id="download-usage">185 GB</h4>
@@ -323,10 +313,8 @@
                             </div>
                             <div class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar bg-light-warning mr-1 p-50">
-                                        <div class="avatar-content">
-                                            <i data-feather="upload" class="font-medium-4"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-warning mr-1">
+                                        <i data-feather="upload"></i>
                                     </div>
                                     <div>
                                         <h4 class="font-weight-bolder mb-0" id="upload-usage">60 GB</h4>
@@ -392,10 +380,8 @@
                         <div class="row mb-2">
                             <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
                                 <div class="d-flex align-items-center mb-1">
-                                    <div class="avatar bg-light-primary p-50 mr-1">
-                                        <div class="avatar-content">
-                                            <i data-feather="users" class="font-medium-4"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-primary mr-1">
+                                        <i data-feather="users"></i>
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-total-users">-</h4>
@@ -404,13 +390,11 @@
                                 </div>
                                 <span class="text-muted">{{ __('dashboard.unique_users_connected') }}</span>
                             </div>
-                            
+
                             <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
                                 <div class="d-flex align-items-center mb-1">
-                                    <div class="avatar bg-light-info p-50 mr-1">
-                                        <div class="avatar-content">
-                                            <i data-feather="activity" class="font-medium-4"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-info mr-1">
+                                        <i data-feather="activity"></i>
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-data-usage">- GB</h4>
@@ -419,13 +403,11 @@
                                 </div>
                                 <span class="text-muted">{{ __('dashboard.total_bandwidth_consumed') }}</span>
                             </div>
-                            
+
                             <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
                                 <div class="d-flex align-items-center mb-1">
-                                    <div class="avatar bg-light-success p-50 mr-1">
-                                        <div class="avatar-content">
-                                            <i data-feather="wifi" class="font-medium-4"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-success mr-1">
+                                        <i data-feather="wifi"></i>
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-uptime">-%</h4>
@@ -434,13 +416,11 @@
                                 </div>
                                 <span class="text-muted">{{ __('dashboard.network_availability') }}</span>
                             </div>
-                            
+
                             <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
                                 <div class="d-flex align-items-center mb-1">
-                                    <div class="avatar bg-light-warning p-50 mr-1">
-                                        <div class="avatar-content">
-                                            <i data-feather="monitor" class="font-medium-4"></i>
-                                        </div>
+                                    <div class="mw-stat-icon mw-stat-icon-warning mr-1">
+                                        <i data-feather="monitor"></i>
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="analytics-sessions">-</h4>

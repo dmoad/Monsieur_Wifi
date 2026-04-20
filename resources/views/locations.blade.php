@@ -176,20 +176,6 @@
     font-size: 12px;
     color: var(--mw-text-muted);
 }
-.lc-summary-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--mw-radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.lc-summary-icon [data-feather] { width: 20px !important; height: 20px !important; }
-.lc-icon-primary { background: var(--mw-primary-tint); color: var(--mw-primary); }
-.lc-icon-success { background: rgba(22, 163, 74, 0.12); color: var(--mw-success); }
-.lc-icon-info    { background: rgba(37, 99, 235, 0.12); color: var(--mw-info); }
-.lc-icon-warning { background: rgba(234, 139, 9, 0.12); color: var(--mw-warning); }
 
 /* Filter bar */
 .lc-filter-card {
@@ -278,7 +264,7 @@
                         <div class="lc-summary-num" id="total-locations">—</div>
                         <div class="lc-summary-lbl">{{ __('locations.total_locations') }}</div>
                     </div>
-                    <div class="lc-summary-icon lc-icon-primary">
+                    <div class="mw-stat-icon mw-stat-icon-primary">
                         <i data-feather="map-pin"></i>
                     </div>
                 </div>
@@ -291,7 +277,7 @@
                         <div class="lc-summary-num" id="online-locations">—</div>
                         <div class="lc-summary-lbl">{{ __('locations.online_locations') }}</div>
                     </div>
-                    <div class="lc-summary-icon lc-icon-success">
+                    <div class="mw-stat-icon mw-stat-icon-success">
                         <i data-feather="check-circle"></i>
                     </div>
                 </div>
@@ -304,7 +290,7 @@
                         <div class="lc-summary-num" id="total-users">—</div>
                         <div class="lc-summary-lbl">{{ __('locations.total_users') }}</div>
                     </div>
-                    <div class="lc-summary-icon lc-icon-info">
+                    <div class="mw-stat-icon mw-stat-icon-info">
                         <i data-feather="users"></i>
                     </div>
                 </div>
@@ -317,7 +303,7 @@
                         <div class="lc-summary-num" id="total-data">—</div>
                         <div class="lc-summary-lbl">{{ __('locations.total_data_usage') }}</div>
                     </div>
-                    <div class="lc-summary-icon lc-icon-warning">
+                    <div class="mw-stat-icon mw-stat-icon-warning">
                         <i data-feather="download"></i>
                     </div>
                 </div>
