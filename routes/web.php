@@ -70,8 +70,7 @@ foreach (['en', 'fr'] as $loc) {
         })->name('devices');
 
         Route::get('/accounts', function () {
-            $locale = app()->getLocale();
-            return view('accounts-' . $locale, compact('locale'));
+            return view('accounts');
         })->name('accounts');
 
         Route::get('/locations', function () {
