@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <style>
@@ -14,16 +14,16 @@
 </head>
 <body>
     <div class="container">
-        <div class="header"><h1>⚠ Payment Failed</h1></div>
+        <div class="header"><h1>{{ __('emails/payment-failed.heading') }}</h1></div>
         <div class="content">
-            <p>Hello {{ $order->user->name }},</p>
-            <p>Unfortunately, the payment for order <strong>#{{ $order->order_number }}</strong> failed.</p>
-            <p>Please try again or contact our support team for assistance.</p>
+            <p>{{ __('emails/payment-failed.greeting') }} {{ $order->user->name }},</p>
+            <p>{!! __('emails/payment-failed.intro_html', ['order_number' => e($order->order_number)]) !!}</p>
+            <p>{{ __('emails/payment-failed.body_retry') }}</p>
             <div style="text-align: center;">
-                <a href="{{ url('/en/orders/' . $order->order_number) }}" class="button">Retry Payment</a>
+                <a href="{{ url('/' . app()->getLocale() . '/orders/' . $order->order_number) }}" class="button">{{ __('emails/payment-failed.btn_retry') }}</a>
             </div>
         </div>
-        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. All rights reserved.</p></div>
+        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/payment-failed.footer_rights') }}</p></div>
     </div>
 </body>
 </html>
