@@ -14,7 +14,6 @@ class SubscriptionConfirmedMail extends Mailable
 
     public $user;
     public $subscriptionData;
-    public $locale;
 
     public function __construct(User $user, array $subscriptionData, string $locale = 'en')
     {
@@ -26,20 +25,17 @@ class SubscriptionConfirmedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->locale === 'fr'
-                ? 'Confirmation d\'abonnement - Monsieur WiFi'
-                : 'Subscription Confirmation - Monsieur WiFi',
+            subject: __('emails/subscription-confirmed.subject'),
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: $this->locale === 'fr' ? 'emails.subscription-confirmed-fr' : 'emails.subscription-confirmed-en',
+            view: 'emails.subscription-confirmed',
             with: [
                 'user' => $this->user,
                 'subscriptionData' => $this->subscriptionData,
-                'locale' => $this->locale,
             ],
         );
     }
