@@ -256,7 +256,7 @@
                                 <div class="loc-panel panel-location">
                                     <div class="loc-panel-header">
                                         <span class="loc-panel-icon">
-                                            <i data-feather="map-pin" style="color:#7367f0;width:16px;height:16px;"></i>
+                                            <i data-feather="map-pin" style="color:var(--mw-primary);width:16px;height:16px;"></i>
                                         </span>
                                         <h6 class="loc-panel-title">{{ __('location_details.panel_identity_address') }}</h6>
                                     </div>
@@ -374,7 +374,7 @@
                                                 <div class="form-group">
                                                     <label for="location-owner">
                                                         {{ __('location_details.owner') }}
-                                                        <span style="font-size:0.7rem;background:rgba(115,103,240,0.12);color:#7367f0;border-radius:10px;padding:1px 7px;font-weight:600;margin-left:4px;">{{ __('location_details.admin_badge') }}</span>
+                                                        <span style="font-size:0.7rem;background:rgba(var(--mw-primary-rgb,99,102,241),0.12);color:var(--mw-primary);border-radius:10px;padding:1px 7px;font-weight:600;margin-left:4px;">{{ __('location_details.admin_badge') }}</span>
                                                     </label>
                                                     <select class="form-control" id="location-owner"><option value="">{{ __('location_details.select_owner_option') }}</option></select>
                                                 </div>
@@ -383,7 +383,7 @@
                                                 <div class="form-group">
                                                     <label for="location-shared-users">
                                                         {{ __('location_details.shared_access') }}
-                                                        <span style="font-size:0.7rem;background:rgba(115,103,240,0.12);color:#7367f0;border-radius:10px;padding:1px 7px;font-weight:600;margin-left:4px;">{{ __('location_details.admin_badge') }}</span>
+                                                        <span style="font-size:0.7rem;background:rgba(var(--mw-primary-rgb,99,102,241),0.12);color:var(--mw-primary);border-radius:10px;padding:1px 7px;font-weight:600;margin-left:4px;">{{ __('location_details.admin_badge') }}</span>
                                                     </label>
                                                     <select class="select2 form-control" id="location-shared-users" multiple="multiple">
                                                         <!-- populated by JS -->
@@ -775,7 +775,7 @@
                 <div id="reboot-now-section">
                     <div class="alert alert-warning mb-3"><div class="alert-body"><i data-feather="alert-triangle" class="mr-2"></i><strong>{{ __('location_details.modal_warning_label') }}</strong> {{ __('location_details.modal_restart_warning') }}</div></div>
                     <div class="d-flex align-items-center mb-3">
-                        <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
+                        <div class="avatar p-50 mr-3" style="background:rgba(99,102,241,0.12);"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
                         <div>
                             <h6 class="mb-0">{{ __('location_details.modal_device_info') }}</h6>
                             <p class="card-text text-muted mb-0">{{ __('location_details.modal_location_prefix') }} <span class="location_name font-weight-bold"></span></p>
@@ -823,7 +823,7 @@
             <div class="modal-body">
                 <div class="alert alert-info mb-3"><div class="alert-body"><i data-feather="info" class="mr-2"></i><strong>{{ __('location_details.modal_important_label') }}</strong> {{ __('location_details.modal_firmware_info') }}</div></div>
                 <div class="d-flex align-items-center mb-3">
-                    <div class="avatar bg-light-primary p-50 mr-3"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
+                    <div class="avatar p-50 mr-3" style="background:rgba(99,102,241,0.12);"><div class="avatar-content"><i data-feather="hard-drive" class="font-medium-4"></i></div></div>
                     <div>
                         <h6 class="mb-0">{{ __('location_details.modal_current_device') }}</h6>
                         <p class="card-text text-muted mb-0">{{ __('location_details.modal_model_prefix') }} <span class="router_model font-weight-bold"></span></p>
@@ -872,7 +872,7 @@
 <div class="modal fade" id="channel-scan-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg,#7367f0,#9c88ff);">
+            <div class="modal-header" style="background:var(--mw-primary);">
                 <h5 class="modal-title" style="color:white;"><i data-feather="wifi" class="mr-2"></i>{{ __('location_details.modal_scan_title') }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true" style="color:white;">&times;</span></button>
             </div>
@@ -891,8 +891,8 @@
                 <div id="scan-results-view" style="display: none;">
                     <div class="alert alert-success mb-2"><div class="alert-body"><i data-feather="check-circle" class="mr-1"></i><span>{{ __('location_details.modal_scan_complete') }}</span></div></div>
                     <div class="row mb-2">
-                        <div class="col-md-6"><div class="card bg-light-primary mb-0"><div class="card-body"><h5 class="card-title">2.4 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>{{ __('location_details.modal_scan_recommended') }}</span><h3 class="mb-0" id="result-channel-2g">6</h3></div></div></div></div>
-                        <div class="col-md-6"><div class="card bg-light-primary mb-0"><div class="card-body"><h5 class="card-title">5 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>{{ __('location_details.modal_scan_recommended') }}</span><h3 class="mb-0" id="result-channel-5g">36</h3></div></div></div></div>
+                        <div class="col-md-6"><div class="card mb-0" style="background:rgba(99,102,241,0.08);"><div class="card-body"><h5 class="card-title">2.4 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>{{ __('location_details.modal_scan_recommended') }}</span><h3 class="mb-0" id="result-channel-2g">6</h3></div></div></div></div>
+                        <div class="col-md-6"><div class="card mb-0" style="background:rgba(99,102,241,0.08);"><div class="card-body"><h5 class="card-title">5 GHz</h5><div class="d-flex justify-content-between align-items-center"><span>{{ __('location_details.modal_scan_recommended') }}</span><h3 class="mb-0" id="result-channel-5g">36</h3></div></div></div></div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover" id="nearby-networks-table">

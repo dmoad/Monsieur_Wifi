@@ -54,7 +54,7 @@
             </div>
             <div class="d-flex align-items-center" style="gap:8px;">
                 <div class="d-flex align-items-center" style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:6px 14px;gap:10px;">
-                    <i data-feather="layers" style="width:14px;height:14px;color:#7367f0;flex-shrink:0;"></i>
+                    <i data-feather="layers" style="width:14px;height:14px;color:var(--mw-primary);flex-shrink:0;"></i>
                     <span style="font-size:0.85rem;font-weight:600;color:#495057;white-space:nowrap;">{{ __('location_networks.vlan_support') }}</span>
                     <div class="custom-control custom-switch mb-0">
                         <input type="checkbox" class="custom-control-input" id="vlan-enabled">
@@ -178,7 +178,7 @@
                     <div class="network-type-panel panel-password">
                         <div class="network-type-panel-header">
                             <span class="network-type-panel-icon">
-                                <i data-feather="lock" style="color:#7367f0;width:16px;height:16px;"></i>
+                                <i data-feather="lock" style="color:var(--mw-primary);width:16px;height:16px;"></i>
                             </span>
                             <h6 class="network-type-panel-title">{{ __('location_networks.panel_security_encryption') }}</h6>
                         </div>
