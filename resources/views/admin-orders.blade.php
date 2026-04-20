@@ -3,6 +3,79 @@
 @php
     $locale = app()->getLocale();
     $shopUrl = "/{$locale}/shop";
+    $adminOrdersJsT = [
+        'locale' => $locale,
+        'date_locale' => $locale === 'fr' ? 'fr-FR' : 'en-US',
+        'dashboard_url' => "/{$locale}/dashboard",
+        'session_expired' => __('admin_orders.js_session_expired'),
+        'no_permission' => __('admin_orders.js_no_permission'),
+        'load_orders_failed' => __('admin_orders.js_load_orders_failed'),
+        'no_orders' => __('admin_orders.js_no_orders'),
+        'no_tracking' => __('admin_orders.js_no_tracking'),
+        'btn_view' => __('admin_orders.js_btn_view'),
+        'btn_tracking' => __('admin_orders.js_btn_tracking'),
+        'load_details_failed' => __('admin_orders.js_load_details_failed'),
+        'label_customer' => __('admin_orders.js_label_customer'),
+        'label_payment' => __('admin_orders.js_label_payment'),
+        'label_shipping_info' => __('admin_orders.js_label_shipping_info'),
+        'label_tracking_info' => __('admin_orders.js_label_tracking_info'),
+        'summary_title' => __('admin_orders.js_summary_title'),
+        'summary_subtotal' => __('admin_orders.js_summary_subtotal'),
+        'summary_shipping' => __('admin_orders.js_summary_shipping'),
+        'summary_tax' => __('admin_orders.js_summary_tax'),
+        'summary_total' => __('admin_orders.js_summary_total'),
+        'badge_cancelled' => __('admin_orders.status_cancelled'),
+        'badge_awaiting_payment' => __('admin_orders.js_badge_awaiting_payment'),
+        'badge_delivered' => __('admin_orders.status_delivered'),
+        'badge_shipped' => __('admin_orders.status_shipped'),
+        'badge_paid' => __('admin_orders.js_badge_paid'),
+        'btn_invoice' => __('admin_orders.js_btn_invoice'),
+        'btn_update_inventory' => __('admin_orders.js_btn_update_inventory'),
+        'btn_assign_inventory' => __('admin_orders.js_btn_assign_inventory'),
+        'btn_update_tracking' => __('admin_orders.js_btn_update_tracking'),
+        'btn_add_tracking' => __('admin_orders.js_btn_add_tracking'),
+        'btn_confirm_payment' => __('admin_orders.js_btn_confirm_payment'),
+        'btn_mark_shipped' => __('admin_orders.js_btn_mark_shipped'),
+        'btn_mark_delivered' => __('admin_orders.js_btn_mark_delivered'),
+        'btn_cancel_order' => __('admin_orders.js_btn_cancel_order'),
+        'confirm_payment_received' => __('admin_orders.js_confirm_payment_received'),
+        'confirm_cancel' => __('admin_orders.js_confirm_cancel'),
+        'status_info_cancelled' => __('admin_orders.js_status_info_cancelled'),
+        'status_info_completed' => __('admin_orders.js_status_info_completed'),
+        'payment_stripe_confirmed' => __('admin_orders.js_payment_stripe_confirmed'),
+        'payment_confirmed' => __('admin_orders.js_payment_confirmed'),
+        'payment_confirm_failed' => __('admin_orders.js_payment_confirm_failed'),
+        'tracking_add_title' => __('admin_orders.js_tracking_add_title'),
+        'tracking_provider' => __('admin_orders.js_tracking_provider'),
+        'tracking_select_provider' => __('admin_orders.js_tracking_select_provider'),
+        'tracking_major_carriers' => __('admin_orders.js_tracking_major_carriers'),
+        'tracking_other_providers' => __('admin_orders.js_tracking_other_providers'),
+        'tracking_other_provider_name' => __('admin_orders.js_tracking_other_provider_name'),
+        'tracking_enter_provider' => __('admin_orders.js_tracking_enter_provider'),
+        'tracking_id' => __('admin_orders.js_tracking_id'),
+        'tracking_enter_tracking' => __('admin_orders.js_tracking_enter_tracking'),
+        'tracking_btn_cancel' => __('common.cancel'),
+        'tracking_btn_save' => __('admin_orders.js_tracking_btn_save'),
+        'tracking_error_select_provider' => __('admin_orders.js_tracking_error_select_provider'),
+        'tracking_error_enter_provider' => __('admin_orders.js_tracking_error_enter_provider'),
+        'tracking_error_enter_tracking' => __('admin_orders.js_tracking_error_enter_tracking'),
+        'tracking_updated' => __('admin_orders.js_tracking_updated'),
+        'tracking_update_failed' => __('admin_orders.js_tracking_update_failed'),
+        'status_updated' => __('admin_orders.js_status_updated'),
+        'status_update_failed' => __('admin_orders.js_status_update_failed'),
+        'inv_instructions' => __('admin_orders.js_inv_instructions'),
+        'inv_label_quantity' => __('admin_orders.js_inv_label_quantity'),
+        'inv_label_available' => __('admin_orders.js_inv_label_available'),
+        'inv_select_items' => __('admin_orders.js_inv_select_items'),
+        'inv_click_to_select' => __('admin_orders.js_inv_click_to_select'),
+        'inv_error_load_order' => __('admin_orders.js_inv_error_load_order'),
+        'inv_error_select_exactly' => __('admin_orders.js_inv_error_select_exactly'),
+        'inv_assigned_success' => __('admin_orders.js_inv_assigned_success'),
+        'inv_error_assign' => __('admin_orders.js_inv_error_assign'),
+        'invoice_download_failed' => __('admin_orders.js_invoice_download_failed'),
+        'invoice_downloaded' => __('admin_orders.js_invoice_downloaded'),
+        'invoice_filename' => __('admin_orders.js_invoice_filename'),
+    ];
 @endphp
 
 @section('title', __('admin_orders.page_title'))
@@ -487,5 +560,9 @@
 @endpush
 
 @push('scripts')
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.admin_orders = @json($adminOrdersJsT);
+</script>
 <script src="/assets/js/admin-orders.js?v={{ time() }}"></script>
 @endpush
