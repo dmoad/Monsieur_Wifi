@@ -142,12 +142,6 @@ foreach (['en', 'fr'] as $loc) {
             return view('qos-settings');
         })->name('qos-settings');
 
-        if ($loc === 'en') {
-            Route::get('/v2/locations/{location}', function ($location) {
-                return view('location-details-v2-en');
-            })->name('location-details-v2');
-        }
-
         // E-commerce
         Route::get('/shop', [ShopController::class, 'indexView'])->name('shop');
         Route::get('/shop/{slug}', [ShopController::class, 'detailView'])->name('product');
