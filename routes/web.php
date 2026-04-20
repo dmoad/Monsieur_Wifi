@@ -90,10 +90,6 @@ foreach (['en', 'fr'] as $loc) {
             return view('location-networks', compact('location', 'locale'));
         })->name('location-networks');
 
-        Route::get('/locations/analytics/{location_id}', function ($location_id) {
-            return view('location-analytics', compact('location_id'));
-        })->name('location-analytics');
-
         Route::get('/system-settings', function () {
             return view('system-settings');
         })->name('system-settings');
@@ -101,10 +97,6 @@ foreach (['en', 'fr'] as $loc) {
         Route::get('/profile', function () {
             return view('profile');
         })->name('profile');
-
-        Route::get('/location-analytics', function () {
-            return view('location-analytics');
-        })->name('location-analytics');
 
         Route::get('/locations/{location}/guests', function ($location) {
             return view('location-guests', compact('location'));
@@ -121,10 +113,6 @@ foreach (['en', 'fr'] as $loc) {
         Route::get('/firmware', function () {
             return view('firmware');
         })->name('firmware');
-
-        Route::get('/analytics', function () {
-            return view('analytics');
-        })->name('analytics');
 
         Route::get('/captive-portals', function () {
             return view('captive-portals');
