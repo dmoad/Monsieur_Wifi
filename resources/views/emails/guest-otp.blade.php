@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <style>
@@ -29,22 +29,22 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Code d'accès WiFi</h1>
+            <h1>{{ __('emails/guest-otp.heading') }}</h1>
             <p>{{ $brandName }}</p>
         </div>
         <div class="content">
-            <p>Bonjour,</p>
-            <p>Utilisez le code à usage unique ci-dessous pour finaliser votre connexion WiFi. Il est valable <strong>5 minutes</strong>.</p>
+            <p>{{ __('emails/guest-otp.greeting') }}</p>
+            <p>{!! __('emails/guest-otp.intro') !!}</p>
 
             <div class="otp-box">
                 <div class="otp-code">{{ $otp }}</div>
-                <div class="otp-label">Code d'accès unique</div>
+                <div class="otp-label">{{ __('emails/guest-otp.otp_label') }}</div>
             </div>
 
-            <p class="note">Si vous n'avez pas demandé ce code, vous pouvez ignorer cet e-mail. Quelqu'un a peut-être saisi votre adresse par erreur.</p>
+            <p class="note">{{ __('emails/guest-otp.note') }}</p>
         </div>
         <div class="footer">
-            <p>&copy; {{ date('Y') }} {{ $brandName }}. Tous droits réservés.</p>
+            <p>&copy; {{ date('Y') }} {{ $brandName }}. {{ __('emails/guest-otp.footer_rights') }}</p>
         </div>
     </div>
 </body>
