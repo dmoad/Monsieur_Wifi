@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation - Monsieur WiFi</title>
+    <title>{{ __('emails/order-processed.title') }}</title>
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; line-height: 1.6; }
         .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
@@ -22,16 +22,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>✓ Order Confirmed!</h1>
-            <p>Thank you for your order</p>
+            <h1>{{ __('emails/order-processed.heading') }}</h1>
+            <p>{{ __('emails/order-processed.subheading') }}</p>
         </div>
         <div class="content">
-            <div class="greeting">Hello {{ $order->user->name }},</div>
-            <p>Your order has been successfully placed and is now being processed.</p>
-            <div class="order-number">Order #{{ $order->order_number }}</div>
-            
+            <div class="greeting">{{ __('emails/order-processed.greeting') }} {{ $order->user->name }},</div>
+            <p>{{ __('emails/order-processed.intro') }}</p>
+            <div class="order-number">{{ __('emails/order-processed.order_number_prefix') }} #{{ $order->order_number }}</div>
+
             <div class="order-details">
-                <h3 style="margin-top: 0;">Order Summary</h3>
+                <h3 style="margin-top: 0;">{{ __('emails/order-processed.summary_heading') }}</h3>
                 @foreach($order->items as $item)
                 <div class="order-item">
                     <span>{{ $item->productModel->name }} × {{ $item->quantity }}</span>
@@ -40,22 +40,22 @@
                 @endforeach
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #7367f0;">
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>Subtotal:</span>
+                        <span>{{ __('emails/order-processed.label_subtotal') }}</span>
                         <span>€{{ number_format($order->product_amount, 2) }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>Shipping:</span>
+                        <span>{{ __('emails/order-processed.label_shipping') }}</span>
                         <span>€{{ number_format($order->shipping_cost, 2) }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>Tax:</span>
+                        <span>{{ __('emails/order-processed.label_tax') }}</span>
                         <span>€{{ number_format($order->tax_amount, 2) }}</span>
                     </div>
-                    <div class="total">Total: €{{ number_format($order->total, 2) }}</div>
+                    <div class="total">{{ __('emails/order-processed.label_total') }} €{{ number_format($order->total, 2) }}</div>
                 </div>
             </div>
-            
-            <h3>Shipping Address</h3>
+
+            <h3>{{ __('emails/order-processed.shipping_heading') }}</h3>
             <p>
                 {{ $order->shippingAddress->first_name }} {{ $order->shippingAddress->last_name }}<br>
                 {{ $order->shippingAddress->address_line1 }}<br>
@@ -63,13 +63,13 @@
                 {{ $order->shippingAddress->city }}, {{ $order->shippingAddress->province }} {{ $order->shippingAddress->postal_code }}<br>
                 {{ $order->shippingAddress->country }}
             </p>
-            
+
             <div style="text-align: center;">
-                <a href="{{ url('/en/orders/' . $order->order_number) }}" class="button">View Order Details</a>
+                <a href="{{ url('/' . app()->getLocale() . '/orders/' . $order->order_number) }}" class="button">{{ __('emails/order-processed.btn_view_details') }}</a>
             </div>
         </div>
         <div class="footer">
-            <p>&copy; {{ date('Y') }} Monsieur WiFi. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/order-processed.footer_rights') }}</p>
         </div>
     </div>
 </body>
