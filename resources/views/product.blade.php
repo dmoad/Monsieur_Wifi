@@ -3,6 +3,19 @@
 @php
     $locale = app()->getLocale();
     $shopUrl = $locale === 'fr' ? '/fr/boutique' : '/en/shop';
+    $productT = [
+        'locale' => $locale,
+        'shop_url' => $shopUrl,
+        'cart_url' => $locale === 'fr' ? '/fr/panier' : '/en/cart',
+        'not_found' => __('product.js_not_found'),
+        'btn_back_to_shop' => __('product.btn_back_to_shop'),
+        'alt_thumbnail' => __('product.js_alt_thumbnail'),
+        'badge_in_stock_html' => __('product.js_badge_in_stock_html'),
+        'badge_out_of_stock' => __('product.js_badge_out_of_stock'),
+        'toast_login_required' => __('product.js_toast_login_required'),
+        'toast_added' => __('product.js_toast_added'),
+        'toast_add_failed' => __('product.js_toast_add_failed'),
+    ];
 @endphp
 
 @section('title', __('product.page_title'))
@@ -101,5 +114,9 @@
 @endsection
 
 @push('scripts')
-<script src="/assets/js/product{{ $locale === 'fr' ? '-fr' : '' }}.js?v={{ time() + 2 }}"></script>
+<script>
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.product = @json($productT);
+</script>
+<script src="/assets/js/product.js?v={{ time() + 2 }}"></script>
 @endpush
