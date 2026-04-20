@@ -7,115 +7,239 @@
 @section('title', __('locations.page_title'))
 
 @push('styles')
-<!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
-
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/maps/leaflet.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
-
 <style>
-.dataTables_paginate {
-    margin-top: 1rem !important;
-    padding: 1rem !important;
-}
+/* Location card layout */
+.location-card { margin-bottom: var(--mw-space-md); }
 
-.pagination {
+.lc-head {
     display: flex;
-    justify-content: flex-end;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: var(--mw-space-lg) var(--mw-space-xl);
+    gap: var(--mw-space-lg);
+}
+.lc-info { flex: 1; min-width: 0; }
+.lc-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--mw-text-primary);
+    margin-bottom: 4px;
+}
+.lc-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-lg);
+    flex-wrap: wrap;
+}
+.lc-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--mw-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 340px;
+}
+.lc-meta-item [data-feather] { width: 13px !important; height: 13px !important; }
+
+.lc-head-right {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    flex-shrink: 0;
 }
 
-.page-link {
-    padding: 0.5rem 0.75rem;
-    margin-left: -1px;
-    border: 1px solid #ddd;
-    color: #7367f0;
+/* Status pill */
+.lc-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--mw-radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+.lc-status-online {
+    background: rgba(22, 163, 74, 0.12);
+    color: var(--mw-success);
+}
+.lc-status-offline {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--mw-danger);
 }
 
-.page-item.active .page-link {
-    background-color: #7367f0;
-    border-color: #7367f0;
-    color: #fff;
-}
-
-.page-item.disabled .page-link {
-    color: #b9b9c3;
-    pointer-events: none;
-    background-color: #fff;
-    border-color: #ddd;
-}
-
-.location-card {
-    border-radius: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.location-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.status-online {
-    background-color: rgba(40, 199, 111, 0.12);
-    color: #28c76f;
-}
-
-.status-offline {
-    background-color: rgba(234, 84, 85, 0.12);
-    color: #ea5455;
-}
-
-.status-warning {
-    background-color: rgba(255, 159, 67, 0.12);
-    color: #ff9f43;
-}
-
-.network-stat-icon {
-    height: 45px;
-    width: 45px;
+/* Kebab menu */
+.lc-kebab-wrap { position: relative; }
+.lc-kebab-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    border-radius: var(--mw-radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-}
-
-.marker-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.leaflet-map {
-    z-index: 1;
-}
-
-.leaflet-container {
-    font-family: inherit;
-    font-size: inherit;
-}
-
-.leaflet-popup-content {
-    margin: 0;
+    color: var(--mw-text-muted);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
     padding: 0;
 }
-
-.custom-div-icon, .marker-icon {
-    background: transparent;
-    border: none;
+.lc-kebab-btn:hover {
+    background: var(--mw-bg-hover);
+    color: var(--mw-text-primary);
 }
+.lc-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--mw-bg-surface);
+    border: 1px solid var(--mw-border);
+    border-radius: var(--mw-radius-md);
+    box-shadow: var(--mw-shadow-elevated);
+    min-width: 140px;
+    z-index: 100;
+    padding: 4px 0;
+    animation: mw-fade-in 0.1s ease;
+}
+.lc-menu.open { display: block; }
+.lc-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    width: 100%;
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--mw-text-secondary);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.1s, color 0.1s;
+    font-family: var(--mw-font);
+}
+.lc-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+.lc-menu-danger { color: var(--mw-danger) !important; }
+.lc-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
+.lc-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
+
+/* Stat row */
+.lc-stats {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid var(--mw-border-light);
+}
+.lc-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--mw-space-md) var(--mw-space-lg);
+    gap: 3px;
+}
+.lc-stat-divider {
+    width: 1px;
+    background: var(--mw-border-light);
+    flex-shrink: 0;
+}
+.lc-stat-val {
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: -0.3px;
+}
+.lc-stat-val [data-feather] { width: 17px !important; height: 17px !important; }
+.lc-stat-lbl { font-size: 11px; color: var(--mw-text-muted); }
+.lc-p { color: var(--mw-primary); }
+.lc-i { color: var(--mw-info); }
+
+/* Summary stat cards (top row) */
+.lc-summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--mw-space-lg) var(--mw-space-xl);
+}
+.lc-summary-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mw-text-primary);
+    line-height: 1.1;
+    margin-bottom: 2px;
+}
+.lc-summary-lbl {
+    font-size: 12px;
+    color: var(--mw-text-muted);
+}
+.lc-summary-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--mw-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.lc-summary-icon [data-feather] { width: 20px !important; height: 20px !important; }
+.lc-icon-primary { background: var(--mw-primary-tint); color: var(--mw-primary); }
+.lc-icon-success { background: rgba(22, 163, 74, 0.12); color: var(--mw-success); }
+.lc-icon-info    { background: rgba(37, 99, 235, 0.12); color: var(--mw-info); }
+.lc-icon-warning { background: rgba(234, 139, 9, 0.12); color: var(--mw-warning); }
+
+/* Filter bar */
+.lc-filter-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--mw-space-md);
+    padding: var(--mw-space-md) var(--mw-space-lg);
+    flex-wrap: wrap;
+    margin-bottom: var(--mw-space-md);
+}
+.lc-filter-controls {
+    display: flex;
+    gap: var(--mw-space-sm);
+    align-items: center;
+    flex-wrap: wrap;
+}
+.lc-filter-controls .form-control {
+    min-width: 200px;
+}
+
+/* Empty state */
+.lc-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+.lc-empty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    background: var(--mw-primary-tint);
+    color: var(--mw-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--mw-bg-surface);
+    border-radius: var(--mw-radius-md);
+    box-shadow: var(--mw-shadow-card);
+}
+.pagination-info { color: var(--mw-text-muted); font-size: 0.9rem; }
+.pagination-buttons { display: flex; gap: 0.5rem; align-items: center; }
 </style>
 @endpush
 
@@ -145,109 +269,93 @@
 </div>
 
 <div class="content-body">
-    <section id="locations-content">
-        <!-- Locations Stats -->
-        <div class="row">
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h2 class="font-weight-bolder mb-0" id="total-locations"></h2>
-                            <p class="card-text">{{ __('locations.total_locations') }}</p>
-                        </div>
-                        <div class="avatar bg-light-primary p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
-                            <div class="avatar-content">
-                                <i data-feather="map-pin" class="font-medium-5"></i>
-                            </div>
-                        </div>
+    <!-- Summary cards -->
+    <div class="row">
+        <div class="col-lg-3 col-sm-6 col-12">
+            <div class="card">
+                <div class="lc-summary-card">
+                    <div>
+                        <div class="lc-summary-num" id="total-locations">—</div>
+                        <div class="lc-summary-lbl">{{ __('locations.total_locations') }}</div>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h2 class="font-weight-bolder mb-0" id="online-locations"></h2>
-                            <p class="card-text">{{ __('locations.online_locations') }}</p>
-                        </div>
-                        <div class="avatar bg-light-success p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
-                            <div class="avatar-content">
-                                <i data-feather="check-circle" class="font-medium-5"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h2 class="font-weight-bolder mb-0" id="total-users"></h2>
-                            <p class="card-text">{{ __('locations.total_users') }}</p>
-                        </div>
-                        <div class="avatar bg-light-info p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
-                            <div class="avatar-content">
-                                <i data-feather="users" class="font-medium-5"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h2 class="font-weight-bolder mb-0" id="total-data"></h2>
-                            <p class="card-text">{{ __('locations.total_data_usage') }}</p>
-                        </div>
-                        <div class="avatar bg-light-warning p-50 m-0" style="pointer-events: none; cursor: default; text-decoration: none;">
-                            <div class="avatar-content">
-                                <i data-feather="download" class="font-medium-5"></i>
-                            </div>
-                        </div>
+                    <div class="lc-summary-icon lc-icon-primary">
+                        <i data-feather="map-pin"></i>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-lg-3 col-sm-6 col-12">
+            <div class="card">
+                <div class="lc-summary-card">
+                    <div>
+                        <div class="lc-summary-num" id="online-locations">—</div>
+                        <div class="lc-summary-lbl">{{ __('locations.online_locations') }}</div>
+                    </div>
+                    <div class="lc-summary-icon lc-icon-success">
+                        <i data-feather="check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6 col-12">
+            <div class="card">
+                <div class="lc-summary-card">
+                    <div>
+                        <div class="lc-summary-num" id="total-users">—</div>
+                        <div class="lc-summary-lbl">{{ __('locations.total_users') }}</div>
+                    </div>
+                    <div class="lc-summary-icon lc-icon-info">
+                        <i data-feather="users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6 col-12">
+            <div class="card">
+                <div class="lc-summary-card">
+                    <div>
+                        <div class="lc-summary-num" id="total-data">—</div>
+                        <div class="lc-summary-lbl">{{ __('locations.total_data_usage') }}</div>
+                    </div>
+                    <div class="lc-summary-icon lc-icon-warning">
+                        <i data-feather="download"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Locations Table -->
-        <div class="row" id="table-hover-row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('locations.locations_list') }}</h4>
-                        <div class="d-flex align-items-center">
-                            <div class="form-group mb-0 mr-1">
-                                <select class="form-control" id="status-filter" disabled>
-                                    <option value="">{{ __('locations.all_status') }}</option>
-                                    <option value="{{ __('locations.status_online') }}">{{ __('locations.status_online') }}</option>
-                                    <option value="{{ __('locations.status_offline') }}">{{ __('locations.status_offline') }}</option>
-                                </select>
-                            </div>
-                            <div class="form-group mb-0">
-                                <input type="text" class="form-control" id="search-locations" placeholder="{{ __('locations.search_placeholder') }}">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="locations-table">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('locations.col_location') }}</th>
-                                    <th>{{ __('locations.col_address') }}</th>
-                                    <th>{{ __('locations.col_users') }}</th>
-                                    <th>{{ __('locations.col_data_usage') }}</th>
-                                    <th>{{ __('locations.col_status') }}</th>
-                                    <th>{{ __('locations.col_actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody id="locations-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Filter bar -->
+    <div class="card lc-filter-card">
+        <div class="per-page-selector d-flex align-items-center" style="gap: 8px;">
+            <label for="items-per-page" class="mb-0 text-muted" style="font-size: 13px;">{{ __('locations.items_per_page') }}</label>
+            <select id="items-per-page" class="form-control form-control-sm" style="width: auto;">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
         </div>
-    </section>
+        <div class="lc-filter-controls">
+            <select class="form-control form-control-sm" id="status-filter">
+                <option value="">{{ __('locations.all_status') }}</option>
+                <option value="online">{{ __('locations.status_online') }}</option>
+                <option value="offline">{{ __('locations.status_offline') }}</option>
+            </select>
+            <input type="text" class="form-control form-control-sm" id="search-locations" placeholder="{{ __('locations.search_placeholder') }}">
+        </div>
+    </div>
+
+    <!-- Loading / list / pagination -->
+    <div id="locations-loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">{{ __('common.loading') }}</span>
+        </div>
+    </div>
+
+    <div id="locations-list"></div>
+
+    <div id="pagination-container"></div>
 </div>
 
 <!-- Add Location Modal -->
@@ -299,325 +407,49 @@
 </div>
 @endsection
 
+@php
+    $locationsT = [
+        'status_online' => __('locations.status_online'),
+        'status_offline' => __('locations.status_offline'),
+        'col_users' => __('locations.col_users'),
+        'col_data_usage' => __('locations.col_data_usage'),
+        'action_view' => __('locations.action_view'),
+        'action_delete' => __('locations.action_delete'),
+        'actions' => __('locations.actions'),
+        'empty_title' => __('locations.empty_title'),
+        'empty_desc' => __('locations.empty_desc'),
+        'error_loading' => __('locations.error_loading'),
+        'confirm_delete' => __('locations.confirm_delete'),
+        'location_deleted' => __('locations.location_deleted'),
+        'error_deleting' => __('locations.error_deleting'),
+        'unit_tb' => __('locations.unit_tb'),
+        'unit_gb' => __('locations.unit_gb'),
+        'add_location' => __('locations.add_location'),
+        'adding_location' => __('locations.adding_location'),
+        'error_creating_location' => __('locations.error_creating_location'),
+        'location_created' => __('locations.location_created'),
+        'assigned_firmware_prefix' => __('locations.assigned_firmware_prefix'),
+        'location_name_required' => __('locations.location_name_required'),
+        'device_required' => __('locations.device_required'),
+        'select_owner_first_option' => __('locations.select_owner_first_option'),
+        'select_owner_above_first' => __('locations.select_owner_above_first'),
+        'select_owner_first_hint' => __('locations.select_owner_first_hint'),
+        'select_device_help' => __('locations.select_device_help'),
+        'loading_devices' => __('locations.loading_devices'),
+        'select_a_device' => __('locations.select_a_device'),
+        'available_devices_group' => __('locations.available_devices_group'),
+        'available_suffix' => __('locations.available_suffix'),
+        'devices_assigned_elsewhere_group' => __('locations.devices_assigned_elsewhere_group'),
+        'assigned_to_prefix' => __('locations.assigned_to_prefix'),
+        'unknown_location' => __('locations.unknown_location'),
+        'no_devices_found' => __('locations.no_devices_found'),
+        'error_loading_devices' => __('locations.error_loading_devices'),
+    ];
+@endphp
+
 @push('scripts')
-<!-- Leaflet -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-<!-- DataTables -->
-<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-<script src="/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
-<script src="/app-assets/vendors/js/maps/leaflet.min.js"></script>
-<script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
-<script src="/app-assets/js/scripts/tables/table-datatables-basic.js"></script>
-
 <script>
-$(document).ready(function() {
-    const user = UserManager.getUser();
-    const token = UserManager.getToken();
-
-    if (!token || !user) {
-        window.location.href = '/';
-        return;
-    }
-
-    // Make API call to get locations
-    $.ajax({
-        url: APP_CONFIG.API.BASE_URL + '/locations',
-        type: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token
-        },
-        success: function(response) {
-            var locations = response.locations;
-            var networkTotals = response.network_totals;
-
-            var total_locations = locations.length;
-            var online_locations = locations.filter(loc => loc.online_status == "online").length;
-            var total_users = locations.reduce((sum, loc) => sum + loc.users, 0);
-            var total_data_gb = networkTotals.total_data_gb;
-            var total_data_formatted = total_data_gb > 1024 ?
-                (total_data_gb / 1024).toFixed(1) + '{{ __('locations.unit_tb') }}' :
-                total_data_gb.toFixed(1) + '{{ __('locations.unit_gb') }}';
-
-            $("#total-locations").text(total_locations);
-            $("#online-locations").text(online_locations);
-            $("#total-users").text(total_users);
-            $("#total-data").text(total_data_formatted);
-
-            // Populate table with locations data
-            var table_content = "";
-            locations.forEach(function(location) {
-                table_content += '<tr>';
-                table_content += '<td><div class="d-flex align-items-center"><div class="avatar bg-light-primary mr-1"><div class="avatar-content"><img src="/assets/map-icon-1.png" alt="{{ __('locations.marker_icon_alt') }}" width="40" height="40"></div></div><span>' + location.name + '</span></div></td>';
-                table_content += '<td>' + location.address + '</td>';
-                table_content += '<td>' + location.users + '</td>';
-                table_content += '<td>' + location.data_usage + '</td>';
-                if (location.online_status == "online") {
-                    table_content += '<td><span class="badge badge-pill badge-light-success">{{ __('locations.status_online') }}</span></td>';
-                } else {
-                    table_content += '<td><span class="badge badge-pill badge-light-danger">{{ __('locations.status_offline') }}</span></td>';
-                }
-                table_content += '<td><a href="/{{ $locale }}/locations/' + location.id + '" class="btn btn-sm btn-primary">{{ __('locations.action_view') }}</a></td>';
-                table_content += '</tr>';
-            });
-            $('#locations-table-body').html(table_content);
-
-            if (typeof feather !== 'undefined') {
-                feather.replace();
-            }
-
-            // Initialize or reinitialize DataTable after data is loaded
-            if ($.fn.DataTable.isDataTable('#locations-table')) {
-                $('#locations-table').DataTable().destroy();
-            }
-
-            $('#locations-table').DataTable({
-                responsive: true,
-                columnDefs: [
-                    {
-                        targets: [5],
-                        orderable: false
-                    }
-                ],
-                dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-                language: {
-                    paginate: {
-                        previous: '&nbsp;',
-                        next: '&nbsp;'
-                    }
-                }
-            });
-
-            $('#status-filter').prop('disabled', false);
-            $('#status-filter').val("");
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching locations:', error);
-            if (xhr.status === 401) {
-                window.location.href = '/';
-            }
-        }
-    });
-
-    // Handle add location form submission
-    $('#add-location-btn').on('click', function(e) {
-        e.preventDefault();
-
-        $(this).html('<i data-feather="loader" class="mr-2"></i>{{ __('locations.adding_location') }}');
-        $(this).prop('disabled', true);
-
-        $('.form-error').remove();
-        $('.is-invalid').removeClass('is-invalid');
-
-        const locationData = {
-            name: $('#location-name').val(),
-            address: $('#location-address').val(),
-            device_id: $('#device-select').val(),
-            description: $('#location-notes').val()
-        };
-
-        // Set owner_id
-        if (UserManager.isAdminOrAbove() && $('#owner-select').val()) {
-            // Admin selected a specific owner
-            locationData.owner_id = $('#owner-select').val();
-        } else {
-            // Non-admin or admin without selection - set to current user
-            locationData.owner_id = user.id;
-        }
-
-        let hasErrors = false;
-        if (!locationData.name) {
-            showFieldError('location-name', '{{ __('locations.location_name_required') }}');
-            hasErrors = true;
-        }
-
-        if (!locationData.device_id) {
-            showFieldError('device-select', '{{ __('locations.device_required') }}');
-            hasErrors = true;
-        }
-
-        if (hasErrors) {
-            $('#add-location-btn').html('{{ __('locations.add_location') }}');
-            $('#add-location-btn').prop('disabled', false);
-            return;
-        }
-
-        $.ajax({
-            url: APP_CONFIG.API.BASE_URL + '/locations',
-            type: 'POST',
-            data: locationData,
-            headers: {
-                'Authorization': 'Bearer ' + token
-            },
-            success: function(response) {
-                $('#add-location-btn').removeClass('btn-primary');
-                $('#add-location-btn').addClass('btn-success');
-
-                let successMessage = '{{ __('locations.location_created') }}';
-                if (response.firmware) {
-                    successMessage += `<br><small>{{ __('locations.assigned_firmware_prefix') }} ${response.firmware.name}</small>`;
-                }
-
-                $('#add-location-btn').html(successMessage);
-                $('#add-location-btn').prop('disabled', true);
-
-                setTimeout(function() {
-                    $('#add-location-btn').removeClass('btn-success');
-                    $('#add-location-btn').addClass('btn-primary');
-                    $('#add-location-btn').html('{{ __('locations.add_location') }}');
-                    $('#add-location-btn').prop('disabled', false);
-                    $('#add-location-modal').modal('hide');
-
-                    $('#add-location-form')[0].reset();
-                    $('.form-error').remove();
-                    $('.is-invalid').removeClass('is-invalid');
-
-                    window.location.reload();
-                }, 4000);
-            },
-            error: function(xhr, status, error) {
-                $('#add-location-btn').removeClass('btn-primary');
-                $('#add-location-btn').addClass('btn-danger');
-                $('#add-location-btn').html('{{ __('locations.error_creating_location') }}');
-                $('#add-location-btn').prop('disabled', true);
-
-                setTimeout(function() {
-                    $('#add-location-btn').removeClass('btn-danger');
-                    $('#add-location-btn').addClass('btn-primary');
-                    $('#add-location-btn').html('{{ __('locations.add_location') }}');
-                    $('#add-location-btn').prop('disabled', false);
-                }, 3000);
-                console.error('Error creating location:', error);
-            }
-        });
-    });
-
-    function showFieldError(fieldId, message) {
-        $(`#${fieldId}`)
-            .addClass('is-invalid')
-            .after(`<div class="invalid-feedback form-error">${message}</div>`);
-    }
-
-    function isValidMacAddress(mac) {
-        return /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac);
-    }
-});
-
-$('#status-filter').on('change', function() {
-    var status = $(this).val();
-    var table = $('#locations-table').DataTable();
-
-    if (status !== '') {
-        table.column(4).search(status).draw();
-    } else {
-        table.column(4).search('').draw();
-    }
-});
-
-async function loadUsers() {
-    if (!UserManager.isAdminOrAbove()) return;
-
-    const token = UserManager.getToken();
-
-    try {
-        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
-            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-        });
-
-        if (!response.ok) throw new Error('Failed to load users');
-
-        const data = await response.json();
-        const select = $('#owner-select');
-
-        let options = '<option value="">{{ __('locations.select_owner_first_option') }}</option>';
-        data.users.forEach(u => {
-            options += `<option value="${u.id}">${u.name} (${u.email})</option>`;
-        });
-
-        select.html(options);
-        $('#owner-select-group').show();
-
-        // Disable device select until an owner is chosen
-        $('#device-select').html('<option value="">{{ __('locations.select_owner_above_first') }}</option>').prop('disabled', true);
-        $('#device-select-hint').text('{{ __('locations.select_owner_first_hint') }}');
-    } catch (error) {
-        console.error('Error loading users:', error);
-    }
-}
-
-async function loadAvailableDevices(ownerId = null) {
-    const token = UserManager.getToken();
-
-    $('#device-select').html('<option value="">{{ __('locations.loading_devices') }}</option>').prop('disabled', true);
-
-    let url = `${APP_CONFIG.API.BASE_URL}/v1/devices/available-for-location`;
-    if (ownerId) url += `?owner_id=${ownerId}`;
-
-    try {
-        const response = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-        });
-
-        if (!response.ok) throw new Error('Failed to load devices');
-
-        const data = await response.json();
-        const select = $('#device-select');
-
-        let options = '<option value="">{{ __('locations.select_a_device') }}</option>';
-
-        if (data.unassigned && data.unassigned.length > 0) {
-            options += '<optgroup label="{{ __('locations.available_devices_group') }}">';
-            data.unassigned.forEach(device => {
-                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - {{ __('locations.available_suffix') }}</option>`;
-            });
-            options += '</optgroup>';
-        }
-
-        if (data.assigned && data.assigned.length > 0) {
-            options += '<optgroup label="{{ __('locations.devices_assigned_elsewhere_group') }}">';
-            data.assigned.forEach(device => {
-                const locationName = device.location ? device.location.name : '{{ __('locations.unknown_location') }}';
-                options += `<option value="${device.id}">${device.serial_number} - ${device.mac_address} (${device.model}) - {{ __('locations.assigned_to_prefix') }} ${locationName}</option>`;
-            });
-            options += '</optgroup>';
-        }
-
-        if ((!data.unassigned || data.unassigned.length === 0) && (!data.assigned || data.assigned.length === 0)) {
-            options = '<option value="">{{ __('locations.no_devices_found') }}</option>';
-        }
-
-        select.html(options).prop('disabled', false);
-        $('#device-select-hint').text('{{ __('locations.select_device_help') }}');
-    } catch (error) {
-        console.error('Error loading devices:', error);
-        $('#device-select').html('<option value="">{{ __('locations.error_loading_devices') }}</option>').prop('disabled', false);
-    }
-}
-
-// When modal opens: load users (admin) or load devices directly (non-admin)
-$('#add-location-modal').on('show.bs.modal', function() {
-    if (UserManager.isAdminOrAbove()) {
-        loadUsers();
-    } else {
-        loadAvailableDevices();
-    }
-});
-
-// When admin changes owner selection, reload devices for that owner
-$('#owner-select').on('change', function() {
-    const ownerId = $(this).val();
-    if (ownerId) {
-        loadAvailableDevices(ownerId);
-    } else {
-        $('#device-select').html('<option value="">{{ __('locations.select_owner_above_first') }}</option>').prop('disabled', true);
-    }
-});
+    window.LOCATIONS_T = {!! json_encode($locationsT) !!};
 </script>
+<script src="/assets/js/locations.js?v=<?php echo time(); ?>"></script>
 @endpush

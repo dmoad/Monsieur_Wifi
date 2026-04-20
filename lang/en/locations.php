@@ -30,7 +30,18 @@ return [
     'col_status' => 'Status',
     'col_actions' => 'Actions',
     'action_view' => 'View',
+    'action_delete' => 'Delete',
+    'actions' => 'Actions',
     'marker_icon_alt' => 'Marker Icon',
+
+    // Card list states
+    'items_per_page' => 'Items per page:',
+    'empty_title' => 'No locations found',
+    'empty_desc' => 'Add your first location to get started.',
+    'error_loading' => 'Error loading locations',
+    'confirm_delete' => 'Delete location "{name}"? This cannot be undone.',
+    'location_deleted' => 'Location deleted successfully',
+    'error_deleting' => 'Error deleting location',
 
     // Add-location modal
     'add_new_location' => 'Add New Location',

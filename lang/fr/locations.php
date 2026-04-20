@@ -30,7 +30,18 @@ return [
     'col_status' => 'Statut',
     'col_actions' => 'Actions',
     'action_view' => 'Voir',
+    'action_delete' => 'Supprimer',
+    'actions' => 'Actions',
     'marker_icon_alt' => 'Icône de marqueur',
+
+    // Card list states
+    'items_per_page' => 'Éléments par page :',
+    'empty_title' => 'Aucun emplacement trouvé',
+    'empty_desc' => 'Ajoutez votre premier emplacement pour commencer.',
+    'error_loading' => 'Erreur lors du chargement des emplacements',
+    'confirm_delete' => 'Supprimer l\'emplacement « {name} » ? Cette action est irréversible.',
+    'location_deleted' => 'Emplacement supprimé avec succès',
+    'error_deleting' => 'Erreur lors de la suppression de l\'emplacement',
 
     // Add-location modal
     'add_new_location' => 'Ajouter un nouvel emplacement',
