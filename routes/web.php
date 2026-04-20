@@ -164,7 +164,7 @@ foreach (['en', 'fr'] as $loc) {
             return view('admin-inventory');
         })->name('admin-inventory');
         Route::get('/admin/models', function () {
-            return view('admin-models-' . app()->getLocale());
+            return view('admin-models');
         })->name('admin-models');
     });
 }
