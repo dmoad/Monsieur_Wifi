@@ -48,7 +48,11 @@ const TRANSLATIONS = {
         inactive: 'Inactive',
         zoneSettings: 'Zone Settings',
         viewSettings: 'View Settings',
-        editZone: 'Edit Zone',
+        editZone: 'Edit',
+        deleteZone: 'Delete',
+        confirmDeleteZone: 'Are you sure you want to delete this zone? Locations will be un-grouped.',
+        zoneDeleted: 'Zone deleted',
+        errorDeletingZone: 'Error deleting zone',
         actions: 'Actions',
         showingLocations: 'Showing',
         of: 'of',
@@ -93,7 +97,11 @@ const TRANSLATIONS = {
         inactive: 'Inactif',
         zoneSettings: 'Paramètres de la Zone',
         viewSettings: 'Voir les Paramètres',
-        editZone: 'Modifier la Zone',
+        editZone: 'Modifier',
+        deleteZone: 'Supprimer',
+        confirmDeleteZone: 'Êtes-vous sûr de vouloir supprimer cette zone ? Les emplacements seront dissociés.',
+        zoneDeleted: 'Zone supprimée',
+        errorDeletingZone: 'Erreur lors de la suppression de la zone',
         actions: 'Actions',
         showingLocations: 'Affichage de',
         of: 'sur',
@@ -143,7 +151,6 @@ async function loadZoneDetails() {
         const data = await response.json();
         currentZone = data.zone;
         displayZoneInfo(currentZone);
-        renderOwnershipAlert(currentZone);
         displayLocations(currentZone.locations || []);
         loadAvailableLocations();
         contentEl.style.display = 'block';
@@ -159,6 +166,53 @@ function displayZoneInfo(zone) {
     document.getElementById('zone-breadcrumb').textContent = zone.name;
     const primaryLocation = zone.primary_location;
 
+    let primarySection = '';
+    if (primaryLocation) {
+        const settingsUrl = `/${PAGE_LOCALE}/locations/${primaryLocation.id}`;
+        const inheritanceTitle = PAGE_LOCALE === 'fr' ? 'Héritage des Paramètres' : 'Settings Inheritance';
+        const inheritanceMessage = PAGE_LOCALE === 'fr'
+            ? `Les paramètres réseau, sécurité et configuration de cette zone sont gérés via l'emplacement principal. Toute modification appliquée à l'emplacement principal sera automatiquement propagée à tous les autres emplacements de cette zone.`
+            : `Network, security, and configuration settings for this zone are managed via the primary location. Any change applied to the primary location automatically propagates to every other location in this zone.`;
+        const eyebrow = PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location';
+        const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres' : 'Manage Settings';
+        primarySection = `
+            <div class="zone-info-primary">
+                <div class="primary-loc-icon"><i data-feather="settings"></i></div>
+                <div class="primary-loc-body">
+                    <div class="primary-loc-eyebrow">${eyebrow}</div>
+                    <div class="primary-loc-name">${primaryLocation.name}</div>
+                    <div class="primary-loc-addr">
+                        <i data-feather="map-pin"></i>
+                        ${primaryLocation.address || 'N/A'}
+                    </div>
+                    <div class="primary-loc-inherit">
+                        <div class="primary-loc-inherit-title">
+                            <i data-feather="info"></i>${inheritanceTitle}
+                        </div>
+                        <div>${inheritanceMessage}</div>
+                    </div>
+                    <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
+                        <i data-feather="settings"></i> ${manageLabel}
+                    </a>
+                </div>
+            </div>
+        `;
+    } else {
+        const noPrimaryTitle = PAGE_LOCALE === 'fr' ? 'Aucun Emplacement Principal' : 'No Primary Location';
+        const noPrimaryMessage = PAGE_LOCALE === 'fr'
+            ? `Pour gérer les paramètres de cette zone, ajoutez des emplacements ci-dessous et désignez l'un d'eux comme principal.`
+            : `To manage settings for this zone, add locations below and designate one as the primary.`;
+        primarySection = `
+            <div class="zone-info-primary no-primary-warn" style="background: rgba(234,139,9,0.08); border-top-color: rgba(234,139,9,0.25);">
+                <div class="no-primary-warn-icon"><i data-feather="alert-triangle"></i></div>
+                <div>
+                    <div class="no-primary-warn-title">${noPrimaryTitle}</div>
+                    <div class="no-primary-warn-body">${noPrimaryMessage}</div>
+                </div>
+            </div>
+        `;
+    }
+
     const infoHtml = `
         <div class="zone-info-card">
             <div class="zone-info-head">
@@ -166,9 +220,22 @@ function displayZoneInfo(zone) {
                     <div class="zone-info-title">${zone.name}</div>
                     <div class="zone-info-description">${zone.description || ''}</div>
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editZone()">
-                    <i data-feather="edit-2"></i> ${T.editZone}
-                </button>
+                <div class="lz-kebab-wrap">
+                    <button class="lz-kebab-btn" onclick="toggleZoneHeaderMenu(event)" title="${T.actions}">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                        </svg>
+                    </button>
+                    <div class="lz-menu" id="zone-header-menu">
+                        <button class="lz-menu-item" onclick="editZone(); closeAllLocationMenus()">
+                            <i data-feather="edit"></i> ${T.editZone}
+                        </button>
+                        <div class="lz-menu-divider"></div>
+                        <button class="lz-menu-item lz-menu-danger" onclick="deleteZone(); closeAllLocationMenus()">
+                            <i data-feather="trash-2"></i> ${T.deleteZone}
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="zone-info-meta">
                 <div class="zone-info-item">
@@ -188,51 +255,39 @@ function displayZoneInfo(zone) {
                     <span>${T.roaming}: ${zone.roaming_enabled !== false ? T.roamingOn : T.roamingOff}</span>
                 </div>
             </div>
+            ${primarySection}
         </div>
     `;
     document.getElementById('zone-info-container').innerHTML = infoHtml;
 
-    // Settings-inheritance callout on the page itself, so the model
-    // ("settings are managed via the primary location") is clear
-    // without the user having to open the Edit Zone modal.
-    const inheritanceEl = document.getElementById('zone-inheritance-container');
-    if (inheritanceEl) {
-        if (primaryLocation) {
-            const settingsUrl = `/${PAGE_LOCALE}/locations/${primaryLocation.id}`;
-            const inheritanceTitle = PAGE_LOCALE === 'fr' ? 'Héritage des Paramètres' : 'Settings Inheritance';
-            const inheritanceMessage = PAGE_LOCALE === 'fr'
-                ? `Les paramètres réseau, sécurité et configuration de cette zone sont gérés via l'emplacement principal. Toute modification appliquée à l'emplacement principal sera automatiquement propagée à tous les autres emplacements de cette zone.`
-                : `Network, security, and configuration settings for this zone are managed via the primary location. Any change applied to the primary location automatically propagates to every other location in this zone.`;
-            const eyebrow = PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location';
-            const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres' : 'Manage Settings';
-            inheritanceEl.innerHTML = `
-                <div class="primary-loc-card">
-                    <div class="primary-loc-icon"><i data-feather="settings"></i></div>
-                    <div class="primary-loc-body">
-                        <div class="primary-loc-eyebrow">${eyebrow}</div>
-                        <div class="primary-loc-name">${primaryLocation.name}</div>
-                        <div class="primary-loc-addr">
-                            <i data-feather="map-pin"></i>
-                            ${primaryLocation.address || 'N/A'}
-                        </div>
-                        <div class="primary-loc-inherit">
-                            <div class="primary-loc-inherit-title">
-                                <i data-feather="info"></i>${inheritanceTitle}
-                            </div>
-                            <div>${inheritanceMessage}</div>
-                        </div>
-                        <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
-                            <i data-feather="settings"></i> ${manageLabel}
-                        </a>
-                    </div>
-                </div>
-            `;
-        } else {
-            inheritanceEl.innerHTML = '';
-        }
-    }
-
     feather.replace();
+}
+
+function toggleZoneHeaderMenu(e) {
+    e.stopPropagation();
+    const target = document.getElementById('zone-header-menu');
+    if (!target) return;
+    const isOpen = target.classList.contains('open');
+    closeAllLocationMenus();
+    if (!isOpen) target.classList.add('open');
+}
+
+async function deleteZone() {
+    if (!confirm(T.confirmDeleteZone)) return;
+    const token = UserManager.getToken();
+    try {
+        const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/zones/${ZONE_ID}`, {
+            method: 'DELETE',
+            headers: {'Authorization': `Bearer ${token}`, 'Accept': 'application/json'}
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || 'Failed to delete zone');
+        toastr.success(T.zoneDeleted);
+        setTimeout(() => { window.location.href = `/${PAGE_LOCALE}/zones`; }, 600);
+    } catch (error) {
+        console.error('Error deleting zone:', error);
+        toastr.error(T.errorDeletingZone);
+    }
 }
 
 function renderOwnershipAlert(zone) {

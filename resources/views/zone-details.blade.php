@@ -52,6 +52,21 @@
         color: var(--mw-text-secondary);
     }
     .zone-info-item [data-feather] { width: 14px !important; height: 14px !important; color: var(--mw-text-muted); }
+
+    /* Primary-location subsection nested inside .zone-info-card.
+       Reuses the .primary-loc-* typography classes but without their own
+       card chrome — flush inside the zone info card, separated by a rule. */
+    .zone-info-primary {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--mw-space-md);
+        margin-top: var(--mw-space-lg);
+        padding-top: var(--mw-space-lg);
+        border-top: 1px solid var(--mw-border-light);
+    }
+    .zone-info-primary .primary-loc-inherit {
+        background: var(--mw-bg-muted);
+    }
     .admin-alert {
         display: flex;
         align-items: flex-start;
@@ -242,8 +257,6 @@
     
     <div id="zone-content" style="display: none;">
         <div id="zone-info-container"></div>
-        <div id="zone-inheritance-container"></div>
-        <div id="admin-alert-container"></div>
 
         <div class="card">
             <div class="card-header">
