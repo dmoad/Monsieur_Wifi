@@ -32,6 +32,7 @@ return [
     'action_view' => 'Voir',
     'action_delete' => 'Supprimer',
     'actions' => 'Actions',
+    'primary_label' => 'Principal',
     'marker_icon_alt' => 'Icône de marqueur',
 
     // Card list states

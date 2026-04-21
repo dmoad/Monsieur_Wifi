@@ -1,4 +1,4 @@
-// Locations list page — card layout with search, status filter, pagination
+// Locations list page — table layout with search, status filter, pagination
 const PAGE_LOCALE = document.documentElement.lang || 'en';
 const T = window.LOCATIONS_T || {};
 
@@ -131,16 +131,12 @@ function displayLocations() {
 
     if (filteredLocations.length === 0) {
         listEl.innerHTML = `
-            <div class="card">
-                <div class="card-body">
-                    <div class="lc-empty">
-                        <div class="lc-empty-icon">
-                            <i data-feather="map-pin" style="width: 32px; height: 32px;"></i>
-                        </div>
-                        <h4>${T.empty_title || 'No locations found'}</h4>
-                        <p class="text-muted">${T.empty_desc || 'Add your first location to get started.'}</p>
-                    </div>
+            <div class="lc-empty">
+                <div class="lc-empty-icon">
+                    <i data-feather="map-pin" style="width: 32px; height: 32px;"></i>
                 </div>
+                <h4>${T.empty_title || 'No locations found'}</h4>
+                <p class="text-muted">${T.empty_desc || 'Add your first location to get started.'}</p>
             </div>
         `;
         paginationEl.innerHTML = '';
@@ -154,7 +150,21 @@ function displayLocations() {
     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
     const pageItems = filteredLocations.slice(startIndex, endIndex);
 
-    listEl.innerHTML = pageItems.map(renderLocationCard).join('');
+    listEl.innerHTML = `
+        <table class="lc-table">
+            <thead>
+                <tr>
+                    <th>${T.col_location || 'Location'}</th>
+                    <th>${T.col_address || 'Address'}</th>
+                    <th>${T.col_users || 'Users'}</th>
+                    <th>${T.col_data_usage || 'Data Usage'}</th>
+                    <th>${T.col_status || 'Status'}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>${pageItems.map(renderLocationRow).join('')}</tbody>
+        </table>
+    `;
 
     if (totalPages > 1) {
         const showingText = PAGE_LOCALE === 'fr'
@@ -213,57 +223,57 @@ function displayLocations() {
     if (typeof feather !== 'undefined') feather.replace();
 }
 
-function renderLocationCard(location) {
+function renderLocationRow(location) {
     const locale = PAGE_LOCALE === 'fr' ? 'fr' : 'en';
     const isOnline = location.online_status === 'online';
     const statusClass = isOnline ? 'lc-status-online' : 'lc-status-offline';
     const statusLabel = isOnline ? (T.status_online || 'Online') : (T.status_offline || 'Offline');
-
-    const addressHtml = location.address
-        ? `<span class="lc-meta-item" title="${escapeHtml(location.address)}"><i data-feather="map-pin"></i> ${escapeHtml(location.address)}</span>`
+    const isPrimary = !!(location.zone && location.zone.primary_location_id && location.zone.primary_location_id === location.id);
+    const zoneName = (location.zone && location.zone.name) || '';
+    const primaryPill = isPrimary
+        ? `<span class="lc-primary-pill">${T.primary_label || 'Primary'}</span>`
         : '';
+    const subLine = zoneName
+        ? `<div class="lc-name-sub">${escapeHtml(zoneName)}</div>`
+        : '';
+    const deleteName = JSON.stringify(location.name || '').replace(/"/g, '&quot;');
 
     return `
-        <div class="location-card card card-clickable" onclick="window.location.href='/${locale}/locations/${location.id}'">
-            <div class="lc-head">
-                <div class="lc-info">
-                    <div class="lc-name">${escapeHtml(location.name || '')}</div>
-                    <div class="lc-meta">${addressHtml}</div>
-                </div>
-                <div class="lc-head-right" onclick="event.stopPropagation()">
-                    <span class="lc-status ${statusClass}">${statusLabel}</span>
-                    <div class="lc-kebab-wrap">
-                        <button class="lc-kebab-btn" onclick="toggleLocationMenu(event, ${location.id})" title="${T.actions || 'Actions'}">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-                            </svg>
-                        </button>
-                        <div class="lc-menu" id="lc-menu-${location.id}">
-                            <button class="lc-menu-item" onclick="window.location.href='/${locale}/locations/${location.id}'">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                ${T.action_view || 'View'}
-                            </button>
-                            <div class="lc-menu-divider"></div>
-                            <button class="lc-menu-item lc-menu-danger" onclick="deleteLocation(${location.id}, ${JSON.stringify(location.name || '').replace(/"/g, '&quot;')}); closeAllLocationMenus()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                                ${T.action_delete || 'Delete'}
-                            </button>
-                        </div>
+        <tr onclick="window.location.href='/${locale}/locations/${location.id}'">
+            <td>
+                <div class="lc-name-cell">
+                    <div class="lc-icon-chip"><i data-feather="map-pin"></i></div>
+                    <div>
+                        <div class="lc-name-main">${escapeHtml(location.name || '')}${primaryPill}</div>
+                        ${subLine}
                     </div>
                 </div>
-            </div>
-            <div class="lc-stats">
-                <div class="lc-stat">
-                    <div class="lc-stat-val lc-p"><i data-feather="users"></i> ${Number(location.users) || 0}</div>
-                    <div class="lc-stat-lbl">${T.col_users || 'Users'}</div>
+            </td>
+            <td>${escapeHtml(location.address || '—')}</td>
+            <td>${Number(location.users) || 0}</td>
+            <td>${escapeHtml(location.data_usage || '—')}</td>
+            <td><span class="lc-status ${statusClass}">${statusLabel}</span></td>
+            <td class="lc-col-actions" onclick="event.stopPropagation()">
+                <div class="lc-kebab-wrap">
+                    <button class="lc-kebab-btn" onclick="toggleLocationMenu(event, ${location.id})" title="${T.actions || 'Actions'}">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                        </svg>
+                    </button>
+                    <div class="lc-menu" id="lc-menu-${location.id}">
+                        <button class="lc-menu-item" onclick="window.location.href='/${locale}/locations/${location.id}'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            ${T.action_view || 'View'}
+                        </button>
+                        <div class="lc-menu-divider"></div>
+                        <button class="lc-menu-item lc-menu-danger" onclick="deleteLocation(${location.id}, ${deleteName}); closeAllLocationMenus()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                            ${T.action_delete || 'Delete'}
+                        </button>
+                    </div>
                 </div>
-                <div class="lc-stat-divider"></div>
-                <div class="lc-stat">
-                    <div class="lc-stat-val lc-i"><i data-feather="download"></i> ${escapeHtml(location.data_usage || '—')}</div>
-                    <div class="lc-stat-lbl">${T.col_data_usage || 'Data Usage'}</div>
-                </div>
-            </div>
-        </div>
+            </td>
+        </tr>
     `;
 }
 

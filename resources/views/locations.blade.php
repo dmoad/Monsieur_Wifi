@@ -8,46 +8,92 @@
 
 @push('styles')
 <style>
-/* Location card layout */
-.location-card { margin-bottom: var(--mw-space-md); }
+/* List card wraps header + table */
+.lc-list-card { overflow: hidden; margin-bottom: var(--mw-space-md); }
 
-.lc-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: var(--mw-space-lg) var(--mw-space-xl);
-    gap: var(--mw-space-lg);
+/* Locations table */
+.lc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
 }
-.lc-info { flex: 1; min-width: 0; }
-.lc-name {
-    font-size: 15px;
+.lc-table thead th {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--mw-text-muted);
+    text-align: left;
+    padding: 10px var(--mw-space-lg);
+    background: var(--mw-bg-page);
+    border-bottom: 1px solid var(--mw-border-light);
+    border-top: 1px solid var(--mw-border-light);
+}
+.lc-table tbody tr {
+    border-bottom: 1px solid var(--mw-border-light);
+    cursor: pointer;
+    transition: background 0.12s;
+}
+.lc-table tbody tr:last-child { border-bottom: none; }
+.lc-table tbody tr:hover { background: var(--mw-bg-hover); }
+.lc-table td {
+    padding: var(--mw-space-md) var(--mw-space-lg);
+    vertical-align: middle;
+    color: var(--mw-text-secondary);
+}
+.lc-table td.lc-col-actions { text-align: right; width: 1%; white-space: nowrap; }
+
+/* Location name cell: icon chip + name/subtitle */
+.lc-name-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-md);
+}
+.lc-icon-chip {
+    width: 30px;
+    height: 30px;
+    background: var(--mw-primary-tint);
+    color: var(--mw-primary);
+    border-radius: var(--mw-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.lc-icon-chip [data-feather] { width: 14px !important; height: 14px !important; }
+.lc-name-main {
+    font-size: 13px;
     font-weight: 700;
     color: var(--mw-text-primary);
-    margin-bottom: 4px;
-}
-.lc-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--mw-space-lg);
-    flex-wrap: wrap;
-}
-.lc-meta-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--mw-text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 340px;
-}
-.lc-meta-item [data-feather] { width: 13px !important; height: 13px !important; }
-
-.lc-head-right {
     display: flex;
     align-items: center;
     gap: var(--mw-space-sm);
+}
+.lc-name-sub {
+    font-size: 11px;
+    color: var(--mw-text-muted);
+    margin-top: 1px;
+}
+
+/* Primary pill (matches zone-details 489eeb6 pattern) */
+.lc-primary-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px 2px 7px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--mw-primary);
+    background: var(--mw-primary-tint);
+    border-radius: var(--mw-radius-full);
+    line-height: 1.2;
+}
+.lc-primary-pill::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--mw-primary);
     flex-shrink: 0;
 }
 
@@ -136,39 +182,6 @@
 .lc-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
 .lc-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
 
-/* Stat row */
-.lc-stats {
-    display: flex;
-    align-items: stretch;
-    border-top: 1px solid var(--mw-border-light);
-}
-.lc-stat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--mw-space-md) var(--mw-space-lg);
-    gap: 3px;
-}
-.lc-stat-divider {
-    width: 1px;
-    background: var(--mw-border-light);
-    flex-shrink: 0;
-}
-.lc-stat-val {
-    font-size: 20px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    letter-spacing: -0.3px;
-}
-.lc-stat-val [data-feather] { width: 17px !important; height: 17px !important; }
-.lc-stat-lbl { font-size: 11px; color: var(--mw-text-muted); }
-.lc-p { color: var(--mw-primary); }
-.lc-i { color: var(--mw-info); }
-
 /* Summary stat cards (top row) */
 .lc-summary-card {
     display: flex;
@@ -188,8 +201,8 @@
     color: var(--mw-text-muted);
 }
 
-/* List-header bar (title + filter controls on one row) */
-.lc-filter-card {
+/* List-header bar (title + filter controls on one row, inside .lc-list-card) */
+.lc-filter-bar {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -197,7 +210,7 @@
     gap: var(--mw-space-md);
     padding: var(--mw-space-md) var(--mw-space-lg);
     flex-wrap: wrap;
-    margin-bottom: var(--mw-space-md);
+    border-bottom: 1px solid var(--mw-border-light);
 }
 .lc-list-title {
     font-size: 14px;
@@ -327,36 +340,37 @@
         </div>
     </div>
 
-    <!-- List header: title + filter controls -->
-    <div class="card lc-filter-card">
-        <div class="lc-list-title">{{ __('locations.locations_list') }}</div>
-        <div class="lc-filter-controls">
-            <div class="per-page-selector d-flex align-items-center" style="gap: 8px;">
-                <label for="items-per-page" class="mb-0 text-muted" style="font-size: 13px;">{{ __('locations.items_per_page') }}</label>
-                <select id="items-per-page" class="form-control form-control-sm" style="width: auto;">
-                    <option value="10">10</option>
-                    <option value="25" selected>25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
+    <!-- List card: header (title + filter controls) + table -->
+    <div class="card lc-list-card">
+        <div class="lc-filter-bar">
+            <div class="lc-list-title">{{ __('locations.locations_list') }}</div>
+            <div class="lc-filter-controls">
+                <div class="per-page-selector d-flex align-items-center" style="gap: 8px;">
+                    <label for="items-per-page" class="mb-0 text-muted" style="font-size: 13px;">{{ __('locations.items_per_page') }}</label>
+                    <select id="items-per-page" class="form-control form-control-sm" style="width: auto;">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <select class="form-control form-control-sm" id="status-filter">
+                    <option value="">{{ __('locations.all_status') }}</option>
+                    <option value="online">{{ __('locations.status_online') }}</option>
+                    <option value="offline">{{ __('locations.status_offline') }}</option>
                 </select>
+                <input type="text" class="form-control form-control-sm" id="search-locations" placeholder="{{ __('locations.search_placeholder') }}">
             </div>
-            <select class="form-control form-control-sm" id="status-filter">
-                <option value="">{{ __('locations.all_status') }}</option>
-                <option value="online">{{ __('locations.status_online') }}</option>
-                <option value="offline">{{ __('locations.status_offline') }}</option>
-            </select>
-            <input type="text" class="form-control form-control-sm" id="search-locations" placeholder="{{ __('locations.search_placeholder') }}">
         </div>
-    </div>
 
-    <!-- Loading / list / pagination -->
-    <div id="locations-loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">{{ __('common.loading') }}</span>
+        <div id="locations-loading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">{{ __('common.loading') }}</span>
+            </div>
         </div>
-    </div>
 
-    <div id="locations-list"></div>
+        <div id="locations-list"></div>
+    </div>
 
     <div id="pagination-container"></div>
 </div>
@@ -414,8 +428,12 @@
     $locationsT = [
         'status_online' => __('locations.status_online'),
         'status_offline' => __('locations.status_offline'),
+        'col_location' => __('locations.col_location'),
+        'col_address' => __('locations.col_address'),
         'col_users' => __('locations.col_users'),
         'col_data_usage' => __('locations.col_data_usage'),
+        'col_status' => __('locations.col_status'),
+        'primary_label' => __('locations.primary_label'),
         'action_view' => __('locations.action_view'),
         'action_delete' => __('locations.action_delete'),
         'actions' => __('locations.actions'),

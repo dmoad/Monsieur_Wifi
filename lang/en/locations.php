@@ -32,6 +32,7 @@ return [
     'action_view' => 'View',
     'action_delete' => 'Delete',
     'actions' => 'Actions',
+    'primary_label' => 'Primary',
     'marker_icon_alt' => 'Marker Icon',
 
     // Card list states
