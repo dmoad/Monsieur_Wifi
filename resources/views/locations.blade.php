@@ -51,15 +51,25 @@
     flex-shrink: 0;
 }
 
-/* Status pill */
+/* Status pill — soft tint + leading dot (matches zone-details Online chip) */
 .lc-status {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
+    gap: 6px;
+    padding: 3px 10px 3px 8px;
     border-radius: var(--mw-radius-full);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.2px;
+    line-height: 1.2;
+}
+.lc-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
 }
 .lc-status-online {
     background: rgba(22, 163, 74, 0.12);
