@@ -188,9 +188,10 @@
     color: var(--mw-text-muted);
 }
 
-/* Filter bar */
+/* List-header bar (title + filter controls on one row) */
 .lc-filter-card {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: var(--mw-space-md);
@@ -198,15 +199,19 @@
     flex-wrap: wrap;
     margin-bottom: var(--mw-space-md);
 }
+.lc-list-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--mw-text-primary);
+}
 .lc-filter-controls {
     display: flex;
     gap: var(--mw-space-sm);
     align-items: center;
     flex-wrap: wrap;
 }
-.lc-filter-controls .form-control {
-    min-width: 200px;
-}
+.lc-filter-controls #status-filter { width: 150px; }
+.lc-filter-controls #search-locations { width: 220px; }
 
 /* Empty state */
 .lc-empty {
@@ -322,18 +327,19 @@
         </div>
     </div>
 
-    <!-- Filter bar -->
+    <!-- List header: title + filter controls -->
     <div class="card lc-filter-card">
-        <div class="per-page-selector d-flex align-items-center" style="gap: 8px;">
-            <label for="items-per-page" class="mb-0 text-muted" style="font-size: 13px;">{{ __('locations.items_per_page') }}</label>
-            <select id="items-per-page" class="form-control form-control-sm" style="width: auto;">
-                <option value="10">10</option>
-                <option value="25" selected>25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-        </div>
+        <div class="lc-list-title">{{ __('locations.locations_list') }}</div>
         <div class="lc-filter-controls">
+            <div class="per-page-selector d-flex align-items-center" style="gap: 8px;">
+                <label for="items-per-page" class="mb-0 text-muted" style="font-size: 13px;">{{ __('locations.items_per_page') }}</label>
+                <select id="items-per-page" class="form-control form-control-sm" style="width: auto;">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
             <select class="form-control form-control-sm" id="status-filter">
                 <option value="">{{ __('locations.all_status') }}</option>
                 <option value="online">{{ __('locations.status_online') }}</option>
