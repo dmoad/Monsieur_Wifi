@@ -68,19 +68,19 @@
     }
 
     .upload-area:hover {
-        border-color: #7367f0;
-        background-color: rgba(115, 103, 240, 0.05);
+        border-color: var(--mw-primary);
+        background-color: rgba(99, 102, 241, 0.05);
     }
 
     .upload-area.highlight {
-        border-color: #7367f0;
-        background-color: rgba(115, 103, 240, 0.1);
+        border-color: var(--mw-primary);
+        background-color: rgba(99, 102, 241, 0.1);
         transform: scale(1.02);
     }
 
     .upload-icon {
         font-size: 2.5rem;
-        color: #7367f0;
+        color: var(--mw-primary);
         margin-bottom: 1rem;
     }
 
@@ -213,7 +213,7 @@
     .preview-button {
         width: 100%;
         padding: 12px 20px;
-        background-color: #7367f0;
+        background-color: var(--mw-primary);
         color: white;
         border: none;
         border-radius: 5px;
@@ -230,7 +230,7 @@
     }
 
     .preview-terms a {
-        color: #7367f0;
+        color: var(--mw-primary);
         text-decoration: none;
     }
 
@@ -478,17 +478,6 @@
         font-weight: 500;
     }
 
-    .bg-light-primary {
-        background-color: rgba(115, 103, 240, 0.12) !important;
-    }
-
-    .bg-light-success {
-        background-color: rgba(40, 199, 111, 0.12) !important;
-    }
-
-    .bg-light-danger {
-        background-color: rgba(234, 84, 85, 0.12) !important;
-    }
 
     .tab-content h6 {
         color: #5e5873;
@@ -637,7 +626,7 @@
         <div style="display:flex; align-items:flex-start; justify-content:center; position:relative;">
             <div style="position:absolute; top:24px; left:calc(16.66% + 20px); right:calc(16.66% + 20px); height:3px; background:#e0e0e0; z-index:0;"></div>
             <div id="timeline-step-1" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
-                <div id="timeline-circle-1" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:linear-gradient(135deg,#7367f0,#9e95f5); color:white; box-shadow:0 4px 15px rgba(115,103,240,0.4);">1</div>
+                <div id="timeline-circle-1" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:var(--mw-primary); color:white; box-shadow:0 4px 15px rgba(99,102,241,0.4);">1</div>
                 <div style="font-size:0.85rem; font-weight:600; color:#333; text-align:center;">{{ __('captive_portals.timeline_step1_label') }}</div>
                 <div style="font-size:0.75rem; color:#888; text-align:center; margin-top:4px;">{{ __('captive_portals.timeline_step1_sub') }}</div>
             </div>
