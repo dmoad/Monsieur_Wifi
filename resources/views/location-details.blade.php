@@ -194,6 +194,7 @@
     <button type="button" class="ld-tab active" data-tab="overview">{{ __('location_details.tab_overview') }}</button>
     <button type="button" class="ld-tab" data-tab="settings">{{ __('location_details.tab_location_details') }}</button>
     <button type="button" class="ld-tab" data-tab="router">{{ __('location_details.tab_router_settings') }}</button>
+    <button type="button" class="ld-tab" data-tab="networks">{{ __('location_details.tab_networks') }}</button>
 </div>
 
 <div class="content-body">
@@ -203,6 +204,8 @@
 @include('location-details._settings')
 
 @include('location-details._router')
+
+@include('location-details._networks')
 
 </div><!-- end .content-body -->
 

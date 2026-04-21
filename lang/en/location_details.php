@@ -57,6 +57,8 @@ return [
     'tab_overview' => 'Overview',
     'tab_location_details' => 'Location Details',
     'tab_router_settings' => 'Router Settings',
+    'tab_networks' => 'WiFi Networks',
+    'networks_placeholder' => 'WiFi networks management is being moved into this tab.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Location Identity & Address',

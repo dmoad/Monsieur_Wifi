@@ -57,6 +57,8 @@ return [
     'tab_overview' => 'Vue d\'ensemble',
     'tab_location_details' => 'Détails de l\'emplacement',
     'tab_router_settings' => 'Paramètres du routeur',
+    'tab_networks' => 'Réseaux WiFi',
+    'networks_placeholder' => 'La gestion des réseaux WiFi est en cours de migration dans cet onglet.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Identité et adresse de l\'emplacement',
