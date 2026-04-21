@@ -87,16 +87,16 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     background: var(--mw-bg-surface);
     border: 1px solid var(--mw-border-light);
     border-radius: var(--mw-radius-lg);
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
     box-shadow: var(--mw-shadow-card);
 }
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 1rem;
-    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
     border-bottom: 1px solid var(--mw-border-light);
 }
 .section-title {
