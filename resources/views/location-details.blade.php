@@ -473,7 +473,7 @@
                                 <div class="loc-panel panel-contact">
                                     <div class="loc-panel-header">
                                         <span class="loc-panel-icon">
-                                            <i data-feather="user" style="color:#17a2b8;width:16px;height:16px;"></i>
+                                            <i data-feather="user" style="width:16px;height:16px;"></i>
                                         </span>
                                         <h6 class="loc-panel-title">{{ __('location_details.panel_contact_ownership') }}</h6>
                                     </div>

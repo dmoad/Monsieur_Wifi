@@ -20,33 +20,63 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .form-group label { font-weight: 600; color: #495057; margin-bottom: 8px; font-size: 0.9rem; display: block; }
 .btn { border-radius: 8px; padding: 10px 20px; font-weight: 500; transition: all 0.3s ease; border: none; }
 
-/* Shared panel design system */
-.loc-panel { border-radius: 10px; border: 1px solid #e9ecef; margin-bottom: 1rem; overflow: hidden; }
-.loc-panel-header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid #e9ecef; }
-.loc-panel-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.loc-panel-title { font-size: 0.9rem; font-weight: 700; margin: 0; letter-spacing: 0.01em; }
+/* Shared panel design system — tokenised, no variant tints */
+.loc-panel {
+    border-radius: var(--mw-radius-lg);
+    border: 1px solid var(--mw-border-light);
+    background: var(--mw-bg-surface);
+    box-shadow: var(--mw-shadow-card);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+.loc-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--mw-border-light);
+    background: transparent;
+}
+.loc-panel-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--mw-primary-tint);
+    color: var(--mw-primary);
+}
+.loc-panel-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.01em;
+    color: var(--mw-text-primary);
+}
 .loc-panel-body { padding: 1.25rem; }
 .loc-panel-body .form-group { margin-bottom: 1rem; }
 .loc-panel-body .form-group:last-child { margin-bottom: 0; }
-.panel-sub-section { border-top: 1px solid #f1f3f4; padding-top: 1rem; margin-top: 1rem; }
-.panel-sub-label { font-size: 0.75rem; font-weight: 700; color: #adb5bd; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
-.panel-location { border-color: rgba(115,103,240,0.25); }
-.panel-location .loc-panel-header { background: rgba(115,103,240,0.05); border-bottom-color: rgba(115,103,240,0.15); }
-.panel-location .loc-panel-icon { background: rgba(115,103,240,0.12); }
-.panel-location .loc-panel-title { color: #7367f0; }
-.panel-contact { border-color: rgba(23,162,184,0.25); }
-.panel-contact .loc-panel-header { background: rgba(23,162,184,0.05); border-bottom-color: rgba(23,162,184,0.15); }
-.panel-contact .loc-panel-icon { background: rgba(23,162,184,0.12); }
-.panel-contact .loc-panel-title { color: #17a2b8; }
-.panel-settings { border-color: rgba(40,199,111,0.25); }
-.panel-settings .loc-panel-header { background: rgba(40,199,111,0.05); border-bottom-color: rgba(40,199,111,0.15); }
-.panel-settings .loc-panel-icon { background: rgba(40,199,111,0.12); }
-.panel-settings .loc-panel-title { color: #28c76f; }
-.panel-qos { border-color: rgba(102, 126, 234, 0.28); }
-.panel-qos .loc-panel-header { background: rgba(102, 126, 234, 0.06); border-bottom-color: rgba(102, 126, 234, 0.12); }
-.panel-qos .loc-panel-icon { background: rgba(102, 126, 234, 0.12); }
-.panel-qos .loc-panel-title { color: #667eea; }
-.form-action-bar { display: flex; align-items: center; gap: 8px; background: #f8f9fa; border-radius: 10px; padding: 14px 18px; margin-top: 1.25rem; border: 1px solid #e9ecef; }
+.panel-sub-section { border-top: 1px solid var(--mw-border-light); padding-top: 1rem; margin-top: 1rem; }
+.panel-sub-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--mw-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.75rem;
+}
+.form-action-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--mw-bg-page);
+    border-radius: var(--mw-radius-md);
+    padding: 14px 18px;
+    margin-top: 1.25rem;
+    border: 1px solid var(--mw-border-light);
+}
 
 .nav-tabs { border: none; background: #f8f9fa; border-radius: 12px; padding: 8px; margin-bottom: 2rem; }
 .nav-tabs .nav-item { margin-bottom: 0; }
