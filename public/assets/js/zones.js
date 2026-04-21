@@ -487,41 +487,27 @@ async function loadZoneForEdit(zoneId) {
                     : `Network, security, and configuration settings are inherited from the Primary Location. Any changes applied to the Primary Location will automatically propagate to all other locations in this zone.`;
                 
                 const inheritanceTitle = PAGE_LOCALE === 'fr' ? 'Héritage des Paramètres' : 'Settings Inheritance';
+                const eyebrow = PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location';
+                const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres de la Zone' : 'Manage Zone Settings';
                 primaryInfoContainer.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; color: white; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);">
-                        <div class="d-flex align-items-start">
-                            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 1rem;">
-                                <i data-feather="settings" style="width: 24px; height: 24px;"></i>
+                    <div class="primary-loc-card">
+                        <div class="primary-loc-icon"><i data-feather="settings"></i></div>
+                        <div class="primary-loc-body">
+                            <div class="primary-loc-eyebrow">${eyebrow}</div>
+                            <div class="primary-loc-name">${zone.primary_location.name}</div>
+                            <div class="primary-loc-addr">
+                                <i data-feather="map-pin"></i>
+                                ${zone.primary_location.address || 'N/A'}
                             </div>
-                            <div style="flex: 1;">
-                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
-                                    <div>
-                                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; margin-bottom: 0.25rem;">
-                                            ${PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location'}
-                                        </div>
-                                        <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.25rem;">
-                                            ${zone.primary_location.name}
-                                        </div>
-                                        <div style="font-size: 0.875rem; opacity: 0.85;">
-                                            <i data-feather="map-pin" style="width: 14px; height: 14px; margin-right: 0.25rem;"></i>
-                                            ${zone.primary_location.address || 'N/A'}
-                                        </div>
-                                    </div>
+                            <div class="primary-loc-inherit">
+                                <div class="primary-loc-inherit-title">
+                                    <i data-feather="info"></i>${inheritanceTitle}
                                 </div>
-                                <div style="background: rgba(255,255,255,0.15); border-left: 3px solid rgba(255,255,255,0.5); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem;">
-                                    <div style="font-weight: 600; font-size: 0.875rem; margin-bottom: 0.35rem;">
-                                        <i data-feather="info" style="width: 16px; height: 16px; margin-right: 0.25rem;"></i>
-                                        ${inheritanceTitle}
-                                    </div>
-                                    <div style="font-size: 0.8125rem; line-height: 1.5; opacity: 0.95;">
-                                        ${inheritanceMessage}
-                                    </div>
-                                </div>
-                                <a href="${settingsUrl}" class="btn btn-light btn-sm" style="font-weight: 500;">
-                                    <i data-feather="settings" style="width: 16px; height: 16px;"></i>
-                                    ${PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres de la Zone' : 'Manage Zone Settings'}
-                                </a>
+                                <div>${inheritanceMessage}</div>
                             </div>
+                            <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
+                                <i data-feather="settings"></i> ${manageLabel}
+                            </a>
                         </div>
                     </div>
                 `;
@@ -532,19 +518,11 @@ async function loadZoneForEdit(zoneId) {
                     ? 'Pour configurer les paramètres de cette zone, vous devez d\'abord ajouter des emplacements et définir l\'un d\'eux comme principal.'
                     : 'To configure settings for this zone, you must first add locations and designate one as the primary location.';
                 primaryInfoContainer.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; color: white; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.2);">
-                        <div class="d-flex align-items-center">
-                            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 1rem;">
-                                <i data-feather="alert-triangle" style="width: 24px; height: 24px;"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; font-size: 1rem; margin-bottom: 0.35rem;">
-                                    ${noPrimaryTitle}
-                                </div>
-                                <div style="font-size: 0.875rem; opacity: 0.95; line-height: 1.4;">
-                                    ${noPrimaryMessage}
-                                </div>
-                            </div>
+                    <div class="no-primary-warn">
+                        <div class="no-primary-warn-icon"><i data-feather="alert-triangle"></i></div>
+                        <div>
+                            <div class="no-primary-warn-title">${noPrimaryTitle}</div>
+                            <div class="no-primary-warn-body">${noPrimaryMessage}</div>
                         </div>
                     </div>
                 `;

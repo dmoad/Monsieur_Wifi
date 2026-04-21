@@ -65,6 +65,7 @@
         font-size: 13px;
         margin-bottom: var(--mw-space-lg);
     }
+
     .location-card {
         border: 1px solid var(--mw-border);
         border-radius: var(--mw-radius-lg);
