@@ -91,11 +91,11 @@
     .location-name {
         font-size: 1.1rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--mw-text-primary);
         margin-bottom: 0.25rem;
     }
     .location-address {
-        color: #6c757d;
+        color: var(--mw-text-muted);
         font-size: 0.9rem;
     }
     .location-badges {
@@ -162,9 +162,9 @@
     .lz-menu-danger:hover { background: rgba(220, 38, 38, 0.06) !important; }
     .lz-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
     .add-location-section {
-        background: #f8f9fa;
-        border: 2px dashed #dee2e6;
-        border-radius: 12px;
+        background: var(--mw-bg-muted);
+        border: 2px dashed var(--mw-border);
+        border-radius: var(--mw-radius-lg);
         padding: 2rem;
         text-align: center;
     }
@@ -176,12 +176,12 @@
         width: 64px;
         height: 64px;
         margin: 0 auto 1rem;
-        background: #f0f0f0;
+        background: var(--mw-bg-muted);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6c757d;
+        color: var(--mw-text-muted);
     }
     /* Owner dropdown: hide the broken Select2 arrow and use a clean CSS chevron instead */
     #edit-zone-owner ~ .select2-container .select2-selection__arrow b,
@@ -209,7 +209,7 @@
         height: 0;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
-        border-top: 5px solid #6e6b7b;
+        border-top: 5px solid var(--mw-text-muted);
         pointer-events: none;
     }
 </style>
