@@ -99,6 +99,80 @@ function buildNetworksUrl(locId) {
 }
 
 // ============================================================================
+// MW-DRAWER — right-anchored overlay primitive
+// Extractable to public/assets/js/mw-drawer.js once a second consumer exists
+// (planned JS split = T4.8 in the Tab 4 track).
+// ============================================================================
+
+const MwDrawer = (function () {
+    const backdropId = '__mw_drawer_backdrop';
+    let previousFocus = null;
+
+    function ensureBackdrop() {
+        let el = document.getElementById(backdropId);
+        if (!el) {
+            el = document.createElement('div');
+            el.id = backdropId;
+            el.className = 'mw-drawer-backdrop';
+            el.setAttribute('data-mw-drawer-close', '');
+            document.body.appendChild(el);
+        }
+        return el;
+    }
+
+    function open(id) {
+        const drawer = document.getElementById(id);
+        if (!drawer || !drawer.classList.contains('mw-drawer')) return;
+        if (drawer.classList.contains('is-open')) return;
+        previousFocus = document.activeElement;
+        ensureBackdrop().classList.add('is-open');
+        drawer.classList.add('is-open');
+        document.body.classList.add('mw-drawer-locked');
+        const closeBtn = drawer.querySelector('.mw-drawer-close');
+        if (closeBtn) closeBtn.focus();
+    }
+
+    function close(id) {
+        const drawer = id
+            ? document.getElementById(id)
+            : document.querySelector('.mw-drawer.is-open');
+        if (!drawer) return;
+        drawer.classList.remove('is-open');
+        if (!document.querySelector('.mw-drawer.is-open')) {
+            const bd = document.getElementById(backdropId);
+            if (bd) bd.classList.remove('is-open');
+            document.body.classList.remove('mw-drawer-locked');
+        }
+        if (previousFocus && typeof previousFocus.focus === 'function') {
+            previousFocus.focus();
+            previousFocus = null;
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        const opener = e.target.closest('[data-mw-drawer-open]');
+        if (opener) {
+            e.preventDefault();
+            open(opener.getAttribute('data-mw-drawer-open'));
+            return;
+        }
+        const closer = e.target.closest('[data-mw-drawer-close]');
+        if (closer) {
+            e.preventDefault();
+            close();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.querySelector('.mw-drawer.is-open')) {
+            close();
+        }
+    });
+
+    return { open, close };
+})();
+
+// ============================================================================
 // PAGE INIT
 // ============================================================================
 
