@@ -107,7 +107,6 @@
     }
     .location-card.primary {
         border: 2px solid var(--mw-primary);
-        background: var(--mw-primary-tint);
     }
     .lc-icon {
         width: 40px;
