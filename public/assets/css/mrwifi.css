@@ -142,26 +142,16 @@
    VUEXY SPACING SHIMS
    Vuexy defined fractional spacing utilities (0.25/0.5/0.75rem)
    inside their bundled bootstrap.css. Standard Bootstrap CDN
-   doesn't include them — redeclare here so existing class usage
-   keeps working without touching every blade.
+   doesn't include them — redeclare the ones still used in blades
+   so existing class usage keeps working. Prune as usage drops.
    ============================================================ */
-.m-25  { margin:        0.25rem !important; }
-.mt-25, .my-25 { margin-top:    0.25rem !important; }
-.mr-25, .mx-25 { margin-right:  0.25rem !important; }
-.mb-25, .my-25 { margin-bottom: 0.25rem !important; }
-.ml-25, .mx-25 { margin-left:   0.25rem !important; }
-
-.m-50  { margin:        0.5rem !important; }
-.mt-50, .my-50 { margin-top:    0.5rem !important; }
-.mr-50, .mx-50 { margin-right:  0.5rem !important; }
-.mb-50, .my-50 { margin-bottom: 0.5rem !important; }
-.ml-50, .mx-50 { margin-left:   0.5rem !important; }
-
-.m-75  { margin:        0.75rem !important; }
-.mt-75, .my-75 { margin-top:    0.75rem !important; }
-.mr-75, .mx-75 { margin-right:  0.75rem !important; }
-.mb-75, .my-75 { margin-bottom: 0.75rem !important; }
-.ml-75, .mx-75 { margin-left:   0.75rem !important; }
+.mr-25 { margin-right:  0.25rem !important; }
+.mt-50 { margin-top:    0.5rem  !important; }
+.mr-50 { margin-right:  0.5rem  !important; }
+.mb-50 { margin-bottom: 0.5rem  !important; }
+.mt-75 { margin-top:    0.75rem !important; }
+.mr-75 { margin-right:  0.75rem !important; }
+.mb-75 { margin-bottom: 0.75rem !important; }
 
 /* ============================================================
    STATUS PILLS
