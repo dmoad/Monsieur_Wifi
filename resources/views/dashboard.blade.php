@@ -128,7 +128,7 @@
         <div class="row match-height">
             <!-- Welcome Card -->
             <div class="col-lg-4 col-md-6 col-12">
-                <div class="card card-congratulation-medal" id="welcome-card">
+                <div class="card" id="welcome-card">
                     <div class="card-body">
                         <h5>{{ __('dashboard.welcome_title') }}</h5>
                         <p class="card-text" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.status_overview') }}</p>
@@ -147,7 +147,6 @@
                             </div>
                         </div>
                         <a type="button" class="btn btn-primary mt-1" href="/{{ $locale }}/locations">{{ __('dashboard.view_details') }}</a>
-                        <img src="/app-assets/images/illustration/badge.svg" class="congratulation-medal" alt="{{ __('dashboard.medal_alt') }}" />
                     </div>
                 </div>
             </div>
