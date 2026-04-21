@@ -83,6 +83,13 @@
     border: 1px solid var(--mw-border) !important;
     box-shadow: var(--mw-shadow-card) !important;
     background: var(--mw-bg-surface) !important;
+    margin-bottom: var(--mw-space-3xl) !important;
+}
+
+/* Location mini-cards sit inside a CSS grid; the grid's `gap` handles
+   spacing, so suppress the global card margin here to avoid a double gap. */
+#locations-container > .card {
+    margin-bottom: 0 !important;
 }
 
 .card .card-header {
@@ -220,7 +227,7 @@ body.vertical-menu-modern {
 .app-content.content {
     margin-left: var(--mw-sb-width) !important;
     margin-top: 0 !important;
-    padding-top: var(--mw-space-2xl) !important;
+    padding: var(--mw-space-2xl) var(--mw-space-3xl) !important;
     transition: margin-left 0.2s ease;
     min-height: 100vh;
     background: var(--mw-bg-page);
