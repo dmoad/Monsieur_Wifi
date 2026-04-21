@@ -156,11 +156,8 @@ async function loadZoneDetails() {
 function displayZoneInfo(zone) {
     document.getElementById('zone-breadcrumb').textContent = zone.name;
     const primaryLocation = zone.primary_location;
-    const settingsUrl = primaryLocation 
-        ? `/${PAGE_LOCALE}/locations/${primaryLocation.id}` 
-        : '#';
-    
-    const html = `
+
+    const infoHtml = `
         <div class="zone-info-card">
             <div class="zone-info-head">
                 <div>
@@ -188,16 +185,51 @@ function displayZoneInfo(zone) {
                     <i data-feather="wifi"></i>
                     <span>${T.roaming}: ${zone.roaming_enabled !== false ? T.roamingOn : T.roamingOff}</span>
                 </div>
-                ${primaryLocation ? `
-                <div class="zone-info-item">
-                    <a href="${settingsUrl}" class="btn btn-sm btn-light">
-                        <i data-feather="settings"></i> ${T.zoneSettings}
-                    </a>
-                </div>` : ''}
             </div>
         </div>
     `;
-    document.getElementById('zone-info-container').innerHTML = html;
+    document.getElementById('zone-info-container').innerHTML = infoHtml;
+
+    // Settings-inheritance callout on the page itself, so the model
+    // ("settings are managed via the primary location") is clear
+    // without the user having to open the Edit Zone modal.
+    const inheritanceEl = document.getElementById('zone-inheritance-container');
+    if (inheritanceEl) {
+        if (primaryLocation) {
+            const settingsUrl = `/${PAGE_LOCALE}/locations/${primaryLocation.id}`;
+            const inheritanceTitle = PAGE_LOCALE === 'fr' ? 'Héritage des Paramètres' : 'Settings Inheritance';
+            const inheritanceMessage = PAGE_LOCALE === 'fr'
+                ? `Les paramètres réseau, sécurité et configuration de cette zone sont gérés via l'emplacement principal. Toute modification appliquée à l'emplacement principal sera automatiquement propagée à tous les autres emplacements de cette zone.`
+                : `Network, security, and configuration settings for this zone are managed via the primary location. Any change applied to the primary location automatically propagates to every other location in this zone.`;
+            const eyebrow = PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location';
+            const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres' : 'Manage Settings';
+            inheritanceEl.innerHTML = `
+                <div class="primary-loc-card">
+                    <div class="primary-loc-icon"><i data-feather="settings"></i></div>
+                    <div class="primary-loc-body">
+                        <div class="primary-loc-eyebrow">${eyebrow}</div>
+                        <div class="primary-loc-name">${primaryLocation.name}</div>
+                        <div class="primary-loc-addr">
+                            <i data-feather="map-pin"></i>
+                            ${primaryLocation.address || 'N/A'}
+                        </div>
+                        <div class="primary-loc-inherit">
+                            <div class="primary-loc-inherit-title">
+                                <i data-feather="info"></i>${inheritanceTitle}
+                            </div>
+                            <div>${inheritanceMessage}</div>
+                        </div>
+                        <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
+                            <i data-feather="settings"></i> ${manageLabel}
+                        </a>
+                    </div>
+                </div>
+            `;
+        } else {
+            inheritanceEl.innerHTML = '';
+        }
+    }
+
     feather.replace();
 }
 

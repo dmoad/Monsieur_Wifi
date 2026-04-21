@@ -189,8 +189,9 @@
     
     <div id="zone-content" style="display: none;">
         <div id="zone-info-container"></div>
+        <div id="zone-inheritance-container"></div>
         <div id="admin-alert-container"></div>
-        
+
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">{{ __('zone_details.locations_in_zone') }}</h4>
