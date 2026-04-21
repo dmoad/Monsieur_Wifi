@@ -538,29 +538,23 @@
 
 <div class="ld-panel" id="ld-panel-router">
                             <!-- WAN -->
-                            <div class="content-section">
-                                <div class="section-header d-flex justify-content-between align-items-center">
-                                    <h5 class="section-title">{{ __('location_details.wan_connection') }}</h5>
+                            <div class="content-section wan-section">
+                                <div class="wan-head">
+                                    <div class="wan-title-row">
+                                        <h5 class="section-title">{{ __('location_details.wan_connection') }}</h5>
+                                        <span class="wan-type-chip" id="wan-type-display">DHCP</span>
+                                    </div>
                                     <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#wan-settings-modal"><i data-feather="edit" class="mr-1"></i>{{ __('location_details.edit_wan_settings') }}</button>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="interface-detail"><span class="interface-label">{{ __('location_details.connection_type') }}</span><span class="interface-value" id="wan-type-display">DHCP</span></div>
-                                    </div>
-                                    <div class="col-md-9 wan-static-ip-display_div hidden">
-                                        <div class="row">
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.ip_address') }}</span><span class="interface-value" id="wan-ip-display">-</span></div></div>
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.subnet_mask') }}</span><span class="interface-value" id="wan-subnet-display">-</span></div></div>
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.gateway') }}</span><span class="interface-value" id="wan-gateway-display">-</span></div></div>
-                                            <div class="col-md-3"><div class="interface-detail"><span class="interface-label">{{ __('location_details.primary_dns') }}</span><span class="interface-value" id="wan-dns1-display">-</span></div></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-9 wan-pppoe-display_div hidden">
-                                        <div class="row">
-                                            <div class="col-md-6"><div class="interface-detail"><span class="interface-label">{{ __('location_details.username') }}</span><span class="interface-value" id="wan-pppoe-username">-</span></div></div>
-                                            <div class="col-md-6"><div class="interface-detail"><span class="interface-label">{{ __('location_details.service_name') }}</span><span class="interface-value" id="wan-pppoe-service-name">-</span></div></div>
-                                        </div>
-                                    </div>
+                                <div class="wan-details wan-static-ip-display_div hidden">
+                                    <div class="wan-detail"><span class="interface-label">{{ __('location_details.ip_address') }}</span><span class="interface-value" id="wan-ip-display">-</span></div>
+                                    <div class="wan-detail"><span class="interface-label">{{ __('location_details.subnet_mask') }}</span><span class="interface-value" id="wan-subnet-display">-</span></div>
+                                    <div class="wan-detail"><span class="interface-label">{{ __('location_details.gateway') }}</span><span class="interface-value" id="wan-gateway-display">-</span></div>
+                                    <div class="wan-detail"><span class="interface-label">{{ __('location_details.primary_dns') }}</span><span class="interface-value" id="wan-dns1-display">-</span></div>
+                                </div>
+                                <div class="wan-details wan-pppoe-display_div hidden">
+                                    <div class="wan-detail"><span class="interface-label">{{ __('location_details.username') }}</span><span class="interface-value" id="wan-pppoe-username">-</span></div>
+                                    <div class="wan-detail"><span class="interface-label">{{ __('location_details.service_name') }}</span><span class="interface-value" id="wan-pppoe-service-name">-</span></div>
                                 </div>
                             </div>
 
