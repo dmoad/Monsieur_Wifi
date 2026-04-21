@@ -53,24 +53,28 @@
     }
     .zone-info-item [data-feather] { width: 14px !important; height: 14px !important; color: var(--mw-text-muted); }
 
-    /* Primary-location subsection nested inside .zone-info-card.
-       Reuses the .primary-loc-* typography classes but without their own
-       card chrome — flush inside the zone info card, separated by a rule. */
-    .zone-info-primary {
+    /* Zone Settings card — dedicated card in the Information tab that
+       surfaces the primary-location pointer and Manage Settings CTA.
+       Separate card so the user isn't confused about what Manage
+       Settings applies to. */
+    .zone-settings-card .zone-settings-desc {
+        color: var(--mw-text-secondary);
+        font-size: 13px;
+        margin: 0 0 var(--mw-space-lg);
+        line-height: 1.5;
+    }
+    .zone-settings-primary {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: var(--mw-space-md);
-        margin-top: var(--mw-space-lg);
-        padding-top: var(--mw-space-lg);
-        border-top: 1px solid var(--mw-border-light);
+        padding: var(--mw-space-md) var(--mw-space-lg);
+        background: var(--mw-primary-tint);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: var(--mw-radius-md);
     }
-    .zone-info-primary .primary-loc-inherit {
-        background: var(--mw-bg-muted);
-    }
-    .zone-info-primary .primary-loc-cta {
-        margin-top: 0;
+    .zone-settings-primary .primary-loc-body { flex: 1; min-width: 0; }
+    .zone-settings-primary .btn {
         flex-shrink: 0;
-        align-self: flex-start;
     }
     .admin-alert {
         display: flex;
@@ -296,6 +300,7 @@
 
         <div class="zd-panel active" id="zd-panel-info" role="tabpanel">
             <div id="zone-info-container"></div>
+            <div id="zone-settings-container"></div>
         </div>
 
         <div class="zd-panel" id="zd-panel-locations" role="tabpanel">

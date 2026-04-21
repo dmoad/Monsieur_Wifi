@@ -54,6 +54,8 @@ const TRANSLATIONS = {
         zoneDeleted: 'Zone deleted',
         errorDeletingZone: 'Error deleting zone',
         actions: 'Actions',
+        settingsCardTitle: 'Zone Settings',
+        settingsCardDesc: 'Network, security, and configuration settings for this zone are defined by its primary location and inherited by every other location in the zone.',
         showingLocations: 'Showing',
         of: 'of',
         locations: 'locations',
@@ -103,6 +105,8 @@ const TRANSLATIONS = {
         zoneDeleted: 'Zone supprimée',
         errorDeletingZone: 'Erreur lors de la suppression de la zone',
         actions: 'Actions',
+        settingsCardTitle: 'Paramètres de la Zone',
+        settingsCardDesc: 'Les paramètres réseau, sécurité et configuration de cette zone sont définis par son emplacement principal et hérités par tous les autres emplacements de la zone.',
         showingLocations: 'Affichage de',
         of: 'sur',
         locations: 'emplacements',
@@ -166,53 +170,7 @@ function displayZoneInfo(zone) {
     document.getElementById('zone-breadcrumb').textContent = zone.name;
     const primaryLocation = zone.primary_location;
 
-    let primarySection = '';
-    if (primaryLocation) {
-        const settingsUrl = `/${PAGE_LOCALE}/locations/${primaryLocation.id}`;
-        const inheritanceTitle = PAGE_LOCALE === 'fr' ? 'Héritage des Paramètres' : 'Settings Inheritance';
-        const inheritanceMessage = PAGE_LOCALE === 'fr'
-            ? `Les paramètres réseau, sécurité et configuration de cette zone sont gérés via l'emplacement principal. Toute modification appliquée à l'emplacement principal sera automatiquement propagée à tous les autres emplacements de cette zone.`
-            : `Network, security, and configuration settings for this zone are managed via the primary location. Any change applied to the primary location automatically propagates to every other location in this zone.`;
-        const eyebrow = PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location';
-        const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres' : 'Manage Settings';
-        primarySection = `
-            <div class="zone-info-primary">
-                <div class="primary-loc-icon"><i data-feather="home"></i></div>
-                <div class="primary-loc-body">
-                    <div class="primary-loc-eyebrow">${eyebrow}</div>
-                    <div class="primary-loc-name">${primaryLocation.name}</div>
-                    <div class="primary-loc-addr">
-                        <i data-feather="map-pin"></i>
-                        ${primaryLocation.address || 'N/A'}
-                    </div>
-                    <div class="primary-loc-inherit">
-                        <div class="primary-loc-inherit-title">
-                            <i data-feather="info"></i>${inheritanceTitle}
-                        </div>
-                        <div>${inheritanceMessage}</div>
-                    </div>
-                </div>
-                <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
-                    <i data-feather="settings"></i> ${manageLabel}
-                </a>
-            </div>
-        `;
-    } else {
-        const noPrimaryTitle = PAGE_LOCALE === 'fr' ? 'Aucun Emplacement Principal' : 'No Primary Location';
-        const noPrimaryMessage = PAGE_LOCALE === 'fr'
-            ? `Pour gérer les paramètres de cette zone, ajoutez des emplacements ci-dessous et désignez l'un d'eux comme principal.`
-            : `To manage settings for this zone, add locations below and designate one as the primary.`;
-        primarySection = `
-            <div class="zone-info-primary no-primary-warn" style="background: rgba(234,139,9,0.08); border-top-color: rgba(234,139,9,0.25);">
-                <div class="no-primary-warn-icon"><i data-feather="alert-triangle"></i></div>
-                <div>
-                    <div class="no-primary-warn-title">${noPrimaryTitle}</div>
-                    <div class="no-primary-warn-body">${noPrimaryMessage}</div>
-                </div>
-            </div>
-        `;
-    }
-
+    // ── Card 1: Zone facts (name, description, meta, Edit/Delete kebab)
     const infoHtml = `
         <div class="zone-info-card">
             <div class="zone-info-head">
@@ -255,10 +213,63 @@ function displayZoneInfo(zone) {
                     <span>${T.roaming}: ${zone.roaming_enabled !== false ? T.roamingOn : T.roamingOff}</span>
                 </div>
             </div>
-            ${primarySection}
         </div>
     `;
     document.getElementById('zone-info-container').innerHTML = infoHtml;
+
+    // ── Card 2: Zone Settings (primary-location pointer + inheritance + CTA)
+    let settingsHtml;
+    if (primaryLocation) {
+        const settingsUrl = `/${PAGE_LOCALE}/locations/${primaryLocation.id}`;
+        const eyebrow = PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location';
+        const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres' : 'Manage Settings';
+        settingsHtml = `
+            <div class="card zone-settings-card">
+                <div class="card-header">
+                    <h4 class="card-title">${T.settingsCardTitle}</h4>
+                </div>
+                <div class="card-body">
+                    <p class="zone-settings-desc">${T.settingsCardDesc}</p>
+                    <div class="zone-settings-primary">
+                        <div class="primary-loc-icon"><i data-feather="home"></i></div>
+                        <div class="primary-loc-body">
+                            <div class="primary-loc-eyebrow">${eyebrow}</div>
+                            <div class="primary-loc-name">${primaryLocation.name}</div>
+                            <div class="primary-loc-addr">
+                                <i data-feather="map-pin"></i>
+                                ${primaryLocation.address || 'N/A'}
+                            </div>
+                        </div>
+                        <a href="${settingsUrl}" class="btn btn-sm btn-primary">
+                            <i data-feather="settings"></i> ${manageLabel}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        const noPrimaryTitle = PAGE_LOCALE === 'fr' ? 'Aucun Emplacement Principal' : 'No Primary Location';
+        const noPrimaryMessage = PAGE_LOCALE === 'fr'
+            ? `Pour gérer les paramètres de cette zone, ouvrez l'onglet Emplacements, ajoutez un emplacement et désignez-le comme principal.`
+            : `To manage settings for this zone, open the Locations tab, add a location, and designate it as primary.`;
+        settingsHtml = `
+            <div class="card zone-settings-card">
+                <div class="card-header">
+                    <h4 class="card-title">${T.settingsCardTitle}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="no-primary-warn">
+                        <div class="no-primary-warn-icon"><i data-feather="alert-triangle"></i></div>
+                        <div>
+                            <div class="no-primary-warn-title">${noPrimaryTitle}</div>
+                            <div class="no-primary-warn-body">${noPrimaryMessage}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    document.getElementById('zone-settings-container').innerHTML = settingsHtml;
 
     feather.replace();
 }
