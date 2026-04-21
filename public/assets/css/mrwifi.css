@@ -133,6 +133,69 @@
 .mw-stat-icon-danger  { background: rgba(220, 38, 38, 0.1);          color: var(--mw-danger); }
 
 /* ============================================================
+   VUEXY SPACING SHIMS
+   Vuexy defined fractional spacing utilities (0.25/0.5/0.75rem)
+   inside their bundled bootstrap.css. Standard Bootstrap CDN
+   doesn't include them — redeclare here so existing class usage
+   keeps working without touching every blade.
+   ============================================================ */
+.m-25  { margin:        0.25rem !important; }
+.mt-25, .my-25 { margin-top:    0.25rem !important; }
+.mr-25, .mx-25 { margin-right:  0.25rem !important; }
+.mb-25, .my-25 { margin-bottom: 0.25rem !important; }
+.ml-25, .mx-25 { margin-left:   0.25rem !important; }
+
+.m-50  { margin:        0.5rem !important; }
+.mt-50, .my-50 { margin-top:    0.5rem !important; }
+.mr-50, .mx-50 { margin-right:  0.5rem !important; }
+.mb-50, .my-50 { margin-bottom: 0.5rem !important; }
+.ml-50, .mx-50 { margin-left:   0.5rem !important; }
+
+.m-75  { margin:        0.75rem !important; }
+.mt-75, .my-75 { margin-top:    0.75rem !important; }
+.mr-75, .mx-75 { margin-right:  0.75rem !important; }
+.mb-75, .my-75 { margin-bottom: 0.75rem !important; }
+.ml-75, .mx-75 { margin-left:   0.75rem !important; }
+
+/* ============================================================
+   STATUS PILLS
+   Used across dashboard, locations, location-details JS.
+   ============================================================ */
+.status-badge {
+    padding: 3px 10px;
+    border-radius: var(--mw-radius-full);
+    font-size: 11px;
+    font-weight: 600;
+}
+.status-online  { background: rgba(22, 163, 74, 0.12);  color: var(--mw-success); }
+.status-offline { background: rgba(220, 38, 38, 0.10);  color: var(--mw-danger); }
+.status-warning { background: rgba(234, 139, 9, 0.12);  color: var(--mw-warning); }
+
+/* ============================================================
+   PAGINATION
+   Token-based overrides for Bootstrap pagination + DataTables.
+   ============================================================ */
+.dataTables_paginate { margin-top: 1rem !important; padding: 1rem !important; }
+.pagination { display: flex; justify-content: flex-end; }
+.page-link {
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    border: 1px solid #ddd;
+    color: var(--mw-primary);
+}
+.page-item.active .page-link {
+    background-color: var(--mw-primary);
+    border-color: var(--mw-primary);
+    color: #fff;
+}
+.page-item.disabled .page-link {
+    color: #b9b9c3;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #ddd;
+}
+
+/* ============================================================
    PAGE BACKGROUND
    Apply the design-system page color globally so cards (white)
    visually float above the surface.
