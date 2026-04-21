@@ -121,6 +121,36 @@
 }
 
 /* ============================================================
+   BUTTONS — rebrand Bootstrap's .btn-primary to indigo tokens
+   ============================================================ */
+.btn-primary {
+    background-color: var(--mw-primary) !important;
+    border-color: var(--mw-primary) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.focus {
+    background-color: var(--mw-primary-hover) !important;
+    border-color: var(--mw-primary-hover) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35) !important;
+}
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled).active {
+    background-color: var(--mw-primary-hover) !important;
+    border-color: var(--mw-primary-hover) !important;
+}
+.btn-outline-primary {
+    color: var(--mw-primary) !important;
+    border-color: var(--mw-primary) !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--mw-primary) !important;
+    border-color: var(--mw-primary) !important;
+    color: #fff !important;
+}
+
+/* ============================================================
    STAT ICON — small rounded icon pill used in stat-style cards
    (summary rows, analytics tiles). Tinted background + solid
    accent color per semantic variant.
