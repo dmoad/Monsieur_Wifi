@@ -175,7 +175,7 @@
 <style>
 /* Hero Header */
 .order-modal-redesign .order-hero-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--mw-primary);
     margin: 0 0 1.5rem 0;
     padding: 1.5rem 1.5rem;
     color: white;
@@ -267,15 +267,15 @@
 }
 
 .order-modal-redesign .info-card:hover {
-    border-color: #667eea;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    border-color: var(--mw-primary);
+    box-shadow: 0 2px 8px rgba(99,102,241,0.1);
 }
 
 .order-modal-redesign .info-card-icon {
     width: 40px;
     height: 40px;
     min-width: 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--mw-primary);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -369,7 +369,7 @@
 }
 
 .order-modal-redesign .summary-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--mw-primary);
     color: white;
     padding: 0.75rem 1rem;
     font-weight: 600;
@@ -433,12 +433,12 @@
 }
 
 .order-modal-redesign .summary-total {
-    border-top: 2px solid #667eea;
+    border-top: 2px solid var(--mw-primary);
     margin-top: 0.5rem;
     padding-top: 0.75rem;
     font-size: 1.1rem;
     font-weight: 700;
-    color: #667eea;
+    color: var(--mw-primary);
 }
 
 /* Responsive */
@@ -503,7 +503,7 @@
 }
 
 .tracking-modal-redesign .tracking-hero-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--mw-primary);
     color: white;
     padding: 1.5rem;
     margin: 0;
@@ -539,8 +539,8 @@
 }
 
 .tracking-modal-redesign .form-control-modern:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    border-color: var(--mw-primary);
+    box-shadow: 0 0 0 0.2rem rgba(99,102,241,0.15);
 }
 
 .tracking-modal-redesign .tracking-form-actions {
