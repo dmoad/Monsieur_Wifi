@@ -729,9 +729,9 @@
                                             <div class="form-group">
                                                 <label for="theme-color">{{ __('captive_portals.label_theme_color') }}</label>
                                                 <div class="color-picker-container">
-                                                    <input type="color" class="form-control form-control-color" id="theme-color" value="#7367f0">
-                                                    <div class="color-preview" style="background-color: #7367f0;"></div>
-                                                    <span class="color-value">#7367f0</span>
+                                                    <input type="color" class="form-control form-control-color" id="theme-color" value="#6366f1">
+                                                    <div class="color-preview" style="background-color: #6366f1;"></div>
+                                                    <span class="color-value">#6366f1</span>
                                                 </div>
                                             </div>
                                         </div>
