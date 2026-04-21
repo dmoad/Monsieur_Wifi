@@ -30,6 +30,7 @@ return [
     'col_status' => 'Statut',
     'col_actions' => 'Actions',
     'action_view' => 'Voir',
+    'action_clone' => 'Cloner',
     'action_delete' => 'Supprimer',
     'actions' => 'Actions',
     'primary_label' => 'Principal',
@@ -43,6 +44,9 @@ return [
     'confirm_delete' => 'Supprimer l\'emplacement « {name} » ? Cette action est irréversible.',
     'location_deleted' => 'Emplacement supprimé avec succès',
     'error_deleting' => 'Erreur lors de la suppression de l\'emplacement',
+    'location_cloned' => 'Emplacement cloné',
+    'error_cloning' => 'Erreur lors du clonage de l\'emplacement',
+    'cloning' => 'Clonage…',
 
     // Add-location modal
     'add_new_location' => 'Ajouter un nouvel emplacement',

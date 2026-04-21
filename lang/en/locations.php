@@ -30,6 +30,7 @@ return [
     'col_status' => 'Status',
     'col_actions' => 'Actions',
     'action_view' => 'View',
+    'action_clone' => 'Clone',
     'action_delete' => 'Delete',
     'actions' => 'Actions',
     'primary_label' => 'Primary',
@@ -43,6 +44,9 @@ return [
     'confirm_delete' => 'Delete location "{name}"? This cannot be undone.',
     'location_deleted' => 'Location deleted successfully',
     'error_deleting' => 'Error deleting location',
+    'location_cloned' => 'Location cloned',
+    'error_cloning' => 'Error cloning location',
+    'cloning' => 'Cloning…',
 
     // Add-location modal
     'add_new_location' => 'Add New Location',

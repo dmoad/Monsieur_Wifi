@@ -48,6 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('add-location-btn').addEventListener('click', handleAddLocation);
 
+    $('#confirm-clone-btn').on('click', confirmCloneLocation);
+    $('#clone-location-modal').on('hidden.bs.modal', function () {
+        pendingCloneLocationId = null;
+        $('#clone-owner-select').empty();
+    });
+
     // Close kebab menus on outside click
     document.addEventListener('click', function (e) {
         if (!e.target.closest('.lc-kebab-wrap')) {
@@ -261,9 +267,9 @@ function renderLocationRow(location) {
                         </svg>
                     </button>
                     <div class="lc-menu" id="lc-menu-${location.id}">
-                        <button class="lc-menu-item" onclick="window.location.href='/${locale}/locations/${location.id}'">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            ${T.action_view || 'View'}
+                        <button class="lc-menu-item" onclick="openCloneModal(${location.id}, ${deleteName}); closeAllLocationMenus()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            ${T.action_clone || 'Clone'}
                         </button>
                         <div class="lc-menu-divider"></div>
                         <button class="lc-menu-item lc-menu-danger" onclick="deleteLocation(${location.id}, ${deleteName}); closeAllLocationMenus()">
@@ -312,6 +318,73 @@ function changeItemsPerPage() {
     itemsPerPage = parseInt(select.value, 10) || 25;
     currentPage = 1;
     displayLocations();
+}
+
+let pendingCloneLocationId = null;
+
+async function openCloneModal(locationId, locationName) {
+    pendingCloneLocationId = locationId;
+    $('#clone-location-name-display').text(locationName || '');
+
+    if (UserManager.isAdminOrAbove()) {
+        try {
+            const response = await fetch(`${APP_CONFIG.API.BASE_URL}/accounts/users`, {
+                headers: { 'Authorization': `Bearer ${UserManager.getToken()}`, 'Accept': 'application/json' }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const users = data.users || data.data || [];
+                const $select = $('#clone-owner-select');
+                $select.empty().append(`<option value="">${T.modal_clone_assign_to_self || 'Assign to self'}</option>`);
+                users.forEach(u => {
+                    $select.append(`<option value="${u.id}">${escapeHtml(u.name)} (${escapeHtml(u.email)})</option>`);
+                });
+            }
+        } catch (err) {
+            console.error('Error loading user list for clone:', err);
+        }
+        $('#clone-owner-group').show();
+    } else {
+        $('#clone-owner-group').hide();
+    }
+
+    if (typeof feather !== 'undefined') feather.replace();
+    $('#clone-location-modal').modal('show');
+}
+
+async function confirmCloneLocation() {
+    if (!pendingCloneLocationId) return;
+    const $btn = $('#confirm-clone-btn');
+    const origHtml = $btn.html();
+    $btn.prop('disabled', true).html(`<span class="spinner-border spinner-border-sm mr-1"></span> ${T.cloning || 'Cloning…'}`);
+
+    const token = UserManager.getToken();
+    try {
+        const body = {};
+        if (UserManager.isAdminOrAbove()) {
+            const ownerId = $('#clone-owner-select').val();
+            if (ownerId) body.owner_id = ownerId;
+        }
+        await $.ajax({
+            url: APP_CONFIG.API.BASE_URL + '/locations/' + pendingCloneLocationId + '/clone',
+            type: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token },
+            contentType: 'application/json',
+            data: JSON.stringify(body)
+        });
+        $('#clone-location-modal').modal('hide');
+        if (typeof toastr !== 'undefined') {
+            toastr.success(T.location_cloned || 'Location cloned');
+        }
+        loadLocations();
+    } catch (xhr) {
+        console.error('Error cloning location:', xhr);
+        if (typeof toastr !== 'undefined') {
+            toastr.error(T.error_cloning || 'Error cloning location');
+        }
+    } finally {
+        $btn.prop('disabled', false).html(origHtml);
+    }
 }
 
 async function deleteLocation(locationId, locationName) {

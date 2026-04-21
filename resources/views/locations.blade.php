@@ -375,6 +375,39 @@
     <div id="pagination-container"></div>
 </div>
 
+<!-- Clone Location Modal -->
+<div class="modal fade" id="clone-location-modal" tabindex="-1" role="dialog" aria-labelledby="clone-location-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clone-location-modal-title"><i data-feather="copy" class="mr-2"></i>{{ __('location_details.modal_clone_title') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info mb-3">
+                    <div class="alert-body"><i data-feather="info" class="mr-2"></i>{{ __('location_details.modal_clone_info') }}</div>
+                </div>
+                <p class="mb-3"><strong id="clone-location-name-display"></strong></p>
+                <div id="clone-owner-group" style="display:none;">
+                    <div class="form-group">
+                        <label for="clone-owner-select">{{ __('location_details.modal_clone_assign_to_user') }}</label>
+                        <select class="form-control" id="clone-owner-select">
+                            <option value="">{{ __('location_details.modal_clone_assign_to_self') }}</option>
+                        </select>
+                        <small class="text-muted">{{ __('location_details.modal_clone_assign_help') }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="confirm-clone-btn">
+                    <i data-feather="copy" class="mr-1"></i><span>{{ __('location_details.modal_clone_location_btn') }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add Location Modal -->
 <div class="modal fade" id="add-location-modal" tabindex="-1" role="dialog" aria-labelledby="add-location-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -435,7 +468,12 @@
         'col_status' => __('locations.col_status'),
         'primary_label' => __('locations.primary_label'),
         'action_view' => __('locations.action_view'),
+        'action_clone' => __('locations.action_clone'),
         'action_delete' => __('locations.action_delete'),
+        'location_cloned' => __('locations.location_cloned'),
+        'error_cloning' => __('locations.error_cloning'),
+        'cloning' => __('locations.cloning'),
+        'modal_clone_assign_to_self' => __('location_details.modal_clone_assign_to_self'),
         'actions' => __('locations.actions'),
         'empty_title' => __('locations.empty_title'),
         'empty_desc' => __('locations.empty_desc'),
