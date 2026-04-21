@@ -54,6 +54,7 @@ return [
 
     // Location Configuration card
     'config_title' => 'Location Configuration',
+    'tab_overview' => 'Overview',
     'tab_location_details' => 'Location Details',
     'tab_router_settings' => 'Router Settings',
 

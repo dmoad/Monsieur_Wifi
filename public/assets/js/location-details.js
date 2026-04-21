@@ -1712,3 +1712,13 @@ function initEventHandlers() {
     const user = UserManager.getUser();
     if (user) UserManager.updateUserUI(user);
 }
+
+// Page-level tab switching (Overview / Settings / Router)
+document.addEventListener('click', function (e) {
+    const tab = e.target.closest('.ld-tab');
+    if (!tab) return;
+    const key = tab.dataset.tab;
+    if (!key) return;
+    document.querySelectorAll('.ld-tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.querySelectorAll('.ld-panel').forEach(p => p.classList.toggle('active', p.id === 'ld-panel-' + key));
+});

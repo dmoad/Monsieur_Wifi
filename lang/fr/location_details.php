@@ -54,6 +54,7 @@ return [
 
     // Location Configuration card
     'config_title' => 'Configuration de l\'emplacement',
+    'tab_overview' => 'Vue d\'ensemble',
     'tab_location_details' => 'Détails de l\'emplacement',
     'tab_router_settings' => 'Paramètres du routeur',
 

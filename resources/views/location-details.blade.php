@@ -12,6 +12,35 @@
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/maps/leaflet.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/css/location-details.css">
+<style>
+/* Page-level tab nav (matches zone-details .zd-tabs pattern) */
+.ld-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--mw-border);
+    margin-bottom: var(--mw-space-xl);
+}
+.ld-tab {
+    padding: 10px var(--mw-space-xl);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--mw-text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+.ld-tab:hover { color: var(--mw-text-primary); }
+.ld-tab.active {
+    color: var(--mw-primary);
+    font-weight: 600;
+    border-bottom-color: var(--mw-primary);
+}
+.ld-panel { display: none; }
+.ld-panel.active { display: block; }
+</style>
 @endpush
 
 @section('content')
@@ -42,7 +71,15 @@
     </div>
 </div>
 
+<div class="ld-tabs">
+    <button type="button" class="ld-tab active" data-tab="overview">{{ __('location_details.tab_overview') }}</button>
+    <button type="button" class="ld-tab" data-tab="settings">{{ __('location_details.tab_location_details') }}</button>
+    <button type="button" class="ld-tab" data-tab="router">{{ __('location_details.tab_router_settings') }}</button>
+</div>
+
 <div class="content-body">
+
+<div class="ld-panel active" id="ld-panel-overview">
 
     <!-- Location Overview -->
     <div class="stats-grid">
@@ -222,30 +259,9 @@
         </div>
     </div>
 
-    <!-- Location Configuration -->
-    <div class="row" id="location-configuration">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header"><h4 class="card-title">{{ __('location_details.config_title') }}</h4></div>
-                <div class="card-body">
+</div><!-- /ld-panel-overview -->
 
-                    <ul class="nav nav-tabs" role="tablist" id="main-tabs-nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="location-settings-tab" data-toggle="tab" href="#location-settings" role="tab">
-                                <i class="fas fa-building mr-2"></i>{{ __('location_details.tab_location_details') }}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="router-tab" data-toggle="tab" href="#router" role="tab">
-                                <i data-feather="hard-drive" class="mr-50"></i>{{ __('location_details.tab_router_settings') }}
-                            </a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content">
-
-                        <!-- ── Location Details Tab ── -->
-                        <div class="tab-pane active show" id="location-settings" role="tabpanel">
+<div class="ld-panel" id="ld-panel-settings">
                             <form id="location-info-form" novalidate>
 
                                 <!-- Panel 1: Identity & Address -->
@@ -402,10 +418,9 @@
                                 </div>
 
                             </form>
-                        </div>
+</div><!-- /ld-panel-settings -->
 
-                        <!-- ── Router Settings Tab ── -->
-                        <div class="tab-pane fade" id="router" role="tabpanel">
+<div class="ld-panel" id="ld-panel-router">
                             <!-- WAN -->
                             <div class="content-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
@@ -690,15 +705,9 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- end #router -->
+                        <!-- end router content -->
 
-                    </div><!-- end .tab-content -->
-
-                </div><!-- end .card-body -->
-            </div><!-- end .card -->
-        </div><!-- end .col-12 -->
-    </div><!-- end #location-configuration -->
+</div><!-- /ld-panel-router -->
 
 </div><!-- end .content-body -->
 
