@@ -252,7 +252,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="primary-location-info-edit" class="mb-3"></div>
                 <form id="zone-form">
                     <input type="hidden" id="zone-id">
                     <div class="form-group" id="zone-owner-select-group" style="display: none;">

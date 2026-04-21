@@ -289,7 +289,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="primary-location-info" class="mb-3"></div>
                 <form id="edit-zone-form">
                     <div class="form-group">
                         <label for="edit-zone-name">{{ __('zones.zone_name') }} *</label>

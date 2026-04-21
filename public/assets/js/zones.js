@@ -402,13 +402,8 @@ function showZoneModal(zoneId = null) {
     
     document.getElementById('zone-form').reset();
     document.getElementById('zone-id').value = '';
-    
-    // Clear primary location info
-    const primaryInfoContainer = document.getElementById('primary-location-info-edit');
-    if (primaryInfoContainer) {
-        primaryInfoContainer.innerHTML = '';
-    }
-    
+
+
     // Show/hide owner dropdown based on admin status and mode
     console.log('showZoneModal - zoneId:', zoneId);
     console.log('showZoneModal - isAdminOrAbove:', UserManager.isAdminOrAbove());
@@ -477,58 +472,6 @@ async function loadZoneForEdit(zoneId) {
             initSharedUsersSelect2(zone.shared_users);
         }
 
-        // Show primary location info if available
-        const primaryInfoContainer = document.getElementById('primary-location-info-edit');
-        if (primaryInfoContainer) {
-            if (zone.primary_location) {
-                const settingsUrl = `/${PAGE_LOCALE}/locations/${zone.primary_location.id}`;
-                const inheritanceMessage = PAGE_LOCALE === 'fr' 
-                    ? `Les paramètres réseau, sécurité et configuration sont hérités de l'emplacement principal. Toute modification appliquée à l'emplacement principal sera automatiquement propagée à tous les autres emplacements de cette zone.`
-                    : `Network, security, and configuration settings are inherited from the Primary Location. Any changes applied to the Primary Location will automatically propagate to all other locations in this zone.`;
-                
-                const inheritanceTitle = PAGE_LOCALE === 'fr' ? 'Héritage des Paramètres' : 'Settings Inheritance';
-                const eyebrow = PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location';
-                const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres de la Zone' : 'Manage Zone Settings';
-                primaryInfoContainer.innerHTML = `
-                    <div class="primary-loc-card">
-                        <div class="primary-loc-icon"><i data-feather="settings"></i></div>
-                        <div class="primary-loc-body">
-                            <div class="primary-loc-eyebrow">${eyebrow}</div>
-                            <div class="primary-loc-name">${zone.primary_location.name}</div>
-                            <div class="primary-loc-addr">
-                                <i data-feather="map-pin"></i>
-                                ${zone.primary_location.address || 'N/A'}
-                            </div>
-                            <div class="primary-loc-inherit">
-                                <div class="primary-loc-inherit-title">
-                                    <i data-feather="info"></i>${inheritanceTitle}
-                                </div>
-                                <div>${inheritanceMessage}</div>
-                            </div>
-                            <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
-                                <i data-feather="settings"></i> ${manageLabel}
-                            </a>
-                        </div>
-                    </div>
-                `;
-                feather.replace();
-            } else {
-                const noPrimaryTitle = PAGE_LOCALE === 'fr' ? 'Aucun Emplacement Principal' : 'No Primary Location';
-                const noPrimaryMessage = PAGE_LOCALE === 'fr'
-                    ? 'Pour configurer les paramètres de cette zone, vous devez d\'abord ajouter des emplacements et définir l\'un d\'eux comme principal.'
-                    : 'To configure settings for this zone, you must first add locations and designate one as the primary location.';
-                primaryInfoContainer.innerHTML = `
-                    <div class="no-primary-warn">
-                        <div class="no-primary-warn-icon"><i data-feather="alert-triangle"></i></div>
-                        <div>
-                            <div class="no-primary-warn-title">${noPrimaryTitle}</div>
-                            <div class="no-primary-warn-body">${noPrimaryMessage}</div>
-                        </div>
-                    </div>
-                `;
-                feather.replace();
-            }
-        }
     } catch (error) {
         console.error('Error loading zone:', error);
         toastr.error(T.errorLoading);
