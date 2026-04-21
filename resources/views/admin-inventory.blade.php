@@ -267,8 +267,8 @@
     transition: all 0.2s;
 }
 .inventory-settings-modal .stat-card:hover {
-    border-color: #7367f0;
-    box-shadow: 0 2px 8px rgba(115, 103, 240, 0.1);
+    border-color: var(--mw-primary);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
 }
 .inventory-settings-modal .stat-icon {
     width: 50px;

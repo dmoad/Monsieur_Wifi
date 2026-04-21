@@ -355,8 +355,8 @@
                                                 <div class="form-group">
                                                     <label for="primary_color">{{ __('system_settings.label_primary_color') }}</label>
                                                     <div class="input-group">
-                                                        <input type="color" id="primary_color" class="form-control" name="primary_color" value="#7367f0" />
-                                                        <div class="input-group-append"><span class="input-group-text">#7367f0</span></div>
+                                                        <input type="color" id="primary_color" class="form-control" name="primary_color" value="#6366f1" />
+                                                        <div class="input-group-append"><span class="input-group-text">#6366f1</span></div>
                                                     </div>
                                                     <small>{{ __('system_settings.help_primary_color') }}</small>
                                                 </div>

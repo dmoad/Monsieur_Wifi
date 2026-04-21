@@ -63,7 +63,7 @@
     .qos-badge-ef   { background: rgba(234,84,85,0.12);  color: #ea5455; }
     .qos-badge-af41 { background: rgba(255,159,67,0.12); color: #ff9f43; }
     .qos-badge-be   { background: rgba(40,199,111,0.12); color: #28c76f; }
-    .qos-badge-cs1  { background: rgba(130,128,255,0.12);color: #7367f0; }
+    .qos-badge-cs1  { background: rgba(99,102,241,0.12);color: var(--mw-primary); }
     .qos-class-meta { flex: 1; min-width: 0; }
     .qos-class-meta h6 { margin: 0 0 1px; font-weight: 700; font-size: 1rem; }
     .qos-class-meta .priority-desc { color: #6e6b7b; font-size: 0.78rem; margin-bottom: 3px; }

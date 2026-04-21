@@ -39,7 +39,7 @@
         transition: all 0.3s ease;
     }
     .thumbnail:hover, .thumbnail.active {
-        border-color: #7367f0;
+        border-color: var(--mw-primary);
         transform: scale(1.05);
     }
     .quantity-input {

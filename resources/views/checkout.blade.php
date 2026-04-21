@@ -105,7 +105,7 @@
     .payment-summary-row.total {
         font-weight: 600;
         font-size: 1.1rem;
-        color: #7367f0;
+        color: var(--mw-primary);
         margin-top: 0.5rem;
         padding-top: 0.5rem;
         border-top: 1px solid #d8d6de;

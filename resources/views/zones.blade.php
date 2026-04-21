@@ -165,7 +165,7 @@
         width: 64px;
         height: 64px;
         margin: 0 auto 1rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--mw-primary) 0%, #4F46E5 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -302,7 +302,7 @@
                     <div class="form-group" id="zone-shared-users-group" style="display:none;">
                         <label for="zone-shared-users">
                             {{ __('zones.shared_access') }}
-                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">{{ __('zones.admin_badge') }}</span>
+                            <span style="font-size:0.7rem;font-weight:600;background:var(--mw-primary);color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">{{ __('zones.admin_badge') }}</span>
                         </label>
                         <select class="select2 form-control" id="zone-shared-users" multiple="multiple"></select>
                         <small class="form-text text-muted">{{ __('zones.shared_users_help') }}</small>

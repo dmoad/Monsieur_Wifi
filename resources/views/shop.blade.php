@@ -54,7 +54,7 @@
     }
     .product-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 8px 25px rgba(115, 103, 240, 0.2);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2);
     }
     .product-image-wrapper {
         position: relative;
@@ -106,7 +106,7 @@
     .product-price {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #7367f0;
+        color: var(--mw-primary);
         margin: 0;
     }
     .product-actions {
@@ -127,7 +127,7 @@
     }
     .product-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(115, 103, 240, 0.3);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
     .product-btn svg {
         display: block;
@@ -176,9 +176,9 @@
         font-size: 0.75rem;
         font-weight: 600;
         border-radius: 20px;
-        background: linear-gradient(135deg, #7367f0 0%, #5e50ee 100%);
+        background: linear-gradient(135deg, var(--mw-primary) 0%, #4F46E5 100%);
         color: white;
-        box-shadow: 0 2px 8px rgba(115, 103, 240, 0.3);
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
     }
     .qty-controls {
         display: flex;
@@ -199,8 +199,8 @@
         transition: all 0.2s;
     }
     .qty-btn:hover:not(:disabled) {
-        background: #7367f0;
-        border-color: #7367f0;
+        background: var(--mw-primary);
+        border-color: var(--mw-primary);
         color: white;
         transform: scale(1.05);
     }

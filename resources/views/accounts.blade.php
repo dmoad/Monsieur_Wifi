@@ -32,8 +32,8 @@
     }
 
     .badge-role-admin {
-        background-color: rgba(115, 103, 240, 0.12);
-        color: #7367f0;
+        background-color: rgba(99, 102, 241, 0.12);
+        color: var(--mw-primary);
     }
 
     .badge-role-owner {

@@ -251,7 +251,7 @@
                     <div class="form-group" id="edit-zone-shared-users-group" style="display:none;">
                         <label for="edit-zone-shared-users">
                             {{ __('zones.shared_access') }}
-                            <span style="font-size:0.7rem;font-weight:600;background:#7367f0;color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">{{ __('zones.admin_badge') }}</span>
+                            <span style="font-size:0.7rem;font-weight:600;background:var(--mw-primary);color:#fff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">{{ __('zones.admin_badge') }}</span>
                         </label>
                         <select class="select2 form-control" id="edit-zone-shared-users" multiple="multiple"></select>
                         <small class="form-text text-muted">{{ __('zones.shared_users_help') }}</small>
