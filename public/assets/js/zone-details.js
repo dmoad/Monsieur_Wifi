@@ -342,7 +342,7 @@ function displayLocations(locations) {
                 <div class="lc-body">
                     <div class="lc-name-row">
                         <div class="location-name">${location.name}</div>
-                        ${isPrimary ? `<span class="lc-badge-primary"><i data-feather="home"></i>${T.primary}</span>` : ''}
+                        ${isPrimary ? `<span class="lc-badge-primary">${T.primary}</span>` : ''}
                     </div>
                     <div class="location-address">${location.address || 'N/A'}</div>
                 </div>

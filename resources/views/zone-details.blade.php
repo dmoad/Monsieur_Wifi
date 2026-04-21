@@ -140,15 +140,23 @@
     .lc-badge-primary {
         font-size: 11px;
         font-weight: 600;
-        background: var(--mw-primary);
-        color: #fff;
-        border-radius: var(--mw-radius-badge);
-        padding: 2px 8px;
+        background: var(--mw-primary-tint);
+        color: var(--mw-primary);
+        border-radius: var(--mw-radius-full);
+        padding: 3px 10px 3px 8px;
         display: inline-flex;
         align-items: center;
-        gap: 3px;
+        gap: 6px;
+        line-height: 1.2;
     }
-    .lc-badge-primary [data-feather] { width: 11px !important; height: 11px !important; }
+    .lc-badge-primary::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--mw-primary);
+        flex-shrink: 0;
+    }
     .location-address {
         color: var(--mw-text-muted);
         font-size: 12px;
