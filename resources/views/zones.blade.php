@@ -52,22 +52,23 @@
         align-self: center;
     }
     .zc-kebab-btn {
-        width: 30px;
-        height: 30px;
-        border: none;
-        background: transparent;
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--mw-border);
+        background: var(--mw-bg-surface);
         border-radius: var(--mw-radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--mw-text-muted);
+        color: var(--mw-text-secondary);
         cursor: pointer;
-        transition: background 0.12s, color 0.12s;
+        transition: background 0.12s, color 0.12s, border-color 0.12s;
         padding: 0;
     }
     .zc-kebab-btn:hover {
-        background: var(--mw-bg-hover);
-        color: var(--mw-text-primary);
+        background: var(--mw-primary-tint);
+        border-color: var(--mw-primary);
+        color: var(--mw-primary);
     }
     .zc-menu {
         display: none;
