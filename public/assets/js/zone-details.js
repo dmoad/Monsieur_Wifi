@@ -338,31 +338,30 @@ function displayLocations(locations) {
         const isPrimary = currentZone.primary_location_id === location.id;
         return `
             <div class="location-card ${isPrimary ? 'primary' : ''}">
-                <div class="location-header">
-                    <div>
+                <div class="lc-icon"><i data-feather="wifi"></i></div>
+                <div class="lc-body">
+                    <div class="lc-name-row">
                         <div class="location-name">${location.name}</div>
-                        <div class="location-address">${location.address || 'N/A'}</div>
-                        <div class="location-badges">
-                            ${isPrimary ? `<span class="badge badge-primary">${T.primary}</span>` : ''}
-                        </div>
+                        ${isPrimary ? `<span class="lc-badge-primary"><i data-feather="home"></i>${T.primary}</span>` : ''}
                     </div>
-                    <div class="lz-kebab-wrap">
-                        <button class="lz-kebab-btn" onclick="toggleLocationMenu(event, ${location.id})" title="${T.actions || 'Actions'}">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-                            </svg>
-                        </button>
-                        <div class="lz-menu" id="lz-menu-${location.id}">
-                            ${!isPrimary ? `
-                                <button class="lz-menu-item" onclick="setPrimary(${location.id}); closeAllLocationMenus()">
-                                    <i data-feather="home"></i> ${T.setPrimary}
-                                </button>
-                                <div class="lz-menu-divider"></div>
-                            ` : ''}
-                            <button class="lz-menu-item lz-menu-danger" onclick="removeLocation(${location.id}); closeAllLocationMenus()">
-                                <i data-feather="x"></i> ${T.removeLocation}
+                    <div class="location-address">${location.address || 'N/A'}</div>
+                </div>
+                <div class="lz-kebab-wrap">
+                    <button class="lz-kebab-btn" onclick="toggleLocationMenu(event, ${location.id})" title="${T.actions || 'Actions'}">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                        </svg>
+                    </button>
+                    <div class="lz-menu" id="lz-menu-${location.id}">
+                        ${!isPrimary ? `
+                            <button class="lz-menu-item" onclick="setPrimary(${location.id}); closeAllLocationMenus()">
+                                <i data-feather="home"></i> ${T.setPrimary}
                             </button>
-                        </div>
+                            <div class="lz-menu-divider"></div>
+                        ` : ''}
+                        <button class="lz-menu-item lz-menu-danger" onclick="removeLocation(${location.id}); closeAllLocationMenus()">
+                            <i data-feather="x"></i> ${T.removeLocation}
+                        </button>
                     </div>
                 </div>
             </div>

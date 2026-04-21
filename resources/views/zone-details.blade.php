@@ -91,12 +91,15 @@
     }
 
     .location-card {
+        display: flex;
+        align-items: center;
+        gap: var(--mw-space-md);
         border: 1px solid var(--mw-border);
-        border-radius: var(--mw-radius-lg);
-        padding: var(--mw-space-lg);
-        margin-bottom: var(--mw-space-md);
-        transition: box-shadow 0.15s, border-color 0.15s;
+        border-radius: var(--mw-radius-md);
+        padding: var(--mw-space-md) var(--mw-space-lg);
+        margin-bottom: var(--mw-space-sm);
         background: var(--mw-bg-surface);
+        transition: box-shadow 0.15s, border-color 0.15s;
     }
     .location-card:hover {
         border-color: var(--mw-primary);
@@ -106,31 +109,50 @@
         border: 2px solid var(--mw-primary);
         background: var(--mw-primary-tint);
     }
-    .location-header {
+    .lc-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--mw-radius-md);
+        background: var(--mw-bg-muted);
+        color: var(--mw-text-muted);
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 0.75rem;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .lc-icon [data-feather] { width: 20px !important; height: 20px !important; }
+    .location-card.primary .lc-icon {
+        background: var(--mw-primary);
+        color: #fff;
+    }
+    .lc-body { flex: 1; min-width: 0; }
+    .lc-name-row {
+        display: flex;
+        align-items: center;
+        gap: var(--mw-space-sm);
+        flex-wrap: wrap;
     }
     .location-name {
-        font-size: 1.1rem;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 700;
         color: var(--mw-text-primary);
-        margin-bottom: 0.25rem;
     }
+    .lc-badge-primary {
+        font-size: 11px;
+        font-weight: 600;
+        background: var(--mw-primary);
+        color: #fff;
+        border-radius: var(--mw-radius-badge);
+        padding: 2px 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+    .lc-badge-primary [data-feather] { width: 11px !important; height: 11px !important; }
     .location-address {
         color: var(--mw-text-muted);
-        font-size: 0.9rem;
-    }
-    .location-badges {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-top: 0.5rem;
-    }
-    .location-actions {
-        display: flex;
-        gap: 0.5rem;
+        font-size: 12px;
+        margin-top: 2px;
     }
     /* Kebab menu on location cards (Set as Primary / Remove from Zone) */
     .lz-kebab-wrap { position: relative; flex-shrink: 0; }
