@@ -11,15 +11,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="/assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/app-assets/vendors/css/vendors.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <link rel="stylesheet" href="/app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" href="/app-assets/css/colors.css">
-    <link rel="stylesheet" href="/app-assets/css/components.css">
-    <link rel="stylesheet" href="/app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" href="/app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" href="/app-assets/css/themes/semi-dark-layout.css">
-    <link rel="stylesheet" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
     <link rel="stylesheet" href="/assets/vendors/css/extensions/toastr.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/mrwifi.css">
@@ -118,8 +110,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.js" integrity="sha384-RyE9TSx1shZZA6GS7TToIk1J7zY1mU8evbLDXYgOz4zgduwPFEtnHd1bswt8PG/u" crossorigin="anonymous"></script>
     <script src="/assets/vendors/js/extensions/toastr.min.js"></script>
-    <script src="/app-assets/js/core/app-menu.js"></script>
-    <script src="/app-assets/js/core/app.js"></script>
     <script src="/assets/js/config.js"></script>
 
     @stack('scripts')
