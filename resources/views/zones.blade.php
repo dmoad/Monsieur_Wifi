@@ -192,22 +192,6 @@
         gap: 0.5rem;
         align-items: center;
     }
-    .per-page-selector {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .per-page-selector label {
-        margin: 0;
-        color: #6c757d;
-        font-size: 0.9rem;
-    }
-    .per-page-selector select {
-        padding: 0.375rem 0.75rem;
-        border: 1px solid #d8d6de;
-        border-radius: 4px;
-        font-size: 0.9rem;
-    }
 </style>
 @endpush
 
@@ -236,18 +220,14 @@
 <div class="content-body">
     <div id="admin-alert-container"></div>
     
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <div class="per-page-selector">
-                <label for="items-per-page">{{ __('zones.items_per_page') }}</label>
-                <select id="items-per-page" class="form-control" onchange="changeItemsPerPage()">
-                    <option value="10">10</option>
-                    <option value="25" selected>25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-            </div>
-        </div>
+    <div class="per-page-selector d-flex align-items-center mb-3" style="gap: 8px;">
+        <label for="items-per-page" class="mb-0 text-muted" style="font-size: 13px;">{{ __('zones.items_per_page') }}</label>
+        <select id="items-per-page" class="form-control form-control-sm" style="width: auto;" onchange="changeItemsPerPage()">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
     </div>
     
     <div id="zones-loading" class="text-center py-5">
