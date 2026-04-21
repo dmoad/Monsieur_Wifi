@@ -223,9 +223,6 @@
         </a>
         @endforeach
     </div>
-    <button id="mwLangModalClose" type="button"
-            style="position:absolute;top:0.75rem;right:0.9rem;background:none;border:none;cursor:pointer;
-                   color:var(--mw-text-muted);font-size:1.3rem;line-height:1;padding:0;">&times;</button>
 </div>
 
 <script>
@@ -234,7 +231,6 @@
     const langTrigger  = document.getElementById('mwLangTrigger');
     const langModal    = document.getElementById('mwLangModal');
     const langBackdrop = document.getElementById('mwLangModalBackdrop');
-    const langClose    = document.getElementById('mwLangModalClose');
 
     function openLangModal() {
         langModal.style.display    = 'block';
@@ -250,7 +246,6 @@
         if (avMenu) avMenu.classList.remove('open');
         openLangModal();
     });
-    if (langClose)    langClose.addEventListener('click', closeLangModal);
     if (langBackdrop) langBackdrop.addEventListener('click', closeLangModal);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLangModal(); });
 
