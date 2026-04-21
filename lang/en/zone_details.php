@@ -11,6 +11,10 @@ return [
     'locations_in_zone' => 'Locations in Zone',
     'add_location_to_zone' => 'Add Location to Zone',
 
+    // Tabs
+    'tab_information' => 'Information',
+    'tab_locations' => 'Locations',
+
     // Edit zone modal
     'save_changes' => 'Save Changes',
     'change_owner_help' => 'Change the owner of this zone. All locations in the zone must belong to the new owner.',

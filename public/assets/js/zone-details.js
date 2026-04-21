@@ -406,6 +406,16 @@ function closeAllLocationMenus() {
 
 document.addEventListener('click', closeAllLocationMenus);
 
+// Tab switching for the zone-details page
+document.addEventListener('click', function(e) {
+    const tab = e.target.closest('.zd-tab');
+    if (!tab) return;
+    const key = tab.dataset.tab;
+    if (!key) return;
+    document.querySelectorAll('.zd-tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.querySelectorAll('.zd-panel').forEach(p => p.classList.toggle('active', p.id === 'zd-panel-' + key));
+});
+
 async function loadAvailableLocations() {
     const token = UserManager.getToken();
     const container = document.getElementById('available-locations-container');
