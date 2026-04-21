@@ -21,7 +21,6 @@
 
 @push('styles')
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/forms/select/select2.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/form-validation.css">
 <style>
     .setting-section {
         padding: 1.5rem;
@@ -481,7 +480,6 @@
 @push('scripts')
 <script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script src="/assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
-<script src="/app-assets/js/scripts/forms/form-validation.js"></script>
 
 <script>
     const T = @json($systemSettingsT);

@@ -48,7 +48,6 @@
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/file-uploaders/dropzone.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/forms/select/select2.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/form-file-uploader.css">
 <style>
     .badge-status-stable  { background-color: rgba(40,199,111,0.12); color: #28c76f; }
     .badge-status-beta    { background-color: rgba(255,159,67,0.12); color: #ff9f43; }
@@ -297,7 +296,6 @@
 <script src="/assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
 <script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script src="/assets/vendors/js/file-uploaders/dropzone.min.js"></script>
-<script src="/app-assets/js/scripts/forms/form-file-uploader.js"></script>
 
 <script>
     window.FIRMWARE_T = {!! json_encode($firmwareT) !!};

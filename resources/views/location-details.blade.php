@@ -11,10 +11,6 @@
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/forms/select/select2.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/maps/leaflet.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/pickers/form-flat-pickr.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
 <link rel="stylesheet" type="text/css" href="/assets/css/location-details.css">
 @endpush
 
@@ -996,9 +992,6 @@
 <script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script src="/assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/vendors/js/maps/leaflet.min.js"></script>
-<script src="/app-assets/js/scripts/charts/chart-apex.js"></script>
-<script src="/app-assets/js/scripts/extensions/ext-component-toastr.js"></script>
-<script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
 <script>
     window.APP_CONFIG_V5 = {
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'

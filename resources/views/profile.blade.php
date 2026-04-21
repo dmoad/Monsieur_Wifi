@@ -7,8 +7,6 @@
 @section('title', __('profile.page_title'))
 
 @push('styles')
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/form-validation.css">
-
 <style>
     .avatar-content svg {
         color: inherit;

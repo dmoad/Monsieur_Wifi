@@ -9,9 +9,7 @@
 @push('styles')
 <!-- Dashboard-specific CSS -->
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/charts/apexcharts.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/maps/leaflet.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -377,7 +375,6 @@
 <script src="/assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
 <script src="/assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/vendors/js/maps/leaflet.min.js"></script>
-<script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
 
 <!-- Charts -->
 <script src="/assets/vendors/js/charts/apexcharts.min.js"></script>
