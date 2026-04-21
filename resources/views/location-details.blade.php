@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/forms/select/select2.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/maps/leaflet.min.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/location-details.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/location-details.css?v={{ filemtime(public_path('assets/css/location-details.css')) }}">
 <style>
 /* Page-level tab nav (matches zone-details .zd-tabs pattern) */
 .ld-tabs {
