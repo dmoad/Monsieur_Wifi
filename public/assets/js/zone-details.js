@@ -48,6 +48,7 @@ const TRANSLATIONS = {
         inactive: 'Inactive',
         zoneSettings: 'Zone Settings',
         viewSettings: 'View Settings',
+        editZone: 'Edit Zone',
         showingLocations: 'Showing',
         of: 'of',
         locations: 'locations',
@@ -91,6 +92,7 @@ const TRANSLATIONS = {
         inactive: 'Inactif',
         zoneSettings: 'Paramètres de la Zone',
         viewSettings: 'Voir les Paramètres',
+        editZone: 'Modifier la Zone',
         showingLocations: 'Affichage de',
         of: 'sur',
         locations: 'emplacements',
@@ -160,8 +162,15 @@ function displayZoneInfo(zone) {
     
     const html = `
         <div class="zone-info-card">
-            <div class="zone-info-title">${zone.name}</div>
-            <div class="zone-info-description">${zone.description || ''}</div>
+            <div class="zone-info-head">
+                <div>
+                    <div class="zone-info-title">${zone.name}</div>
+                    <div class="zone-info-description">${zone.description || ''}</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editZone()">
+                    <i data-feather="edit-2"></i> ${T.editZone}
+                </button>
+            </div>
             <div class="zone-info-meta">
                 <div class="zone-info-item">
                     <i data-feather="user"></i>

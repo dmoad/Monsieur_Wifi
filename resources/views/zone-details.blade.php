@@ -18,6 +18,12 @@
         margin-top: var(--mw-space-lg);
         margin-bottom: var(--mw-space-lg);
     }
+    .zone-info-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: var(--mw-space-lg);
+    }
     .zone-info-title {
         font-size: 1.4rem;
         font-weight: 700;
@@ -157,7 +163,7 @@
 
 @section('content')
 <div class="content-header row">
-    <div class="content-header-left col-md-9 col-12 mb-2">
+    <div class="col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
                 <h2 class="content-header-title float-left mb-0">{{ __('zone_details.heading') }}</h2>
@@ -170,11 +176,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="content-header-right col-md-3 col-12 text-right d-flex justify-content-end gap-2">
-        <button class="btn btn-outline-primary" onclick="editZone()">
-            <i data-feather="edit"></i> {{ __('zone_details.edit_zone') }}
-        </button>
     </div>
 </div>
 
