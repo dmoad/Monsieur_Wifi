@@ -843,9 +843,9 @@
                     </select>
                 </div>
                 <div id="wan-static-fields" style="display:none;">
-                    <div class="form-group"><label>{{ __('location_details.ip_address') }}</label><input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10"></div>
+                    <div class="form-group"><label>{{ __('location_details.ip_address') }}</label><input type="text" class="form-control" id="wan-ip-address" placeholder="192.168.1.10"></div>
                     <div class="form-group"><label>{{ __('location_details.modal_wan_netmask') }}</label><input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0"></div>
-                    <div class="form-group"><label>{{ __('location_details.gateway') }}</label><input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1"></div>
+                    <div class="form-group"><label>{{ __('location_details.gateway') }}</label><input type="text" class="form-control" id="wan-gateway" placeholder="192.168.1.1"></div>
                     <div class="form-group"><label>{{ __('location_details.primary_dns') }}</label><input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8"></div>
                     <div class="form-group"><label>{{ __('location_details.modal_wan_secondary_dns') }}</label><input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1"></div>
                 </div>
