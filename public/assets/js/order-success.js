@@ -2,23 +2,15 @@
 const t = window.APP_I18N.order_success;
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Order success page loaded');
-    console.log('Current URL:', window.location.href);
-    console.log('UserManager available:', typeof UserManager !== 'undefined');
-
     const token = UserManager.getToken();
-    console.log('Token exists:', !!token);
-    console.log('Token value:', token ? token.substring(0, 20) + '...' : 'null');
 
     if (!token) {
-        console.error('No token found, redirecting to login');
         toastr.warning(t.toast_login_required);
         window.location.href = '/login';
         return;
     }
 
     const orderNumber = window.location.pathname.split('/').pop();
-    console.log('Loading order:', orderNumber);
     loadOrder(orderNumber);
 });
 
