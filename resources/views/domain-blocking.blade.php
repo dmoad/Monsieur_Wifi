@@ -13,14 +13,6 @@
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
 
 <style>
-    .avatar-content svg {
-        color: inherit;
-        width: 24px !important;
-        height: 24px !important;
-        stroke-width: 2;
-        display: block !important;
-    }
-
     [data-feather] {
         display: inline-block !important;
         vertical-align: middle;
@@ -99,11 +91,7 @@
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <div>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-danger p-50 mr-1">
-                                                <div class="avatar-content">
-                                                    <i data-feather="octagon"></i>
-                                                </div>
-                                            </div>
+                                            <span class="mw-stat-icon mw-stat-icon-danger mr-1"><i data-feather="octagon"></i></span>
                                             <div>
                                                 <h4 class="mb-0">{{ __('domain_blocking.cat_adult') }}</h4>
                                                 <span>1,024 {{ __('domain_blocking.domains_suffix') }}</span>
@@ -122,11 +110,7 @@
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <div>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-warning p-50 mr-1">
-                                                <div class="avatar-content">
-                                                    <i data-feather="dollar-sign"></i>
-                                                </div>
-                                            </div>
+                                            <span class="mw-stat-icon mw-stat-icon-warning mr-1"><i data-feather="dollar-sign"></i></span>
                                             <div>
                                                 <h4 class="mb-0">{{ __('domain_blocking.cat_gambling') }}</h4>
                                                 <span>856 {{ __('domain_blocking.domains_suffix') }}</span>
@@ -145,11 +129,7 @@
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <div>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-primary p-50 mr-1">
-                                                <div class="avatar-content">
-                                                    <i data-feather="shield-off"></i>
-                                                </div>
-                                            </div>
+                                            <span class="mw-stat-icon mw-stat-icon-primary mr-1"><i data-feather="shield-off"></i></span>
                                             <div>
                                                 <h4 class="mb-0">{{ __('domain_blocking.cat_malware') }}</h4>
                                                 <span>2,345 {{ __('domain_blocking.domains_suffix') }}</span>
@@ -168,11 +148,7 @@
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <div>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-info p-50 mr-1">
-                                                <div class="avatar-content">
-                                                    <i data-feather="users"></i>
-                                                </div>
-                                            </div>
+                                            <span class="mw-stat-icon mw-stat-icon-info mr-1"><i data-feather="users"></i></span>
                                             <div>
                                                 <h4 class="mb-0">{{ __('domain_blocking.cat_social') }}</h4>
                                                 <span>342 {{ __('domain_blocking.domains_suffix') }}</span>
@@ -191,11 +167,7 @@
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <div>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-success p-50 mr-1">
-                                                <div class="avatar-content">
-                                                    <i data-feather="film"></i>
-                                                </div>
-                                            </div>
+                                            <span class="mw-stat-icon mw-stat-icon-success mr-1"><i data-feather="film"></i></span>
                                             <div>
                                                 <h4 class="mb-0">{{ __('domain_blocking.cat_streaming') }}</h4>
                                                 <span>128 {{ __('domain_blocking.domains_suffix') }}</span>
@@ -214,11 +186,7 @@
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <div>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-secondary p-50 mr-1">
-                                                <div class="avatar-content">
-                                                    <i data-feather="tag"></i>
-                                                </div>
-                                            </div>
+                                            <span class="mw-stat-icon mw-stat-icon-muted mr-1"><i data-feather="tag"></i></span>
                                             <div>
                                                 <h4 class="mb-0">{{ __('domain_blocking.cat_custom') }}</h4>
                                                 <span>43 {{ __('domain_blocking.domains_suffix') }}</span>

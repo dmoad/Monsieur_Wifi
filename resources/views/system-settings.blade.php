@@ -94,7 +94,7 @@
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
-                                            <div class="avatar bg-light-primary p-50 mr-1"><div class="avatar-content"><i data-feather="wifi"></i></div></div>
+                                            <span class="mw-stat-icon mw-stat-icon-primary mr-1"><i data-feather="wifi"></i></span>
                                             <h3 class="setting-section-title">{{ __('system_settings.section_default_wifi') }}</h3>
                                         </div>
                                         <div class="row">
@@ -131,7 +131,7 @@
 
                                     <div class="setting-section">
                                         <div class="setting-section-header">
-                                            <div class="avatar bg-light-info p-50 mr-1"><div class="avatar-content"><i data-feather="layout"></i></div></div>
+                                            <span class="mw-stat-icon mw-stat-icon-info mr-1"><i data-feather="layout"></i></span>
                                             <h3 class="setting-section-title">{{ __('system_settings.section_portal_behavior') }}</h3>
                                         </div>
                                         <div class="row">
@@ -200,7 +200,7 @@
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
-                                            <div class="avatar bg-light-primary p-50 mr-1"><div class="avatar-content"><i data-feather="shield"></i></div></div>
+                                            <span class="mw-stat-icon mw-stat-icon-primary mr-1"><i data-feather="shield"></i></span>
                                             <h3 class="setting-section-title">{{ __('system_settings.section_primary_radius') }}</h3>
                                         </div>
                                         <div class="row">
@@ -255,7 +255,7 @@
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
-                                            <div class="avatar bg-light-primary p-50 mr-1"><div class="avatar-content"><i data-feather="type"></i></div></div>
+                                            <span class="mw-stat-icon mw-stat-icon-primary mr-1"><i data-feather="type"></i></span>
                                             <h3 class="setting-section-title">{{ __('system_settings.section_company_info') }}</h3>
                                         </div>
                                         <div class="row">
@@ -294,7 +294,7 @@
 
                                     <div class="setting-section">
                                         <div class="setting-section-header">
-                                            <div class="avatar bg-light-info p-50 mr-1"><div class="avatar-content"><i data-feather="image"></i></div></div>
+                                            <span class="mw-stat-icon mw-stat-icon-info mr-1"><i data-feather="image"></i></span>
                                             <h3 class="setting-section-title">{{ __('system_settings.section_logo_images') }}</h3>
                                         </div>
                                         <div class="row">
@@ -347,7 +347,7 @@
 
                                     <div class="setting-section">
                                         <div class="setting-section-header">
-                                            <div class="avatar bg-light-warning p-50 mr-1"><div class="avatar-content"><i data-feather="layers"></i></div></div>
+                                            <span class="mw-stat-icon mw-stat-icon-warning mr-1"><i data-feather="layers"></i></span>
                                             <h3 class="setting-section-title">{{ __('system_settings.section_portal_customization') }}</h3>
                                         </div>
                                         <div class="row">
@@ -413,7 +413,7 @@
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
-                                            <div class="avatar bg-light-warning p-50 mr-1"><div class="avatar-content"><i data-feather="mail"></i></div></div>
+                                            <span class="mw-stat-icon mw-stat-icon-warning mr-1"><i data-feather="mail"></i></span>
                                             <h3 class="setting-section-title">{{ __('system_settings.section_email_config') }}</h3>
                                         </div>
                                         <div class="row">

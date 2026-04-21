@@ -87,7 +87,7 @@
         <div class="col-xl-3 col-md-6 col-sm-6">
             <div class="card text-center">
                 <div class="card-body">
-                    <div class="avatar bg-light-primary p-50 mb-1"><div class="avatar-content"><i data-feather="hard-drive"></i></div></div>
+                    <span class="mw-stat-icon mw-stat-icon-primary mb-1"><i data-feather="hard-drive"></i></span>
                     <h2 class="font-weight-bolder" id="total-firmware">0</h2>
                     <p class="card-text">{{ __('firmware.total_versions') }}</p>
                 </div>
@@ -96,7 +96,7 @@
         <div class="col-xl-3 col-md-6 col-sm-6">
             <div class="card text-center">
                 <div class="card-body">
-                    <div class="avatar bg-light-success p-50 mb-1"><div class="avatar-content"><i data-feather="check-circle"></i></div></div>
+                    <span class="mw-stat-icon mw-stat-icon-success mb-1"><i data-feather="check-circle"></i></span>
                     <h2 class="font-weight-bolder" id="enabled-firmware">0</h2>
                     <p class="card-text">{{ __('firmware.enabled_firmware') }}</p>
                 </div>
@@ -105,7 +105,7 @@
         <div class="col-xl-3 col-md-6 col-sm-6">
             <div class="card text-center">
                 <div class="card-body">
-                    <div class="avatar bg-light-secondary p-50 mb-1"><div class="avatar-content"><i data-feather="x-circle"></i></div></div>
+                    <span class="mw-stat-icon mw-stat-icon-muted mb-1"><i data-feather="x-circle"></i></span>
                     <h2 class="font-weight-bolder" id="disabled-firmware">0</h2>
                     <p class="card-text">{{ __('firmware.disabled_firmware') }}</p>
                 </div>
@@ -114,7 +114,7 @@
         <div class="col-xl-3 col-md-6 col-sm-6">
             <div class="card text-center">
                 <div class="card-body">
-                    <div class="avatar bg-light-info p-50 mb-1"><div class="avatar-content"><i data-feather="hard-drive"></i></div></div>
+                    <span class="mw-stat-icon mw-stat-icon-info mb-1"><i data-feather="hard-drive"></i></span>
                     <h2 class="font-weight-bolder" id="total-size">0 MB</h2>
                     <p class="card-text">{{ __('firmware.total_size') }}</p>
                 </div>
@@ -395,7 +395,7 @@
             const statusBadge  = fw.is_enabled ? `<span class="badge badge-pill badge-light-success">${T.badge_enabled}</span>` : `<span class="badge badge-pill badge-light-secondary">${T.badge_disabled}</span>`;
             const defaultBadge = fw.default_model_firmware ? `<span class="badge badge-pill badge-light-primary">${T.badge_default}</span>` : '<span class="badge badge-pill badge-light-secondary">-</span>';
             table.row.add([
-                `<div class="d-flex align-items-center"><div class="avatar bg-light-primary mr-1 p-25"><div class="avatar-content"><i data-feather="hard-drive"></i></div></div><div><div class="font-weight-bold">${fw.name}</div><div class="small text-truncate text-muted">${fw.description || ''}</div></div></div>`,
+                `<div class="d-flex align-items-center"><span class="mw-stat-icon mw-stat-icon-primary mr-1"><i data-feather="hard-drive"></i></span><div><div class="font-weight-bold">${fw.name}</div><div class="small text-truncate text-muted">${fw.description || ''}</div></div></div>`,
                 statusBadge, getModelName(fw.model), defaultBadge, formatFileSize(fw.file_size),
                 `<div class="dropdown"><button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown"><i data-feather="more-vertical"></i></button><div class="dropdown-menu"><a class="dropdown-item firmware-edit" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="edit-2" class="mr-50"></i><span>${T.action_edit}</span></a><a class="dropdown-item firmware-download" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="download" class="mr-50"></i><span>${T.action_download}</span></a>${!fw.default_model_firmware ? `<a class="dropdown-item firmware-set-default" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="star" class="mr-50"></i><span>${T.action_set_default}</span></a>` : ''}<a class="dropdown-item firmware-delete" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="trash" class="mr-50"></i><span>${T.action_delete}</span></a></div></div>`
             ]);
