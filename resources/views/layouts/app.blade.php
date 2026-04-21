@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="/app-assets/css/themes/bordered-layout.css">
     <link rel="stylesheet" href="/app-assets/css/themes/semi-dark-layout.css">
     <link rel="stylesheet" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" href="/app-assets/vendors/css/extensions/toastr.min.css">
+    <link rel="stylesheet" href="/assets/vendors/css/extensions/toastr.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/mrwifi.css">
 
@@ -115,7 +115,7 @@
     <!-- END: Footer-->
 
     <script src="/app-assets/vendors/js/vendors.min.js"></script>
-    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <script src="/assets/vendors/js/extensions/toastr.min.js"></script>
     <script src="/app-assets/js/core/app-menu.js"></script>
     <script src="/app-assets/js/core/app.js"></script>
     <script src="/assets/js/config.js"></script>
