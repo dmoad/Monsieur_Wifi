@@ -8,9 +8,9 @@
 
 @push('styles')
 <!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
 
 <style>
     [data-feather] {
@@ -449,12 +449,12 @@
 
 @push('scripts')
 <!-- DataTables JS -->
-<script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+<script src="/assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
 
 <script>
     const locale = '{{ $locale }}';

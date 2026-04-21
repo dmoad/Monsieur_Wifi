@@ -7,7 +7,7 @@
 @section('title', __('zones.page_title'))
 
 @push('styles')
-<link rel="stylesheet" href="/app-assets/vendors/css/forms/select/select2.min.css">
+<link rel="stylesheet" href="/assets/vendors/css/forms/select/select2.min.css">
 <style>
     /* Zone card layout */
     .zone-card { margin-bottom: var(--mw-space-md); }
@@ -319,7 +319,7 @@
 @endsection
 
 @push('scripts')
-<script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+<script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script src="/assets/js/zones.js?v={{ filemtime(public_path('assets/js/zones.js')) }}"></script>
 @endpush
 

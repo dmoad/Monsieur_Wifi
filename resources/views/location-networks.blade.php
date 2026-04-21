@@ -7,7 +7,7 @@
 @section('title', __('location_networks.page_title'))
 
 @push('styles')
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/forms/select/select2.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/extensions/ext-component-toastr.css">
 <link rel="stylesheet" type="text/css" href="/working-hours/interactive-schedule.css">
 <link rel="stylesheet" type="text/css" href="/assets/css/location-networks.css?v={{ filemtime(public_path('assets/css/location-networks.css')) }}">
@@ -653,7 +653,7 @@
 @endsection
 
 @push('scripts')
-<script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+<script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 <script src="/app-assets/js/scripts/extensions/ext-component-toastr.js"></script>
 <script src="/working-hours/interactive-schedule.js"></script>

@@ -7,7 +7,7 @@
 @section('title', __('zone_details.page_title'))
 
 @push('styles')
-<link rel="stylesheet" href="/app-assets/vendors/css/forms/select/select2.min.css">
+<link rel="stylesheet" href="/assets/vendors/css/forms/select/select2.min.css">
 <style>
     .zone-info-card {
         background: var(--mw-bg-surface);
@@ -268,7 +268,7 @@
 @endsection
 
 @push('scripts')
-<script src="/app-assets/vendors/js/forms/select/select2.full.min.js"></script>
+<script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script>
     const ZONE_ID = {{ $zone }};
 </script>

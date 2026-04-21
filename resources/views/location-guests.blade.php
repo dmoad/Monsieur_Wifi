@@ -25,8 +25,8 @@
 
 @push('styles')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
 @endpush
 
 @section('content')
@@ -88,10 +88,10 @@
 @push('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+<script src="/assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
 
 <script>
     window.GUESTS_T = {!! json_encode($guestsT) !!};

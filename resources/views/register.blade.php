@@ -567,7 +567,7 @@
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
-    <script src="app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+    <script src="/assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <!-- END: Page Vendor JS-->
 

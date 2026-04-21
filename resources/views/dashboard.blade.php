@@ -8,9 +8,9 @@
 
 @push('styles')
 <!-- Dashboard-specific CSS -->
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/charts/apexcharts.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/charts/apexcharts.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/charts/chart-apex.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/maps/leaflet.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/maps/leaflet.min.css">
 <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
 
 <!-- Leaflet CSS -->
@@ -19,10 +19,10 @@
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
 
 <style>
 .location-card {
@@ -371,16 +371,16 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-<script src="/app-assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-<script src="/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
-<script src="/app-assets/vendors/js/maps/leaflet.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
+<script src="/assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
+<script src="/assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/vendors/js/maps/leaflet.min.js"></script>
 <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
 
 <!-- Charts -->
-<script src="/app-assets/vendors/js/charts/apexcharts.min.js"></script>
+<script src="/assets/vendors/js/charts/apexcharts.min.js"></script>
 
 <!-- Dashboard JS -->
 <script src="/assets/js/dashboard.js?v={{ filemtime(public_path('assets/js/dashboard.js')) }}"></script>
