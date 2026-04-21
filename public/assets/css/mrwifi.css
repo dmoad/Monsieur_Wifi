@@ -721,8 +721,6 @@ button.mw-av-item {
 }
 
 /* ── Footer ──────────────────────────────────────────────────────── */
-.footer.footer-static.footer-light { display: none !important; } /* tombstone: Vuexy footer */
-
 .mw-footer {
     margin-left: var(--mw-sb-width);
     padding: var(--mw-space-md) var(--mw-space-xl);
