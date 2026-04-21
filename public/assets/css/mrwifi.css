@@ -219,20 +219,6 @@ body.vertical-menu-modern {
     background-color: var(--mw-bg-page) !important;
 }
 
-/* ============================================================
-   PHASE 3 TOMBSTONE — remove this entire block once the Vuexy
-   HTML is excised from the Blade templates and /public/app-assets/
-   is deleted. Until then these hide the elements we've replaced.
-   ============================================================ */
-.header-navbar,
-.header-navbar-shadow,
-.navbar-floating,
-.sidenav-overlay,
-.drag-target,
-.main-menu {
-    display: none !important;
-}
-
 /* Vuexy uses .hidden to hide role-gated items before JS reveals them.
    Without Vuexy's CSS loading that rule, hidden items sit in the DOM
    and create layout gaps. This restores the behaviour. */
