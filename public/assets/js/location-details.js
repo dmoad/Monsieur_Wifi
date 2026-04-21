@@ -194,7 +194,7 @@ async function loadLocationDetails() {
     networkSourceLocationId = primaryLocationId;
 
     const netUrl = buildNetworksUrl(primaryLocationId);
-    $('#manage-networks-btn, #manage-networks-header-btn')
+    $('#manage-networks-btn')
         .attr('href', canAccessPrimary ? netUrl : '#')
         .removeClass('disabled')
         .removeAttr('title tabindex');
@@ -205,7 +205,7 @@ async function loadLocationDetails() {
         $('#zone-network-notice').show();
         $('#zone-qos-notice').show();
         if (!canAccessPrimary) {
-            $('#manage-networks-btn, #manage-networks-header-btn')
+            $('#manage-networks-btn')
                 .addClass('disabled')
                 .attr('title', 'Networks are managed by the zone\'s primary location — you do not have access to that location')
                 .attr('tabindex', '-1');

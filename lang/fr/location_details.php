@@ -6,7 +6,6 @@ return [
 
     // Header buttons
     'clone_button' => 'Cloner',
-    'networks_button' => 'Réseaux',
 
     // Router info card
     'mac_prefix' => 'MAC :',

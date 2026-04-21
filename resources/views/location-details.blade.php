@@ -182,13 +182,10 @@
         </div>
     </div>
     <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
-        <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end" style="gap:8px;">
+        <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end">
             <button id="clone-location-btn" class="btn btn-outline-secondary">
                 <i data-feather="copy" class="mr-1"></i>{{ __('location_details.clone_button') }}
             </button>
-            <a id="manage-networks-header-btn" href="#" class="btn custom-btn">
-                <i data-feather="wifi" class="mr-1"></i>{{ __('location_details.networks_button') }}
-            </a>
         </div>
     </div>
 </div>
