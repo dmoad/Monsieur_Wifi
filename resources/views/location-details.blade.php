@@ -525,7 +525,7 @@
 
                                 <!-- Action bar -->
                                 <div class="form-action-bar">
-                                    <button type="button" id="save-location-info" class="btn custom-btn">
+                                    <button type="button" id="save-location-info" class="btn btn-primary">
                                         <i data-feather="save" class="mr-1"></i> {{ __('location_details.save_location_info') }}
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary" onclick="resetLocationForm()">
@@ -656,7 +656,7 @@
                                     </div>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <button class="btn custom-btn" id="save-radio-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_all_radio') }}</button>
+                                    <button class="btn btn-primary" id="save-radio-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_all_radio') }}</button>
                                 </div>
                             </div>
 
@@ -664,7 +664,7 @@
                             <div class="content-section" id="qos-settings-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
                                     <h5 class="section-title">{{ __('location_details.qos_title') }}</h5>
-                                    <button type="button" class="btn custom-btn btn-sm" id="save-qos-settings"><i data-feather="save" class="mr-1"></i>{{ __('location_details.save_qos') }}</button>
+                                    <button type="button" class="btn btn-primary btn-sm" id="save-qos-settings"><i data-feather="save" class="mr-1"></i>{{ __('location_details.save_qos') }}</button>
                                 </div>
 
                                 <div id="zone-qos-notice" class="alert alert-info py-2 px-3 mb-3" style="display:none;">
@@ -776,7 +776,7 @@
                             <div class="content-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
                                     <h5 class="section-title">{{ __('location_details.web_content_filtering') }}</h5>
-                                    <button class="btn custom-btn" id="save-web-filter-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_web_filter') }}</button>
+                                    <button class="btn btn-primary" id="save-web-filter-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_web_filter') }}</button>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -863,7 +863,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
-                <button type="button" class="btn custom-btn save-wan-settings">{{ __('location_details.modal_save_changes') }}</button>
+                <button type="button" class="btn btn-primary save-wan-settings">{{ __('location_details.modal_save_changes') }}</button>
             </div>
         </div>
     </div>
@@ -963,7 +963,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
-                <button type="button" class="btn custom-btn" id="start-firmware-update-btn" disabled><i data-feather="download" class="mr-1"></i><span>{{ __('location_details.modal_update_firmware_btn') }}</span></button>
+                <button type="button" class="btn btn-primary" id="start-firmware-update-btn" disabled><i data-feather="download" class="mr-1"></i><span>{{ __('location_details.modal_update_firmware_btn') }}</span></button>
             </div>
         </div>
     </div>
@@ -1022,7 +1022,7 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-between mt-2">
-                        <button class="btn custom-btn" id="apply-scan-results"><i data-feather="check" class="mr-1"></i> {{ __('location_details.modal_scan_apply_settings') }}</button>
+                        <button class="btn btn-primary" id="apply-scan-results"><i data-feather="check" class="mr-1"></i> {{ __('location_details.modal_scan_apply_settings') }}</button>
                         <button class="btn btn-outline-primary" id="back-to-scan-btn"><i data-feather="refresh-cw" class="mr-1"></i> {{ __('location_details.modal_scan_again') }}</button>
                     </div>
                 </div>
@@ -1055,7 +1055,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
-                <button type="button" class="btn custom-btn" id="confirm-clone-btn">
+                <button type="button" class="btn btn-primary" id="confirm-clone-btn">
                     <i data-feather="copy" class="mr-1"></i><span>{{ __('location_details.modal_clone_location_btn') }}</span>
                 </button>
             </div>
@@ -1105,7 +1105,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.cancel') }}</button>
-                <button type="button" class="btn custom-btn" id="save-mac-address-btn" disabled><i data-feather="save" class="mr-1"></i><span>{{ __('location_details.modal_assign_device_btn') }}</span></button>
+                <button type="button" class="btn btn-primary" id="save-mac-address-btn" disabled><i data-feather="save" class="mr-1"></i><span>{{ __('location_details.modal_assign_device_btn') }}</span></button>
             </div>
         </div>
     </div>
