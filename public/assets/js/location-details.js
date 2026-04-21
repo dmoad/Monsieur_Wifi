@@ -177,6 +177,15 @@ async function loadLocationDetails() {
     $('.location_name').text(location.name || '');
     $('.location_address').text([location.address, location.city, location.country].filter(Boolean).join(', '));
 
+    // Zone line on Overview device card — only show when the location belongs to a zone
+    const zoneName = (location.zone && location.zone.name) || '';
+    if (zoneName) {
+        $('.location_zone').text(zoneName);
+        $('#location-zone-line').show();
+    } else {
+        $('#location-zone-line').hide();
+    }
+
     // Manage networks links — for non-primary zone members, point to primary location
     const isPrimaryOrStandalone = !location.zone_id || location.is_primary_in_zone;
     const primaryLocationId = location.primary_location_id || location_id;

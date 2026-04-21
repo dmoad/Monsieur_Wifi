@@ -11,6 +11,7 @@ return [
     // Router info card
     'mac_prefix' => 'MAC :',
     'edit_button' => 'Modifier',
+    'zone_label' => 'Zone',
     'router_model' => 'Modèle de routeur',
     'mac_address' => 'Adresse MAC',
     'firmware' => 'Firmware',

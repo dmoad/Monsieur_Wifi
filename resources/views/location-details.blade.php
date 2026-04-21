@@ -40,6 +40,128 @@
 }
 .ld-panel { display: none; }
 .ld-panel.active { display: block; }
+
+/* Overview cards — flat tokenised look (override .stat-card gradient/hover-lift) */
+#ld-panel-overview .stat-card {
+    background: var(--mw-bg-surface);
+    border: 1px solid var(--mw-border-light);
+    border-left-width: 1px;
+    border-left-color: var(--mw-border-light);
+    box-shadow: var(--mw-shadow-card);
+    padding: var(--mw-space-xl);
+    transition: none;
+}
+#ld-panel-overview .stat-card:hover {
+    transform: none;
+    box-shadow: var(--mw-shadow-card);
+}
+
+/* Device card pieces */
+.ld-ov-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--mw-space-md);
+    margin-bottom: var(--mw-space-md);
+}
+.ld-ov-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--mw-primary);
+    line-height: 1.25;
+    margin-bottom: 2px;
+}
+.ld-ov-sub, .ld-ov-sub-zone {
+    font-size: 12px;
+    color: var(--mw-text-muted);
+}
+.ld-ov-sub-zone { margin-top: 2px; }
+.ld-ov-sub-zone strong {
+    color: var(--mw-text-secondary);
+    font-weight: 500;
+}
+
+/* Device status pill — soft-tint + leading dot, scoped override of .status-badge */
+#ld-panel-overview .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 8px;
+    border-radius: var(--mw-radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    box-shadow: none;
+    flex-shrink: 0;
+    background: transparent;
+    color: inherit;
+    transition: none;
+}
+#ld-panel-overview .status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+#ld-panel-overview .status-badge.status-online {
+    background: rgba(22, 163, 74, 0.12);
+    color: var(--mw-success);
+}
+#ld-panel-overview .status-badge.status-offline {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--mw-danger);
+}
+
+/* MAC chip row */
+.ld-ov-mac-row {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    margin: var(--mw-space-md) 0;
+}
+.ld-ov-mac-chip {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    color: var(--mw-text-muted);
+    background: var(--mw-bg-muted);
+    padding: 3px 8px;
+    border-radius: var(--mw-radius-sm);
+    border: 1px solid var(--mw-border-light);
+}
+
+/* Details key/value grid */
+.ld-ov-details {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px var(--mw-space-xl);
+    font-size: 13px;
+    margin: 0 0 var(--mw-space-xl);
+}
+.ld-ov-details dt {
+    color: var(--mw-text-muted);
+    font-weight: 400;
+    margin: 0;
+}
+.ld-ov-details dd {
+    font-weight: 600;
+    color: var(--mw-text-primary);
+    margin: 0;
+    text-align: right;
+}
+
+/* Action buttons row */
+.ld-ov-actions {
+    display: flex;
+    gap: var(--mw-space-sm);
+}
+.ld-ov-actions .btn {
+    flex: 1;
+    justify-content: center;
+}
 </style>
 @endpush
 
@@ -83,36 +205,33 @@
 
     <!-- Location Overview -->
     <div class="stats-grid">
-        <!-- Location Info Card -->
+        <!-- Device card -->
         <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="ld-ov-head">
                 <div>
-                    <h4 class="text-gradient mb-1"><span class="location_name"></span></h4>
-                    <p class="text-muted mb-0"><span class="location_address"></span></p>
-                    <div class="d-flex align-items-center mt-1">
-                        <small class="text-muted mr-2">{{ __('location_details.mac_prefix') }} <span class="router_mac_address_header font-weight-bold">{{ __('common.loading') }}</span></small>
-                        <button class="btn btn-sm btn-outline-secondary p-1" id="edit-mac-btn" style="font-size: 0.7rem; line-height: 1;">
-                            <i data-feather="edit" class="mr-1" style="width: 12px; height: 12px;"></i>{{ __('location_details.edit_button') }}
-                        </button>
-                    </div>
+                    <div class="ld-ov-name location_name"></div>
+                    <div class="ld-ov-sub location_address"></div>
+                    <div class="ld-ov-sub-zone" id="location-zone-line" style="display:none;">{{ __('location_details.zone_label') }}: <strong class="location_zone"></strong></div>
                 </div>
                 <span class="status-badge status-offline">{{ __('common.offline') }}</span>
             </div>
-            <div class="row">
-                <div class="col-6">
-                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.router_model') }}</span><span class="interface-value router_model_updated"></span></div>
-                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.mac_address') }}</span><span class="interface-value router_mac_address"></span></div>
-                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.firmware') }}</span><span class="interface-value router_firmware"></span></div>
-                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.total_users') }}</span><span class="interface-value connected_users"></span></div>
-                </div>
-                <div class="col-6">
-                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.daily_usage') }}</span><span class="interface-value daily_usage"></span></div>
-                    <div class="interface-detail"><span class="interface-label">{{ __('location_details.uptime') }}</span><span class="interface-value uptime"></span></div>
-                </div>
+            <div class="ld-ov-mac-row">
+                <span class="ld-ov-mac-chip">{{ __('location_details.mac_prefix') }} <span class="router_mac_address_header">{{ __('common.loading') }}</span></span>
+                <button class="btn btn-sm btn-outline-secondary" id="edit-mac-btn" style="font-size: 11px;">
+                    <i data-feather="edit" class="mr-1" style="width: 12px; height: 12px;"></i>{{ __('location_details.edit_button') }}
+                </button>
             </div>
-            <div class="d-flex gap-2 mt-3">
-                <button class="btn custom-btn btn-sm flex-fill" id="device-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i> {{ __('location_details.restart_button') }}</button>
-                <button class="btn btn-outline-primary btn-sm flex-fill" id="update-firmware-btn"><i data-feather="download" class="mr-1"></i> {{ __('location_details.update_button') }}</button>
+            <dl class="ld-ov-details">
+                <dt>{{ __('location_details.router_model') }}</dt><dd class="router_model_updated"></dd>
+                <dt>{{ __('location_details.mac_address') }}</dt><dd class="router_mac_address"></dd>
+                <dt>{{ __('location_details.firmware') }}</dt><dd class="router_firmware"></dd>
+                <dt>{{ __('location_details.total_users') }}</dt><dd class="connected_users"></dd>
+                <dt>{{ __('location_details.daily_usage') }}</dt><dd class="daily_usage"></dd>
+                <dt>{{ __('location_details.uptime') }}</dt><dd class="uptime"></dd>
+            </dl>
+            <div class="ld-ov-actions">
+                <button class="btn btn-primary btn-sm" id="device-restart-btn"><i data-feather="refresh-cw" class="mr-1"></i>{{ __('location_details.restart_button') }}</button>
+                <button class="btn btn-outline-secondary btn-sm" id="update-firmware-btn"><i data-feather="download" class="mr-1"></i>{{ __('location_details.update_button') }}</button>
             </div>
         </div>
 
