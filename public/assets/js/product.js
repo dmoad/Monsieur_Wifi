@@ -41,7 +41,7 @@ function displayProduct(product) {
     document.getElementById('product-price').textContent = `€${parseFloat(product.price).toFixed(2)}`;
     document.getElementById('product-description').innerHTML = product['description_' + t.locale] || '';
     
-    const mainImage = product.primary_image || '/app-assets/images/placeholder.png';
+    const mainImage = product.primary_image || '/assets/images/product-placeholder.png';
     document.getElementById('main-image').src = mainImage;
     
     if (product.images && product.images.length > 1) {

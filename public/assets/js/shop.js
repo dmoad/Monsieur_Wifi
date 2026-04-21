@@ -101,7 +101,7 @@ function displayProducts(products) {
             <a href="${t.product_url_base}/${product.slug}" class="product-card-link">
                 <div class="product-card ${!product.is_in_stock ? 'out-of-stock' : ''}">
                     <div class="product-image-wrapper">
-                        <img src="${product.primary_image || '/app-assets/images/placeholder.png'}"
+                        <img src="${product.primary_image || '/assets/images/product-placeholder.png'}"
                              alt="${product.name}"
                              class="product-image">
                         ${!product.is_in_stock

@@ -80,7 +80,7 @@ function displayModels(modelsData) {
     html += '</tr></thead><tbody>';
 
     models.forEach(model => {
-        const imageUrl = model.primary_image || '/app-assets/images/placeholder.png';
+        const imageUrl = model.primary_image || '/assets/images/product-placeholder.png';
         const stockQty = model.available_quantity || 0;
         const stockBadge = stockQty > 0
             ? `<span class="badge badge-success">${stockQty}</span>`

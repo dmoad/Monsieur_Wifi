@@ -51,7 +51,7 @@ function displayCart(data) {
     const itemsContainer = document.getElementById('cart-items');
     itemsContainer.innerHTML = cart.items.map(item => `
         <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
-            <img src="${item.product_model.primary_image || '/app-assets/images/placeholder.png'}" 
+            <img src="${item.product_model.primary_image || '/assets/images/product-placeholder.png'}"
                  alt="${item.product_model.name}" 
                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
             <div class="ml-3 flex-grow-1">
