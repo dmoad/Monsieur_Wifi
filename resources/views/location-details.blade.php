@@ -135,8 +135,8 @@
                                 <div class="chart-header">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center gap-3">
-                                            <div class="chart-icon" style="background: linear-gradient(135deg,#667eea,#764ba2); width:50px; height:50px; border-radius:15px; display:flex; align-items:center; justify-content:center;">
-                                                <i data-feather="bar-chart-2" style="color:white;"></i>
+                                            <div class="chart-icon" style="background: rgba(99,102,241,0.12); width:50px; height:50px; border-radius:15px; display:flex; align-items:center; justify-content:center;">
+                                                <i data-feather="bar-chart-2" style="color:var(--mw-primary);"></i>
                                             </div>
                                             <div>
                                                 <h5 style="margin:0; font-weight:600; color:#2c3e50;">{{ __('location_details.daily_usage_analytics') }}</h5>
@@ -144,7 +144,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex" style="background:rgba(0,0,0,0.05); border-radius:10px; padding:4px; border:1px solid rgba(0,0,0,0.1);">
-                                            <button class="period-btn active" data-period="7" style="padding:8px 16px; border:none; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:8px; cursor:pointer;">7D</button>
+                                            <button class="period-btn active" data-period="7" style="padding:8px 16px; border:none; background:var(--mw-primary); color:white; border-radius:8px; cursor:pointer;">7D</button>
                                             <button class="period-btn" data-period="30" style="padding:8px 16px; border:none; background:transparent; color:#6c757d; border-radius:8px; cursor:pointer;">30D</button>
                                             <button class="period-btn" data-period="90" style="padding:8px 16px; border:none; background:transparent; color:#6c757d; border-radius:8px; cursor:pointer;">90D</button>
                                         </div>
@@ -163,8 +163,8 @@
                                 <div class="users-header">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center gap-3">
-                                            <div class="users-icon" style="background: linear-gradient(135deg,#667eea,#764ba2);">
-                                                <i data-feather="wifi" style="color:white;"></i>
+                                            <div class="users-icon" style="background: rgba(99,102,241,0.12);">
+                                                <i data-feather="wifi" style="color:var(--mw-primary);"></i>
                                             </div>
                                             <div><h5 style="margin:0; font-weight:600;">{{ __('location_details.live_users') }}</h5><p style="margin:0; color:#6c757d; font-size:0.9rem;">{{ __('location_details.currently_connected') }}</p></div>
                                         </div>
@@ -179,7 +179,7 @@
                                 <div class="users-container">
                                     <div id="online-users-list">
                                         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; text-align:center;">
-                                            <i data-feather="loader" style="width:40px; height:40px; color:#667eea; animation:spin 1s linear infinite; margin-bottom:15px;"></i>
+                                            <i data-feather="loader" style="width:40px; height:40px; color:var(--mw-primary); animation:spin 1s linear infinite; margin-bottom:15px;"></i>
                                             <p>{{ __('location_details.loading_online_users') }}</p>
                                         </div>
                                     </div>
@@ -548,7 +548,7 @@
                                 <div class="loc-panel panel-qos mb-0">
                                     <div class="loc-panel-header">
                                         <span class="loc-panel-icon">
-                                            <i data-feather="git-merge" style="color:#667eea;width:16px;height:16px;"></i>
+                                            <i data-feather="git-merge" style="color:var(--mw-primary);width:16px;height:16px;"></i>
                                         </span>
                                         <h6 class="loc-panel-title">{{ __('location_details.qos_classification') }}</h6>
                                     </div>
@@ -576,7 +576,7 @@
                                         <div class="panel-sub-section qos-bandwidth-subsection">
                                             <div class="d-flex align-items-center mb-2">
                                                 <span class="loc-panel-icon mr-2 mb-0" style="width:28px;height:28px;">
-                                                    <i data-feather="bar-chart-2" style="color:#667eea;width:14px;height:14px;"></i>
+                                                    <i data-feather="bar-chart-2" style="color:var(--mw-primary);width:14px;height:14px;"></i>
                                                 </span>
                                                 <span class="panel-sub-label mb-0" style="font-size:0.8rem;">{{ __('location_details.qos_bandwidth_limits') }}</span>
                                             </div>

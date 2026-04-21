@@ -44,8 +44,8 @@
     <div class="card mb-2" style="border-radius:10px;">
         <div class="card-body py-3 d-flex align-items-center justify-content-between flex-wrap" style="gap:12px;">
             <div class="d-flex align-items-center gap-3">
-                <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;">
-                    <i data-feather="map-pin" style="color:white;width:20px;height:20px;"></i>
+                <div style="width:44px;height:44px;border-radius:10px;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;">
+                    <i data-feather="map-pin" style="color:var(--mw-primary);width:20px;height:20px;"></i>
                 </div>
                 <div>
                     <h5 class="mb-0 location_name" style="font-weight:700; padding-left:10px;">{{ __('common.loading') }}</h5>
