@@ -48,7 +48,7 @@
 
 @section('content')
 <div class="content-header row">
-    <div class="content-header-left col-md-9 col-12 mb-2">
+    <div class="col-12 mb-2">
         <div class="row breadcrumbs-top">
             <div class="col-12">
                 <h2 class="content-header-title float-left mb-0">{{ __('dashboard.heading') }}</h2>
@@ -57,18 +57,6 @@
                         <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
                         <li class="breadcrumb-item active">{{ __('dashboard.heading') }}</li>
                     </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
-        <div class="form-group breadcrumb-right">
-            <div class="dropdown">
-                <button class="btn-icon btn btn-primary btn-round btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i data-feather="grid"></i></button>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" href="/{{ $locale }}/locations"><i class="mr-1" data-feather="plus"></i><span class="align-middle">{{ __('dashboard.add_location') }}</span></a>
-                    <a class="dropdown-item" href="/{{ $locale }}/accounts"><i class="mr-1" data-feather="user-plus"></i><span class="align-middle">{{ __('dashboard.add_user') }}</span></a>
-                    <a class="dropdown-item" href="/{{ $locale }}/analytics"><i class="mr-1" data-feather="bar-chart-2"></i><span class="align-middle">{{ __('dashboard.reports') }}</span></a>
                 </div>
             </div>
         </div>
