@@ -11,7 +11,7 @@
     <meta name="author" content="monsieur-wifi">
     <title>Login - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
@@ -474,7 +474,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <a href="javascript:void(0);" class="brand-logo">
-                                        <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
+                                        <img src="assets/images/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
                                         <h2 class="brand-text text-primary ml-1">monsieur-wifi</h2>
                                     </a>
                                     <div class="language-switcher">

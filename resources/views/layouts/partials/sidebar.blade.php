@@ -8,7 +8,7 @@
     {{-- Logo / collapse toggle --}}
     <div class="mw-sb-head" id="mwSbToggle" title="{{ __('sidebar.toggle') }}">
         <div class="mw-sb-logo">
-            <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Monsieur WiFi">
+            <img src="/assets/images/Mr-Wifi.PNG" alt="Monsieur WiFi">
             <span class="mw-sb-logo-text">
                 <span class="mw-sb-m">Monsieur</span>&nbsp;<span class="mw-sb-w">WiFi</span>
             </span>

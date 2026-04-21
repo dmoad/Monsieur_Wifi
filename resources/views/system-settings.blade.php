@@ -309,7 +309,7 @@
                                                 <div class="form-group">
                                                     <label>{{ __('system_settings.label_current_logo') }}</label>
                                                     <div class="d-flex justify-content-center p-2 border rounded mb-1">
-                                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="{{ __('system_settings.alt_current_logo') }}" height="50" />
+                                                        <img src="/assets/images/Mr-Wifi.PNG" alt="{{ __('system_settings.alt_current_logo') }}" height="50" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -325,7 +325,7 @@
                                                 <div class="form-group">
                                                     <label>{{ __('system_settings.label_current_favicon') }}</label>
                                                     <div class="d-flex justify-content-center p-2 border rounded mb-1">
-                                                        <img src="/app-assets/mrwifi-assets/MrWifi.png" alt="{{ __('system_settings.alt_current_favicon') }}" height="32" />
+                                                        <img src="/assets/images/MrWifi.png" alt="{{ __('system_settings.alt_current_favicon') }}" height="32" />
                                                     </div>
                                                 </div>
                                             </div>

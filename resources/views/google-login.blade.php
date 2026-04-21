@@ -19,7 +19,7 @@
         
         body {
             min-height: 100vh;
-            background-image: url('/app-assets/mrwifi-assets/captive-portal/images/background.jpg');
+            background-image: url('/assets/images/captive-portal/images/background.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -293,7 +293,7 @@
         <!-- Footer with Brand Logo and Terms -->
         <div class="footer">
             <div class="brand-logo">
-                <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
+                <img src="/assets/images/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
             <div class="terms" id="terms-text" data-i18n-default="footer">
                 Powered by Monsieur WiFi

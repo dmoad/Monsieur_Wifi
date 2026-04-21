@@ -9,7 +9,7 @@
     <meta name="author" content="monsieur-wifi">
     <title id="page-title">Tarifs - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
@@ -538,7 +538,7 @@
     <!-- Header -->
     <div class="pricing-header">
         <a href="/" class="brand-logo">
-            <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Monsieur WiFi">
+            <img src="assets/images/Mr-Wifi.PNG" alt="Monsieur WiFi">
             <h2>monsieur-wifi</h2>
         </a>
 

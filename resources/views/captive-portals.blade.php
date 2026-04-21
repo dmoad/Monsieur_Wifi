@@ -909,7 +909,7 @@
                                 <!-- Footer with Brand Logo and Terms -->
                                 <div class="footer">
                                     <div class="brand-logo">
-                                        <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="{{ __('captive_portals.alt_brand_logo') }}">
+                                        <img src="/assets/images/Mr-Wifi.PNG" alt="{{ __('captive_portals.alt_brand_logo') }}">
                                     </div>
                                     <div class="terms" id="preview-terms-container" style="display: none; margin-bottom: 0.5rem;">
                                         <!-- Terms links will be inserted here when show_terms is enabled -->

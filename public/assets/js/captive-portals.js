@@ -364,7 +364,7 @@ function fetchDesigns(openFirstDesign = false) {
                                             <div class="location-logo-mini">${logoHtml}</div>
                                             <div class="login-area-mini">${design.name}</div>
                                             <div class="brand-logo-mini">
-                                                <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi" style="max-height: 15px;">
+                                                <img src="/assets/images/Mr-Wifi.PNG" alt="Mr WiFi" style="max-height: 15px;">
                                             </div>
                                         </div>
                                     </div>
