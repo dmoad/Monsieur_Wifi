@@ -750,3 +750,27 @@ button.mw-av-item {
 }
 body.mw-sb-expanded .mw-footer { margin-left: var(--mw-sb-width-exp); }
 @media (max-width: 640px) { .mw-footer { margin-left: 0; padding-top: 10px; } }
+
+/* ============================================================
+   CDN BOOTSTRAP COMPAT — fixes for Vuexy extensions loaded
+   on top of standard Bootstrap 4.6.0 CDN instead of Vuexy base
+   ============================================================ */
+
+/* Custom switch: Vuexy sets height/position but not width on the track.
+   CDN Bootstrap defaults to 1.75rem; Vuexy needs 3rem for the wide pill. */
+.custom-switch .custom-control-label::before {
+    width: 3rem;
+}
+.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+    background-color: #fff;
+}
+
+/* Modal close button: Vuexy applies translate(8px,-2px) + overflow:visible
+   to float the × outside the modal border. With CDN Bootstrap header padding
+   it clips the edge. Reset to sit inside the header normally. */
+.modal .modal-header .close {
+    transform: none !important;
+}
+.modal .modal-content {
+    overflow: hidden;
+}
