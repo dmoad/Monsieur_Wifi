@@ -177,7 +177,7 @@ function displayZoneInfo(zone) {
         const manageLabel = PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres' : 'Manage Settings';
         primarySection = `
             <div class="zone-info-primary">
-                <div class="primary-loc-icon"><i data-feather="settings"></i></div>
+                <div class="primary-loc-icon"><i data-feather="home"></i></div>
                 <div class="primary-loc-body">
                     <div class="primary-loc-eyebrow">${eyebrow}</div>
                     <div class="primary-loc-name">${primaryLocation.name}</div>
@@ -344,7 +344,7 @@ function displayLocations(locations) {
                         <div class="lz-menu" id="lz-menu-${location.id}">
                             ${!isPrimary ? `
                                 <button class="lz-menu-item" onclick="setPrimary(${location.id}); closeAllLocationMenus()">
-                                    <i data-feather="star"></i> ${T.setPrimary}
+                                    <i data-feather="home"></i> ${T.setPrimary}
                                 </button>
                                 <div class="lz-menu-divider"></div>
                             ` : ''}
