@@ -667,3 +667,22 @@ button.mw-av-item {
 
     .mw-sb .mw-sb-chevron { display: none !important; }
 }
+
+/* ── Footer ──────────────────────────────────────────────────────── */
+.footer.footer-static.footer-light { display: none !important; } /* tombstone: Vuexy footer */
+
+.mw-footer {
+    margin-left: var(--mw-sb-width);
+    padding: var(--mw-space-md) var(--mw-space-xl);
+    font-size: 0.78rem;
+    color: var(--mw-text-muted);
+    border-top: 1px solid var(--mw-border-light);
+    background: var(--mw-bg-page);
+}
+.mw-footer a {
+    color: var(--mw-primary);
+    text-decoration: none;
+    margin-left: 4px;
+}
+body.mw-sb-expanded .mw-footer { margin-left: var(--mw-sb-width-exp); }
+@media (max-width: 640px) { .mw-footer { margin-left: 0; padding-top: 10px; } }
