@@ -179,8 +179,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     border-bottom: none;
     padding: 0;
 }
-.pppoe_display { display: none; }
-.static_ip_display { display: none; }
 
 /* Analytics chart */
 .analytics-chart-card { background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); border-radius: 20px; padding: 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
@@ -210,23 +208,12 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .pagination-btn:hover:not(:disabled) { background: #667eea; color: white; }
 .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* Channel scan */
-.scan-pulse-dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 20px; height: 20px; background-color: #7367f0; border-radius: 50%; z-index: 2; }
-.scan-pulse-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 40px; height: 40px; border: 3px solid #7367f0; border-radius: 50%; animation: pulse 2s infinite; }
-@keyframes pulse { 0%{width:30px;height:30px;opacity:1} 100%{width:80px;height:80px;opacity:0} }
 .timeline { padding-left: 0; list-style: none; margin-bottom: 0; }
 .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 0.85rem; }
 .timeline-point { position: absolute; left: 0; top: 0; }
 .timeline-point-indicator { display: inline-block; height: 12px; width: 12px; border-radius: 50%; background-color: #ebe9f1; }
 .timeline-point-primary { background-color: #7367f0 !important; }
 .timeline-point-success { background-color: #28c76f !important; }
-.channel-recommendation { padding: 1rem; background-color: #f8f8f8; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #7367f0; }
-.channel-value { font-size: 2rem; font-weight: 600; color: #5e5873; }
-.interference-meter { height: 6px; background-color: #eee; border-radius: 3px; overflow: hidden; margin-top: 4px; }
-.interference-level { height: 100%; border-radius: 3px; }
-.interference-low { background-color: #28c76f; width: 20%; }
-.interference-medium { background-color: #ff9f43; width: 50%; }
-.interference-high { background-color: #ea5455; width: 80%; }
 #channel-scan-modal .progress-bar { transition: width 0.5s linear; }
 
 /* Networks shortcut card */
@@ -240,41 +227,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .network-summary-badge.badge-captive { background: rgba(40,199,111,0.1); color: #28c76f; border-color: rgba(40,199,111,0.3); }
 .network-summary-badge.badge-open { background: rgba(255,159,67,0.1); color: #ff9f43; border-color: rgba(255,159,67,0.3); }
 .network-summary-badge.badge-disabled { opacity: 0.65; }
-
-/* Dark/semi-dark overrides */
-.dark-layout .loc-panel { border-color: #3b4253; }
-.dark-layout .loc-panel-header { border-bottom-color: #3b4253; }
-.dark-layout .panel-location .loc-panel-header { background: rgba(115,103,240,0.08); }
-.dark-layout .panel-qos .loc-panel-header { background: rgba(102, 126, 234, 0.1); }
-.dark-layout .panel-contact .loc-panel-header { background: rgba(23,162,184,0.08); }
-.dark-layout .panel-settings .loc-panel-header { background: rgba(40,199,111,0.08); }
-.dark-layout .panel-sub-section { border-top-color: #3b4253; }
-.dark-layout .form-action-bar { background: #1e2a3c; border-color: #3b4253; }
-.semi-dark-layout .loc-panel { border-color: #3b4253; }
-.semi-dark-layout .loc-panel-header { border-bottom-color: #3b4253; }
-.semi-dark-layout .panel-location .loc-panel-header { background: rgba(115,103,240,0.08); }
-.semi-dark-layout .panel-qos .loc-panel-header { background: rgba(102, 126, 234, 0.1); }
-.semi-dark-layout .panel-contact .loc-panel-header { background: rgba(23,162,184,0.08); }
-.semi-dark-layout .panel-settings .loc-panel-header { background: rgba(40,199,111,0.08); }
-.semi-dark-layout .panel-sub-section { border-top-color: #3b4253; }
-.semi-dark-layout .form-action-bar { background: #1e2a3c; border-color: #3b4253; }
-.dark-layout .nav-tabs { background-color: #283046 !important; }
-.dark-layout .nav-tabs .nav-link { color: #b4b7bd !important; }
-.dark-layout .nav-tabs .nav-link.active { color: #ffffff !important; }
-.dark-layout .form-group label { color: #d0d2d6 !important; }
-.dark-layout .card-header { background: linear-gradient(135deg,#283046 0%,#2c2c2c 100%) !important; border-bottom: 1px solid rgba(180,183,189,0.3) !important; }
-.dark-layout h4, .dark-layout h5, .dark-layout h6 { color: #d0d2d6 !important; }
-.dark-layout .form-control { background-color: #3b4253 !important; border-color: #3b4253 !important; color: #d0d2d6 !important; }
-.dark-layout .form-control:focus { border-color: #7367f0 !important; }
-.dark-layout .content-section { background-color: #283046 !important; border: 1px solid #3b4253 !important; }
-.semi-dark-layout .nav-tabs { background-color: #283046 !important; }
-.semi-dark-layout .nav-tabs .nav-link { color: #b4b7bd !important; }
-.semi-dark-layout .nav-tabs .nav-link.active { color: #ffffff !important; }
-.semi-dark-layout .form-group label { color: #d0d2d6 !important; }
-.semi-dark-layout .card-header { background: linear-gradient(135deg,#283046 0%,#2c2c2c 100%) !important; border-bottom: 1px solid rgba(180,183,189,0.3) !important; }
-.semi-dark-layout h4, .semi-dark-layout h5, .semi-dark-layout h6 { color: #d0d2d6 !important; }
-.semi-dark-layout .form-control { background-color: #3b4253 !important; border-color: #3b4253 !important; color: #d0d2d6 !important; }
-.semi-dark-layout .content-section { background-color: #283046 !important; border: 1px solid #3b4253 !important; }
 
 /* QoS settings — compact numeric fields (override global 50px input height in this section only) */
 #qos-settings-section.content-section { padding: 1.35rem 1.5rem; }
@@ -308,10 +260,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 #qos-settings-section .qos-bw-class-input {
     max-width: 100%;
 }
-.dark-layout #qos-settings-section .qos-classify-preview-col,
-.semi-dark-layout #qos-settings-section .qos-classify-preview-col {
-    border-left-color: #3b4253;
-}
 /* Bandwidth limits: WAN vs class minimums side by side (md+) */
 #qos-settings-section .qos-bw-min-col {
     border-top: 1px solid #ebe9f1;
@@ -327,10 +275,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
         margin-left: 0;
         border-left: 1px solid #ebe9f1;
     }
-}
-.dark-layout #qos-settings-section .qos-bw-min-col,
-.semi-dark-layout #qos-settings-section .qos-bw-min-col {
-    border-color: #3b4253;
 }
 #qos-settings-section .qos-bandwidth-subsection.qos-bandwidth-disabled {
     opacity: 0.55;
