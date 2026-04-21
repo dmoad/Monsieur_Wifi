@@ -25,32 +25,6 @@
 <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/tables/datatable/rowGroup.bootstrap4.min.css">
 
 <style>
-.dataTables_paginate {
-    margin-top: 1rem !important;
-    padding: 1rem !important;
-}
-.pagination {
-    display: flex;
-    justify-content: flex-end;
-}
-.page-link {
-    padding: 0.5rem 0.75rem;
-    margin-left: -1px;
-    border: 1px solid #ddd;
-    color: var(--mw-primary);
-}
-.page-item.active .page-link {
-    background-color: var(--mw-primary);
-    border-color: var(--mw-primary);
-    color: #fff;
-}
-.page-item.disabled .page-link {
-    color: #b9b9c3;
-    pointer-events: none;
-    background-color: #fff;
-    border-color: #ddd;
-}
-
 .location-card {
     border-radius: var(--mw-radius-lg);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -58,25 +32,6 @@
 .location-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--mw-shadow-elevated);
-}
-
-.status-badge {
-    padding: 3px 10px;
-    border-radius: var(--mw-radius-full);
-    font-size: 11px;
-    font-weight: 600;
-}
-.status-online {
-    background-color: rgba(22, 163, 74, 0.12);
-    color: var(--mw-success);
-}
-.status-offline {
-    background-color: rgba(220, 38, 38, 0.10);
-    color: var(--mw-danger);
-}
-.status-warning {
-    background-color: rgba(234, 139, 9, 0.12);
-    color: var(--mw-warning);
 }
 
 .marker-icon { display: flex; align-items: center; justify-content: center; }
