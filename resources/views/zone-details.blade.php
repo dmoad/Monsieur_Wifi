@@ -67,6 +67,11 @@
     .zone-info-primary .primary-loc-inherit {
         background: var(--mw-bg-muted);
     }
+    .zone-info-primary .primary-loc-cta {
+        margin-top: 0;
+        flex-shrink: 0;
+        align-self: flex-start;
+    }
     .admin-alert {
         display: flex;
         align-items: flex-start;

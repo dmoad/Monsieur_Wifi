@@ -191,10 +191,10 @@ function displayZoneInfo(zone) {
                         </div>
                         <div>${inheritanceMessage}</div>
                     </div>
-                    <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
-                        <i data-feather="settings"></i> ${manageLabel}
-                    </a>
                 </div>
+                <a href="${settingsUrl}" class="btn btn-sm btn-primary primary-loc-cta">
+                    <i data-feather="settings"></i> ${manageLabel}
+                </a>
             </div>
         `;
     } else {
