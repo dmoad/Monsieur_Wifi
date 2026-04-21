@@ -79,9 +79,6 @@ function updateOverviewDisplay(data) {
     const loc = data.locations;
     const ns = data.network_stats;
 
-    $('#welcome-total-locations').text(loc.total + ' Location' + (loc.total !== 1 ? 's' : ''));
-    $('#welcome-active-count').text(loc.online);
-    $('#welcome-offline-count').text(loc.offline);
     $('#routers-online-count').text(ns.routers_online + '/' + ns.routers_total);
     $('#active-users-count').text(ns.active_users.toLocaleString());
     $('#data-used-count').text(ns.data_used_tb + 'TB');

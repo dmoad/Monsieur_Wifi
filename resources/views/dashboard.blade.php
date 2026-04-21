@@ -79,34 +79,8 @@
     <!-- Dashboard Content Starts -->
     <section id="dashboard-analytics">
         <div class="row match-height">
-            <!-- Welcome Card -->
-            <div class="col-lg-4 col-md-6 col-12">
-                <div class="card" id="welcome-card">
-                    <div class="card-body">
-                        <h5>{{ __('dashboard.welcome_title') }}</h5>
-                        <p class="card-text" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.status_overview') }}</p>
-                        <h3 class="mb-75 mt-2 pt-50">
-                            <span id="welcome-total-locations" style="color:var(--mw-primary);">{{ __('common.loading') }}</span>
-                        </h3>
-                        <div class="d-flex">
-                            <div class="d-flex align-items-center mr-2">
-                                <i data-feather="check-circle" class="text-success font-medium-2 mr-50"></i>
-                                <span class="font-weight-bold" id="welcome-active-count">-</span>&nbsp;{{ __('common.active') }}
-                            </div>
-                            <span class="mx-1">|</span>
-                            <div class="d-flex align-items-center ml-1">
-                                <i data-feather="x-circle" class="text-danger font-medium-2 mr-50"></i>
-                                <span class="font-weight-bold" id="welcome-offline-count">-</span>&nbsp;{{ __('common.offline') }}
-                            </div>
-                        </div>
-                        <a type="button" class="btn btn-primary mt-1" href="/{{ $locale }}/locations">{{ __('dashboard.view_details') }}</a>
-                    </div>
-                </div>
-            </div>
-            <!--/ Welcome Card -->
-
             <!-- Statistics Card -->
-            <div class="col-lg-8 col-12">
+            <div class="col-12">
                 <div class="card card-statistics" id="network-stats">
                     <div class="card-header">
                         <h4 class="card-title">{{ __('dashboard.network_statistics') }}</h4>
