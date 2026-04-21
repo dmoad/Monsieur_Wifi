@@ -247,6 +247,19 @@
 }
 
 /* ============================================================
+   FORM CONTROLS — lighten placeholders so they don't read as
+   real input values (Bootstrap 4's default #6c757d / opacity:1
+   is visually indistinguishable from typed text).
+   ============================================================ */
+.form-control::placeholder {
+    color: var(--mw-text-muted);
+    opacity: 0.55;
+}
+.form-control::-webkit-input-placeholder { color: var(--mw-text-muted); opacity: 0.55; }
+.form-control::-moz-placeholder          { color: var(--mw-text-muted); opacity: 0.55; }
+.form-control:-ms-input-placeholder      { color: var(--mw-text-muted); opacity: 0.55; }
+
+/* ============================================================
    STAT ICON — small rounded icon pill used in stat-style cards
    (summary rows, analytics tiles). Tinted background + solid
    accent color per semantic variant.
