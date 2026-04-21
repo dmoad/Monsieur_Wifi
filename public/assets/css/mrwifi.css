@@ -86,9 +86,14 @@
 }
 
 .card .card-header {
+    padding: 1.25rem 1.5rem !important;
     border-bottom: 1px solid var(--mw-border-light) !important;
     border-radius: var(--mw-radius-lg) var(--mw-radius-lg) 0 0 !important;
     background: var(--mw-bg-surface) !important;
+}
+
+.card .card-body {
+    padding: 1.5rem !important;
 }
 
 .card .card-footer {

@@ -169,91 +169,8 @@
             <!--/ Statistics Card -->
         </div>
 
-        <div class="row match-height">
-            <!-- Network Map -->
-            <div class="col-lg-8 col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">{{ __('dashboard.network_map') }}</h4>
-                        <div class="d-flex">
-                            <button id="fullscreen-btn" class="btn btn-sm btn-outline-primary mr-1">
-                                <i data-feather="maximize"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="network-map" style="height: 400px;">
-                            <div class="d-flex align-items-center justify-content-center h-100" id="map-loading">
-                                <div class="text-center">
-                                    <div class="spinner-border text-primary mb-2" role="status">
-                                        <span class="sr-only">{{ __('common.loading') }}</span>
-                                    </div>
-                                    <p class="text-muted">{{ __('dashboard.loading_network_map') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--/ Network Map -->
-
-            <!-- Data Usage Trends -->
-            <div class="col-lg-4 col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">{{ __('dashboard.data_usage_trends') }}</h4>
-                        <div class="dropdown chart-dropdown">
-                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dataUsageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ __('dashboard.last_7_days') }}
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dataUsageDropdown">
-                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_7_days') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_month') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_year') }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 d-flex flex-column flex-wrap text-center mb-2">
-                                <h1 class="mt-2 mb-0" id="total-bandwidth-used">-</h1>
-                                <p class="card-text">{{ __('dashboard.total_usage_this_week') }}</p>
-                            </div>
-                        </div>
-                        <div id="data-usage-chart" class="mt-2" style="min-height: 270px;"></div>
-                        
-                        <div class="row mt-3">
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <div class="mw-stat-icon mw-stat-icon-info mr-1">
-                                        <i data-feather="download"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="mb-0" id="download-usage">185 GB</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.download') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex align-items-center">
-                                    <div class="mw-stat-icon mw-stat-icon-warning mr-1">
-                                        <i data-feather="upload"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="mb-0" id="upload-usage">60 GB</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.upload') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--/ Data Usage Trends -->
-        </div>
-
         <div id="dashboard-errors"></div>
-        
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -356,6 +273,89 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="row match-height">
+            <!-- Network Map -->
+            <div class="col-lg-8 col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">{{ __('dashboard.network_map') }}</h4>
+                        <div class="d-flex">
+                            <button id="fullscreen-btn" class="btn btn-sm btn-outline-primary mr-1">
+                                <i data-feather="maximize"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="network-map" style="height: 400px;">
+                            <div class="d-flex align-items-center justify-content-center h-100" id="map-loading">
+                                <div class="text-center">
+                                    <div class="spinner-border text-primary mb-2" role="status">
+                                        <span class="sr-only">{{ __('common.loading') }}</span>
+                                    </div>
+                                    <p class="text-muted">{{ __('dashboard.loading_network_map') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/ Network Map -->
+
+            <!-- Data Usage Trends -->
+            <div class="col-lg-4 col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">{{ __('dashboard.data_usage_trends') }}</h4>
+                        <div class="dropdown chart-dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dataUsageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ __('dashboard.last_7_days') }}
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dataUsageDropdown">
+                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_7_days') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_month') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);">{{ __('dashboard.last_year') }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 d-flex flex-column flex-wrap text-center mb-2">
+                                <h1 class="mt-2 mb-0" id="total-bandwidth-used">-</h1>
+                                <p class="card-text">{{ __('dashboard.total_usage_this_week') }}</p>
+                            </div>
+                        </div>
+                        <div id="data-usage-chart" class="mt-2" style="min-height: 270px;"></div>
+
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="mw-stat-icon mw-stat-icon-info mr-1">
+                                        <i data-feather="download"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="mb-0" id="download-usage">185 GB</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.download') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="mw-stat-icon mw-stat-icon-warning mr-1">
+                                        <i data-feather="upload"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="mb-0" id="upload-usage">60 GB</h4>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.upload') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/ Data Usage Trends -->
         </div>
     </section>
     <!-- Dashboard Content Ends -->
