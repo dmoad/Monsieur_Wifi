@@ -108,6 +108,59 @@
         display: flex;
         gap: 0.5rem;
     }
+    /* Kebab menu on location cards (Set as Primary / Remove from Zone) */
+    .lz-kebab-wrap { position: relative; flex-shrink: 0; }
+    .lz-kebab-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--mw-border);
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s, border-color 0.12s;
+        padding: 0;
+    }
+    .lz-kebab-btn:hover {
+        background: var(--mw-primary-tint);
+        border-color: var(--mw-primary);
+        color: var(--mw-primary);
+    }
+    .lz-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        right: 0;
+        background: var(--mw-bg-surface);
+        border: 1px solid var(--mw-border);
+        border-radius: var(--mw-radius-md);
+        box-shadow: var(--mw-shadow-elevated);
+        min-width: 180px;
+        z-index: 100;
+        padding: 4px 0;
+    }
+    .lz-menu.open { display: block; }
+    .lz-menu-item {
+        display: flex;
+        align-items: center;
+        gap: var(--mw-space-sm);
+        width: 100%;
+        padding: 7px 14px;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+        text-align: left;
+    }
+    .lz-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+    .lz-menu-item [data-feather] { width: 14px !important; height: 14px !important; }
+    .lz-menu-danger { color: var(--mw-danger) !important; }
+    .lz-menu-danger:hover { background: rgba(220, 38, 38, 0.06) !important; }
+    .lz-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
     .add-location-section {
         background: #f8f9fa;
         border: 2px dashed #dee2e6;

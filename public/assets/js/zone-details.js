@@ -49,6 +49,7 @@ const TRANSLATIONS = {
         zoneSettings: 'Zone Settings',
         viewSettings: 'View Settings',
         editZone: 'Edit Zone',
+        actions: 'Actions',
         showingLocations: 'Showing',
         of: 'of',
         locations: 'locations',
@@ -93,6 +94,7 @@ const TRANSLATIONS = {
         zoneSettings: 'Paramètres de la Zone',
         viewSettings: 'Voir les Paramètres',
         editZone: 'Modifier la Zone',
+        actions: 'Actions',
         showingLocations: 'Affichage de',
         of: 'sur',
         locations: 'emplacements',
@@ -278,15 +280,23 @@ function displayLocations(locations) {
                             ${isPrimary ? `<span class="badge badge-primary">${T.primary}</span>` : ''}
                         </div>
                     </div>
-                    <div class="location-actions">
-                        ${!isPrimary ? `
-                            <button class="btn btn-sm btn-outline-primary" onclick="setPrimary(${location.id})">
-                                <i data-feather="star"></i> ${T.setPrimary}
-                            </button>
-                        ` : ''}
-                        <button class="btn btn-sm btn-outline-danger" onclick="removeLocation(${location.id})">
-                            <i data-feather="x"></i> ${T.removeLocation}
+                    <div class="lz-kebab-wrap">
+                        <button class="lz-kebab-btn" onclick="toggleLocationMenu(event, ${location.id})" title="${T.actions || 'Actions'}">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                            </svg>
                         </button>
+                        <div class="lz-menu" id="lz-menu-${location.id}">
+                            ${!isPrimary ? `
+                                <button class="lz-menu-item" onclick="setPrimary(${location.id}); closeAllLocationMenus()">
+                                    <i data-feather="star"></i> ${T.setPrimary}
+                                </button>
+                                <div class="lz-menu-divider"></div>
+                            ` : ''}
+                            <button class="lz-menu-item lz-menu-danger" onclick="removeLocation(${location.id}); closeAllLocationMenus()">
+                                <i data-feather="x"></i> ${T.removeLocation}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -325,6 +335,21 @@ function changeLocationsPage(delta) {
     currentLocationsPage += delta;
     displayLocations(currentZone.locations || []);
 }
+
+function toggleLocationMenu(e, locationId) {
+    e.stopPropagation();
+    const target = document.getElementById('lz-menu-' + locationId);
+    if (!target) return;
+    const isOpen = target.classList.contains('open');
+    closeAllLocationMenus();
+    if (!isOpen) target.classList.add('open');
+}
+
+function closeAllLocationMenus() {
+    document.querySelectorAll('.lz-menu.open').forEach(m => m.classList.remove('open'));
+}
+
+document.addEventListener('click', closeAllLocationMenus);
 
 async function loadAvailableLocations() {
     const token = UserManager.getToken();
