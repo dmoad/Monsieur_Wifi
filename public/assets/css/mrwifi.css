@@ -772,13 +772,51 @@ body.mw-sb-expanded .mw-footer { margin-left: var(--mw-sb-width-exp); }
    on top of standard Bootstrap 4.6.0 CDN instead of Vuexy base
    ============================================================ */
 
-/* Custom switch: Vuexy sets height/position but not width on the track.
-   CDN Bootstrap defaults to 1.75rem; Vuexy needs 3rem for the wide pill. */
+/* Custom switch — modern pill toggle. Overrides Bootstrap 4.6 CDN
+   defaults (1.75rem track, 12px thumb, blue-checked) with a 44x24 pill,
+   20px white thumb, indigo-primary when checked, focus ring matching
+   the design tokens. Applies to every .custom-switch in the app. */
+.custom-switch {
+    padding-left: 3rem;
+}
+.custom-switch .custom-control-label {
+    line-height: 24px;
+    cursor: pointer;
+}
 .custom-switch .custom-control-label::before {
-    width: 3rem;
+    width: 44px;
+    height: 24px;
+    top: 0;
+    left: -3rem;
+    border-radius: 12px;
+    background-color: var(--mw-border);
+    border-color: var(--mw-border);
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.custom-switch .custom-control-label::after {
+    width: 20px;
+    height: 20px;
+    top: 2px;
+    left: calc(-3rem + 2px);
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--mw-primary);
+    border-color: var(--mw-primary);
 }
 .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
     background-color: #fff;
+    transform: translateX(20px);
+}
+.custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+.custom-switch .custom-control-input:disabled ~ .custom-control-label {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Modal close button: Vuexy applies translate(8px,-2px) + overflow:visible
