@@ -1591,6 +1591,28 @@ const ldNetworks = (function () {
         }
     }
 
+    async function remove(netId) {
+        const idx = data.findIndex(n => String(n.id) === String(netId));
+        if (idx < 0) return;
+        const net = data[idx];
+        const i18n = t();
+        const msg = (i18n.networks_delete_confirm || 'Delete "{ssid}"? This cannot be undone.').replace('{ssid}', net.ssid || '');
+        if (!window.confirm(msg)) return;
+        const btn = document.getElementById('ld-network-drawer-delete');
+        if (btn) btn.disabled = true;
+        try {
+            await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, { method: 'DELETE' });
+            data.splice(idx, 1);
+            render();
+            if (typeof toastr !== 'undefined') toastr.success(i18n.networks_delete_success || 'Network deleted.');
+            if (typeof MwDrawer !== 'undefined') MwDrawer.close('ld-network-drawer');
+        } catch (err) {
+            handleApiError(err, 'ldNetworks.remove');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
     async function add() {
         const btn = document.getElementById('ld-networks-add-btn');
         if (!btn || btn.disabled) return;
@@ -1846,6 +1868,13 @@ const ldNetworks = (function () {
         if (e.target.closest('#ld-network-drawer-save')) {
             e.preventDefault();
             save();
+            return;
+        }
+        if (e.target.closest('#ld-network-drawer-delete')) {
+            e.preventDefault();
+            const drawer = document.getElementById('ld-network-drawer');
+            const netId = drawer && drawer.dataset.networkId;
+            if (netId) remove(netId);
             return;
         }
         const pwdToggle = e.target.closest('#ld-net-password-toggle, #ld-net-portal-password-toggle');
