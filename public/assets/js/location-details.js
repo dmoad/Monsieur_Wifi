@@ -1037,6 +1037,9 @@ const ldNetworks = (function () {
     // Drawer-local scratch for MAC filter + DHCP reservations (edits revert on Cancel)
     let drawerMac = [];
     let drawerReservations = [];
+    // Drawer-local scratch for working-hours picker: { [day]: [{startHour, endHour}, ...] }
+    let drawerSchedule = {};
+    const SCHEDULE_DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 
     async function ensureCaptiveDesigns() {
         if (captiveDesigns !== null) return captiveDesigns;
@@ -1328,6 +1331,171 @@ const ldNetworks = (function () {
         renderReservations();
     }
 
+    function scheduleFromWorkingHours(workingHours) {
+        const out = {};
+        SCHEDULE_DAYS.forEach(d => { out[d] = []; });
+        (workingHours || []).forEach(e => {
+            const day = (e.day || '').toLowerCase();
+            if (!out[day]) return;
+            const start = e.startHour != null ? +e.startHour : parseInt((e.startTime || '').split(':')[0], 10);
+            const end   = e.endHour   != null ? +e.endHour   : parseInt((e.endTime   || '').split(':')[0], 10);
+            if (!Number.isInteger(start) || !Number.isInteger(end)) return;
+            out[day].push({ startHour: start, endHour: end });
+        });
+        return out;
+    }
+
+    function scheduleToWorkingHours(schedule) {
+        const out = [];
+        SCHEDULE_DAYS.forEach(day => {
+            (schedule[day] || []).forEach(({ startHour, endHour }) => {
+                if (!Number.isInteger(startHour) || !Number.isInteger(endHour)) return;
+                if (endHour <= startHour) return;
+                out.push({
+                    day,
+                    startHour,
+                    endHour,
+                    startTime: String(startHour).padStart(2,'0') + ':00',
+                    endTime:   String(endHour).padStart(2,'0') + ':00',
+                });
+            });
+        });
+        return out;
+    }
+
+    function buildHourOptions(selectEl, selected, minHour, maxHour) {
+        selectEl.innerHTML = '';
+        for (let h = minHour; h <= maxHour; h++) {
+            const opt = document.createElement('option');
+            opt.value = String(h);
+            opt.textContent = String(h).padStart(2,'0') + ':00';
+            if (h === selected) opt.selected = true;
+            selectEl.appendChild(opt);
+        }
+    }
+
+    function renderScheduleEditor() {
+        const editor = document.getElementById('ld-net-schedule-editor');
+        if (!editor) return;
+        const dayTpl = document.getElementById('ld-net-schedule-day-tpl');
+        const rangeTpl = document.getElementById('ld-net-schedule-range-tpl');
+        if (!dayTpl || !rangeTpl) return;
+        const i18n = t();
+        editor.innerHTML = '';
+        SCHEDULE_DAYS.forEach(day => {
+            const row = dayTpl.content.firstElementChild.cloneNode(true);
+            row.dataset.day = day;
+            row.querySelector('.ld-net-schedule-day-name').textContent =
+                i18n['networks_schedule_day_' + day] || day.charAt(0).toUpperCase() + day.slice(1);
+            const ranges = drawerSchedule[day] || [];
+            const hasRanges = ranges.length > 0;
+            row.querySelector('.ld-net-schedule-day-enabled').checked = hasRanges;
+            const rangesEl = row.querySelector('.ld-net-schedule-day-ranges');
+            const addBtn = row.querySelector('.ld-net-schedule-day-add');
+            if (hasRanges) {
+                ranges.forEach((r, idx) => rangesEl.appendChild(buildRangeRow(day, idx, r.startHour, r.endHour, rangeTpl)));
+                addBtn.style.display = '';
+            }
+            editor.appendChild(row);
+        });
+        if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
+    }
+
+    function buildRangeRow(day, idx, startHour, endHour, rangeTpl) {
+        const row = rangeTpl.content.firstElementChild.cloneNode(true);
+        row.dataset.day = day;
+        row.dataset.idx = String(idx);
+        const startSel = row.querySelector('.ld-net-schedule-range-start');
+        const endSel   = row.querySelector('.ld-net-schedule-range-end');
+        buildHourOptions(startSel, startHour, 0, 23);
+        buildHourOptions(endSel, endHour, 1, 24);
+        return row;
+    }
+
+    function applyScheduleMode(mode) {
+        const editor = document.getElementById('ld-net-schedule-editor');
+        if (!editor) return;
+        if (mode === 'always') {
+            editor.style.display = 'none';
+        } else {
+            // Default to business hours if schedule is empty when switching to restricted
+            const hasAny = SCHEDULE_DAYS.some(d => (drawerSchedule[d] || []).length > 0);
+            if (!hasAny) {
+                drawerSchedule = {};
+                SCHEDULE_DAYS.forEach(d => { drawerSchedule[d] = []; });
+                ['monday','tuesday','wednesday','thursday','friday'].forEach(d => {
+                    drawerSchedule[d] = [{ startHour: 9, endHour: 17 }];
+                });
+            }
+            renderScheduleEditor();
+            editor.style.display = '';
+        }
+    }
+
+    function initSchedulePicker(net) {
+        drawerSchedule = scheduleFromWorkingHours(net.working_hours);
+        const hasAny = SCHEDULE_DAYS.some(d => (drawerSchedule[d] || []).length > 0);
+        const mode = hasAny ? 'restricted' : 'always';
+        const modeInput = document.querySelector(`.ld-net-schedule-mode[value="${mode}"]`);
+        if (modeInput) modeInput.checked = true;
+        applyScheduleMode(mode);
+    }
+
+    function getScheduleModeValue() {
+        const checked = document.querySelector('.ld-net-schedule-mode:checked');
+        return checked ? checked.value : 'always';
+    }
+
+    function collectSchedulePayload() {
+        if (getScheduleModeValue() === 'always') return [];
+        // Update drawerSchedule from DOM before serialising
+        const editor = document.getElementById('ld-net-schedule-editor');
+        if (!editor) return [];
+        const next = {};
+        SCHEDULE_DAYS.forEach(d => { next[d] = []; });
+        editor.querySelectorAll('.ld-net-schedule-day').forEach(row => {
+            const day = row.dataset.day;
+            const enabled = row.querySelector('.ld-net-schedule-day-enabled').checked;
+            if (!enabled) return;
+            row.querySelectorAll('.ld-net-schedule-range').forEach(r => {
+                const start = parseInt(r.querySelector('.ld-net-schedule-range-start').value, 10);
+                const end   = parseInt(r.querySelector('.ld-net-schedule-range-end').value, 10);
+                if (Number.isInteger(start) && Number.isInteger(end) && end > start) {
+                    next[day].push({ startHour: start, endHour: end });
+                }
+            });
+        });
+        drawerSchedule = next;
+        return scheduleToWorkingHours(next);
+    }
+
+    function toggleDay(day, enabled) {
+        if (enabled) {
+            if (!drawerSchedule[day] || !drawerSchedule[day].length) {
+                drawerSchedule[day] = [{ startHour: 9, endHour: 17 }];
+            }
+        } else {
+            drawerSchedule[day] = [];
+        }
+        renderScheduleEditor();
+    }
+
+    function addRangeToDay(day) {
+        drawerSchedule[day] = drawerSchedule[day] || [];
+        // Pick a default that doesn't overlap: place at 18 if free, else last-end → last-end+2
+        const last = drawerSchedule[day][drawerSchedule[day].length - 1];
+        const start = last ? Math.min(last.endHour, 22) : 18;
+        const end   = Math.min(start + 2, 24);
+        drawerSchedule[day].push({ startHour: start, endHour: end });
+        renderScheduleEditor();
+    }
+
+    function removeRange(day, idx) {
+        if (!drawerSchedule[day]) return;
+        drawerSchedule[day].splice(idx, 1);
+        renderScheduleEditor();
+    }
+
     function t() {
         return (window.APP_I18N && window.APP_I18N.location_details) || {};
     }
@@ -1525,6 +1693,9 @@ const ldNetworks = (function () {
 
         applyTypeVisibility(type);
 
+        // Working-hours picker (captive only) — always init so switching type later works
+        initSchedulePicker(net);
+
         document.getElementById('ld-network-drawer-save').disabled = false;
 
         if (typeof MwDrawer !== 'undefined') MwDrawer.open('ld-network-drawer');
@@ -1599,6 +1770,7 @@ const ldNetworks = (function () {
             payload.portal_design_id = document.getElementById('ld-net-portal-design').value || null;
             payload.download_limit = parseInt(document.getElementById('ld-net-download-limit').value, 10) || null;
             payload.upload_limit = parseInt(document.getElementById('ld-net-upload-limit').value, 10) || null;
+            payload.working_hours = collectSchedulePayload();
         }
 
         // Réseau (IP / DHCP / VLAN) — applies to all types
@@ -1656,6 +1828,12 @@ const ldNetworks = (function () {
         }
     }
 
+    document.addEventListener('submit', function (e) {
+        if (e.target && e.target.id === 'ld-network-drawer-form') {
+            e.preventDefault();
+        }
+    });
+
     document.addEventListener('click', function (e) {
         if (e.target.closest('#ld-networks-add-btn')) {
             e.preventDefault();
@@ -1703,6 +1881,24 @@ const ldNetworks = (function () {
             removeReservation(parseInt(resRemoveBtn.dataset.idx, 10));
             return;
         }
+        const addRangeBtn = e.target.closest('.ld-net-schedule-day-add');
+        if (addRangeBtn) {
+            e.preventDefault();
+            const day = addRangeBtn.closest('.ld-net-schedule-day').dataset.day;
+            // Sync DOM → scratch before mutating to preserve user-edited range values
+            collectSchedulePayload();
+            addRangeToDay(day);
+            return;
+        }
+        const rangeRemoveBtn = e.target.closest('.ld-net-schedule-range-remove');
+        if (rangeRemoveBtn) {
+            e.preventDefault();
+            const rangeEl = rangeRemoveBtn.closest('.ld-net-schedule-range');
+            const dayRow = rangeRemoveBtn.closest('.ld-net-schedule-day');
+            collectSchedulePayload();
+            removeRange(dayRow.dataset.day, parseInt(rangeEl.dataset.idx, 10));
+            return;
+        }
         const row = e.target.closest('.ld-network-row');
         if (row && row.dataset.networkId) {
             openForNetwork(row.dataset.networkId);
@@ -1728,6 +1924,17 @@ const ldNetworks = (function () {
         }
         if (e.target && e.target.id === 'ld-net-dhcp-enabled') {
             applyReservationsVisibility();
+        }
+        if (e.target && e.target.classList && e.target.classList.contains('ld-net-schedule-mode')) {
+            applyScheduleMode(e.target.value);
+        }
+        if (e.target && e.target.classList && e.target.classList.contains('ld-net-schedule-day-enabled')) {
+            const dayRow = e.target.closest('.ld-net-schedule-day');
+            if (dayRow) {
+                // Sync current DOM edits before re-rendering
+                collectSchedulePayload();
+                toggleDay(dayRow.dataset.day, e.target.checked);
+            }
         }
     });
 

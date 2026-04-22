@@ -393,6 +393,53 @@
                     </div>
                 </div>
 
+                <div class="ld-drawer-section ld-net-schedule-section" data-show-for-type="captive_portal">
+                    <h6 class="ld-drawer-section-title">{{ __('location_networks.working_hours') }}</h6>
+
+                    <div class="ld-net-schedule-modes">
+                        <label class="ld-net-schedule-mode-label">
+                            <input type="radio" name="ld-net-schedule-mode" value="always" class="ld-net-schedule-mode">
+                            <span class="ld-net-schedule-mode-text">
+                                <span class="ld-net-schedule-mode-title">{{ __('location_details.networks_schedule_always') }}</span>
+                                <span class="ld-net-schedule-mode-desc">{{ __('location_details.networks_schedule_always_desc') }}</span>
+                            </span>
+                        </label>
+                        <label class="ld-net-schedule-mode-label">
+                            <input type="radio" name="ld-net-schedule-mode" value="restricted" class="ld-net-schedule-mode">
+                            <span class="ld-net-schedule-mode-text">
+                                <span class="ld-net-schedule-mode-title">{{ __('location_details.networks_schedule_restricted') }}</span>
+                                <span class="ld-net-schedule-mode-desc">{{ __('location_details.networks_schedule_restricted_desc') }}</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="ld-net-schedule-editor" id="ld-net-schedule-editor" style="display:none;"></div>
+
+                    <template id="ld-net-schedule-day-tpl">
+                        <div class="ld-net-schedule-day">
+                            <label class="ld-net-schedule-day-toggle">
+                                <input type="checkbox" class="ld-net-schedule-day-enabled">
+                                <span class="ld-net-schedule-day-name"></span>
+                            </label>
+                            <div class="ld-net-schedule-day-ranges"></div>
+                            <button type="button" class="btn btn-sm btn-link ld-net-schedule-day-add" style="display:none;">
+                                <i data-feather="plus"></i> {{ __('location_details.networks_schedule_add_range') }}
+                            </button>
+                        </div>
+                    </template>
+
+                    <template id="ld-net-schedule-range-tpl">
+                        <div class="ld-net-schedule-range">
+                            <select class="form-control form-control-sm ld-net-schedule-range-start"></select>
+                            <span class="ld-net-schedule-range-sep">→</span>
+                            <select class="form-control form-control-sm ld-net-schedule-range-end"></select>
+                            <button type="button" class="btn btn-link btn-sm text-danger p-0 ld-net-schedule-range-remove" aria-label="Remove">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+
                 <div class="ld-drawer-section" data-show-for-type="password">
                     <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_security') }}</h6>
 

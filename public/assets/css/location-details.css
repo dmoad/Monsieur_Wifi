@@ -527,3 +527,105 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     background: color-mix(in srgb, var(--mw-success) 14%, transparent);
     color: var(--mw-success);
 }
+
+/* Working-hours picker (T4.4e replacement) */
+.ld-net-schedule-modes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mw-space-sm);
+    margin-bottom: var(--mw-space-lg);
+}
+.ld-net-schedule-mode-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--mw-space-md);
+    padding: var(--mw-space-md);
+    border: 1px solid var(--mw-border-light);
+    border-radius: var(--mw-radius-md);
+    cursor: pointer;
+    margin: 0;
+    transition: border-color 0.12s, background 0.12s;
+}
+.ld-net-schedule-mode-label:has(.ld-net-schedule-mode:checked) {
+    border-color: var(--mw-primary);
+    background: color-mix(in srgb, var(--mw-primary) 5%, transparent);
+}
+.ld-net-schedule-mode-label input {
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+.ld-net-schedule-mode-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.ld-net-schedule-mode-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mw-text-primary);
+}
+.ld-net-schedule-mode-desc {
+    font-size: 12px;
+    color: var(--mw-text-muted);
+}
+.ld-net-schedule-editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mw-space-md);
+    padding-top: var(--mw-space-sm);
+}
+.ld-net-schedule-day {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    column-gap: var(--mw-space-md);
+    row-gap: var(--mw-space-xs);
+    align-items: center;
+    padding: var(--mw-space-sm) 0;
+    border-top: 1px solid var(--mw-border-light);
+}
+.ld-net-schedule-day:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+.ld-net-schedule-day-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    margin: 0;
+    cursor: pointer;
+}
+.ld-net-schedule-day-toggle input {
+    flex-shrink: 0;
+}
+.ld-net-schedule-day-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mw-text-secondary);
+}
+.ld-net-schedule-day-ranges {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mw-space-sm);
+}
+.ld-net-schedule-range {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+}
+.ld-net-schedule-range select {
+    flex: 0 0 96px;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 20px;
+}
+.ld-net-schedule-range-sep {
+    color: var(--mw-text-muted);
+    font-size: 12px;
+}
+.ld-net-schedule-day-add {
+    justify-self: end;
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 12px;
+}
