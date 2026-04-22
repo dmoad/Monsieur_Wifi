@@ -19,7 +19,11 @@
 // GLOBALS
 // ============================================================================
 
-let location_id = null;
+let location_id = (function () {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1];
+    return /^\d+$/.test(last) ? last : null;
+})();
 let currentUsagePeriod = 'today';
 let currentDeviceData = null;
 let analyticsChart = null;
@@ -1661,6 +1665,7 @@ const ldNetworks = (function () {
             vlanEnabled = !!(settingsRes && settingsRes.data && settingsRes.data.settings && settingsRes.data.settings.vlan_enabled);
             render();
             loaded = true;
+            restoreEditFromUrl();
         } catch (err) {
             console.error('ldNetworks.load', err);
             errorEl.style.display = '';
@@ -1808,6 +1813,7 @@ const ldNetworks = (function () {
         const body = document.getElementById('ld-network-drawer-body');
         if (body) body.scrollTop = 0;
 
+        setEditUrl(net.id);
         if (typeof MwDrawer !== 'undefined') MwDrawer.open('ld-network-drawer');
 
         // Portal designs are only needed for captive type — lazy fetch
@@ -2055,12 +2061,48 @@ const ldNetworks = (function () {
         }
     });
 
+    function setEditUrl(netId) {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('edit') === String(netId)) return;
+        url.searchParams.set('edit', String(netId));
+        history.replaceState(null, '', url);
+    }
+
+    function clearEditUrl() {
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has('edit')) return;
+        url.searchParams.delete('edit');
+        history.replaceState(null, '', url);
+    }
+
+    // Clear ?edit when the drawer closes by any path (X, Cancel, backdrop, Escape, save, delete)
+    (function watchDrawerClose() {
+        const drawer = document.getElementById('ld-network-drawer');
+        if (!drawer) return;
+        const mo = new MutationObserver(() => {
+            if (!drawer.classList.contains('is-open')) clearEditUrl();
+        });
+        mo.observe(drawer, { attributes: true, attributeFilter: ['class'] });
+    })();
+
+    // On networks data load, auto-open drawer if ?edit=<id> is in the URL
+    function restoreEditFromUrl() {
+        const editId = new URL(window.location.href).searchParams.get('edit');
+        if (!editId) return;
+        if (!data.some(n => String(n.id) === String(editId))) {
+            clearEditUrl();
+            return;
+        }
+        openForNetwork(editId);
+    }
+
     return {
         load,
         render,
         openForNetwork,
         save,
         isLoaded: () => loaded,
+        restoreEditFromUrl,
     };
 })();
 
