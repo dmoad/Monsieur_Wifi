@@ -8,11 +8,8 @@ return [
     // Header action
     'upload_new' => 'Télécharger un nouveau firmware',
 
-    // Summary stats
-    'total_versions' => 'Total des versions de firmware',
-    'enabled_firmware' => 'Firmware activés',
-    'disabled_firmware' => 'Firmware désactivés',
-    'total_size' => 'Taille totale',
+    // Bannière d'avertissement inline
+    'alert_sysupgrade' => 'Les mises à jour passent par <strong>OpenWrt sysupgrade</strong>. Les appareils redémarreront — les clients se déconnecteront brièvement.',
 
     // Table
     'table_card_title' => 'Toutes les versions de firmware',

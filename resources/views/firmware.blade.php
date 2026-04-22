@@ -81,44 +81,9 @@
 </div>
 
 <div class="content-body">
-    <!-- Statistics Cards -->
-    <div class="row">
-        <div class="col-xl-3 col-md-6 col-sm-6">
-            <div class="card text-center">
-                <div class="card-body">
-                    <span class="mw-stat-icon mw-stat-icon-primary mb-1"><i data-feather="hard-drive"></i></span>
-                    <h2 class="font-weight-bolder" id="total-firmware">0</h2>
-                    <p class="card-text">{{ __('firmware.total_versions') }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 col-sm-6">
-            <div class="card text-center">
-                <div class="card-body">
-                    <span class="mw-stat-icon mw-stat-icon-success mb-1"><i data-feather="check-circle"></i></span>
-                    <h2 class="font-weight-bolder" id="enabled-firmware">0</h2>
-                    <p class="card-text">{{ __('firmware.enabled_firmware') }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 col-sm-6">
-            <div class="card text-center">
-                <div class="card-body">
-                    <span class="mw-stat-icon mw-stat-icon-muted mb-1"><i data-feather="x-circle"></i></span>
-                    <h2 class="font-weight-bolder" id="disabled-firmware">0</h2>
-                    <p class="card-text">{{ __('firmware.disabled_firmware') }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 col-sm-6">
-            <div class="card text-center">
-                <div class="card-body">
-                    <span class="mw-stat-icon mw-stat-icon-info mb-1"><i data-feather="hard-drive"></i></span>
-                    <h2 class="font-weight-bolder" id="total-size">0 MB</h2>
-                    <p class="card-text">{{ __('firmware.total_size') }}</p>
-                </div>
-            </div>
-        </div>
+    <div class="alert alert-info py-2 px-3 mb-3" role="alert">
+        <i data-feather="info" class="mr-50" style="width:16px;height:16px;vertical-align:text-bottom;"></i>
+        {!! __('firmware.alert_sysupgrade') !!}
     </div>
 
     <!-- Firmware Table -->
@@ -379,7 +344,7 @@
         $.ajax({
             url: '/api/firmware', method: 'GET', headers: getAuthHeaders(),
             success: function(response) {
-                if (response.status === 'success') { firmwareData = response.data; updateFirmwareTable(); updateStats(); }
+                if (response.status === 'success') { firmwareData = response.data; updateFirmwareTable(); }
             },
             error: function() { showToast(T.load_error, 'error'); }
         });
@@ -400,13 +365,6 @@
         });
         table.draw();
         if (feather) feather.replace({ width: 14, height: 14 });
-    }
-
-    function updateStats() {
-        $('#total-firmware').text(firmwareData.length);
-        $('#enabled-firmware').text(firmwareData.filter(f => f.is_enabled).length);
-        $('#disabled-firmware').text(firmwareData.filter(f => !f.is_enabled).length);
-        $('#total-size').text(formatFileSize(firmwareData.reduce((s, f) => s + (f.file_size || 0), 0)));
     }
 
     function uploadFirmware() {

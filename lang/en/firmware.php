@@ -8,11 +8,8 @@ return [
     // Header action
     'upload_new' => 'Upload New Firmware',
 
-    // Summary stats
-    'total_versions' => 'Total Firmware Versions',
-    'enabled_firmware' => 'Enabled Firmware',
-    'disabled_firmware' => 'Disabled Firmware',
-    'total_size' => 'Total Size',
+    // Inline warning banner
+    'alert_sysupgrade' => 'Updates flash via <strong>OpenWrt sysupgrade</strong>. Devices will reboot — clients briefly disconnect.',
 
     // Table
     'table_card_title' => 'All Firmware Versions',
