@@ -11,7 +11,7 @@
                 <h4 class="ld-networks-title">{{ __('location_details.networks_card_title') }}</h4>
                 <div class="ld-networks-subtitle">{{ __('location_details.networks_card_subtitle') }}</div>
             </div>
-            <button type="button" id="ld-networks-add-btn" class="btn btn-primary btn-sm">
+            <button type="button" id="ld-networks-add-btn" class="btn btn-primary btn-sm" disabled>
                 <i data-feather="plus" class="mr-1"></i>{{ __('location_details.networks_add') }}
             </button>
         </div>

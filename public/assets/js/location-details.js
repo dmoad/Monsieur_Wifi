@@ -1596,6 +1596,8 @@ const ldNetworks = (function () {
             vlanEnabled = !!(settingsRes && settingsRes.data && settingsRes.data.settings && settingsRes.data.settings.vlan_enabled);
             render();
             loaded = true;
+            const addBtn = document.getElementById('ld-networks-add-btn');
+            if (addBtn) addBtn.disabled = false;
             restoreEditFromUrl();
         } catch (err) {
             console.error('ldNetworks.load', err);
