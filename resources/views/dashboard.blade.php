@@ -85,7 +85,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="mb-0" id="routers-online-count">-/-</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.routers_online') }}</p>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.routers_online') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -96,7 +96,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="mb-0" id="active-users-count">-</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.active_users') }}</p>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.active_users') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="mb-0" id="data-used-count">-</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.data_used') }}</p>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.data_used') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="media-body my-auto">
                                         <h4 class="mb-0" id="uptime-percentage">-%</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.uptime') }}</p>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.uptime') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -296,7 +296,7 @@
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="download-usage">185 GB</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.download') }}</p>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.download') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -307,7 +307,7 @@
                                     </div>
                                     <div>
                                         <h4 class="mb-0" id="upload-usage">60 GB</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-muted);">{{ __('dashboard.upload') }}</p>
+                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.upload') }}</p>
                                     </div>
                                 </div>
                             </div>

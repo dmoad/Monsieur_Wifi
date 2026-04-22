@@ -1156,3 +1156,21 @@ body.mw-drawer-locked {
 :root[data-theme="dark"] .breadcrumb-item + .breadcrumb-item::before {
     color: var(--mw-text-muted);
 }
+
+/* Uppercase stat labels on Dashboard / location-details stat cards —
+   muted-gray reads too dim against the dark card surface. */
+:root[data-theme="dark"] .stat-label {
+    color: var(--mw-text-secondary);
+}
+
+/* Bootstrap defaults body text to #212529 — invisible on the dark page
+   background. Route it through the design-system token. */
+:root[data-theme="dark"] body {
+    color: var(--mw-text-primary);
+}
+
+/* Bootstrap's .text-muted is #6c757d regardless of theme — reads as a
+   near-match for the dark card surface and fails AA. */
+:root[data-theme="dark"] .text-muted {
+    color: var(--mw-text-secondary) !important;
+}
