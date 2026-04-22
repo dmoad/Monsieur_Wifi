@@ -2066,15 +2066,17 @@ async function loadCurrentUsage(period) {
 function renderAnalyticsChart(dailyStats) {
     const categories = dailyStats.map(d => d.date);
     const series = [{ name: 'Users', data: dailyStats.map(d => d.unique_users || 0) }];
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
     const options = {
-        chart: { type: 'area', height: 300, toolbar: { show: false } },
+        theme: { mode: dark ? 'dark' : 'light' },
+        chart: { type: 'area', height: 300, toolbar: { show: false }, background: 'transparent' },
         series, xaxis: { categories },
         stroke: { curve: 'smooth', width: 2 },
         fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0 } },
         colors: ['#667eea'],
         dataLabels: { enabled: false },
-        grid: { borderColor: '#f1f1f1' },
-        tooltip: { theme: 'light' },
+        grid: { borderColor: dark ? 'var(--mw-border)' : '#f1f1f1' },
+        tooltip: { theme: dark ? 'dark' : 'light' },
     };
     if (analyticsChart) {
         analyticsChart.updateOptions({ series, xaxis: { categories } });
@@ -2083,6 +2085,16 @@ function renderAnalyticsChart(dailyStats) {
         analyticsChart.render();
     }
 }
+
+new MutationObserver(function () {
+    if (!analyticsChart) return;
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    analyticsChart.updateOptions({
+        theme: { mode: dark ? 'dark' : 'light' },
+        tooltip: { theme: dark ? 'dark' : 'light' },
+        grid: { borderColor: dark ? 'var(--mw-border)' : '#f1f1f1' },
+    });
+}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 // ============================================================================
 // ONLINE USERS

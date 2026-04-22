@@ -248,8 +248,10 @@ function updateDataUsageChart(data) {
     if (dataUsageChart) { try { dataUsageChart.destroy(); } catch(e) {} dataUsageChart = null; }
     container.innerHTML = '';
 
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
     dataUsageChart = new ApexCharts(container, {
-        chart: { height: 270, type: 'area', toolbar: { show: false } },
+        theme: { mode: dark ? 'dark' : 'light' },
+        chart: { height: 270, type: 'area', toolbar: { show: false }, background: 'transparent' },
         colors: ['var(--mw-primary)', '#EA8B09'],
         dataLabels: { enabled: false },
         stroke: { curve: 'smooth', width: 2 },
@@ -259,10 +261,19 @@ function updateDataUsageChart(data) {
         fill: { type: 'gradient', gradient: { opacityFrom: 0.5, opacityTo: 0.1 } },
         grid: { borderColor: 'var(--mw-border)', strokeDashArray: 5 },
         legend: { position: 'top', horizontalAlign: 'left' },
-        tooltip: { y: { formatter: function(v) { return v.toFixed(2) + ' GB'; } } }
+        tooltip: { theme: dark ? 'dark' : 'light', y: { formatter: function(v) { return v.toFixed(2) + ' GB'; } } }
     });
     dataUsageChart.render();
 }
+
+new MutationObserver(function () {
+    if (!dataUsageChart) return;
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    dataUsageChart.updateOptions({
+        theme: { mode: dark ? 'dark' : 'light' },
+        tooltip: { theme: dark ? 'dark' : 'light' }
+    });
+}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 // ── Loading / error states ─────────────────────────────────────────────────
 
