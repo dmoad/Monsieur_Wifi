@@ -38,6 +38,7 @@ let qosBwZonePrimary = null;
 let lastLoadedLocalQosBw = null;
 
 const API = window.APP_CONFIG_V5?.apiBase || (window.APP_NETWORK_CONFIG?.apiBase) || '/api';
+const i18n = (window.APP_I18N && window.APP_I18N.location_details) || {};
 
 // ============================================================================
 // UTILITY HELPERS
@@ -781,38 +782,38 @@ async function saveWanSettings() {
         const dns1    = $('#wan-primary-dns').val().trim();
         const dns2    = $('#wan-secondary-dns').val().trim();
         if (!ip || !isValidIPv4(ip)) {
-            toastr.warning('A valid IP address is required for Static IP mode.');
+            toastr.warning(i18n.wan_ip_required);
             $('#wan-ip-address').focus();
             return;
         }
         if (!netmask || !isValidIPv4(netmask)) {
-            toastr.warning('A valid netmask is required for Static IP mode.');
+            toastr.warning(i18n.wan_netmask_required);
             $('#wan-netmask').focus();
             return;
         }
         if (!gateway || !isValidIPv4(gateway)) {
-            toastr.warning('A valid gateway address is required for Static IP mode.');
+            toastr.warning(i18n.wan_gateway_required);
             $('#wan-gateway').focus();
             return;
         }
         if (dns1 && !isValidIPv4(dns1)) {
-            toastr.warning('Primary DNS must be a valid IPv4 address.');
+            toastr.warning(i18n.wan_primary_dns_invalid);
             $('#wan-primary-dns').focus();
             return;
         }
         if (dns2 && !isValidIPv4(dns2)) {
-            toastr.warning('Secondary DNS must be a valid IPv4 address.');
+            toastr.warning(i18n.wan_secondary_dns_invalid);
             $('#wan-secondary-dns').focus();
             return;
         }
     } else if (connType === 'PPPOE') {
         if (!$('#wan-pppoe-username-modal').val().trim()) {
-            toastr.warning('A username is required for PPPoE mode.');
+            toastr.warning(i18n.wan_pppoe_username_required);
             $('#wan-pppoe-username-modal').focus();
             return;
         }
         if (!$('#wan-pppoe-password').val()) {
-            toastr.warning('A password is required for PPPoE mode.');
+            toastr.warning(i18n.wan_pppoe_password_required);
             $('#wan-pppoe-password').focus();
             return;
         }
@@ -856,7 +857,7 @@ async function saveWanSettings() {
         }
 
         await apiFetch(`${API}/locations/${location_id}/settings`, { method: 'PUT', body: JSON.stringify(data) });
-        toastr.success('WAN settings saved.');
+        toastr.success(i18n.wan_settings_saved);
         $('#wan-settings-modal').modal('hide');
         loadLocationSettings();
     } catch (err) {

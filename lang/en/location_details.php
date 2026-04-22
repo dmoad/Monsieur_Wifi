@@ -240,6 +240,16 @@ return [
     'modal_save_changes' => 'Save Changes',
     'modal_wan_static_ip' => 'Static IP',
 
+    // WAN save — toast messages
+    'wan_ip_required' => 'A valid IP address is required for Static IP mode.',
+    'wan_netmask_required' => 'A valid netmask is required for Static IP mode.',
+    'wan_gateway_required' => 'A valid gateway address is required for Static IP mode.',
+    'wan_primary_dns_invalid' => 'Primary DNS must be a valid IPv4 address.',
+    'wan_secondary_dns_invalid' => 'Secondary DNS must be a valid IPv4 address.',
+    'wan_pppoe_username_required' => 'A username is required for PPPoE mode.',
+    'wan_pppoe_password_required' => 'A password is required for PPPoE mode.',
+    'wan_settings_saved' => 'WAN settings saved.',
+
     // Restart modal
     'modal_restart_title' => 'Restart Device',
     'modal_restart_tab_now' => 'Reboot Now',

@@ -240,6 +240,16 @@ return [
     'modal_save_changes' => 'Enregistrer les modifications',
     'modal_wan_static_ip' => 'IP statique',
 
+    // Enregistrement WAN — messages toast
+    'wan_ip_required' => 'Une adresse IP valide est requise en mode IP statique.',
+    'wan_netmask_required' => 'Un masque de sous-réseau valide est requis en mode IP statique.',
+    'wan_gateway_required' => 'Une adresse de passerelle valide est requise en mode IP statique.',
+    'wan_primary_dns_invalid' => 'Le DNS primaire doit être une adresse IPv4 valide.',
+    'wan_secondary_dns_invalid' => 'Le DNS secondaire doit être une adresse IPv4 valide.',
+    'wan_pppoe_username_required' => 'Un nom d\'utilisateur est requis en mode PPPoE.',
+    'wan_pppoe_password_required' => 'Un mot de passe est requis en mode PPPoE.',
+    'wan_settings_saved' => 'Paramètres WAN enregistrés.',
+
     // Restart modal
     'modal_restart_title' => 'Redémarrer l\'appareil',
     'modal_restart_tab_now' => 'Redémarrer maintenant',
