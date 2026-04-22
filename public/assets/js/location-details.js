@@ -104,6 +104,84 @@ function buildNetworksUrl(locId) {
 // (planned JS split = T4.8 in the Tab 4 track).
 // ============================================================================
 
+const MwConfirm = (function () {
+    let backdrop = null;
+    let dialog = null;
+    let pending = null;
+    let previousFocus = null;
+
+    function ensureEls() {
+        if (backdrop && dialog) return;
+        backdrop = document.createElement('div');
+        backdrop.className = 'mw-confirm-backdrop';
+        document.body.appendChild(backdrop);
+
+        dialog = document.createElement('div');
+        dialog.className = 'mw-confirm';
+        dialog.setAttribute('role', 'alertdialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.innerHTML = `
+            <div class="mw-confirm-header" data-mw-confirm-title></div>
+            <div class="mw-confirm-body" data-mw-confirm-message></div>
+            <div class="mw-confirm-footer">
+                <button type="button" class="btn btn-outline-secondary" data-mw-confirm-cancel></button>
+                <button type="button" class="btn btn-primary" data-mw-confirm-ok></button>
+            </div>`;
+        document.body.appendChild(dialog);
+
+        backdrop.addEventListener('click', () => resolve(false));
+        dialog.querySelector('[data-mw-confirm-cancel]').addEventListener('click', () => resolve(false));
+        dialog.querySelector('[data-mw-confirm-ok]').addEventListener('click', () => resolve(true));
+        document.addEventListener('keydown', (e) => {
+            if (!pending) return;
+            if (e.key === 'Escape') { e.preventDefault(); resolve(false); }
+            if (e.key === 'Enter')  { e.preventDefault(); resolve(true); }
+        });
+    }
+
+    function resolve(result) {
+        if (!pending) return;
+        backdrop.classList.remove('is-open');
+        dialog.classList.remove('is-open');
+        document.body.classList.remove('mw-drawer-locked');
+        const p = pending;
+        pending = null;
+        if (previousFocus && typeof previousFocus.focus === 'function') {
+            previousFocus.focus();
+            previousFocus = null;
+        }
+        p.resolve(result);
+    }
+
+    function open(opts = {}) {
+        ensureEls();
+        if (pending) pending.resolve(false); // close any outstanding prompt
+        const {
+            title = 'Confirm',
+            message = '',
+            confirmText = 'Confirm',
+            cancelText = 'Cancel',
+            destructive = false,
+        } = opts;
+        dialog.querySelector('[data-mw-confirm-title]').textContent = title;
+        dialog.querySelector('[data-mw-confirm-message]').textContent = message;
+        const cancelBtn = dialog.querySelector('[data-mw-confirm-cancel]');
+        const okBtn     = dialog.querySelector('[data-mw-confirm-ok]');
+        cancelBtn.textContent = cancelText;
+        okBtn.textContent = confirmText;
+        okBtn.classList.toggle('btn-danger', !!destructive);
+        okBtn.classList.toggle('btn-primary', !destructive);
+        previousFocus = document.activeElement;
+        backdrop.classList.add('is-open');
+        dialog.classList.add('is-open');
+        document.body.classList.add('mw-drawer-locked');
+        okBtn.focus();
+        return new Promise((resolveFn) => { pending = { resolve: resolveFn }; });
+    }
+
+    return { open };
+})();
+
 const MwDrawer = (function () {
     const backdropId = '__mw_drawer_backdrop';
     let previousFocus = null;
@@ -1597,7 +1675,14 @@ const ldNetworks = (function () {
         const net = data[idx];
         const i18n = t();
         const msg = (i18n.networks_delete_confirm || 'Delete "{ssid}"? This cannot be undone.').replace('{ssid}', net.ssid || '');
-        if (!window.confirm(msg)) return;
+        const ok = await MwConfirm.open({
+            title: i18n.networks_delete_title || 'Delete WiFi network?',
+            message: msg,
+            confirmText: i18n.networks_drawer_delete || 'Delete',
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+            destructive: true,
+        });
+        if (!ok) return;
         const btn = document.getElementById('ld-network-drawer-delete');
         if (btn) btn.disabled = true;
         try {

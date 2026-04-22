@@ -77,6 +77,7 @@ return [
     'networks_drawer_placeholder' => 'Les champs du formulaire seront ajoutés à l\'étape suivante.',
     'networks_drawer_save' => 'Enregistrer',
     'networks_drawer_delete' => 'Supprimer',
+    'networks_delete_title' => 'Supprimer le réseau WiFi ?',
     'networks_delete_confirm' => 'Supprimer « {ssid} » ? Le routeur sera reconfiguré et cette action est irréversible.',
     'networks_delete_success' => 'Réseau supprimé.',
     'networks_section_identity' => 'Identité',

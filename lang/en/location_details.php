@@ -77,6 +77,7 @@ return [
     'networks_drawer_placeholder' => 'Form fields will be added in the next step.',
     'networks_drawer_save' => 'Save',
     'networks_drawer_delete' => 'Delete',
+    'networks_delete_title' => 'Delete WiFi network?',
     'networks_delete_confirm' => 'Delete "{ssid}"? This will reconfigure the router and cannot be undone.',
     'networks_delete_success' => 'Network deleted.',
     'networks_section_identity' => 'Identity',

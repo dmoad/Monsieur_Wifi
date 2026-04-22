@@ -505,6 +505,7 @@
     };
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.location_details = @json(__('location_details'));
+    window.APP_I18N.common = @json(__('common'));
 </script>
 <script src="/assets/js/location-details.js?v={{ filemtime(public_path('assets/js/location-details.js')) }}"></script>
 @endpush
