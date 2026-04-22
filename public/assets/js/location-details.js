@@ -1142,6 +1142,14 @@ const ldNetworks = (function () {
         }
     }
 
+    function applyTypeVisibility(type) {
+        const sections = document.querySelectorAll('#ld-network-drawer [data-show-for-type]');
+        sections.forEach(el => {
+            const allowed = el.getAttribute('data-show-for-type').split(',').map(s => s.trim());
+            el.style.display = allowed.includes(type) ? '' : 'none';
+        });
+    }
+
     function openForNetwork(netId) {
         const net = data.find(n => String(n.id) === String(netId));
         if (!net) return;
@@ -1151,12 +1159,19 @@ const ldNetworks = (function () {
         drawer.dataset.networkId = net.id;
         document.getElementById('ld-network-drawer-title').textContent = net.ssid || '';
 
-        document.getElementById('ld-net-type').value = net.type || 'password';
+        const type = net.type || 'password';
+        document.getElementById('ld-net-type').value = type;
         document.getElementById('ld-net-ssid').value = net.ssid || '';
         document.getElementById('ld-net-visible').value = net.visible === false ? '0' : '1';
         document.getElementById('ld-net-radio').value = net.radio || 'all';
         document.getElementById('ld-net-enabled').checked = net.enabled !== false;
         document.getElementById('ld-net-qos').checked = net.qos_policy === 'full';
+
+        document.getElementById('ld-net-password').value = net.password || '';
+        document.getElementById('ld-net-security').value = net.security || 'wpa2-psk';
+        document.getElementById('ld-net-cipher').value = net.cipher_suites || 'CCMP';
+
+        applyTypeVisibility(type);
 
         document.getElementById('ld-network-drawer-save').disabled = false;
 
@@ -1181,14 +1196,32 @@ const ldNetworks = (function () {
             return;
         }
 
+        const type = document.getElementById('ld-net-type').value;
         const payload = {
-            type: document.getElementById('ld-net-type').value,
+            type,
             ssid,
             visible: document.getElementById('ld-net-visible').value === '1',
             enabled: document.getElementById('ld-net-enabled').checked,
             radio: document.getElementById('ld-net-radio').value,
             qos_policy: document.getElementById('ld-net-qos').checked ? 'full' : 'scavenger',
         };
+
+        if (type === 'password') {
+            const pwd = document.getElementById('ld-net-password').value;
+            if (!pwd) {
+                if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_password_required || 'WiFi password is required.');
+                document.getElementById('ld-net-password').focus();
+                return;
+            }
+            if (pwd.length < 8) {
+                if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_password_too_short || 'WiFi password must be at least 8 characters.');
+                document.getElementById('ld-net-password').focus();
+                return;
+            }
+            payload.password = pwd;
+            payload.security = document.getElementById('ld-net-security').value;
+            payload.cipher_suites = document.getElementById('ld-net-cipher').value;
+        }
 
         const btn = document.getElementById('ld-network-drawer-save');
         btn.disabled = true;
@@ -1222,9 +1255,28 @@ const ldNetworks = (function () {
             save();
             return;
         }
+        const pwdToggle = e.target.closest('#ld-net-password-toggle');
+        if (pwdToggle) {
+            e.preventDefault();
+            const input = document.getElementById('ld-net-password');
+            const icon = pwdToggle.querySelector('[data-feather]');
+            const isText = input.type === 'text';
+            input.type = isText ? 'password' : 'text';
+            if (icon) {
+                icon.setAttribute('data-feather', isText ? 'eye' : 'eye-off');
+                if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
+            }
+            return;
+        }
         const row = e.target.closest('.ld-network-row');
         if (row && row.dataset.networkId) {
             openForNetwork(row.dataset.networkId);
+        }
+    });
+
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.id === 'ld-net-type') {
+            applyTypeVisibility(e.target.value);
         }
     });
 

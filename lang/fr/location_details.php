@@ -90,6 +90,10 @@ return [
     'networks_ssid_required' => 'Le SSID est requis.',
     'networks_ssid_too_long' => 'Le SSID ne doit pas dépasser 32 caractères.',
     'networks_save_success' => 'Réseau enregistré.',
+    'networks_section_security' => 'Sécurité',
+    'networks_password_toggle' => 'Afficher/masquer le mot de passe',
+    'networks_password_required' => 'Le mot de passe WiFi est requis.',
+    'networks_password_too_short' => 'Le mot de passe WiFi doit contenir au moins 8 caractères.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Identité et adresse de l\'emplacement',

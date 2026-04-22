@@ -54,7 +54,7 @@
                             <option value="captive_portal">{{ __('location_details.networks_type_captive_portal') }}</option>
                             <option value="open">{{ __('location_details.networks_type_open') }}</option>
                         </select>
-                        <small class="form-text text-warning">{{ __('location_details.networks_type_warning') }}</small>
+                        <small class="form-text text-warning" data-show-for-type="captive_portal,open">{{ __('location_details.networks_type_warning') }}</small>
                     </div>
 
                     <div class="form-group">
@@ -92,6 +92,41 @@
                             <label class="custom-control-label" for="ld-net-qos">{{ __('location_details.networks_field_qos_full') }}</label>
                         </div>
                         <small class="form-text text-muted">{{ __('location_details.networks_field_qos_hint') }}</small>
+                    </div>
+                </div>
+
+                <div class="ld-drawer-section" data-show-for-type="password">
+                    <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_security') }}</h6>
+
+                    <div class="form-group">
+                        <label for="ld-net-password">{{ __('location_networks.wifi_password') }}</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="ld-net-password" placeholder="{{ __('location_networks.wifi_password_placeholder') }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="ld-net-password-toggle" aria-label="{{ __('location_details.networks_password_toggle') }}">
+                                    <i data-feather="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ld-net-security">{{ __('location_networks.security_protocol') }}</label>
+                        <select class="form-control" id="ld-net-security">
+                            <option value="wpa2-psk">{{ __('location_networks.security_wpa2_psk_rec') }}</option>
+                            <option value="wpa-wpa2-psk">{{ __('location_networks.security_wpa_wpa2_mixed') }}</option>
+                            <option value="wpa3-psk">{{ __('location_networks.security_wpa3_psk_secure') }}</option>
+                            <option value="wep">{{ __('location_networks.security_wep_legacy') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ld-net-cipher">{{ __('location_networks.cipher_suites') }}</label>
+                        <select class="form-control" id="ld-net-cipher">
+                            <option value="CCMP">CCMP</option>
+                            <option value="TKIP">TKIP</option>
+                            <option value="TKIP+CCMP">TKIP+CCMP</option>
+                        </select>
                     </div>
                 </div>
 

@@ -90,6 +90,10 @@ return [
     'networks_ssid_required' => 'SSID is required.',
     'networks_ssid_too_long' => 'SSID must be 32 characters or fewer.',
     'networks_save_success' => 'Network saved.',
+    'networks_section_security' => 'Security',
+    'networks_password_toggle' => 'Show/hide password',
+    'networks_password_required' => 'WiFi password is required.',
+    'networks_password_too_short' => 'WiFi password must be at least 8 characters.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Location Identity & Address',
