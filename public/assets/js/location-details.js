@@ -1,16 +1,14 @@
 /**
- * location-details-v5.js
+ * location-details.js
  *
- * Main page script for Location Details v5.
- * Network settings have been moved to a dedicated page (/locations/{id}/networks).
+ * Main page script for the Location Details page (4 tabs).
  *
  * Responsibilities:
- *  - Overview stats (device info, usage, map)
- *  - Analytics chart + live users
- *  - Networks shortcut card (summary badges, link to networks page)
- *  - Location info form
- *  - Router / WAN / Radio / Web-filter settings
- *  - MAC address edit, Firmware update, Channel scan, Device restart
+ *  - Overview tab: device info, usage, map, analytics chart, live users
+ *  - Location Details tab: location info form, clone
+ *  - Router Settings tab: WAN / Radio / Web filter / QoS / VLAN, channel scan, firmware, device restart, reboot schedule, MAC edit
+ *  - WiFi Networks tab: SSID list + right-drawer editor (ldNetworks IIFE)
+ *  - MwDrawer + MwConfirm UI primitives (extractable to mw-primitives.js)
  */
 
 'use strict';
