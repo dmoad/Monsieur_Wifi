@@ -1227,3 +1227,9 @@ body.mw-drawer-locked {
     background: var(--mw-primary) !important;
     border-color: var(--mw-primary) !important;
 }
+
+/* Un-tinted action buttons inside tables (typically the kebab dropdown)
+   inherit Bootstrap's default near-black text — invisible on dark rows. */
+:root[data-theme="dark"] .table .btn:not([class*=btn-outline-]):not(.btn-primary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info) {
+    color: var(--mw-text-secondary);
+}
