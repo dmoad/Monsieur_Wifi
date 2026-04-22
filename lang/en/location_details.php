@@ -78,7 +78,7 @@ return [
     'networks_drawer_save' => 'Save',
     'networks_section_identity' => 'Identity',
     'networks_field_type' => 'Network type',
-    'networks_type_warning' => 'Type-specific settings (password, captive portal) are still edited on the legacy WiFi page. Switching type here without updating those settings may leave the network in an invalid state.',
+    'networks_type_warning' => 'Advanced settings (IP, DHCP, VLAN, MAC filter, working hours) are still edited on the legacy WiFi page.',
     'networks_field_ssid' => 'SSID',
     'networks_field_visibility' => 'Visibility',
     'networks_visibility_broadcast' => 'Broadcast',
@@ -94,6 +94,9 @@ return [
     'networks_password_toggle' => 'Show/hide password',
     'networks_password_required' => 'WiFi password is required.',
     'networks_password_too_short' => 'WiFi password must be at least 8 characters.',
+    'networks_email_otp' => 'Require email verification code (OTP)',
+    'networks_email_otp_hint' => 'When disabled, guests enter their email without receiving a verification code.',
+    'networks_portal_password_required' => 'Shared portal password is required when the "password" login method is active.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Location Identity & Address',

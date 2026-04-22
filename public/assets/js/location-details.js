@@ -1021,6 +1021,57 @@ function escapeHtml(str) {
 const ldNetworks = (function () {
     let loaded = false;
     let data = [];
+    let captiveDesigns = null; // null = not fetched; array once fetched
+
+    async function ensureCaptiveDesigns() {
+        if (captiveDesigns !== null) return captiveDesigns;
+        try {
+            const res = await apiFetch('/api/captive-portal-designs', { method: 'POST' });
+            captiveDesigns = (res && res.data) || [];
+        } catch (err) {
+            console.warn('ldNetworks: failed to load captive portal designs', err);
+            captiveDesigns = [];
+        }
+        return captiveDesigns;
+    }
+
+    function populateCaptiveDesignSelect(selectedId) {
+        const select = document.getElementById('ld-net-portal-design');
+        if (!select || !Array.isArray(captiveDesigns)) return;
+        // Keep the first "Default Design" option, replace the rest
+        const defaultOpt = select.querySelector('option[value=""]');
+        select.innerHTML = '';
+        if (defaultOpt) select.appendChild(defaultOpt);
+        captiveDesigns.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = d.name || '';
+            if (String(d.id) === String(selectedId)) opt.selected = true;
+            select.appendChild(opt);
+        });
+        if (!selectedId) select.value = '';
+    }
+
+    function getActiveAuthMethods() {
+        return [...document.querySelectorAll('.ld-net-auth-method:checked')].map(cb => cb.value);
+    }
+
+    function setActiveAuthMethods(methods) {
+        const set = new Set((methods || []).map(String));
+        document.querySelectorAll('.ld-net-auth-method').forEach(cb => {
+            cb.checked = set.has(cb.value);
+        });
+    }
+
+    function applyAuthMethodVisibility() {
+        const methods = getActiveAuthMethods();
+        const pwdGroup = document.getElementById('ld-net-portal-pwd-group');
+        const otpGroup = document.getElementById('ld-net-email-otp-group');
+        const socGroup = document.getElementById('ld-net-social-group');
+        if (pwdGroup) pwdGroup.style.display = methods.includes('password') ? '' : 'none';
+        if (otpGroup) otpGroup.style.display = methods.includes('email') ? '' : 'none';
+        if (socGroup) socGroup.style.display = methods.includes('social') ? '' : 'none';
+    }
 
     function t() {
         return (window.APP_I18N && window.APP_I18N.location_details) || {};
@@ -1150,7 +1201,7 @@ const ldNetworks = (function () {
         });
     }
 
-    function openForNetwork(netId) {
+    async function openForNetwork(netId) {
         const net = data.find(n => String(n.id) === String(netId));
         if (!net) return;
         const drawer = document.getElementById('ld-network-drawer');
@@ -1171,11 +1222,32 @@ const ldNetworks = (function () {
         document.getElementById('ld-net-security').value = net.security || 'wpa2-psk';
         document.getElementById('ld-net-cipher').value = net.cipher_suites || 'CCMP';
 
+        // Captive portal fields
+        const authMethods = (net.auth_methods && net.auth_methods.length)
+            ? net.auth_methods
+            : [net.auth_method || 'click-through'];
+        setActiveAuthMethods(authMethods);
+        document.getElementById('ld-net-portal-password').value = net.portal_password || '';
+        document.getElementById('ld-net-email-otp').checked = net.email_require_otp !== false;
+        document.getElementById('ld-net-social').value = net.social_auth_method || 'facebook';
+        document.getElementById('ld-net-redirect-url').value = net.redirect_url || '';
+        document.getElementById('ld-net-session-timeout').value = String(net.session_timeout || 60);
+        document.getElementById('ld-net-idle-timeout').value = String(net.idle_timeout || 15);
+        document.getElementById('ld-net-download-limit').value = net.download_limit || '';
+        document.getElementById('ld-net-upload-limit').value = net.upload_limit || '';
+        applyAuthMethodVisibility();
+
         applyTypeVisibility(type);
 
         document.getElementById('ld-network-drawer-save').disabled = false;
 
         if (typeof MwDrawer !== 'undefined') MwDrawer.open('ld-network-drawer');
+
+        // Portal designs are only needed for captive type — lazy fetch
+        if (type === 'captive_portal') {
+            await ensureCaptiveDesigns();
+            populateCaptiveDesignSelect(net.portal_design_id);
+        }
     }
 
     async function save() {
@@ -1221,6 +1293,26 @@ const ldNetworks = (function () {
             payload.password = pwd;
             payload.security = document.getElementById('ld-net-security').value;
             payload.cipher_suites = document.getElementById('ld-net-cipher').value;
+        } else if (type === 'captive_portal') {
+            const methods = getActiveAuthMethods();
+            if (methods.includes('password') && !document.getElementById('ld-net-portal-password').value) {
+                if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_portal_password_required || 'Shared portal password is required when the "password" login method is active.');
+                document.getElementById('ld-net-portal-password').focus();
+                return;
+            }
+            payload.auth_methods = methods;
+            payload.auth_method = methods[0] || 'click-through';
+            payload.portal_password = document.getElementById('ld-net-portal-password').value || null;
+            payload.email_require_otp = methods.includes('email')
+                ? document.getElementById('ld-net-email-otp').checked
+                : null;
+            payload.social_auth_method = document.getElementById('ld-net-social').value || null;
+            payload.session_timeout = parseInt(document.getElementById('ld-net-session-timeout').value, 10) || 60;
+            payload.idle_timeout = parseInt(document.getElementById('ld-net-idle-timeout').value, 10) || 15;
+            payload.redirect_url = document.getElementById('ld-net-redirect-url').value.trim() || null;
+            payload.portal_design_id = document.getElementById('ld-net-portal-design').value || null;
+            payload.download_limit = parseInt(document.getElementById('ld-net-download-limit').value, 10) || null;
+            payload.upload_limit = parseInt(document.getElementById('ld-net-upload-limit').value, 10) || null;
         }
 
         const btn = document.getElementById('ld-network-drawer-save');
@@ -1255,10 +1347,11 @@ const ldNetworks = (function () {
             save();
             return;
         }
-        const pwdToggle = e.target.closest('#ld-net-password-toggle');
+        const pwdToggle = e.target.closest('#ld-net-password-toggle, #ld-net-portal-password-toggle');
         if (pwdToggle) {
             e.preventDefault();
-            const input = document.getElementById('ld-net-password');
+            const input = pwdToggle.closest('.input-group')?.querySelector('input');
+            if (!input) return;
             const icon = pwdToggle.querySelector('[data-feather]');
             const isText = input.type === 'text';
             input.type = isText ? 'password' : 'text';
@@ -1277,6 +1370,13 @@ const ldNetworks = (function () {
     document.addEventListener('change', function (e) {
         if (e.target && e.target.id === 'ld-net-type') {
             applyTypeVisibility(e.target.value);
+            // If switching to captive and designs aren't loaded, fetch now
+            if (e.target.value === 'captive_portal') {
+                ensureCaptiveDesigns().then(() => populateCaptiveDesignSelect(null));
+            }
+        }
+        if (e.target && e.target.classList.contains('ld-net-auth-method')) {
+            applyAuthMethodVisibility();
         }
     });
 

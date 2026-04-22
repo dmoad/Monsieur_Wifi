@@ -78,7 +78,7 @@ return [
     'networks_drawer_save' => 'Enregistrer',
     'networks_section_identity' => 'Identité',
     'networks_field_type' => 'Type de réseau',
-    'networks_type_warning' => 'Les paramètres spécifiques au type (mot de passe, portail captif) sont encore édités sur l\'ancienne page WiFi. Changer le type ici sans mettre à jour ces paramètres peut laisser le réseau dans un état invalide.',
+    'networks_type_warning' => 'Les paramètres avancés (IP, DHCP, VLAN, filtre MAC, heures d\'ouverture) sont encore édités sur l\'ancienne page WiFi.',
     'networks_field_ssid' => 'SSID',
     'networks_field_visibility' => 'Visibilité',
     'networks_visibility_broadcast' => 'Diffusé',
@@ -94,6 +94,9 @@ return [
     'networks_password_toggle' => 'Afficher/masquer le mot de passe',
     'networks_password_required' => 'Le mot de passe WiFi est requis.',
     'networks_password_too_short' => 'Le mot de passe WiFi doit contenir au moins 8 caractères.',
+    'networks_email_otp' => 'Exiger un code de vérification par e-mail (OTP)',
+    'networks_email_otp_hint' => 'Désactivé, les invités saisissent leur e-mail sans recevoir de code de vérification.',
+    'networks_portal_password_required' => 'Le mot de passe partagé du portail est requis lorsque la méthode de connexion « mot de passe » est active.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Identité et adresse de l\'emplacement',

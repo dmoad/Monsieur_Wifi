@@ -54,7 +54,7 @@
                             <option value="captive_portal">{{ __('location_details.networks_type_captive_portal') }}</option>
                             <option value="open">{{ __('location_details.networks_type_open') }}</option>
                         </select>
-                        <small class="form-text text-warning" data-show-for-type="captive_portal,open">{{ __('location_details.networks_type_warning') }}</small>
+                        <small class="form-text text-warning" data-show-for-type="captive_portal">{{ __('location_details.networks_type_warning') }}</small>
                     </div>
 
                     <div class="form-group">
@@ -92,6 +92,128 @@
                             <label class="custom-control-label" for="ld-net-qos">{{ __('location_details.networks_field_qos_full') }}</label>
                         </div>
                         <small class="form-text text-muted">{{ __('location_details.networks_field_qos_hint') }}</small>
+                    </div>
+                </div>
+
+                <div class="ld-drawer-section" data-show-for-type="captive_portal">
+                    <h6 class="ld-drawer-section-title">{{ __('location_networks.panel_captive_portal_config') }}</h6>
+
+                    <div class="form-group">
+                        <label>{{ __('location_networks.login_methods') }}</label>
+                        <div class="ld-net-auth-methods">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input ld-net-auth-method" id="ld-net-auth-click-through" value="click-through">
+                                <label class="custom-control-label" for="ld-net-auth-click-through">{{ __('location_networks.method_click_through') }}</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input ld-net-auth-method" id="ld-net-auth-password" value="password">
+                                <label class="custom-control-label" for="ld-net-auth-password">{{ __('location_networks.method_password') }}</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input ld-net-auth-method" id="ld-net-auth-sms" value="sms">
+                                <label class="custom-control-label" for="ld-net-auth-sms">{{ __('location_networks.method_sms') }}</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input ld-net-auth-method" id="ld-net-auth-email" value="email">
+                                <label class="custom-control-label" for="ld-net-auth-email">{{ __('location_networks.method_email') }}</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input ld-net-auth-method" id="ld-net-auth-social" value="social">
+                                <label class="custom-control-label" for="ld-net-auth-social">{{ __('location_networks.method_social') }}</label>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">{{ __('location_networks.multiple_methods_hint') }}</small>
+                    </div>
+
+                    <div class="form-group" id="ld-net-portal-pwd-group" style="display:none;">
+                        <label for="ld-net-portal-password">{{ __('location_networks.shared_password') }}</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="ld-net-portal-password">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="ld-net-portal-password-toggle" aria-label="{{ __('location_details.networks_password_toggle') }}">
+                                    <i data-feather="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="ld-net-email-otp-group" style="display:none;">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="ld-net-email-otp">
+                            <label class="custom-control-label" for="ld-net-email-otp">{{ __('location_details.networks_email_otp') }}</label>
+                        </div>
+                        <small class="form-text text-muted">{{ __('location_details.networks_email_otp_hint') }}</small>
+                    </div>
+
+                    <div class="form-group" id="ld-net-social-group" style="display:none;">
+                        <label for="ld-net-social">{{ __('location_networks.social_provider') }}</label>
+                        <select class="form-control" id="ld-net-social">
+                            <option value="facebook">Facebook</option>
+                            <option value="google">Google</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ld-net-portal-design">{{ __('location_networks.portal_design') }}</label>
+                        <select class="form-control" id="ld-net-portal-design">
+                            <option value="">{{ __('location_networks.default_design') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ld-net-redirect-url">{{ __('location_networks.redirect_url') }} <small class="text-muted font-weight-normal">{{ __('common.optional') }}</small></label>
+                        <input type="url" class="form-control" id="ld-net-redirect-url" placeholder="{{ __('location_networks.redirect_url_placeholder') }}">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ld-net-session-timeout">{{ __('location_networks.session_timeout') }}</label>
+                                <select class="form-control" id="ld-net-session-timeout">
+                                    <option value="60">{{ __('location_networks.dur_1_hour') }}</option>
+                                    <option value="120">{{ __('location_networks.dur_2_hours') }}</option>
+                                    <option value="180">{{ __('location_networks.dur_3_hours') }}</option>
+                                    <option value="240">{{ __('location_networks.dur_4_hours') }}</option>
+                                    <option value="300">{{ __('location_networks.dur_5_hours') }}</option>
+                                    <option value="360">{{ __('location_networks.dur_6_hours') }}</option>
+                                    <option value="720">{{ __('location_networks.dur_12_hours') }}</option>
+                                    <option value="1440">{{ __('location_networks.dur_1_day') }}</option>
+                                    <option value="10080">{{ __('location_networks.dur_1_week') }}</option>
+                                    <option value="43200">{{ __('location_networks.dur_3_months') }}</option>
+                                    <option value="172800">{{ __('location_networks.dur_1_year') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ld-net-idle-timeout">{{ __('location_networks.idle_timeout') }}</label>
+                                <select class="form-control" id="ld-net-idle-timeout">
+                                    <option value="15">{{ __('location_networks.dur_15_min') }}</option>
+                                    <option value="30">{{ __('location_networks.dur_30_min') }}</option>
+                                    <option value="45">{{ __('location_networks.dur_45_min') }}</option>
+                                    <option value="60">{{ __('location_networks.dur_1_hour') }}</option>
+                                    <option value="120">{{ __('location_networks.dur_2_hours') }}</option>
+                                    <option value="240">{{ __('location_networks.dur_4_hours') }}</option>
+                                    <option value="720">{{ __('location_networks.dur_12_hours') }}</option>
+                                    <option value="1440">{{ __('location_networks.dur_1_day') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ld-net-download-limit">{{ __('location_networks.download_mbps') }}</label>
+                                <input type="number" class="form-control" id="ld-net-download-limit" placeholder="{{ __('location_networks.unlimited') }}" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ld-net-upload-limit">{{ __('location_networks.upload_mbps') }}</label>
+                                <input type="number" class="form-control" id="ld-net-upload-limit" placeholder="{{ __('location_networks.unlimited') }}" min="0">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
