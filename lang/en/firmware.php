@@ -12,7 +12,6 @@ return [
     'alert_sysupgrade' => 'Updates flash via <strong>OpenWrt sysupgrade</strong>. Devices will reboot — clients briefly disconnect.',
 
     // Table
-    'table_card_title' => 'All Firmware Versions',
     'col_name' => 'Name',
     'col_status' => 'Status',
     'col_model' => 'Device Model',

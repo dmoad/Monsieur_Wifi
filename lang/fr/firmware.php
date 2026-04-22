@@ -12,7 +12,6 @@ return [
     'alert_sysupgrade' => 'Les mises à jour passent par <strong>OpenWrt sysupgrade</strong>. Les appareils redémarreront — les clients se déconnecteront brièvement.',
 
     // Table
-    'table_card_title' => 'Toutes les versions de firmware',
     'col_name' => 'Nom',
     'col_status' => 'Statut',
     'col_model' => 'Modèle d\'appareil',
