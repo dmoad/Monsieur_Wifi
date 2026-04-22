@@ -335,6 +335,64 @@
                     <small class="form-text text-muted" id="ld-net-vlan-hint" style="display:none;">{{ __('location_details.networks_vlan_disabled_hint') }}</small>
                 </div>
 
+                <div class="ld-drawer-section ld-net-mac-section">
+                    <h6 class="ld-drawer-section-title">{{ __('location_networks.section_mac_filter_reservations') }}</h6>
+
+                    <div class="ld-net-sub-block">
+                        <div class="ld-net-sub-title">{{ __('location_networks.mac_filtering') }}</div>
+                        <p class="text-muted small mb-2" id="ld-net-mac-hint"></p>
+                        <div class="ld-net-add-row">
+                            <input type="text" class="form-control form-control-sm ld-net-add-mac" id="ld-net-mac-input" placeholder="00:11:22:33:44:55">
+                            <select class="form-control form-control-sm ld-net-add-select" id="ld-net-mac-type">
+                                <option value="block">{{ __('location_networks.mac_add_type_block') }}</option>
+                                <option value="bypass">{{ __('location_networks.mac_add_type_bypass') }}</option>
+                            </select>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="ld-net-mac-add">
+                                <i data-feather="plus"></i> {{ __('common.add') }}
+                            </button>
+                        </div>
+                        <div class="ld-net-rl-wrap">
+                            <table class="ld-net-rl-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('location_networks.table_col_type') }}</th>
+                                        <th>{{ __('location_networks.table_col_mac') }}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ld-net-mac-list">
+                                    <tr class="ld-net-rl-empty"><td colspan="3">{{ __('location_networks.mac_list_empty') }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="ld-net-sub-block ld-net-reservations-block" style="display:none;">
+                        <div class="ld-net-sub-title">{{ __('location_networks.dhcp_reservations') }}</div>
+                        <div class="ld-net-add-row">
+                            <input type="text" class="form-control form-control-sm ld-net-add-mac" id="ld-net-res-mac" placeholder="{{ __('location_networks.reservation_mac_placeholder') }}">
+                            <input type="text" class="form-control form-control-sm ld-net-add-ip" id="ld-net-res-ip" placeholder="{{ __('location_networks.reservation_ip_placeholder') }}">
+                            <button type="button" class="btn btn-sm btn-outline-info" id="ld-net-res-add">
+                                <i data-feather="plus"></i> {{ __('common.add') }}
+                            </button>
+                        </div>
+                        <div class="ld-net-rl-wrap">
+                            <table class="ld-net-rl-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('location_networks.table_col_mac') }}</th>
+                                        <th>{{ __('location_networks.table_col_reserved_ip') }}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ld-net-res-list">
+                                    <tr class="ld-net-rl-empty"><td colspan="3">{{ __('location_networks.reservation_list_empty') }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="ld-drawer-section" data-show-for-type="password">
                     <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_security') }}</h6>
 

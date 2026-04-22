@@ -693,6 +693,15 @@ function isValidIPv4(val) {
         val.split('.').every(n => +n >= 0 && +n <= 255);
 }
 
+function ipToInt(ip) {
+    return ip.split('.').reduce((acc, octet) => (acc << 8) | (+octet & 0xff), 0) >>> 0;
+}
+
+function ipInSubnet(ip, networkIp, netmask) {
+    const maskInt = ipToInt(netmask);
+    return (ipToInt(ip) & maskInt) === (ipToInt(networkIp) & maskInt);
+}
+
 function syncDnsFieldStates(filterOn) {
     $('#wan-dns1, #wan-dns2')
         .prop('disabled', !filterOn)
@@ -1018,11 +1027,16 @@ function escapeHtml(str) {
 // (scheduled for removal in T4.6). Drawer wiring + edit + delete land in T4.4+.
 // ============================================================================
 
+const MAC_REGEX = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/;
+
 const ldNetworks = (function () {
     let loaded = false;
     let data = [];
     let captiveDesigns = null; // null = not fetched; array once fetched
     let vlanEnabled = false; // location-wide VLAN setting, fetched alongside networks
+    // Drawer-local scratch for MAC filter + DHCP reservations (edits revert on Cancel)
+    let drawerMac = [];
+    let drawerReservations = [];
 
     async function ensureCaptiveDesigns() {
         if (captiveDesigns !== null) return captiveDesigns;
@@ -1101,6 +1115,217 @@ const ldNetworks = (function () {
         if (vlanId) vlanId.disabled = !vlanEnabled;
         if (vlanTag) vlanTag.disabled = !vlanEnabled;
         if (hint) hint.style.display = vlanEnabled ? 'none' : '';
+    }
+
+    function normaliseMacEntry(entry) {
+        if (typeof entry === 'string') return { mac: entry.toUpperCase(), type: 'block' };
+        return {
+            mac: (entry.mac || entry.address || '').toUpperCase(),
+            type: entry.type === 'bypass' ? 'bypass' : 'block',
+        };
+    }
+
+    function macAllowsBypass(type) {
+        return type === 'captive_portal';
+    }
+
+    function coerceMacListForType(list, type) {
+        if (macAllowsBypass(type)) return list;
+        return list.map(e => e.type === 'bypass' ? { ...e, type: 'block' } : e);
+    }
+
+    function deriveMacFilterMode(list) {
+        if (!list.length) return 'none';
+        const hasBlock  = list.some(e => e.type === 'block');
+        const hasBypass = list.some(e => e.type === 'bypass');
+        if (hasBlock && hasBypass) return 'mixed';
+        if (hasBlock) return 'block-listed';
+        return 'allow-listed';
+    }
+
+    function applyMacBypassUi(type) {
+        const allows = macAllowsBypass(type);
+        const typeSelect = document.getElementById('ld-net-mac-type');
+        if (typeSelect) {
+            const bypassOpt = typeSelect.querySelector('option[value="bypass"]');
+            if (bypassOpt) {
+                bypassOpt.disabled = !allows;
+                bypassOpt.style.display = allows ? '' : 'none';
+            }
+            if (!allows) typeSelect.value = 'block';
+        }
+        // Coerce any bypass entries in scratch list when type changes
+        if (!allows) {
+            drawerMac = coerceMacListForType(drawerMac, type);
+            renderMacList();
+        }
+        const hint = document.getElementById('ld-net-mac-hint');
+        if (hint) {
+            const i18n = t();
+            const key = type === 'password' ? 'networks_mac_hint_password'
+                      : type === 'open'     ? 'networks_mac_hint_open'
+                      :                        'networks_mac_hint_captive';
+            hint.textContent = i18n[key] || '';
+        }
+    }
+
+    function applyReservationsVisibility() {
+        const type    = document.getElementById('ld-net-type').value;
+        const ipMode  = document.getElementById('ld-net-ip-mode').value;
+        const subMode = document.getElementById('ld-net-bridge-lan-mode').value || 'dhcp_client';
+        const dhcpOn  = document.getElementById('ld-net-dhcp-enabled').checked;
+        const dhcpServerActive = (ipMode === 'static' && dhcpOn)
+            || (ipMode === 'bridge_lan' && subMode === 'dhcp_server');
+        const show = dhcpServerActive && type !== 'captive_portal';
+        const block = document.querySelector('.ld-net-reservations-block');
+        if (block) block.style.display = show ? '' : 'none';
+    }
+
+    function renderMacList() {
+        const tbody = document.getElementById('ld-net-mac-list');
+        if (!tbody) return;
+        const i18n = t();
+        const list = drawerMac.map(normaliseMacEntry).filter(e => e.mac);
+        tbody.innerHTML = '';
+        if (!list.length) {
+            const tr = document.createElement('tr');
+            tr.className = 'ld-net-rl-empty';
+            const td = document.createElement('td');
+            td.colSpan = 3;
+            td.textContent = i18n.networks_mac_list_empty || 'No MAC rules added';
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
+        }
+        list.forEach((entry, idx) => {
+            const isBypass = entry.type === 'bypass';
+            const tr = document.createElement('tr');
+            tr.className = 'ld-net-rl-row';
+            tr.innerHTML = `
+                <td><span class="ld-net-mac-badge ${isBypass ? 'is-bypass' : 'is-block'}">${isBypass ? (i18n.networks_mac_badge_bypass || 'Bypass') : (i18n.networks_mac_badge_block || 'Block')}</span></td>
+                <td class="ld-net-rl-mono">${entry.mac}</td>
+                <td class="ld-net-rl-action"><button type="button" class="btn btn-link btn-sm text-danger p-0 ld-net-mac-remove" data-idx="${idx}" aria-label="Remove"><i data-feather="x"></i></button></td>`;
+            tbody.appendChild(tr);
+        });
+        if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
+    }
+
+    function renderReservations() {
+        const tbody = document.getElementById('ld-net-res-list');
+        if (!tbody) return;
+        const i18n = t();
+        const list = (drawerReservations || []).filter(r => r && r.mac && r.ip);
+        tbody.innerHTML = '';
+        if (!list.length) {
+            const tr = document.createElement('tr');
+            tr.className = 'ld-net-rl-empty';
+            const td = document.createElement('td');
+            td.colSpan = 3;
+            td.textContent = i18n.networks_reservation_list_empty || 'No reservations added';
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
+        }
+        list.forEach((entry, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'ld-net-rl-row';
+            tr.innerHTML = `
+                <td class="ld-net-rl-mono">${entry.mac}</td>
+                <td class="ld-net-rl-mono">${entry.ip}</td>
+                <td class="ld-net-rl-action"><button type="button" class="btn btn-link btn-sm text-danger p-0 ld-net-res-remove" data-idx="${idx}" aria-label="Remove"><i data-feather="x"></i></button></td>`;
+            tbody.appendChild(tr);
+        });
+        if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
+    }
+
+    function addMacEntry() {
+        const i18n = t();
+        const inputEl = document.getElementById('ld-net-mac-input');
+        const typeEl  = document.getElementById('ld-net-mac-type');
+        const networkType = document.getElementById('ld-net-type').value;
+        const mac = (inputEl.value || '').trim().toUpperCase().replace(/-/g, ':');
+        const rawType = typeEl.value || 'block';
+        const entryType = macAllowsBypass(networkType) ? rawType : 'block';
+        if (!MAC_REGEX.test(mac)) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_mac_invalid || 'Invalid MAC address.');
+            return;
+        }
+        if (drawerMac.some(e => normaliseMacEntry(e).mac === mac)) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_mac_duplicate || 'This MAC is already in the list.');
+            return;
+        }
+        drawerMac.push({ mac, type: entryType });
+        inputEl.value = '';
+        renderMacList();
+    }
+
+    function removeMacEntry(idx) {
+        if (idx < 0 || idx >= drawerMac.length) return;
+        drawerMac.splice(idx, 1);
+        renderMacList();
+    }
+
+    function addReservation() {
+        const i18n = t();
+        const macEl = document.getElementById('ld-net-res-mac');
+        const ipEl  = document.getElementById('ld-net-res-ip');
+        const mac = (macEl.value || '').trim().toUpperCase().replace(/-/g, ':');
+        const ip  = (ipEl.value || '').trim();
+        if (!MAC_REGEX.test(mac)) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_mac_invalid || 'Invalid MAC address.');
+            return;
+        }
+        if (!isValidIPv4(ip)) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_reservation_invalid_ip || 'Invalid IP address.');
+            return;
+        }
+        const gateway = document.getElementById('ld-net-ip-address').value.trim();
+        const netmask = document.getElementById('ld-net-netmask').value.trim();
+        if (gateway && netmask && isValidIPv4(gateway) && isValidIPv4(netmask)) {
+            if (!ipInSubnet(ip, gateway, netmask)) {
+                const msg = (i18n.networks_reservation_outside_subnet || 'IP {ip} is outside the subnet ({gateway} / {netmask}).')
+                    .replace('{ip}', ip).replace('{gateway}', gateway).replace('{netmask}', netmask);
+                if (typeof toastr !== 'undefined') toastr.warning(msg);
+                return;
+            }
+            if (ip === gateway) {
+                if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_reservation_is_gateway || 'Reserved IP cannot be the gateway.');
+                return;
+            }
+        }
+        const dhcpEnabled = document.getElementById('ld-net-dhcp-enabled').checked;
+        const dhcpStart   = document.getElementById('ld-net-dhcp-start').value.trim();
+        const dhcpSize    = parseInt(document.getElementById('ld-net-dhcp-end').value, 10);
+        if (dhcpEnabled && isValidIPv4(dhcpStart) && dhcpSize >= 1) {
+            const startInt = ipToInt(dhcpStart);
+            const lastInt  = startInt + dhcpSize - 1;
+            const ipInt    = ipToInt(ip);
+            if (ipInt < startInt || ipInt > lastInt) {
+                const lastIp = [(lastInt >>> 24) & 0xff, (lastInt >>> 16) & 0xff, (lastInt >>> 8) & 0xff, lastInt & 0xff].join('.');
+                const msg = (i18n.networks_reservation_outside_pool || 'IP {ip} is outside DHCP pool ({start} – {end}).')
+                    .replace('{ip}', ip).replace('{start}', dhcpStart).replace('{end}', lastIp);
+                if (typeof toastr !== 'undefined') toastr.warning(msg);
+                return;
+            }
+        }
+        if (drawerReservations.some(r => r.mac.toUpperCase() === mac)) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_reservation_duplicate_mac || 'Duplicate MAC in reservations.');
+            return;
+        }
+        if (drawerReservations.some(r => r.ip === ip)) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_reservation_duplicate_ip || 'Duplicate IP in reservations.');
+            return;
+        }
+        drawerReservations.push({ mac, ip });
+        macEl.value = '';
+        ipEl.value = '';
+        renderReservations();
+    }
+
+    function removeReservation(idx) {
+        if (idx < 0 || idx >= drawerReservations.length) return;
+        drawerReservations.splice(idx, 1);
+        renderReservations();
     }
 
     function t() {
@@ -1290,6 +1515,14 @@ const ldNetworks = (function () {
         applyIpModeVisibility();
         applyVlanGating();
 
+        // MAC filter + DHCP reservations (scratch copies so Cancel reverts)
+        drawerMac = (net.mac_filter_list || []).map(normaliseMacEntry);
+        drawerReservations = (net.dhcp_reservations || []).filter(r => r && r.mac && r.ip).map(r => ({ mac: r.mac, ip: r.ip }));
+        applyMacBypassUi(type);
+        renderMacList();
+        renderReservations();
+        applyReservationsVisibility();
+
         applyTypeVisibility(type);
 
         document.getElementById('ld-network-drawer-save').disabled = false;
@@ -1394,6 +1627,14 @@ const ldNetworks = (function () {
         payload.vlan_id = parseInt(document.getElementById('ld-net-vlan-id').value, 10) || null;
         payload.vlan_tagging = document.getElementById('ld-net-vlan-tagging').value;
 
+        // MAC filter + DHCP reservations
+        const coercedMac = coerceMacListForType(drawerMac.map(normaliseMacEntry).filter(e => e.mac), type);
+        payload.mac_filter_list = coercedMac;
+        payload.mac_filter_mode = deriveMacFilterMode(coercedMac);
+        payload.dhcp_reservations = (noDhcpServer || type === 'captive_portal')
+            ? null
+            : drawerReservations.filter(r => r && r.mac && r.ip);
+
         const btn = document.getElementById('ld-network-drawer-save');
         btn.disabled = true;
         try {
@@ -1440,6 +1681,28 @@ const ldNetworks = (function () {
             }
             return;
         }
+        if (e.target.closest('#ld-net-mac-add')) {
+            e.preventDefault();
+            addMacEntry();
+            return;
+        }
+        const macRemoveBtn = e.target.closest('.ld-net-mac-remove');
+        if (macRemoveBtn) {
+            e.preventDefault();
+            removeMacEntry(parseInt(macRemoveBtn.dataset.idx, 10));
+            return;
+        }
+        if (e.target.closest('#ld-net-res-add')) {
+            e.preventDefault();
+            addReservation();
+            return;
+        }
+        const resRemoveBtn = e.target.closest('.ld-net-res-remove');
+        if (resRemoveBtn) {
+            e.preventDefault();
+            removeReservation(parseInt(resRemoveBtn.dataset.idx, 10));
+            return;
+        }
         const row = e.target.closest('.ld-network-row');
         if (row && row.dataset.networkId) {
             openForNetwork(row.dataset.networkId);
@@ -1449,6 +1712,8 @@ const ldNetworks = (function () {
     document.addEventListener('change', function (e) {
         if (e.target && e.target.id === 'ld-net-type') {
             applyTypeVisibility(e.target.value);
+            applyMacBypassUi(e.target.value);
+            applyReservationsVisibility();
             // If switching to captive and designs aren't loaded, fetch now
             if (e.target.value === 'captive_portal') {
                 ensureCaptiveDesigns().then(() => populateCaptiveDesignSelect(null));
@@ -1459,6 +1724,10 @@ const ldNetworks = (function () {
         }
         if (e.target && (e.target.id === 'ld-net-ip-mode' || e.target.id === 'ld-net-bridge-lan-mode')) {
             applyIpModeVisibility();
+            applyReservationsVisibility();
+        }
+        if (e.target && e.target.id === 'ld-net-dhcp-enabled') {
+            applyReservationsVisibility();
         }
     });
 

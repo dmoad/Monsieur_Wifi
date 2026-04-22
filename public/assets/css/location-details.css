@@ -437,3 +437,93 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .ld-drawer-section .form-group label {
     color: var(--mw-text-secondary);
 }
+
+/* MAC Filter + DHCP Reservations (Tab 4 drawer T4.4g) */
+.ld-net-sub-block + .ld-net-sub-block {
+    margin-top: var(--mw-space-xl);
+}
+.ld-net-sub-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mw-text-secondary);
+    margin-bottom: var(--mw-space-sm);
+}
+.ld-net-add-row {
+    display: flex;
+    gap: var(--mw-space-sm);
+    align-items: center;
+    margin-bottom: var(--mw-space-sm);
+}
+.ld-net-add-row .ld-net-add-mac {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 12px;
+}
+.ld-net-add-row .ld-net-add-ip {
+    flex: 0 0 140px;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 12px;
+}
+.ld-net-add-row .ld-net-add-select {
+    flex: 0 0 120px;
+}
+.ld-net-add-row .btn {
+    flex-shrink: 0;
+}
+.ld-net-rl-wrap {
+    border: 1px solid var(--mw-border-light);
+    border-radius: var(--mw-radius-md);
+    overflow: hidden;
+}
+.ld-net-rl-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.ld-net-rl-table thead th {
+    background: var(--mw-bg-muted);
+    color: var(--mw-text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: var(--mw-space-sm) var(--mw-space-md);
+    border-bottom: 1px solid var(--mw-border-light);
+}
+.ld-net-rl-table tbody td {
+    padding: var(--mw-space-sm) var(--mw-space-md);
+    border-top: 1px solid var(--mw-border-light);
+    vertical-align: middle;
+}
+.ld-net-rl-table tbody tr:first-child td {
+    border-top: none;
+}
+.ld-net-rl-table .ld-net-rl-empty td {
+    color: var(--mw-text-muted);
+    font-style: italic;
+    text-align: center;
+}
+.ld-net-rl-table .ld-net-rl-mono {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+.ld-net-rl-table .ld-net-rl-action {
+    width: 32px;
+    text-align: right;
+}
+.ld-net-mac-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--mw-radius-badge);
+    font-size: 11px;
+    font-weight: 600;
+}
+.ld-net-mac-badge.is-block {
+    background: color-mix(in srgb, var(--mw-danger) 14%, transparent);
+    color: var(--mw-danger);
+}
+.ld-net-mac-badge.is-bypass {
+    background: color-mix(in srgb, var(--mw-success) 14%, transparent);
+    color: var(--mw-success);
+}
