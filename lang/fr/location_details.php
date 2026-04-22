@@ -250,6 +250,16 @@ return [
     'wan_pppoe_password_required' => 'Un mot de passe est requis en mode PPPoE.',
     'wan_settings_saved' => 'Paramètres WAN enregistrés.',
 
+    // Radio / actions appareil — messages toast
+    'radio_settings_saved' => 'Paramètres radio enregistrés.',
+    'device_restart_initiated' => 'Redémarrage de l\'appareil lancé. Il sera de retour en ligne dans 2 à 3 minutes.',
+    'reboot_schedule_saved' => 'Planification du redémarrage enregistrée.',
+    'reboot_schedule_save_failed' => 'Échec de l\'enregistrement de la planification.',
+    'reboot_schedule_cleared' => 'Planification supprimée.',
+    'reboot_schedule_clear_failed' => 'Échec de la suppression de la planification.',
+    'channel_scan_failed' => 'Échec de l\'analyse des canaux.',
+    'optimal_channels_applied' => 'Canaux optimaux appliqués.',
+
     // Restart modal
     'modal_restart_title' => 'Redémarrer l\'appareil',
     'modal_restart_tab_now' => 'Redémarrer maintenant',

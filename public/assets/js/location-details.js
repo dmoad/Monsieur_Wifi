@@ -883,7 +883,7 @@ async function saveRadioSettings() {
             channel_5g: parseInt($('#channel-5g').val()),
         };
         await apiFetch(`${API}/locations/${location_id}/settings`, { method: 'PUT', body: JSON.stringify(data) });
-        toastr.success('Radio settings saved.');
+        toastr.success(i18n.radio_settings_saved);
     } catch (err) {
         handleApiError(err, 'saveRadioSettings');
     } finally {
@@ -2409,7 +2409,7 @@ async function restartDevice() {
             method: 'PUT',
             body: JSON.stringify({ settings_type: 'restart' }),
         });
-        toastr.success('Device restart initiated. It will be back online in 2-3 minutes.');
+        toastr.success(i18n.device_restart_initiated);
         $('#restart-confirmation-modal').modal('hide');
     } catch (err) {
         handleApiError(err, 'restartDevice');
@@ -2463,10 +2463,10 @@ async function saveRebootSchedule() {
             } else {
                 $('#scheduled-reboot-current').hide();
             }
-            toastr.success(document.documentElement.lang === 'fr' ? 'Planification du redémarrage enregistrée.' : 'Reboot schedule saved.');
+            toastr.success(i18n.reboot_schedule_saved);
             $('#restart-confirmation-modal').modal('hide');
         } else {
-            toastr.error(res.message || 'Failed to save reboot schedule.');
+            toastr.error(res.message || i18n.reboot_schedule_save_failed);
         }
     } catch (err) {
         handleApiError(err, 'saveRebootSchedule');
@@ -2491,9 +2491,9 @@ async function clearRebootSchedule() {
         if (res.success) {
             $('#scheduled-reboot-time').val('');
             $('#scheduled-reboot-current').hide();
-            toastr.success(document.documentElement.lang === 'fr' ? 'Planification supprimée.' : 'Reboot schedule cleared.');
+            toastr.success(i18n.reboot_schedule_cleared);
         } else {
-            toastr.error(res.message || 'Failed to clear schedule.');
+            toastr.error(res.message || i18n.reboot_schedule_clear_failed);
         }
     } catch (err) {
         handleApiError(err, 'clearRebootSchedule');
@@ -2555,7 +2555,7 @@ function pollScanStatus() {
                 loadScanResults();
             } else if (status === 'failed') {
                 clearInterval(scanPollInterval);
-                toastr.error('Channel scan failed.');
+                toastr.error(i18n.channel_scan_failed);
                 $('#channel-scan-modal').modal('hide');
             }
         } catch (e) { /* swallow poll errors */ }
@@ -2620,7 +2620,7 @@ async function applyOptimalChannels() {
     $('#channel-5g').val(optimalScanResults.optimal_channel_5g);
     $('#channel-scan-modal').modal('hide');
     await saveRadioSettings();
-    toastr.success('Optimal channels applied.');
+    toastr.success(i18n.optimal_channels_applied);
 }
 
 // ============================================================================

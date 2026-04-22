@@ -250,6 +250,16 @@ return [
     'wan_pppoe_password_required' => 'A password is required for PPPoE mode.',
     'wan_settings_saved' => 'WAN settings saved.',
 
+    // Radio / device actions — toasts
+    'radio_settings_saved' => 'Radio settings saved.',
+    'device_restart_initiated' => 'Device restart initiated. It will be back online in 2-3 minutes.',
+    'reboot_schedule_saved' => 'Reboot schedule saved.',
+    'reboot_schedule_save_failed' => 'Failed to save reboot schedule.',
+    'reboot_schedule_cleared' => 'Reboot schedule cleared.',
+    'reboot_schedule_clear_failed' => 'Failed to clear schedule.',
+    'channel_scan_failed' => 'Channel scan failed.',
+    'optimal_channels_applied' => 'Optimal channels applied.',
+
     // Restart modal
     'modal_restart_title' => 'Restart Device',
     'modal_restart_tab_now' => 'Reboot Now',
