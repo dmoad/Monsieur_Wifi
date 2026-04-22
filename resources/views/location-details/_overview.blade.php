@@ -88,8 +88,8 @@
                                                 <i data-feather="bar-chart-2" style="color:var(--mw-primary);"></i>
                                             </div>
                                             <div>
-                                                <h5 style="margin:0; font-weight:600; color:#2c3e50;">{{ __('location_details.daily_usage_analytics') }}</h5>
-                                                <p style="margin:0; color:#6c757d; font-size:0.9rem;">{{ __('location_details.captive_portal_activity') }}</p>
+                                                <h5 style="margin:0; font-weight:600; color:var(--mw-text-primary);">{{ __('location_details.daily_usage_analytics') }}</h5>
+                                                <p style="margin:0; color:var(--mw-text-muted); font-size:0.9rem;">{{ __('location_details.captive_portal_activity') }}</p>
                                             </div>
                                         </div>
                                         <div class="d-flex" style="background:rgba(0,0,0,0.05); border-radius:10px; padding:4px; border:1px solid rgba(0,0,0,0.1);">
@@ -115,14 +115,14 @@
                                             <div class="users-icon" style="background: rgba(99,102,241,0.12);">
                                                 <i data-feather="wifi" style="color:var(--mw-primary);"></i>
                                             </div>
-                                            <div><h5 style="margin:0; font-weight:600;">{{ __('location_details.live_users') }}</h5><p style="margin:0; color:#6c757d; font-size:0.9rem;">{{ __('location_details.currently_connected') }}</p></div>
+                                            <div><h5 style="margin:0; font-weight:600; color:var(--mw-text-primary);">{{ __('location_details.live_users') }}</h5><p style="margin:0; color:var(--mw-text-muted); font-size:0.9rem;">{{ __('location_details.currently_connected') }}</p></div>
                                         </div>
                                         <button class="refresh-btn" id="refresh-online-users"><i data-feather="refresh-cw"></i></button>
                                     </div>
                                     <div class="users-count">
                                         <span class="count-number" id="online-count">0</span>
-                                        <span style="color:#6c757d; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px;">{{ __('location_details.online_label') }}</span>
-                                        <span id="count-range" style="display:none; font-size:0.75rem; color:#6c757d;"></span>
+                                        <span style="color:var(--mw-text-muted); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px;">{{ __('location_details.online_label') }}</span>
+                                        <span id="count-range" style="display:none; font-size:0.75rem; color:var(--mw-text-muted);"></span>
                                     </div>
                                 </div>
                                 <div class="users-container">
@@ -138,7 +138,7 @@
                                             <div class="d-flex align-items-center gap-1" id="page-numbers"></div>
                                             <button class="pagination-btn" id="next-page" disabled><i data-feather="chevron-right"></i></button>
                                         </div>
-                                        <div class="text-center mt-2"><span style="font-size:0.85rem; color:#6c757d;" id="page-info">1 / 1</span></div>
+                                        <div class="text-center mt-2"><span style="font-size:0.85rem; color:var(--mw-text-muted);" id="page-info">1 / 1</span></div>
                                     </div>
                                 </div>
                             </div>

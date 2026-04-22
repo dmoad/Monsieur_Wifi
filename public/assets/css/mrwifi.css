@@ -1072,12 +1072,12 @@ body.mw-drawer-locked {
 ================================================================ */
 :root[data-theme="dark"] .content-header-title,
 :root[data-theme="dark"] .card-title,
-:root[data-theme="dark"] .card .card-header h1,
-:root[data-theme="dark"] .card .card-header h2,
-:root[data-theme="dark"] .card .card-header h3,
-:root[data-theme="dark"] .card .card-header h4,
-:root[data-theme="dark"] .card .card-header h5,
-:root[data-theme="dark"] .card .card-header h6 {
+:root[data-theme="dark"] .card h1,
+:root[data-theme="dark"] .card h2,
+:root[data-theme="dark"] .card h3,
+:root[data-theme="dark"] .card h4,
+:root[data-theme="dark"] .card h5,
+:root[data-theme="dark"] .card h6 {
     color: var(--mw-text-primary);
 }
 
