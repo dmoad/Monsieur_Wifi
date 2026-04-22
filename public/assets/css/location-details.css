@@ -419,3 +419,21 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     height: 18px !important;
     transition: color 0.12s;
 }
+
+/* Drawer body form sections (Tab 4 SSID editing) */
+.ld-drawer-section + .ld-drawer-section {
+    margin-top: var(--mw-space-xl);
+    padding-top: var(--mw-space-xl);
+    border-top: 1px solid var(--mw-border-light);
+}
+.ld-drawer-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--mw-text-muted);
+    margin: 0 0 var(--mw-space-lg) 0;
+}
+.ld-drawer-section .form-group label {
+    color: var(--mw-text-secondary);
+}

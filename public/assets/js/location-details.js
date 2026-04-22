@@ -1145,15 +1145,81 @@ const ldNetworks = (function () {
     function openForNetwork(netId) {
         const net = data.find(n => String(n.id) === String(netId));
         if (!net) return;
-        const titleEl = document.getElementById('ld-network-drawer-title');
-        if (titleEl) titleEl.textContent = net.ssid || '';
+        const drawer = document.getElementById('ld-network-drawer');
+        if (!drawer) return;
+
+        drawer.dataset.networkId = net.id;
+        document.getElementById('ld-network-drawer-title').textContent = net.ssid || '';
+
+        document.getElementById('ld-net-type').value = net.type || 'password';
+        document.getElementById('ld-net-ssid').value = net.ssid || '';
+        document.getElementById('ld-net-visible').value = net.visible === false ? '0' : '1';
+        document.getElementById('ld-net-radio').value = net.radio || 'all';
+        document.getElementById('ld-net-enabled').checked = net.enabled !== false;
+        document.getElementById('ld-net-qos').checked = net.qos_policy === 'full';
+
+        document.getElementById('ld-network-drawer-save').disabled = false;
+
         if (typeof MwDrawer !== 'undefined') MwDrawer.open('ld-network-drawer');
+    }
+
+    async function save() {
+        const drawer = document.getElementById('ld-network-drawer');
+        const netId = drawer && drawer.dataset.networkId;
+        if (!netId) return;
+        const i18n = t();
+
+        const ssid = document.getElementById('ld-net-ssid').value.trim();
+        if (!ssid) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_ssid_required || 'SSID is required');
+            document.getElementById('ld-net-ssid').focus();
+            return;
+        }
+        if (ssid.length > 32) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_ssid_too_long || 'SSID must be 32 characters or fewer');
+            document.getElementById('ld-net-ssid').focus();
+            return;
+        }
+
+        const payload = {
+            type: document.getElementById('ld-net-type').value,
+            ssid,
+            visible: document.getElementById('ld-net-visible').value === '1',
+            enabled: document.getElementById('ld-net-enabled').checked,
+            radio: document.getElementById('ld-net-radio').value,
+            qos_policy: document.getElementById('ld-net-qos').checked ? 'full' : 'scavenger',
+        };
+
+        const btn = document.getElementById('ld-network-drawer-save');
+        btn.disabled = true;
+        try {
+            const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
+                method: 'PUT',
+                body: JSON.stringify(payload),
+            });
+            const idx = data.findIndex(n => String(n.id) === String(netId));
+            if (idx >= 0 && res && res.data && res.data.network) {
+                data[idx] = res.data.network;
+            }
+            render();
+            if (typeof toastr !== 'undefined') toastr.success(i18n.networks_save_success || 'Network saved');
+            if (typeof MwDrawer !== 'undefined') MwDrawer.close('ld-network-drawer');
+        } catch (err) {
+            handleApiError(err, 'ldNetworks.save');
+        } finally {
+            btn.disabled = false;
+        }
     }
 
     document.addEventListener('click', function (e) {
         if (e.target.closest('#ld-networks-add-btn')) {
             e.preventDefault();
             add();
+            return;
+        }
+        if (e.target.closest('#ld-network-drawer-save')) {
+            e.preventDefault();
+            save();
             return;
         }
         const row = e.target.closest('.ld-network-row');
@@ -1166,6 +1232,7 @@ const ldNetworks = (function () {
         load,
         render,
         openForNetwork,
+        save,
         isLoaded: () => loaded,
     };
 })();
