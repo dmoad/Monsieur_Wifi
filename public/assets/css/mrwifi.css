@@ -1186,3 +1186,44 @@ body.mw-drawer-locked {
     background-color: var(--mw-primary);
     border-color: var(--mw-primary);
 }
+
+/* Bootstrap .table text + DataTables widgets hardcode light-mode colours;
+   make them theme-aware so tables (domain-blocking, devices, etc.) stay
+   legible on the dark surface. */
+:root[data-theme="dark"] .table {
+    color: var(--mw-text-primary);
+}
+:root[data-theme="dark"] .table thead th {
+    color: var(--mw-text-primary);
+    border-bottom-color: var(--mw-border);
+}
+:root[data-theme="dark"] .table td,
+:root[data-theme="dark"] .table th {
+    border-top-color: var(--mw-border-light);
+}
+:root[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--mw-bg-hover);
+}
+
+:root[data-theme="dark"] .dataTables_info,
+:root[data-theme="dark"] .dataTables_length,
+:root[data-theme="dark"] .dataTables_filter,
+:root[data-theme="dark"] .dataTables_length label,
+:root[data-theme="dark"] .dataTables_filter label {
+    color: var(--mw-text-secondary);
+}
+:root[data-theme="dark"] .dataTables_filter input,
+:root[data-theme="dark"] .dataTables_length select {
+    background: var(--mw-bg-surface);
+    border: 1px solid var(--mw-border);
+    color: var(--mw-text-primary);
+}
+:root[data-theme="dark"] .dataTables_paginate .paginate_button {
+    color: var(--mw-text-secondary) !important;
+}
+:root[data-theme="dark"] .dataTables_paginate .paginate_button.current,
+:root[data-theme="dark"] .dataTables_paginate .paginate_button.current:hover {
+    color: #fff !important;
+    background: var(--mw-primary) !important;
+    border-color: var(--mw-primary) !important;
+}
