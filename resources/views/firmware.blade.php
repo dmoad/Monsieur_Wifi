@@ -52,6 +52,83 @@
     .badge-status-stable  { background-color: rgba(40,199,111,0.12); color: #28c76f; }
     .badge-status-beta    { background-color: rgba(255,159,67,0.12); color: #ff9f43; }
     .badge-status-deprecated { background-color: rgba(234,84,85,0.12); color: #ea5455; }
+
+    /* Firmware table — matches locations-list .lc-table pattern */
+    .fw-list-card { overflow: hidden; margin-bottom: var(--mw-space-md); }
+    .datatables-firmware { width: 100% !important; border-collapse: collapse; font-size: 13px; }
+    .datatables-firmware thead th {
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--mw-text-muted);
+        text-align: left;
+        padding: 10px var(--mw-space-lg) !important;
+        background: var(--mw-bg-page);
+        border-bottom: 1px solid var(--mw-border-light);
+        border-top: 1px solid var(--mw-border-light);
+    }
+    .datatables-firmware tbody tr {
+        border-bottom: 1px solid var(--mw-border-light);
+        cursor: pointer;
+        transition: background 0.12s;
+    }
+    .datatables-firmware tbody tr:last-child { border-bottom: none; }
+    .datatables-firmware tbody tr:hover { background: var(--mw-bg-hover); }
+    .datatables-firmware td {
+        padding: var(--mw-space-md) var(--mw-space-lg) !important;
+        vertical-align: middle;
+        color: var(--mw-text-secondary);
+        border-top: none !important;
+    }
+
+    .fw-name-cell { display: flex; align-items: center; gap: var(--mw-space-md); }
+    .fw-icon-chip {
+        width: 30px; height: 30px;
+        background: var(--mw-primary-tint);
+        color: var(--mw-primary);
+        border-radius: var(--mw-radius-md);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .fw-icon-chip [data-feather] { width: 14px !important; height: 14px !important; }
+    .fw-name-main { font-size: 13px; font-weight: 700; color: var(--mw-text-primary); }
+    .fw-name-sub  { font-size: 11px; color: var(--mw-text-muted); margin-top: 1px; }
+
+    .fw-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 3px 10px 3px 8px;
+        border-radius: var(--mw-radius-full);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        line-height: 1.2;
+    }
+    .fw-pill::before {
+        content: ''; width: 6px; height: 6px; border-radius: 50%;
+        background: currentColor; flex-shrink: 0;
+    }
+    .fw-pill-enabled  { background: rgba(22,163,74,0.12); color: var(--mw-success); }
+    .fw-pill-disabled { background: var(--mw-bg-muted);   color: var(--mw-text-muted); }
+    .fw-pill-default  { background: var(--mw-primary-tint); color: var(--mw-primary); }
+    .fw-pill-muted    { background: var(--mw-bg-muted);   color: var(--mw-text-muted); }
+
+    /* Kebab button — matches .lc-kebab-btn */
+    .datatables-firmware .dropdown-toggle.hide-arrow {
+        width: 32px; height: 32px;
+        border: 1px solid var(--mw-border) !important;
+        background: var(--mw-bg-surface) !important;
+        border-radius: var(--mw-radius-sm) !important;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: var(--mw-text-secondary) !important;
+        padding: 0 !important;
+        transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .datatables-firmware .dropdown-toggle.hide-arrow:hover {
+        background: var(--mw-primary-tint) !important;
+        border-color: var(--mw-primary) !important;
+        color: var(--mw-primary) !important;
+    }
 </style>
 @endpush
 
@@ -88,28 +165,21 @@
 
     <!-- Firmware Table -->
     <section id="basic-datatable">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header"><h4 class="card-title">{{ __('firmware.table_card_title') }}</h4></div>
-                    <div class="card-body">
-                        <div class="card-datatable table-responsive">
-                            <table class="datatables-firmware table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('firmware.col_name') }}</th>
-                                        <th>{{ __('firmware.col_status') }}</th>
-                                        <th>{{ __('firmware.col_model') }}</th>
-                                        <th>{{ __('firmware.col_default') }}</th>
-                                        <th>{{ __('firmware.col_size') }}</th>
-                                        <th>{{ __('firmware.col_actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+        <div class="card fw-list-card">
+            <div class="card-datatable">
+                <table class="datatables-firmware">
+                    <thead>
+                        <tr>
+                            <th>{{ __('firmware.col_name') }}</th>
+                            <th>{{ __('firmware.col_status') }}</th>
+                            <th>{{ __('firmware.col_model') }}</th>
+                            <th>{{ __('firmware.col_default') }}</th>
+                            <th>{{ __('firmware.col_size') }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </section>
@@ -355,17 +425,27 @@
         table.clear();
         const sorted = [...firmwareData].sort((a, b) => a.created_at && b.created_at ? new Date(b.created_at) - new Date(a.created_at) : b.id - a.id);
         sorted.forEach(function(fw) {
-            const statusBadge  = fw.is_enabled ? `<span class="badge badge-pill badge-light-success">${T.badge_enabled}</span>` : `<span class="badge badge-pill badge-light-secondary">${T.badge_disabled}</span>`;
-            const defaultBadge = fw.default_model_firmware ? `<span class="badge badge-pill badge-light-primary">${T.badge_default}</span>` : '<span class="badge badge-pill badge-light-secondary">-</span>';
-            table.row.add([
-                `<div class="d-flex align-items-center"><span class="mw-stat-icon mw-stat-icon-primary mr-1"><i data-feather="hard-drive"></i></span><div><div class="font-weight-bold">${fw.name}</div><div class="small text-truncate text-muted">${fw.description || ''}</div></div></div>`,
-                statusBadge, getModelName(fw.model), defaultBadge, formatFileSize(fw.file_size),
-                `<div class="dropdown"><button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown"><i data-feather="more-vertical"></i></button><div class="dropdown-menu"><a class="dropdown-item firmware-edit" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="edit-2" class="mr-50"></i><span>${T.action_edit}</span></a><a class="dropdown-item firmware-download" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="download" class="mr-50"></i><span>${T.action_download}</span></a>${!fw.default_model_firmware ? `<a class="dropdown-item firmware-set-default" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="star" class="mr-50"></i><span>${T.action_set_default}</span></a>` : ''}<a class="dropdown-item firmware-delete" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="trash" class="mr-50"></i><span>${T.action_delete}</span></a></div></div>`
-            ]);
+            const statusPill  = fw.is_enabled
+                ? `<span class="fw-pill fw-pill-enabled">${T.badge_enabled}</span>`
+                : `<span class="fw-pill fw-pill-disabled">${T.badge_disabled}</span>`;
+            const defaultPill = fw.default_model_firmware
+                ? `<span class="fw-pill fw-pill-default">${T.badge_default}</span>`
+                : '<span class="fw-pill fw-pill-muted">—</span>';
+            const nameCell = `<div class="fw-name-cell" data-firmware-id="${fw.id}"><span class="fw-icon-chip"><i data-feather="hard-drive"></i></span><div><div class="fw-name-main">${fw.name}</div><div class="fw-name-sub">${fw.description || ''}</div></div></div>`;
+            const actions = `<div class="dropdown"><button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown"><i data-feather="more-vertical"></i></button><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item firmware-edit" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="edit-2" class="mr-50"></i><span>${T.action_edit}</span></a><a class="dropdown-item firmware-download" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="download" class="mr-50"></i><span>${T.action_download}</span></a>${!fw.default_model_firmware ? `<a class="dropdown-item firmware-set-default" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="star" class="mr-50"></i><span>${T.action_set_default}</span></a>` : ''}<a class="dropdown-item firmware-delete" href="javascript:void(0);" data-firmware-id="${fw.id}"><i data-feather="trash" class="mr-50"></i><span>${T.action_delete}</span></a></div></div>`;
+            const row = table.row.add([nameCell, statusPill, getModelName(fw.model), defaultPill, formatFileSize(fw.file_size), actions]).node();
+            row.dataset.firmwareId = fw.id;
         });
         table.draw();
         if (feather) feather.replace({ width: 14, height: 14 });
     }
+
+    // Row click → open edit modal (but let the kebab dropdown / menu items handle their own clicks)
+    $(document).on('click', '.datatables-firmware tbody tr', function(e) {
+        if ($(e.target).closest('.dropdown').length) return;
+        const id = parseInt(this.dataset.firmwareId, 10);
+        if (!isNaN(id)) editFirmware(id);
+    });
 
     function uploadFirmware() {
         const fileInput = document.getElementById('firmware-file');
