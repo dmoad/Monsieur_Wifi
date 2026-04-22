@@ -1177,7 +1177,6 @@ const ldNetworks = (function () {
         }
         const hint = document.getElementById('ld-net-mac-hint');
         if (hint) {
-            const i18n = t();
             const key = type === 'password' ? 'networks_mac_hint_password'
                       : type === 'open'     ? 'networks_mac_hint_open'
                       :                        'networks_mac_hint_captive';
@@ -1200,7 +1199,6 @@ const ldNetworks = (function () {
     function renderMacList() {
         const tbody = document.getElementById('ld-net-mac-list');
         if (!tbody) return;
-        const i18n = t();
         const list = drawerMac.map(normaliseMacEntry).filter(e => e.mac);
         tbody.innerHTML = '';
         if (!list.length) {
@@ -1229,7 +1227,6 @@ const ldNetworks = (function () {
     function renderReservations() {
         const tbody = document.getElementById('ld-net-res-list');
         if (!tbody) return;
-        const i18n = t();
         const list = (drawerReservations || []).filter(r => r && r.mac && r.ip);
         tbody.innerHTML = '';
         if (!list.length) {
@@ -1255,7 +1252,6 @@ const ldNetworks = (function () {
     }
 
     function addMacEntry() {
-        const i18n = t();
         const inputEl = document.getElementById('ld-net-mac-input');
         const typeEl  = document.getElementById('ld-net-mac-type');
         const networkType = document.getElementById('ld-net-type').value;
@@ -1282,7 +1278,6 @@ const ldNetworks = (function () {
     }
 
     function addReservation() {
-        const i18n = t();
         const macEl = document.getElementById('ld-net-res-mac');
         const ipEl  = document.getElementById('ld-net-res-ip');
         const mac = (macEl.value || '').trim().toUpperCase().replace(/-/g, ':');
@@ -1393,7 +1388,6 @@ const ldNetworks = (function () {
         const dayTpl = document.getElementById('ld-net-schedule-day-tpl');
         const rangeTpl = document.getElementById('ld-net-schedule-range-tpl');
         if (!dayTpl || !rangeTpl) return;
-        const i18n = t();
         editor.innerHTML = '';
         SCHEDULE_DAYS.forEach(day => {
             const row = dayTpl.content.firstElementChild.cloneNode(true);
@@ -1509,19 +1503,13 @@ const ldNetworks = (function () {
         renderScheduleEditor();
     }
 
-    function t() {
-        return (window.APP_I18N && window.APP_I18N.location_details) || {};
-    }
-
     function bandLabel(radio) {
-        const i18n = t();
         if (radio === '2.4') return i18n.networks_band_24 || '2.4 GHz';
         if (radio === '5')   return i18n.networks_band_5  || '5 GHz';
         return i18n.networks_band_both || '2.4 GHz + 5 GHz';
     }
 
     function typeLabel(type) {
-        const i18n = t();
         return i18n['networks_type_' + type] || type;
     }
 
@@ -1541,7 +1529,6 @@ const ldNetworks = (function () {
         emptyEl.style.display = 'none';
         listEl.style.display = '';
 
-        const i18n = t();
         for (const net of data) {
             const row = tpl.content.firstElementChild.cloneNode(true);
             row.dataset.networkId = net.id;
@@ -1611,7 +1598,6 @@ const ldNetworks = (function () {
         const idx = data.findIndex(n => String(n.id) === String(netId));
         if (idx < 0) return;
         const net = data[idx];
-        const i18n = t();
         const msg = (i18n.networks_delete_confirm || 'Delete "{ssid}"? This cannot be undone.').replace('{ssid}', net.ssid || '');
         const ok = await MwConfirm.open({
             title: i18n.networks_delete_title || 'Delete WiFi network?',
@@ -1760,7 +1746,6 @@ const ldNetworks = (function () {
         const drawer = document.getElementById('ld-network-drawer');
         const netId = drawer && drawer.dataset.networkId;
         if (!netId) return;
-        const i18n = t();
 
         const ssid = document.getElementById('ld-net-ssid').value.trim();
         if (!ssid) {
