@@ -269,6 +269,17 @@ return [
     'web_filter_enabled_body' => '<strong>Le blocage de domaine est maintenant activé.</strong><br>Il faudra <strong>2 à 5 minutes</strong> pour qu\'il soit actif sur le routeur.',
     'qos_settings_saved' => 'Paramètres QoS enregistrés.',
 
+    // Vue d'ensemble / Clonage / Appareil / MAC — messages toast et libellés de sélection
+    'location_info_saved' => 'Informations de l\'emplacement enregistrées.',
+    'clone_assign_to_self' => 'Attribuer à moi-même',
+    'clone_redirecting' => 'Emplacement cloné avec succès. Redirection…',
+    'device_select_required' => 'Veuillez sélectionner un appareil.',
+    'device_load_failed' => 'Échec du chargement des appareils',
+    'device_assigned' => 'Appareil attribué avec succès.',
+    'mac_format_invalid' => 'Format invalide. Utilisez AA:BB:CC:DD:EE:FF',
+    'mac_updated' => 'Adresse MAC mise à jour.',
+    'mac_update_failed' => 'Échec de la mise à jour.',
+
     // Restart modal
     'modal_restart_title' => 'Redémarrer l\'appareil',
     'modal_restart_tab_now' => 'Redémarrer maintenant',

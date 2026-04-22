@@ -442,7 +442,7 @@ async function saveLocationInfo() {
             method: 'PUT',
             body: JSON.stringify(data),
         });
-        toastr.success('Location information saved successfully.');
+        toastr.success(i18n.location_info_saved);
     } catch (err) {
         handleApiError(err, 'saveLocationInfo');
     } finally {
@@ -462,7 +462,7 @@ async function openCloneModal() {
             const res = await apiFetch(`${API}/accounts/users`);
             const users = res.users || res.data || [];
             const $select = $('#clone-owner-select');
-            $select.empty().append('<option value="">Assign to self</option>');
+            $select.empty().append(`<option value="">${i18n.clone_assign_to_self || ''}</option>`);
             users.forEach(u => {
                 $select.append(`<option value="${u.id}">${u.name} (${u.email})</option>`);
             });
@@ -495,7 +495,7 @@ async function cloneLocation() {
 
         if (res.success) {
             $('#clone-location-modal').modal('hide');
-            toastr.success('Location cloned successfully. Redirecting…');
+            toastr.success(i18n.clone_redirecting);
             const parts = window.location.pathname.split('/');
             const lang = ['en', 'fr'].includes(parts[1]) ? parts[1] : 'en';
             setTimeout(() => {
@@ -2228,7 +2228,7 @@ async function loadDevicesForAssignment() {
             $select.val(currentDeviceId).trigger('change');
         }
     } catch (err) {
-        $('#device-select').html('<option value="">Failed to load devices</option>');
+        $('#device-select').html(`<option value="">${i18n.device_load_failed || ''}</option>`);
     }
 }
 
@@ -2240,7 +2240,7 @@ async function saveDeviceAssignment() {
     try {
         const deviceId = $('#device-select').val();
         if (!deviceId) {
-            toastr.error('Please select a device.');
+            toastr.error(i18n.device_select_required);
             return;
         }
         const $selectedOpt = $('#device-select option:selected');
@@ -2257,7 +2257,7 @@ async function saveDeviceAssignment() {
         }
         $('.router_mac_address, .router_mac_address_header').text(mac);
         $('#mac-address-edit-modal').modal('hide');
-        toastr.success('Device assigned successfully.');
+        toastr.success(i18n.device_assigned);
     } catch (err) {
         handleApiError(err, 'saveDeviceAssignment');
     } finally {
@@ -2284,13 +2284,10 @@ async function saveDeviceMacAddress() {
     $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>');
     clearMacInputError();
 
-    const lang = document.documentElement.lang;
     const newMac = $('#device-mac-input').val().trim();
     const macRegex = /^([0-9A-Fa-f]{2}[:\-]){5}([0-9A-Fa-f]{2})$/;
     if (!macRegex.test(newMac)) {
-        showMacInputError(lang === 'fr'
-            ? 'Format invalide. Utilisez AA:BB:CC:DD:EE:FF'
-            : 'Invalid format. Use AA:BB:CC:DD:EE:FF');
+        showMacInputError(i18n.mac_format_invalid);
         $btn.prop('disabled', false).html(origHtml);
         return;
     }
@@ -2311,10 +2308,10 @@ async function saveDeviceMacAddress() {
             $('#device-mac-edit-inline').hide();
             $('#device-mac-preview-view').show();
             reRenderFeather();
-            toastr.success(lang === 'fr' ? 'Adresse MAC mise à jour.' : 'MAC address updated.');
+            toastr.success(i18n.mac_updated);
         } else {
             // Show the server error inline (e.g. "MAC address is already in use by another device")
-            showMacInputError(res.message || (lang === 'fr' ? 'Échec de la mise à jour.' : 'Failed to update MAC address.'));
+            showMacInputError(res.message || i18n.mac_update_failed);
         }
     } catch (err) {
         // 409 conflict and 422 validation errors carry a message we can show inline

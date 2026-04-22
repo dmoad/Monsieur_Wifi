@@ -269,6 +269,17 @@ return [
     'web_filter_enabled_body' => '<strong>Domain blocking is now enabled.</strong><br>It will take <strong>2–5 minutes</strong> to go live on the router.',
     'qos_settings_saved' => 'QoS settings saved.',
 
+    // Overview / Clone / Device / MAC — toasts & select labels
+    'location_info_saved' => 'Location information saved successfully.',
+    'clone_assign_to_self' => 'Assign to self',
+    'clone_redirecting' => 'Location cloned successfully. Redirecting…',
+    'device_select_required' => 'Please select a device.',
+    'device_load_failed' => 'Failed to load devices',
+    'device_assigned' => 'Device assigned successfully.',
+    'mac_format_invalid' => 'Invalid format. Use AA:BB:CC:DD:EE:FF',
+    'mac_updated' => 'MAC address updated.',
+    'mac_update_failed' => 'Failed to update MAC address.',
+
     // Restart modal
     'modal_restart_title' => 'Restart Device',
     'modal_restart_tab_now' => 'Reboot Now',
