@@ -58,12 +58,15 @@
 
     --mw-bg-page:        #0F1117;
     --mw-bg-surface:     #1A1C25;
+    --mw-bg-hover:       #252833;
+    --mw-bg-muted:       #252833;
 
     --mw-text-primary:   #E4E5E9;
     --mw-text-secondary: #9CA0AB;
     --mw-text-muted:     #6B7083;
 
     --mw-border:         #2E3140;
+    --mw-border-light:   #2A2D38;
 
     --mw-success:        #4ADE80;
     --mw-warning:        #FBBF24;
