@@ -37,6 +37,7 @@ let lastLoadedLocalQosBw = null;
 
 const API = window.APP_CONFIG_V5?.apiBase || (window.APP_NETWORK_CONFIG?.apiBase) || '/api';
 const i18n = (window.APP_I18N && window.APP_I18N.location_details) || {};
+const commonI18n = (window.APP_I18N && window.APP_I18N.common) || {};
 
 // ============================================================================
 // UTILITY HELPERS
@@ -409,7 +410,7 @@ function resetLocationForm() {
 async function saveLocationInfo() {
     const $btn = $('#save-location-info');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     try {
         const data = {
@@ -477,7 +478,7 @@ async function openCloneModal() {
 async function cloneLocation() {
     const $btn = $('#confirm-clone-btn');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-1"></span> Cloning…');
+    $btn.prop('disabled', true).html(`<span class="spinner-border spinner-border-sm mr-1"></span> ${commonI18n.cloning || ''}`);
 
     try {
         const body = {};
@@ -817,7 +818,7 @@ async function saveWanSettings() {
         }
     }
 
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     try {
         const data = { wan_connection_type: connType };
@@ -868,7 +869,7 @@ async function saveWanSettings() {
 async function saveRadioSettings() {
     const $btn = $('#save-radio-settings');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     try {
         const data = {
@@ -909,7 +910,7 @@ async function loadWebFilterCategories(selectedIds) {
 async function saveWebFilterSettings() {
     const $btn = $('#save-web-filter-settings');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     const filterEnabled = $('#global-web-filter').is(':checked');
 
@@ -964,7 +965,7 @@ async function saveWebFilterSettings() {
 async function saveQosSettings() {
     const $btn = $('#save-qos-settings');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     try {
         const payload = {
@@ -2233,7 +2234,7 @@ async function loadDevicesForAssignment() {
 async function saveDeviceAssignment() {
     const $btn = $('#save-mac-address-btn');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     try {
         const deviceId = $('#device-select').val();
@@ -2397,7 +2398,7 @@ async function startFirmwareUpdate() {
 async function restartDevice() {
     const $btn = $('#confirm-restart-btn');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Restarting…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.restarting || ''}`);
 
     try {
         await apiFetch(`${API}/locations/${location_id}`, {
@@ -2437,7 +2438,7 @@ function populateRebootSchedule(location) {
 async function saveRebootSchedule() {
     const $btn = $('#save-reboot-schedule-btn');
     const origHtml = $btn.html();
-    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving…');
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     // datetime-local gives "2026-03-27T03:00", API expects "2026-03-27 03:00"
     const rawVal = $('#scheduled-reboot-time').val();

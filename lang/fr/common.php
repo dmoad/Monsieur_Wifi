@@ -5,6 +5,7 @@ return [
     'add' => 'Ajouter',
     'cancel' => 'Annuler',
     'close' => 'Fermer',
+    'cloning' => 'Clonage…',
     'home' => 'Accueil',
     'inactive' => 'Inactif',
     'loading' => 'Chargement...',
@@ -14,4 +15,6 @@ return [
     'optional' => '(optionnel)',
     'profile' => 'Profil',
     'reset' => 'Réinitialiser',
+    'restarting' => 'Redémarrage…',
+    'saving' => 'Enregistrement…',
 ];
