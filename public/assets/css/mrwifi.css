@@ -1064,3 +1064,34 @@ body.mw-drawer-locked {
     background-color: var(--mw-bg-muted);
     color: var(--mw-text-muted);
 }
+
+/* ================================================================
+   HEADINGS + BREADCRUMB — dark-mode legibility
+   Bootstrap / Vuexy hardcode dark text + light breadcrumb bg which
+   collapse into the dark surface. Token-ise them.
+================================================================ */
+:root[data-theme="dark"] .content-header-title,
+:root[data-theme="dark"] .card-title,
+:root[data-theme="dark"] .card .card-header h1,
+:root[data-theme="dark"] .card .card-header h2,
+:root[data-theme="dark"] .card .card-header h3,
+:root[data-theme="dark"] .card .card-header h4,
+:root[data-theme="dark"] .card .card-header h5,
+:root[data-theme="dark"] .card .card-header h6 {
+    color: var(--mw-text-primary);
+}
+
+:root[data-theme="dark"] .breadcrumb {
+    background-color: transparent;
+    color: var(--mw-text-secondary);
+}
+:root[data-theme="dark"] .breadcrumb-item,
+:root[data-theme="dark"] .breadcrumb-item.active {
+    color: var(--mw-text-secondary);
+}
+:root[data-theme="dark"] .breadcrumb-item a {
+    color: var(--mw-primary);
+}
+:root[data-theme="dark"] .breadcrumb-item + .breadcrumb-item::before {
+    color: var(--mw-text-muted);
+}
