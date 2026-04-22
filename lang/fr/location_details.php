@@ -58,7 +58,22 @@ return [
     'tab_location_details' => 'Détails de l\'emplacement',
     'tab_router_settings' => 'Paramètres du routeur',
     'tab_networks' => 'Réseaux WiFi',
-    'networks_placeholder' => 'La gestion des réseaux WiFi est en cours de migration dans cet onglet.',
+
+    // Onglet Réseaux WiFi
+    'networks_card_title' => 'Réseaux WiFi',
+    'networks_card_subtitle' => 'Gérez l\'ensemble des réseaux WiFi associés à cet emplacement — ajouter, supprimer ou configurer chaque réseau.',
+    'networks_add' => 'Ajouter un réseau',
+    'networks_empty' => 'Aucun réseau WiFi configuré pour le moment. Cliquez sur « Ajouter un réseau » pour en créer un.',
+    'networks_load_error' => 'Impossible de charger les réseaux WiFi.',
+    'networks_type_password' => 'Mot de passe',
+    'networks_type_captive_portal' => 'Portail captif',
+    'networks_type_open' => 'Ouvert',
+    'networks_status_active' => 'Actif',
+    'networks_status_inactive' => 'Inactif',
+    'networks_band_both' => '2.4 GHz + 5 GHz',
+    'networks_band_24' => '2.4 GHz uniquement',
+    'networks_band_5' => '5 GHz uniquement',
+    'networks_vlan_label' => 'VLAN',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Identité et adresse de l\'emplacement',

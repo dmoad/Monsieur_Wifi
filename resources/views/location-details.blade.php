@@ -503,6 +503,8 @@
     window.APP_CONFIG_V5 = {
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'
     };
+    window.APP_I18N = window.APP_I18N || {};
+    window.APP_I18N.location_details = @json(__('location_details'));
 </script>
 <script src="/assets/js/location-details.js?v={{ filemtime(public_path('assets/js/location-details.js')) }}"></script>
 @endpush

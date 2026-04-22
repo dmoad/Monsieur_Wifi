@@ -58,7 +58,22 @@ return [
     'tab_location_details' => 'Location Details',
     'tab_router_settings' => 'Router Settings',
     'tab_networks' => 'WiFi Networks',
-    'networks_placeholder' => 'WiFi networks management is being moved into this tab.',
+
+    // WiFi Networks tab
+    'networks_card_title' => 'WiFi Networks',
+    'networks_card_subtitle' => 'Manage all WiFi networks associated with this location — add, remove, or configure each network.',
+    'networks_add' => 'Add Network',
+    'networks_empty' => 'No WiFi networks configured yet. Click "Add Network" to create one.',
+    'networks_load_error' => 'Could not load WiFi networks.',
+    'networks_type_password' => 'Password',
+    'networks_type_captive_portal' => 'Captive Portal',
+    'networks_type_open' => 'Open',
+    'networks_status_active' => 'Active',
+    'networks_status_inactive' => 'Inactive',
+    'networks_band_both' => '2.4 GHz + 5 GHz',
+    'networks_band_24' => '2.4 GHz only',
+    'networks_band_5' => '5 GHz only',
+    'networks_vlan_label' => 'VLAN',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Location Identity & Address',

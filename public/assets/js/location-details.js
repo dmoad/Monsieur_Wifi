@@ -1013,6 +1013,150 @@ function escapeHtml(str) {
 }
 
 // ============================================================================
+// LD NETWORKS (Tab 4 — WiFi networks list)
+// Separate from NETWORK SUMMARY above, which powers the Overview shortcut card
+// (scheduled for removal in T4.6). Drawer wiring + edit + delete land in T4.4+.
+// ============================================================================
+
+const ldNetworks = (function () {
+    let loaded = false;
+    let data = [];
+
+    function t() {
+        return (window.APP_I18N && window.APP_I18N.location_details) || {};
+    }
+
+    function bandLabel(radio) {
+        const i18n = t();
+        if (radio === '2.4') return i18n.networks_band_24 || '2.4 GHz';
+        if (radio === '5')   return i18n.networks_band_5  || '5 GHz';
+        return i18n.networks_band_both || '2.4 GHz + 5 GHz';
+    }
+
+    function typeLabel(type) {
+        const i18n = t();
+        return i18n['networks_type_' + type] || type;
+    }
+
+    function render() {
+        const listEl  = document.getElementById('ld-networks-list');
+        const emptyEl = document.getElementById('ld-networks-empty');
+        const tpl     = document.getElementById('ld-network-row-tpl');
+        if (!listEl || !tpl) return;
+
+        listEl.innerHTML = '';
+
+        if (!data.length) {
+            emptyEl.style.display = '';
+            listEl.style.display = 'none';
+            return;
+        }
+        emptyEl.style.display = 'none';
+        listEl.style.display = '';
+
+        const i18n = t();
+        for (const net of data) {
+            const row = tpl.content.firstElementChild.cloneNode(true);
+            row.dataset.networkId = net.id;
+            row.dataset.networkType = net.type;
+
+            row.querySelector('.ld-net-name').textContent = net.ssid || '';
+
+            const typeBadge = row.querySelector('.ld-net-type-badge');
+            typeBadge.textContent = typeLabel(net.type);
+            typeBadge.classList.add('ld-net-type-' + net.type);
+
+            const statusBadge = row.querySelector('.ld-net-status-badge');
+            const active = net.enabled !== false;
+            statusBadge.textContent = active
+                ? (i18n.networks_status_active || 'Active')
+                : (i18n.networks_status_inactive || 'Inactive');
+            statusBadge.classList.add(active ? 'is-active' : 'is-inactive');
+
+            row.querySelector('.ld-net-band').textContent = bandLabel(net.radio);
+
+            if (net.vlan_id) {
+                const vlanEl = row.querySelector('.ld-net-vlan');
+                vlanEl.textContent = (i18n.networks_vlan_label || 'VLAN') + ' ' + net.vlan_id;
+                vlanEl.style.display = '';
+            }
+
+            listEl.appendChild(row);
+        }
+
+        if (typeof feather !== 'undefined') feather.replace({ width: 18, height: 18 });
+    }
+
+    async function load() {
+        if (!location_id) return;
+        const loadingEl = document.getElementById('ld-networks-loading');
+        const emptyEl   = document.getElementById('ld-networks-empty');
+        const errorEl   = document.getElementById('ld-networks-error');
+        const listEl    = document.getElementById('ld-networks-list');
+        if (!loadingEl) return;
+
+        loadingEl.style.display = '';
+        emptyEl.style.display = 'none';
+        errorEl.style.display = 'none';
+        listEl.style.display = 'none';
+
+        try {
+            const res = await apiFetch(`${API}/locations/${location_id}/networks`);
+            data = (res && res.data && res.data.networks) || [];
+            render();
+            loaded = true;
+        } catch (err) {
+            console.error('ldNetworks.load', err);
+            errorEl.style.display = '';
+        } finally {
+            loadingEl.style.display = 'none';
+        }
+    }
+
+    async function add() {
+        const btn = document.getElementById('ld-networks-add-btn');
+        if (!btn || btn.disabled) return;
+        btn.disabled = true;
+        try {
+            const next = data.length;
+            const octet = 10 + next;
+            const res = await apiFetch(`${API}/locations/${location_id}/networks`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'password',
+                    ssid: 'New Network',
+                    enabled: true,
+                    ip_address: `192.168.${octet}.1`,
+                    dhcp_start: `192.168.${octet}.100`,
+                    dhcp_end: 101,
+                }),
+            });
+            if (res && res.data && res.data.network) {
+                data.push(res.data.network);
+                render();
+            }
+        } catch (err) {
+            handleApiError(err, 'ldNetworks.add');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('#ld-networks-add-btn')) {
+            e.preventDefault();
+            add();
+        }
+    });
+
+    return {
+        load,
+        render,
+        isLoaded: () => loaded,
+    };
+})();
+
+// ============================================================================
 // USAGE STATS
 // ============================================================================
 
@@ -1796,7 +1940,7 @@ function initEventHandlers() {
     if (user) UserManager.updateUserUI(user);
 }
 
-// Page-level tab switching (Overview / Settings / Router)
+// Page-level tab switching (Overview / Settings / Router / Networks)
 document.addEventListener('click', function (e) {
     const tab = e.target.closest('.ld-tab');
     if (!tab) return;
@@ -1804,4 +1948,7 @@ document.addEventListener('click', function (e) {
     if (!key) return;
     document.querySelectorAll('.ld-tab').forEach(t => t.classList.toggle('active', t === tab));
     document.querySelectorAll('.ld-panel').forEach(p => p.classList.toggle('active', p.id === 'ld-panel-' + key));
+    if (key === 'networks' && !ldNetworks.isLoaded()) {
+        ldNetworks.load();
+    }
 });

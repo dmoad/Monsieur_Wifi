@@ -280,3 +280,142 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     opacity: 0.55;
     transition: opacity 0.2s ease;
 }
+
+/* ================================================================
+   LD NETWORKS (Tab 4) — SSID list card + row styling
+================================================================ */
+.ld-networks-card { margin-bottom: 0; }
+
+.ld-networks-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--mw-space-md);
+}
+.ld-networks-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--mw-text-primary);
+    line-height: 1.3;
+}
+.ld-networks-subtitle {
+    font-size: 12px;
+    color: var(--mw-text-muted);
+    margin-top: 4px;
+    max-width: 640px;
+}
+
+.ld-networks-empty-state {
+    padding: var(--mw-space-xl) var(--mw-space-xl);
+    text-align: center;
+    color: var(--mw-text-muted);
+    font-size: 13px;
+}
+.ld-networks-error { color: var(--mw-danger); }
+
+.ld-networks-list { padding: 0; }
+.ld-network-row {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-lg);
+    padding: var(--mw-space-md) var(--mw-space-xl);
+    border-top: 1px solid var(--mw-border-light);
+    cursor: pointer;
+    transition: background 0.12s;
+}
+.ld-network-row:first-child { border-top: none; }
+.ld-network-row:hover { background: var(--mw-bg-hover); }
+.ld-network-row:hover .ld-net-chevron { color: var(--mw-primary); }
+
+.ld-net-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--mw-radius-md);
+    background: var(--mw-primary-tint);
+    color: var(--mw-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.ld-net-icon [data-feather] { width: 18px !important; height: 18px !important; }
+.ld-network-row[data-network-type="captive_portal"] .ld-net-icon {
+    background: rgba(22, 163, 74, 0.12);
+    color: var(--mw-success);
+}
+.ld-network-row[data-network-type="open"] .ld-net-icon {
+    background: var(--mw-bg-muted);
+    color: var(--mw-text-secondary);
+}
+
+.ld-net-body { flex: 1; min-width: 0; }
+.ld-net-name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-sm);
+    flex-wrap: wrap;
+}
+.ld-net-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--mw-text-primary);
+}
+
+.ld-net-type-badge,
+.ld-net-status-badge {
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: var(--mw-radius-full);
+    padding: 3px 10px;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.ld-net-type-badge.ld-net-type-password {
+    background: var(--mw-primary-tint);
+    color: var(--mw-primary);
+}
+.ld-net-type-badge.ld-net-type-captive_portal {
+    background: rgba(22, 163, 74, 0.12);
+    color: var(--mw-success);
+}
+.ld-net-type-badge.ld-net-type-open {
+    background: var(--mw-bg-muted);
+    color: var(--mw-text-secondary);
+}
+
+.ld-net-status-badge { padding-left: 8px; }
+.ld-net-status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+.ld-net-status-badge.is-active {
+    background: rgba(22, 163, 74, 0.12);
+    color: var(--mw-success);
+}
+.ld-net-status-badge.is-inactive {
+    background: var(--mw-bg-muted);
+    color: var(--mw-text-muted);
+}
+
+.ld-net-meta {
+    display: flex;
+    gap: var(--mw-space-lg);
+    font-size: 12px;
+    color: var(--mw-text-muted);
+    margin-top: 4px;
+}
+
+.ld-net-chevron {
+    flex-shrink: 0;
+    color: var(--mw-text-muted);
+    width: 18px !important;
+    height: 18px !important;
+    transition: color 0.12s;
+}
