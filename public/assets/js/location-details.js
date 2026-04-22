@@ -2735,14 +2735,37 @@ function initEventHandlers() {
 }
 
 // Page-level tab switching (Overview / Settings / Router / Networks)
+function activateLdTab(key, { updateUrl = true } = {}) {
+    const tab = document.querySelector(`.ld-tab[data-tab="${key}"]`);
+    const panel = document.getElementById('ld-panel-' + key);
+    if (!tab || !panel) return;
+    document.querySelectorAll('.ld-tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.querySelectorAll('.ld-panel').forEach(p => p.classList.toggle('active', p === panel));
+    if (updateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', key);
+        history.replaceState(null, '', url);
+    }
+    if (key === 'networks' && !ldNetworks.isLoaded()) {
+        ldNetworks.load();
+    }
+}
+
 document.addEventListener('click', function (e) {
     const tab = e.target.closest('.ld-tab');
     if (!tab) return;
     const key = tab.dataset.tab;
     if (!key) return;
-    document.querySelectorAll('.ld-tab').forEach(t => t.classList.toggle('active', t === tab));
-    document.querySelectorAll('.ld-panel').forEach(p => p.classList.toggle('active', p.id === 'ld-panel-' + key));
-    if (key === 'networks' && !ldNetworks.isLoaded()) {
-        ldNetworks.load();
-    }
+    activateLdTab(key);
 });
+
+// Restore active tab from ?tab= on page load
+(function restoreTabFromUrl() {
+    const key = new URL(window.location.href).searchParams.get('tab');
+    if (!key) return;
+    const allowed = ['overview', 'settings', 'router', 'networks'];
+    if (!allowed.includes(key)) return;
+    // Defer one tick so the ldNetworks IIFE + DOM are fully ready
+    document.addEventListener('DOMContentLoaded', () => activateLdTab(key, { updateUrl: false }));
+    if (document.readyState !== 'loading') activateLdTab(key, { updateUrl: false });
+})();
