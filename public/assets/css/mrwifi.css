@@ -1039,3 +1039,28 @@ body.mw-sb-expanded .mw-footer { margin-left: var(--mw-sb-width-exp); }
 body.mw-drawer-locked {
     overflow: hidden;
 }
+
+/* ================================================================
+   FORM CONTROLS — dark-mode overrides
+   Bootstrap's .form-control hardcodes a white background, which
+   clashes with dark card/drawer surfaces. Use transparent so inputs
+   inherit their container bg; the token border defines the control.
+================================================================ */
+:root[data-theme="dark"] .form-control {
+    background-color: transparent;
+    color: var(--mw-text-primary);
+    border-color: var(--mw-border);
+}
+:root[data-theme="dark"] .form-control::placeholder {
+    color: var(--mw-text-muted);
+}
+:root[data-theme="dark"] .form-control:focus {
+    background-color: var(--mw-bg-surface);
+    border-color: var(--mw-primary);
+    color: var(--mw-text-primary);
+}
+:root[data-theme="dark"] .form-control:disabled,
+:root[data-theme="dark"] .form-control[readonly] {
+    background-color: var(--mw-bg-muted);
+    color: var(--mw-text-muted);
+}
