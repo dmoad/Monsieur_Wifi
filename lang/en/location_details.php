@@ -97,6 +97,7 @@ return [
     'networks_email_otp' => 'Require email verification code (OTP)',
     'networks_email_otp_hint' => 'When disabled, guests enter their email without receiving a verification code.',
     'networks_portal_password_required' => 'Shared portal password is required when the "password" login method is active.',
+    'networks_vlan_disabled_hint' => 'VLAN tagging is disabled for this location. Enable it in Location Details → Router to configure per-network VLANs.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Location Identity & Address',

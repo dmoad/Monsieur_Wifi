@@ -97,6 +97,7 @@ return [
     'networks_email_otp' => 'Exiger un code de vérification par e-mail (OTP)',
     'networks_email_otp_hint' => 'Désactivé, les invités saisissent leur e-mail sans recevoir de code de vérification.',
     'networks_portal_password_required' => 'Le mot de passe partagé du portail est requis lorsque la méthode de connexion « mot de passe » est active.',
+    'networks_vlan_disabled_hint' => 'Le marquage VLAN est désactivé pour cet emplacement. Activez-le dans Détails de l\'emplacement → Routeur pour configurer les VLAN par réseau.',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Identité et adresse de l\'emplacement',

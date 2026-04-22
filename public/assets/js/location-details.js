@@ -1022,6 +1022,7 @@ const ldNetworks = (function () {
     let loaded = false;
     let data = [];
     let captiveDesigns = null; // null = not fetched; array once fetched
+    let vlanEnabled = false; // location-wide VLAN setting, fetched alongside networks
 
     async function ensureCaptiveDesigns() {
         if (captiveDesigns !== null) return captiveDesigns;
@@ -1071,6 +1072,35 @@ const ldNetworks = (function () {
         if (pwdGroup) pwdGroup.style.display = methods.includes('password') ? '' : 'none';
         if (otpGroup) otpGroup.style.display = methods.includes('email') ? '' : 'none';
         if (socGroup) socGroup.style.display = methods.includes('social') ? '' : 'none';
+    }
+
+    function applyIpModeVisibility() {
+        const mode = document.getElementById('ld-net-ip-mode').value;
+        const subMode = document.getElementById('ld-net-bridge-lan-mode').value || 'dhcp_client';
+        const isBridge = mode === 'bridge';
+        const isBridgeLan = mode === 'bridge_lan';
+        const noDhcpServer = isBridge || (isBridgeLan && subMode === 'dhcp_client');
+        const hideIpFields = isBridge || (isBridgeLan && subMode === 'dhcp_client');
+
+        const bridgeLanWrap = document.querySelector('.ld-net-bridge-lan-wrap');
+        if (bridgeLanWrap) bridgeLanWrap.style.display = isBridgeLan ? '' : 'none';
+
+        const ipFields = document.querySelector('.ld-net-ip-fields');
+        if (ipFields) ipFields.style.display = hideIpFields ? 'none' : '';
+
+        const dhcpSection = document.querySelector('.ld-net-dhcp-section');
+        if (dhcpSection) dhcpSection.style.display = noDhcpServer ? 'none' : '';
+
+        // Bridge networks can't be captive_portal (backend doesn't allow bridge for captive)
+    }
+
+    function applyVlanGating() {
+        const vlanId = document.getElementById('ld-net-vlan-id');
+        const vlanTag = document.getElementById('ld-net-vlan-tagging');
+        const hint = document.getElementById('ld-net-vlan-hint');
+        if (vlanId) vlanId.disabled = !vlanEnabled;
+        if (vlanTag) vlanTag.disabled = !vlanEnabled;
+        if (hint) hint.style.display = vlanEnabled ? 'none' : '';
     }
 
     function t() {
@@ -1152,8 +1182,12 @@ const ldNetworks = (function () {
         listEl.style.display = 'none';
 
         try {
-            const res = await apiFetch(`${API}/locations/${location_id}/networks`);
-            data = (res && res.data && res.data.networks) || [];
+            const [netsRes, settingsRes] = await Promise.all([
+                apiFetch(`${API}/locations/${location_id}/networks`),
+                apiFetch(`${API}/locations/${location_id}/settings`).catch(() => null),
+            ]);
+            data = (netsRes && netsRes.data && netsRes.data.networks) || [];
+            vlanEnabled = !!(settingsRes && settingsRes.data && settingsRes.data.settings && settingsRes.data.settings.vlan_enabled);
             render();
             loaded = true;
         } catch (err) {
@@ -1237,6 +1271,25 @@ const ldNetworks = (function () {
         document.getElementById('ld-net-upload-limit').value = net.upload_limit || '';
         applyAuthMethodVisibility();
 
+        // Réseau (IP config + DHCP + VLAN)
+        const rawIpMode = net.ip_mode || 'static';
+        const effectiveIpMode = (type === 'captive_portal' && (rawIpMode === 'bridge' || rawIpMode === 'bridge_lan'))
+            ? 'static' : rawIpMode;
+        document.getElementById('ld-net-bridge-lan-mode').value = net.bridge_lan_dhcp_mode || 'dhcp_client';
+        document.getElementById('ld-net-ip-mode').value = effectiveIpMode;
+        document.getElementById('ld-net-ip-address').value = net.ip_address || '';
+        document.getElementById('ld-net-netmask').value = net.netmask || '255.255.255.0';
+        document.getElementById('ld-net-gateway').value = net.gateway || '';
+        document.getElementById('ld-net-dns1').value = net.dns1 || '';
+        document.getElementById('ld-net-dns2').value = net.dns2 || '';
+        document.getElementById('ld-net-dhcp-enabled').checked = net.dhcp_enabled !== false;
+        document.getElementById('ld-net-dhcp-start').value = net.dhcp_start || '';
+        document.getElementById('ld-net-dhcp-end').value = net.dhcp_end != null ? net.dhcp_end : '';
+        document.getElementById('ld-net-vlan-id').value = net.vlan_id || '';
+        document.getElementById('ld-net-vlan-tagging').value = net.vlan_tagging || 'disabled';
+        applyIpModeVisibility();
+        applyVlanGating();
+
         applyTypeVisibility(type);
 
         document.getElementById('ld-network-drawer-save').disabled = false;
@@ -1315,6 +1368,32 @@ const ldNetworks = (function () {
             payload.upload_limit = parseInt(document.getElementById('ld-net-upload-limit').value, 10) || null;
         }
 
+        // Réseau (IP / DHCP / VLAN) — applies to all types
+        const ipMode = document.getElementById('ld-net-ip-mode').value;
+        const subMode = document.getElementById('ld-net-bridge-lan-mode').value;
+        const isBridge = ipMode === 'bridge';
+        const isBridgeLan = ipMode === 'bridge_lan';
+        const noManualIp = isBridge || (isBridgeLan && subMode === 'dhcp_client');
+        const noDhcpServer = isBridge || (isBridgeLan && subMode === 'dhcp_client');
+
+        payload.ip_mode = ipMode;
+        payload.bridge_lan_dhcp_mode = isBridgeLan ? subMode : null;
+        payload.ip_address = noManualIp ? null : (document.getElementById('ld-net-ip-address').value.trim() || null);
+        payload.netmask = noManualIp ? null : (document.getElementById('ld-net-netmask').value.trim() || null);
+        payload.gateway = noManualIp ? null : (document.getElementById('ld-net-gateway').value.trim() || null);
+        payload.dns1 = noManualIp ? null : (document.getElementById('ld-net-dns1').value.trim() || null);
+        payload.dns2 = noManualIp ? null : (document.getElementById('ld-net-dns2').value.trim() || null);
+        payload.dhcp_enabled = noDhcpServer ? false : document.getElementById('ld-net-dhcp-enabled').checked;
+        payload.dhcp_start = noDhcpServer ? null : (document.getElementById('ld-net-dhcp-start').value.trim() || null);
+        payload.dhcp_end = noDhcpServer ? null : (() => {
+            const raw = document.getElementById('ld-net-dhcp-end').value.trim();
+            if (!raw) return null;
+            const n = parseInt(raw, 10);
+            return Number.isNaN(n) ? null : n;
+        })();
+        payload.vlan_id = parseInt(document.getElementById('ld-net-vlan-id').value, 10) || null;
+        payload.vlan_tagging = document.getElementById('ld-net-vlan-tagging').value;
+
         const btn = document.getElementById('ld-network-drawer-save');
         btn.disabled = true;
         try {
@@ -1377,6 +1456,9 @@ const ldNetworks = (function () {
         }
         if (e.target && e.target.classList.contains('ld-net-auth-method')) {
             applyAuthMethodVisibility();
+        }
+        if (e.target && (e.target.id === 'ld-net-ip-mode' || e.target.id === 'ld-net-bridge-lan-mode')) {
+            applyIpModeVisibility();
         }
     });
 

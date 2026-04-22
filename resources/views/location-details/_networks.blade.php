@@ -217,6 +217,124 @@
                     </div>
                 </div>
 
+                <div class="ld-drawer-section">
+                    <h6 class="ld-drawer-section-title">{{ __('location_networks.panel_ip_config') }}</h6>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="ld-net-ip-mode">{{ __('location_networks.ip_mode') }}</label>
+                                <select class="form-control" id="ld-net-ip-mode">
+                                    <option value="static">{{ __('location_networks.ip_mode_static') }}</option>
+                                    <option value="bridge_lan">{{ __('location_networks.ip_mode_bridge_lan') }}</option>
+                                    <option value="bridge">{{ __('location_networks.ip_mode_bridge') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 ld-net-bridge-lan-wrap" style="display:none;">
+                            <div class="form-group">
+                                <label for="ld-net-bridge-lan-mode">{{ __('location_networks.lan_dhcp_mode') }}</label>
+                                <select class="form-control" id="ld-net-bridge-lan-mode">
+                                    <option value="dhcp_client">{{ __('location_networks.lan_dhcp_client') }}</option>
+                                    <option value="dhcp_server">{{ __('location_networks.lan_dhcp_server') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ld-net-ip-fields">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ld-net-ip-address">{{ __('location_networks.ip_address') }}</label>
+                                    <input type="text" class="form-control" id="ld-net-ip-address" placeholder="{{ __('location_networks.ip_address_placeholder') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ld-net-netmask">{{ __('location_networks.netmask') }}</label>
+                                    <input type="text" class="form-control" id="ld-net-netmask" placeholder="255.255.255.0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ld-net-gateway">{{ __('location_networks.gateway') }}</label>
+                                    <input type="text" class="form-control" id="ld-net-gateway" placeholder="{{ __('location_networks.gateway_placeholder') }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ld-net-dns1">{{ __('location_networks.primary_dns') }}</label>
+                                    <input type="text" class="form-control" id="ld-net-dns1" placeholder="8.8.8.8">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ld-net-dns2">{{ __('location_networks.alt_dns') }}</label>
+                                    <input type="text" class="form-control" id="ld-net-dns2" placeholder="8.8.4.4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ld-drawer-section ld-net-dhcp-section">
+                    <h6 class="ld-drawer-section-title">{{ __('location_networks.dhcp_pool_title') }}</h6>
+                    <p class="text-muted small mb-3">{{ __('location_networks.dhcp_pool_desc') }}</p>
+
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="ld-net-dhcp-enabled">
+                            <label class="custom-control-label" for="ld-net-dhcp-enabled">{{ __('location_networks.enable_dhcp') }}</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ld-net-dhcp-start">{{ __('location_networks.start_ip') }}</label>
+                                <input type="text" class="form-control" id="ld-net-dhcp-start" placeholder="{{ __('location_networks.start_ip_placeholder') }}" autocomplete="off">
+                                <small class="form-text text-muted">{{ __('location_networks.start_ip_hint') }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ld-net-dhcp-end">{{ __('location_networks.pool_size') }}</label>
+                                <input type="number" class="form-control" id="ld-net-dhcp-end" placeholder="{{ __('location_networks.pool_size_placeholder') }}" min="1" max="16777216" step="1">
+                                <small class="form-text text-muted">{{ __('location_networks.pool_size_hint') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ld-drawer-section">
+                    <h6 class="ld-drawer-section-title">{{ __('location_networks.sub_vlan') }}</h6>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="ld-net-vlan-id">{{ __('location_networks.vlan_id') }} <small class="text-muted font-weight-normal">{{ __('location_networks.vlan_id_range') }}</small></label>
+                                <input type="number" class="form-control" id="ld-net-vlan-id" placeholder="{{ __('location_networks.vlan_none') }}" min="1" max="4094">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="ld-net-vlan-tagging">{{ __('location_networks.tagging') }}</label>
+                                <select class="form-control" id="ld-net-vlan-tagging">
+                                    <option value="disabled">{{ __('location_networks.tagging_disabled') }}</option>
+                                    <option value="tagged">{{ __('location_networks.tagging_tagged') }}</option>
+                                    <option value="untagged">{{ __('location_networks.tagging_untagged') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted" id="ld-net-vlan-hint" style="display:none;">{{ __('location_details.networks_vlan_disabled_hint') }}</small>
+                </div>
+
                 <div class="ld-drawer-section" data-show-for-type="password">
                     <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_security') }}</h6>
 
