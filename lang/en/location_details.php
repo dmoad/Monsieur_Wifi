@@ -260,6 +260,15 @@ return [
     'channel_scan_failed' => 'Channel scan failed.',
     'optimal_channels_applied' => 'Optimal channels applied.',
 
+    // Web filter + QoS save — toasts
+    'web_filter_dns1_invalid' => 'Invalid WAN Primary DNS address.',
+    'web_filter_dns2_invalid' => 'Invalid WAN Secondary DNS address.',
+    'web_filter_dns_order' => 'Set a primary DNS before adding a secondary.',
+    'web_filter_saved' => 'Web filter settings saved.',
+    'web_filter_enabled_title' => 'Web Filter Settings Saved',
+    'web_filter_enabled_body' => '<strong>Domain blocking is now enabled.</strong><br>It will take <strong>2–5 minutes</strong> to go live on the router.',
+    'qos_settings_saved' => 'QoS settings saved.',
+
     // Restart modal
     'modal_restart_title' => 'Restart Device',
     'modal_restart_tab_now' => 'Reboot Now',

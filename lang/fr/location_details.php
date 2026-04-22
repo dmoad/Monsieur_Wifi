@@ -260,6 +260,15 @@ return [
     'channel_scan_failed' => 'Échec de l\'analyse des canaux.',
     'optimal_channels_applied' => 'Canaux optimaux appliqués.',
 
+    // Enregistrement filtre Web + QoS — messages toast
+    'web_filter_dns1_invalid' => 'Adresse DNS principale WAN invalide.',
+    'web_filter_dns2_invalid' => 'Adresse DNS secondaire WAN invalide.',
+    'web_filter_dns_order' => 'Définissez un DNS primaire avant d\'ajouter un secondaire.',
+    'web_filter_saved' => 'Paramètres du filtre Web enregistrés.',
+    'web_filter_enabled_title' => 'Paramètres du filtre Web enregistrés',
+    'web_filter_enabled_body' => '<strong>Le blocage de domaine est maintenant activé.</strong><br>Il faudra <strong>2 à 5 minutes</strong> pour qu\'il soit actif sur le routeur.',
+    'qos_settings_saved' => 'Paramètres QoS enregistrés.',
+
     // Restart modal
     'modal_restart_title' => 'Redémarrer l\'appareil',
     'modal_restart_tab_now' => 'Redémarrer maintenant',

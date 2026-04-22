@@ -919,17 +919,17 @@ async function saveWebFilterSettings() {
     const wan_dns2 = $('#wan-dns2').val().trim() || null;
 
     if (wan_dns1 && !isValidIPv4(wan_dns1)) {
-        toastr.warning('Invalid WAN Primary DNS address.');
+        toastr.warning(i18n.web_filter_dns1_invalid);
         $btn.prop('disabled', false).html(origHtml);
         return;
     }
     if (wan_dns2 && !isValidIPv4(wan_dns2)) {
-        toastr.warning('Invalid WAN Secondary DNS address.');
+        toastr.warning(i18n.web_filter_dns2_invalid);
         $btn.prop('disabled', false).html(origHtml);
         return;
     }
     if (wan_dns2 && !wan_dns1) {
-        toastr.warning('Set a primary DNS before adding a secondary.');
+        toastr.warning(i18n.web_filter_dns_order);
         $btn.prop('disabled', false).html(origHtml);
         return;
     }
@@ -948,12 +948,12 @@ async function saveWebFilterSettings() {
 
         if (filterEnabled) {
             toastr.success(
-                '<strong>Domain blocking is now enabled.</strong><br>It will take <strong>2–5 minutes</strong> to go live on the router.',
-                'Web Filter Settings Saved',
+                i18n.web_filter_enabled_body,
+                i18n.web_filter_enabled_title,
                 { timeOut: 8000, extendedTimeOut: 3000, enableHtml: true }
             );
         } else {
-            toastr.success('Web filter settings saved.');
+            toastr.success(i18n.web_filter_saved);
         }
     } catch (err) {
         handleApiError(err, 'saveWebFilterSettings');
@@ -987,7 +987,7 @@ async function saveQosSettings() {
             method: 'PUT',
             body: JSON.stringify(payload),
         });
-        toastr.success('QoS settings saved.');
+        toastr.success(i18n.qos_settings_saved);
         await loadLocationSettings();
     } catch (err) {
         handleApiError(err, 'saveQosSettings');
