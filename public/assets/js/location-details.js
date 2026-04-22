@@ -89,19 +89,6 @@ function formatDuration(seconds) {
     return `${s}s`;
 }
 
-function networksPageUrl() {
-    // Derive language prefix from current path (/en/ or /fr/)
-    const parts = window.location.pathname.split('/');
-    const lang = ['en', 'fr'].includes(parts[1]) ? parts[1] : 'en';
-    return `/${lang}/locations/${location_id}/networks`;
-}
-
-function buildNetworksUrl(locId) {
-    const parts = window.location.pathname.split('/');
-    const lang = ['en', 'fr'].includes(parts[1]) ? parts[1] : 'en';
-    return `/${lang}/locations/${locId}/networks`;
-}
-
 // ============================================================================
 // MW-DRAWER — right-anchored overlay primitive
 // Extractable to public/assets/js/mw-drawer.js once a second consumer exists
@@ -275,7 +262,6 @@ async function initPage() {
         await loadLocationDetails();
         loadCurrentUsage(currentUsagePeriod);
         loadOnlineUsers();
-        loadNetworkSummary();
         initEventHandlers();
     } catch (err) {
         handleApiError(err, 'initPage');
@@ -342,32 +328,16 @@ async function loadLocationDetails() {
         $('#location-zone-line').hide();
     }
 
-    // Manage networks links — for non-primary zone members, point to primary location
+    // Zone-member flags — consumed by QoS logic and network-source routing
     const isPrimaryOrStandalone = !location.zone_id || location.is_primary_in_zone;
     const primaryLocationId = location.primary_location_id || location_id;
-    const canAccessPrimary = location.can_access_primary !== false;
 
     networkSourceLocationId = primaryLocationId;
-
-    const netUrl = buildNetworksUrl(primaryLocationId);
-    $('#manage-networks-btn')
-        .attr('href', canAccessPrimary ? netUrl : '#')
-        .removeClass('disabled')
-        .removeAttr('title tabindex');
-
     locationIsPrimaryOrStandalone = isPrimaryOrStandalone;
 
     if (!isPrimaryOrStandalone) {
-        $('#zone-network-notice').show();
         $('#zone-qos-notice').show();
-        if (!canAccessPrimary) {
-            $('#manage-networks-btn')
-                .addClass('disabled')
-                .attr('title', 'Networks are managed by the zone\'s primary location — you do not have access to that location')
-                .attr('tabindex', '-1');
-        }
     } else {
-        $('#zone-network-notice').hide();
         $('#zone-qos-notice').hide();
     }
     applyQosZoneLock();
@@ -1052,50 +1022,6 @@ async function loadQosClassesPreview() {
         });
     } catch (err) {
         $preview.html('<span class="text-muted" style="font-size:0.85rem;">Unable to load classes.</span>');
-    }
-}
-
-// ============================================================================
-// NETWORK SUMMARY (shortcut card badges)
-// ============================================================================
-
-async function loadNetworkSummary() {
-    try {
-        const srcId = networkSourceLocationId || location_id;
-        const res = await apiFetch(`${API}/locations/${srcId}/networks`);
-        const networks = res.data.networks || [];
-        const $container = $('#network-summary-badges');
-        $container.empty();
-
-        if (!networks.length) {
-            $container.html('<span class="network-summary-badge"><i data-feather="wifi-off" style="width:12px;height:12px;margin-right:4px;"></i> No networks configured</span>');
-            reRenderFeather();
-            return;
-        }
-
-        const TYPE_BADGE_CLASS = {
-            password:       'badge-password',
-            captive_portal: 'badge-captive',
-            open:           'badge-open',
-        };
-        const TYPE_LABELS = { password: 'Password', captive_portal: 'Captive Portal', open: 'Open' };
-
-        networks.forEach(net => {
-            const badgeClass = TYPE_BADGE_CLASS[net.type] || '';
-            const disabledClass = net.enabled ? '' : ' badge-disabled';
-            const label = TYPE_LABELS[net.type] || net.type;
-            const disabledTag = net.enabled ? '' : ' <small>(off)</small>';
-            $container.append(`
-                <span class="network-summary-badge ${badgeClass}${disabledClass}">
-                    <i data-feather="wifi" style="width:12px;height:12px;"></i>
-                    ${escapeHtml(net.ssid || 'Network')} &mdash; ${label}${disabledTag}
-                </span>`);
-        });
-
-        reRenderFeather();
-    } catch (err) {
-        $('#network-summary-badges').html('<span class="network-summary-badge"><i data-feather="alert-circle" style="width:12px;height:12px;"></i> Could not load networks</span>');
-        reRenderFeather();
     }
 }
 

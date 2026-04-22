@@ -149,30 +149,5 @@
         </div>
     </div>
 
-    <!-- WiFi Networks Shortcut -->
-    <div class="row">
-        <div class="col-12">
-            <div class="networks-shortcut-card">
-                <div class="row align-items-center">
-                    <div class="col-md-7">
-                        <h4><i data-feather="wifi" style="width:24px;height:24px;margin-right:10px;vertical-align:middle;"></i> {{ __('location_details.wifi_networks') }}</h4>
-                        <p>{{ __('location_details.wifi_networks_description') }}</p>
-                        <div id="zone-network-notice" class="alert alert-info py-1 px-2 mb-2" style="display:none;font-size:0.85rem;">
-                            <i data-feather="layers" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
-                            {{ __('location_details.zone_networks_notice') }}
-                        </div>
-                        <div id="network-summary-badges">
-                            <span class="network-summary-badge"><i data-feather="loader" style="width:12px;height:12px;"></i> {{ __('common.loading') }}</span>
-                        </div>
-                    </div>
-                    <div class="col-md-5 text-md-right mt-3 mt-md-0">
-                        <a id="manage-networks-btn" href="#" class="btn btn-light btn-lg">
-                            <i data-feather="settings" class="mr-2"></i> {{ __('location_details.manage_networks_button') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 </div><!-- /ld-panel-overview -->

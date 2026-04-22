@@ -46,12 +46,6 @@ return [
     'online_label' => 'En ligne',
     'loading_online_users' => 'Chargement des utilisateurs en ligne...',
 
-    // WiFi networks shortcut
-    'wifi_networks' => 'Réseaux WiFi',
-    'wifi_networks_description' => 'Gérez tous les réseaux WiFi associés à cet emplacement — ajoutez, supprimez ou configurez la sécurité, le portail captif, les paramètres IP et plus encore de chaque réseau.',
-    'zone_networks_notice' => 'Les réseaux sont gérés par l\'emplacement principal de la zone.',
-    'manage_networks_button' => 'Gérer les réseaux',
-
     // Location Configuration card
     'config_title' => 'Configuration de l\'emplacement',
     'tab_overview' => 'Vue d\'ensemble',

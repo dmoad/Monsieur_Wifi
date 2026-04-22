@@ -46,12 +46,6 @@ return [
     'online_label' => 'Online',
     'loading_online_users' => 'Loading online users...',
 
-    // WiFi networks shortcut
-    'wifi_networks' => 'WiFi Networks',
-    'wifi_networks_description' => "Manage all WiFi networks associated with this location — add, remove, or configure each network's security, captive portal, IP settings, and more.",
-    'zone_networks_notice' => "Networks are managed by the zone's primary location.",
-    'manage_networks_button' => 'Manage Networks',
-
     // Location Configuration card
     'config_title' => 'Location Configuration',
     'tab_overview' => 'Overview',

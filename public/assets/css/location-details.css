@@ -216,18 +216,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .timeline-point-success { background-color: #28c76f !important; }
 #channel-scan-modal .progress-bar { transition: width 0.5s linear; }
 
-/* Networks shortcut card */
-.networks-shortcut-card { border-radius: 12px; background: #fff; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #ebe9f1; }
-.networks-shortcut-card h4 { color: var(--mw-primary); font-weight: 700; margin-bottom: 0.5rem; }
-.networks-shortcut-card p { color: #6e6b7b; margin-bottom: 1.5rem; }
-.networks-shortcut-card .btn-light { background: rgba(99,102,241,0.08); color: var(--mw-primary); font-weight: 600; border: 1px solid rgba(99,102,241,0.2); }
-.networks-shortcut-card .btn-light:hover { background: rgba(99,102,241,0.15); transform: translateY(-1px); }
-.network-summary-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.08); color: var(--mw-primary); border: 1px solid rgba(99,102,241,0.2); border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; font-weight: 600; margin-right: 8px; margin-bottom: 8px; }
-.network-summary-badge.badge-password { background: rgba(99,102,241,0.08); color: var(--mw-primary); border-color: rgba(99,102,241,0.2); }
-.network-summary-badge.badge-captive { background: rgba(40,199,111,0.1); color: #28c76f; border-color: rgba(40,199,111,0.3); }
-.network-summary-badge.badge-open { background: rgba(255,159,67,0.1); color: #ff9f43; border-color: rgba(255,159,67,0.3); }
-.network-summary-badge.badge-disabled { opacity: 0.65; }
-
 /* QoS settings — compact numeric fields (override global 50px input height in this section only) */
 #qos-settings-section.content-section { padding: 1.35rem 1.5rem; }
 #qos-settings-section .section-header { margin-bottom: 1rem; padding-bottom: 0.75rem; }
