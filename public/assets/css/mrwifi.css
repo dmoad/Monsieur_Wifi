@@ -1174,3 +1174,15 @@ body.mw-drawer-locked {
 :root[data-theme="dark"] .text-muted {
     color: var(--mw-text-secondary) !important;
 }
+
+/* Bootstrap's .custom-control-label::before paints a white box with a
+   light-grey border — jarring on dark surfaces. Tokenise for dark mode
+   while preserving the primary-tinted checked state. */
+:root[data-theme="dark"] .custom-control-label::before {
+    background-color: var(--mw-bg-surface);
+    border-color: var(--mw-border);
+}
+:root[data-theme="dark"] .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--mw-primary);
+    border-color: var(--mw-primary);
+}
