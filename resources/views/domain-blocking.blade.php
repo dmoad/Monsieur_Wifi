@@ -39,8 +39,8 @@
         color: #28c76f;
     }
     .badge-category-custom {
-        background-color: rgba(45, 45, 45, 0.12);
-        color: #2d2d2d;
+        background-color: var(--mw-bg-muted);
+        color: var(--mw-text-secondary);
     }
 
     .cursor-pointer {
