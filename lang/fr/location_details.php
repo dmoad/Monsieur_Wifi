@@ -56,6 +56,7 @@ return [
     // Onglet Réseaux WiFi
     'networks_card_title' => 'Réseaux WiFi',
     'networks_card_subtitle' => 'Gérez l\'ensemble des réseaux WiFi associés à cet emplacement — ajouter, supprimer ou configurer chaque réseau.',
+    'zone_networks_notice' => 'Les réseaux sont gérés par l\'emplacement principal de la zone.',
     'networks_add' => 'Ajouter un réseau',
     'networks_empty' => 'Aucun réseau WiFi configuré pour le moment. Cliquez sur « Ajouter un réseau » pour en créer un.',
     'networks_load_error' => 'Impossible de charger les réseaux WiFi.',

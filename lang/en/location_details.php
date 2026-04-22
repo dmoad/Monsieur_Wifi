@@ -56,6 +56,7 @@ return [
     // WiFi Networks tab
     'networks_card_title' => 'WiFi Networks',
     'networks_card_subtitle' => 'Manage all WiFi networks associated with this location — add, remove, or configure each network.',
+    'zone_networks_notice' => "Networks are managed by the zone's primary location.",
     'networks_add' => 'Add Network',
     'networks_empty' => 'No WiFi networks configured yet. Click "Add Network" to create one.',
     'networks_load_error' => 'Could not load WiFi networks.',

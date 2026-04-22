@@ -1,5 +1,10 @@
 <div class="ld-panel" id="ld-panel-networks">
 
+    <div id="ld-networks-zone-notice" class="alert alert-info py-2 px-3 mb-3" style="display:none;">
+        <i data-feather="layers" class="mr-50" style="width:16px;height:16px;vertical-align:text-bottom;"></i>
+        {{ __('location_details.zone_networks_notice') }}
+    </div>
+
     <div class="card ld-networks-card">
         <div class="card-header ld-networks-header">
             <div class="ld-networks-header-text">

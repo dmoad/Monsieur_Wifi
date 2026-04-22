@@ -337,8 +337,10 @@ async function loadLocationDetails() {
 
     if (!isPrimaryOrStandalone) {
         $('#zone-qos-notice').show();
+        $('#ld-networks-zone-notice').show();
     } else {
         $('#zone-qos-notice').hide();
+        $('#ld-networks-zone-notice').hide();
     }
     applyQosZoneLock();
 
