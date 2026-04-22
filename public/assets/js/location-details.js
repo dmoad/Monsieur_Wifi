@@ -681,6 +681,9 @@ async function loadLocationSettings() {
         $('#wan-dns2').val(s.wan_dns2 || '');
         syncDnsFieldStates(filterOn);
 
+        // VLAN Support
+        $('#router-vlan-enabled').prop('checked', !!s.vlan_enabled);
+
         // QoS
         $('#qos-enabled').prop('checked', !!s.qos_enabled);
         qosBwZonePrimary = res.data.qos_bw_zone_primary || null;
@@ -2022,6 +2025,14 @@ const ldNetworks = (function () {
         openForNetwork(editId);
     }
 
+    function setVlanEnabled(enabled) {
+        vlanEnabled = !!enabled;
+        // If drawer is open, update the gated fields immediately
+        if (document.getElementById('ld-network-drawer')?.classList.contains('is-open')) {
+            applyVlanGating();
+        }
+    }
+
     return {
         load,
         render,
@@ -2029,6 +2040,7 @@ const ldNetworks = (function () {
         save,
         isLoaded: () => loaded,
         restoreEditFromUrl,
+        setVlanEnabled,
     };
 })();
 
@@ -2645,6 +2657,27 @@ function initEventHandlers() {
         $('#web-filter-propagation-notice').toggle(on);
         syncDnsFieldStates(on);
         reRenderFeather();
+    });
+
+    // VLAN support toggle (location-level)
+    $('#router-vlan-enabled').on('change', async function () {
+        const enabled = $(this).is(':checked');
+        const $toggle = $(this);
+        $toggle.prop('disabled', true);
+        try {
+            await apiFetch(`${API}/locations/${location_id}/settings`, {
+                method: 'PUT',
+                body: JSON.stringify({ vlan_enabled: enabled }),
+            });
+            if (typeof ldNetworks !== 'undefined' && typeof ldNetworks.setVlanEnabled === 'function') {
+                ldNetworks.setVlanEnabled(enabled);
+            }
+        } catch (err) {
+            $toggle.prop('checked', !enabled);
+            handleApiError(err, 'saveVlanEnabled');
+        } finally {
+            $toggle.prop('disabled', false);
+        }
     });
 
     // Save QoS

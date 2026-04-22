@@ -116,6 +116,27 @@
                                 </div>
                             </div>
 
+                            <!-- VLAN Support -->
+                            <div class="content-section">
+                                <div class="section-header">
+                                    <h5 class="section-title">{{ __('location_details.vlan_section_title') }}</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group mb-0">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <label class="mb-0" for="router-vlan-enabled">{{ __('location_details.vlan_enabled_label') }}</label>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="router-vlan-enabled">
+                                                    <label class="custom-control-label" for="router-vlan-enabled"></label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">{{ __('location_details.vlan_enabled_hint') }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Traffic Prioritization (QoS) -->
                             <div class="content-section" id="qos-settings-section">
                                 <div class="section-header d-flex justify-content-between align-items-center">
