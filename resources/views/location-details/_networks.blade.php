@@ -48,34 +48,16 @@
                     <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_identity') }}</h6>
 
                     <div class="form-group">
-                        <label for="ld-net-type">{{ __('location_details.networks_field_type') }}</label>
-                        <select class="form-control" id="ld-net-type">
-                            <option value="password">{{ __('location_details.networks_type_password') }}</option>
-                            <option value="captive_portal">{{ __('location_details.networks_type_captive_portal') }}</option>
-                            <option value="open">{{ __('location_details.networks_type_open') }}</option>
-                        </select>
-                        <small class="form-text text-warning" data-show-for-type="captive_portal">{{ __('location_details.networks_type_warning') }}</small>
-                    </div>
-
-                    <div class="form-group">
                         <label for="ld-net-ssid">{{ __('location_details.networks_field_ssid') }}</label>
                         <input type="text" class="form-control" id="ld-net-ssid" maxlength="32">
                     </div>
 
                     <div class="form-group">
-                        <label for="ld-net-visible">{{ __('location_details.networks_field_visibility') }}</label>
-                        <select class="form-control" id="ld-net-visible">
-                            <option value="1">{{ __('location_details.networks_visibility_broadcast') }}</option>
-                            <option value="0">{{ __('location_details.networks_visibility_hidden') }}</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ld-net-radio">{{ __('location_details.networks_field_radio_band') }}</label>
-                        <select class="form-control" id="ld-net-radio">
-                            <option value="all">{{ __('location_details.networks_band_both') }}</option>
-                            <option value="2.4">{{ __('location_details.networks_band_24') }}</option>
-                            <option value="5">{{ __('location_details.networks_band_5') }}</option>
+                        <label for="ld-net-type">{{ __('location_details.networks_field_type') }}</label>
+                        <select class="form-control" id="ld-net-type">
+                            <option value="password">{{ __('location_details.networks_type_password') }}</option>
+                            <option value="captive_portal">{{ __('location_details.networks_type_captive_portal') }}</option>
+                            <option value="open">{{ __('location_details.networks_type_open') }}</option>
                         </select>
                     </div>
 
@@ -85,13 +67,40 @@
                             <label class="custom-control-label" for="ld-net-enabled">{{ __('location_details.networks_field_enabled') }}</label>
                         </div>
                     </div>
+                </div>
+
+                <div class="ld-drawer-section" data-show-for-type="password">
+                    <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_security') }}</h6>
 
                     <div class="form-group">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="ld-net-qos">
-                            <label class="custom-control-label" for="ld-net-qos">{{ __('location_details.networks_field_qos_full') }}</label>
+                        <label for="ld-net-password">{{ __('location_networks.wifi_password') }}</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="ld-net-password" placeholder="{{ __('location_networks.wifi_password_placeholder') }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="ld-net-password-toggle" aria-label="{{ __('location_details.networks_password_toggle') }}">
+                                    <i data-feather="eye"></i>
+                                </button>
+                            </div>
                         </div>
-                        <small class="form-text text-muted">{{ __('location_details.networks_field_qos_hint') }}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ld-net-security">{{ __('location_networks.security_protocol') }}</label>
+                        <select class="form-control" id="ld-net-security">
+                            <option value="wpa2-psk">{{ __('location_networks.security_wpa2_psk_rec') }}</option>
+                            <option value="wpa-wpa2-psk">{{ __('location_networks.security_wpa_wpa2_mixed') }}</option>
+                            <option value="wpa3-psk">{{ __('location_networks.security_wpa3_psk_secure') }}</option>
+                            <option value="wep">{{ __('location_networks.security_wep_legacy') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ld-net-cipher">{{ __('location_networks.cipher_suites') }}</label>
+                        <select class="form-control" id="ld-net-cipher">
+                            <option value="CCMP">CCMP</option>
+                            <option value="TKIP">TKIP</option>
+                            <option value="TKIP+CCMP">TKIP+CCMP</option>
+                        </select>
                     </div>
                 </div>
 
@@ -215,6 +224,53 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="ld-drawer-section ld-net-schedule-section" data-show-for-type="captive_portal">
+                    <h6 class="ld-drawer-section-title">{{ __('location_networks.working_hours') }}</h6>
+
+                    <div class="ld-net-schedule-modes">
+                        <label class="ld-net-schedule-mode-label">
+                            <input type="radio" name="ld-net-schedule-mode" value="always" class="ld-net-schedule-mode">
+                            <span class="ld-net-schedule-mode-text">
+                                <span class="ld-net-schedule-mode-title">{{ __('location_details.networks_schedule_always') }}</span>
+                                <span class="ld-net-schedule-mode-desc">{{ __('location_details.networks_schedule_always_desc') }}</span>
+                            </span>
+                        </label>
+                        <label class="ld-net-schedule-mode-label">
+                            <input type="radio" name="ld-net-schedule-mode" value="restricted" class="ld-net-schedule-mode">
+                            <span class="ld-net-schedule-mode-text">
+                                <span class="ld-net-schedule-mode-title">{{ __('location_details.networks_schedule_restricted') }}</span>
+                                <span class="ld-net-schedule-mode-desc">{{ __('location_details.networks_schedule_restricted_desc') }}</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="ld-net-schedule-editor" id="ld-net-schedule-editor" style="display:none;"></div>
+
+                    <template id="ld-net-schedule-day-tpl">
+                        <div class="ld-net-schedule-day">
+                            <label class="ld-net-schedule-day-toggle">
+                                <input type="checkbox" class="ld-net-schedule-day-enabled">
+                                <span class="ld-net-schedule-day-name"></span>
+                            </label>
+                            <div class="ld-net-schedule-day-ranges"></div>
+                            <button type="button" class="btn btn-sm btn-link ld-net-schedule-day-add" style="display:none;">
+                                <i data-feather="plus"></i> {{ __('location_details.networks_schedule_add_range') }}
+                            </button>
+                        </div>
+                    </template>
+
+                    <template id="ld-net-schedule-range-tpl">
+                        <div class="ld-net-schedule-range">
+                            <select class="form-control form-control-sm ld-net-schedule-range-start"></select>
+                            <span class="ld-net-schedule-range-sep">→</span>
+                            <select class="form-control form-control-sm ld-net-schedule-range-end"></select>
+                            <button type="button" class="btn btn-link btn-sm text-danger p-0 ld-net-schedule-range-remove" aria-label="Remove">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="ld-drawer-section">
@@ -393,85 +449,32 @@
                     </div>
                 </div>
 
-                <div class="ld-drawer-section ld-net-schedule-section" data-show-for-type="captive_portal">
-                    <h6 class="ld-drawer-section-title">{{ __('location_networks.working_hours') }}</h6>
-
-                    <div class="ld-net-schedule-modes">
-                        <label class="ld-net-schedule-mode-label">
-                            <input type="radio" name="ld-net-schedule-mode" value="always" class="ld-net-schedule-mode">
-                            <span class="ld-net-schedule-mode-text">
-                                <span class="ld-net-schedule-mode-title">{{ __('location_details.networks_schedule_always') }}</span>
-                                <span class="ld-net-schedule-mode-desc">{{ __('location_details.networks_schedule_always_desc') }}</span>
-                            </span>
-                        </label>
-                        <label class="ld-net-schedule-mode-label">
-                            <input type="radio" name="ld-net-schedule-mode" value="restricted" class="ld-net-schedule-mode">
-                            <span class="ld-net-schedule-mode-text">
-                                <span class="ld-net-schedule-mode-title">{{ __('location_details.networks_schedule_restricted') }}</span>
-                                <span class="ld-net-schedule-mode-desc">{{ __('location_details.networks_schedule_restricted_desc') }}</span>
-                            </span>
-                        </label>
-                    </div>
-
-                    <div class="ld-net-schedule-editor" id="ld-net-schedule-editor" style="display:none;"></div>
-
-                    <template id="ld-net-schedule-day-tpl">
-                        <div class="ld-net-schedule-day">
-                            <label class="ld-net-schedule-day-toggle">
-                                <input type="checkbox" class="ld-net-schedule-day-enabled">
-                                <span class="ld-net-schedule-day-name"></span>
-                            </label>
-                            <div class="ld-net-schedule-day-ranges"></div>
-                            <button type="button" class="btn btn-sm btn-link ld-net-schedule-day-add" style="display:none;">
-                                <i data-feather="plus"></i> {{ __('location_details.networks_schedule_add_range') }}
-                            </button>
-                        </div>
-                    </template>
-
-                    <template id="ld-net-schedule-range-tpl">
-                        <div class="ld-net-schedule-range">
-                            <select class="form-control form-control-sm ld-net-schedule-range-start"></select>
-                            <span class="ld-net-schedule-range-sep">→</span>
-                            <select class="form-control form-control-sm ld-net-schedule-range-end"></select>
-                            <button type="button" class="btn btn-link btn-sm text-danger p-0 ld-net-schedule-range-remove" aria-label="Remove">
-                                <i data-feather="x"></i>
-                            </button>
-                        </div>
-                    </template>
-                </div>
-
-                <div class="ld-drawer-section" data-show-for-type="password">
-                    <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_security') }}</h6>
+                <div class="ld-drawer-section">
+                    <h6 class="ld-drawer-section-title">{{ __('location_details.networks_section_radio') }}</h6>
 
                     <div class="form-group">
-                        <label for="ld-net-password">{{ __('location_networks.wifi_password') }}</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="ld-net-password" placeholder="{{ __('location_networks.wifi_password_placeholder') }}">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" id="ld-net-password-toggle" aria-label="{{ __('location_details.networks_password_toggle') }}">
-                                    <i data-feather="eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ld-net-security">{{ __('location_networks.security_protocol') }}</label>
-                        <select class="form-control" id="ld-net-security">
-                            <option value="wpa2-psk">{{ __('location_networks.security_wpa2_psk_rec') }}</option>
-                            <option value="wpa-wpa2-psk">{{ __('location_networks.security_wpa_wpa2_mixed') }}</option>
-                            <option value="wpa3-psk">{{ __('location_networks.security_wpa3_psk_secure') }}</option>
-                            <option value="wep">{{ __('location_networks.security_wep_legacy') }}</option>
+                        <label for="ld-net-radio">{{ __('location_details.networks_field_radio_band') }}</label>
+                        <select class="form-control" id="ld-net-radio">
+                            <option value="all">{{ __('location_details.networks_band_both') }}</option>
+                            <option value="2.4">{{ __('location_details.networks_band_24') }}</option>
+                            <option value="5">{{ __('location_details.networks_band_5') }}</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="ld-net-cipher">{{ __('location_networks.cipher_suites') }}</label>
-                        <select class="form-control" id="ld-net-cipher">
-                            <option value="CCMP">CCMP</option>
-                            <option value="TKIP">TKIP</option>
-                            <option value="TKIP+CCMP">TKIP+CCMP</option>
+                        <label for="ld-net-visible">{{ __('location_details.networks_field_visibility') }}</label>
+                        <select class="form-control" id="ld-net-visible">
+                            <option value="1">{{ __('location_details.networks_visibility_broadcast') }}</option>
+                            <option value="0">{{ __('location_details.networks_visibility_hidden') }}</option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="ld-net-qos">
+                            <label class="custom-control-label" for="ld-net-qos">{{ __('location_details.networks_field_qos_full') }}</label>
+                        </div>
+                        <small class="form-text text-muted">{{ __('location_details.networks_field_qos_hint') }}</small>
                     </div>
                 </div>
 

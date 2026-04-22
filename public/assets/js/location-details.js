@@ -1698,6 +1698,9 @@ const ldNetworks = (function () {
 
         document.getElementById('ld-network-drawer-save').disabled = false;
 
+        const body = document.getElementById('ld-network-drawer-body');
+        if (body) body.scrollTop = 0;
+
         if (typeof MwDrawer !== 'undefined') MwDrawer.open('ld-network-drawer');
 
         // Portal designs are only needed for captive type — lazy fetch
