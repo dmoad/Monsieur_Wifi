@@ -36,4 +36,18 @@
         </li>
     </template>
 
+    <aside class="mw-drawer" id="ld-network-drawer" role="dialog" aria-modal="true" aria-labelledby="ld-network-drawer-title">
+        <header class="mw-drawer-header">
+            <h5 class="mw-drawer-title" id="ld-network-drawer-title"></h5>
+            <button type="button" class="mw-drawer-close" aria-label="{{ __('common.close') }}" data-mw-drawer-close>&times;</button>
+        </header>
+        <div class="mw-drawer-body" id="ld-network-drawer-body">
+            <p class="text-muted">{{ __('location_details.networks_drawer_placeholder') }}</p>
+        </div>
+        <footer class="mw-drawer-footer">
+            <button type="button" class="btn btn-outline-secondary" data-mw-drawer-close>{{ __('common.cancel') }}</button>
+            <button type="button" class="btn btn-primary" id="ld-network-drawer-save" disabled>{{ __('location_details.networks_drawer_save') }}</button>
+        </footer>
+    </aside>
+
 </div>

@@ -1142,16 +1142,30 @@ const ldNetworks = (function () {
         }
     }
 
+    function openForNetwork(netId) {
+        const net = data.find(n => String(n.id) === String(netId));
+        if (!net) return;
+        const titleEl = document.getElementById('ld-network-drawer-title');
+        if (titleEl) titleEl.textContent = net.ssid || '';
+        if (typeof MwDrawer !== 'undefined') MwDrawer.open('ld-network-drawer');
+    }
+
     document.addEventListener('click', function (e) {
         if (e.target.closest('#ld-networks-add-btn')) {
             e.preventDefault();
             add();
+            return;
+        }
+        const row = e.target.closest('.ld-network-row');
+        if (row && row.dataset.networkId) {
+            openForNetwork(row.dataset.networkId);
         }
     });
 
     return {
         load,
         render,
+        openForNetwork,
         isLoaded: () => loaded,
     };
 })();

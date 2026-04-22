@@ -74,6 +74,8 @@ return [
     'networks_band_24' => '2.4 GHz only',
     'networks_band_5' => '5 GHz only',
     'networks_vlan_label' => 'VLAN',
+    'networks_drawer_placeholder' => 'Form fields will be added in the next step.',
+    'networks_drawer_save' => 'Save',
 
     // Location Details tab - Identity & Address panel
     'panel_identity_address' => 'Location Identity & Address',
