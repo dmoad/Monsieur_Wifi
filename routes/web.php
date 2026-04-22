@@ -85,9 +85,8 @@ foreach (['en', 'fr'] as $loc) {
             return view('location-details', compact('location', 'locale'));
         })->name('location-details');
 
-        Route::get('/locations/{location}/networks', function ($location) {
-            $locale = app()->getLocale();
-            return view('location-networks', compact('location', 'locale'));
+        Route::get('/locations/{location}/networks', function ($location) use ($loc) {
+            return redirect("/{$loc}/locations/{$location}?tab=networks", 301);
         })->name('location-networks');
 
         Route::get('/system-settings', function () {
