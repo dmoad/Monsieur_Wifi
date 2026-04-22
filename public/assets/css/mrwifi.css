@@ -442,7 +442,9 @@ body.mw-sb-expanded .app-content.content {
     width: 30px;
     object-fit: contain;
     flex-shrink: 0;
-    border-radius: var(--mw-radius-sm);
+    border-radius: 50%;
+    background: #fff;
+    padding: 2px;
 }
 
 .mw-sb-logo-text {
@@ -468,7 +470,6 @@ body.mw-sb-expanded .app-content.content {
 
 .mw-sb.expanded .mw-sb-chevron {
     display: block;
-    transform: rotate(180deg);
 }
 
 /* --- Nav list --- */
