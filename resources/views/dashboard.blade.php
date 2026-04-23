@@ -193,7 +193,7 @@
         <div id="dashboard-errors"></div>
 
         <!-- Data Usage Trends + Traffic by Location donut -->
-        <div class="row match-height mb-2">
+        <div class="row match-height" style="margin-bottom: 1.5rem;">
             <div class="col-lg-8 col-12">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -306,7 +306,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">{{ __('dashboard.locations_overview') }}</h4>
                         <div class="dropdown">
                             <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
