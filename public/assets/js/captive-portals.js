@@ -763,9 +763,9 @@ $(document).ready(function() {
         const draft = {
             name:             $('#portal-name').val(),
             theme_color:      $('#theme-color').val(),
-            welcome_message:  $('#portal-welcome').val(),
+            welcome_message:  $('#welcome-message').val(),
             login_instructions: $('#login-instructions').val(),
-            button_text:      $('#portal-button-text').val(),
+            button_text:      $('#button-text').val(),
             show_terms:       $('#show-terms').is(':checked'),
             terms_of_service: $('#terms-of-service').val(),
             privacy_policy:   $('#privacy-policy').val(),
