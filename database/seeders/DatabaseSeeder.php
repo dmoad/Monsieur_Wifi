@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             BlockedDomainSeeder::class,
             ShopSeeder::class,
             InventorySeeder::class,
+            CaptivePortalDesignSeeder::class,
         ]);
     }
 }
