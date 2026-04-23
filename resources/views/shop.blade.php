@@ -233,6 +233,15 @@
             </div>
         </div>
     </div>
+    <div class="content-header-right text-md-right col-md-3 col-12 d-md-block">
+        <div class="form-group breadcrumb-right">
+            <a href="/{{ $locale }}/cart" class="btn btn-outline-primary position-relative">
+                <i data-feather="shopping-cart" class="mr-25"></i>
+                <span>{{ __('navbar.my_cart') }}</span>
+                <span class="badge badge-pill badge-primary cart-item-count ml-50" style="display: none;">0</span>
+            </a>
+        </div>
+    </div>
 </div>
 <div class="content-body">
     <div id="products-grid" class="row match-height">

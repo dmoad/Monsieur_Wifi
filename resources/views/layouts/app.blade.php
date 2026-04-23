@@ -265,9 +265,9 @@
                 // Update cart count badges
                 $('.cart-item-count').text(itemCount);
                 if (itemCount > 0) {
-                    $('.badge-up.cart-item-count').show();
+                    $('.cart-item-count').show();
                 } else {
-                    $('.badge-up.cart-item-count').hide();
+                    $('.cart-item-count').hide();
                 }
 
                 // Update cart dropdown

@@ -62,14 +62,6 @@
             <span class="mw-si-label">{{ __('sidebar.shop') }}</span>
         </a>
 
-        <a class="mw-si {{ request()->is('*/cart') ? 'active' : '' }}"
-           href="/{{ $locale }}/cart"
-           title="{{ __('navbar.my_cart') }}">
-            <i data-feather="shopping-cart"></i>
-            <span class="mw-si-label">{{ __('navbar.my_cart') }}</span>
-            <span class="mw-cart-badge cart-item-count" style="display: none;">0</span>
-        </a>
-
         <div class="mw-sb-section admin_and_above hidden">
             <span>{{ __('sidebar.section_admin') }}</span>
         </div>
