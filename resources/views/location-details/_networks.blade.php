@@ -37,7 +37,20 @@
                     <span class="ld-net-vlan" style="display:none;"></span>
                 </div>
             </div>
-            <i data-feather="chevron-right" class="ld-net-chevron"></i>
+            <div class="ld-net-kebab-wrap">
+                <button type="button" class="ld-net-kebab-btn" aria-label="{{ __('common.actions') ?? 'Actions' }}" aria-haspopup="true" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                </button>
+                <div class="ld-net-menu">
+                    <button type="button" class="ld-net-menu-item" data-action="qr">
+                        <i data-feather="smartphone"></i>{{ __('location_details.networks_show_qr') }}
+                    </button>
+                    <div class="ld-net-menu-divider"></div>
+                    <button type="button" class="ld-net-menu-item ld-net-menu-danger" data-action="delete">
+                        <i data-feather="trash-2"></i>{{ __('location_details.networks_drawer_delete') }}
+                    </button>
+                </div>
+            </div>
         </li>
     </template>
 

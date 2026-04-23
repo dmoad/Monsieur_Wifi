@@ -1874,20 +1874,19 @@ const ldNetworks = (function () {
         return `WIFI:T:nopass;S:${escape(ssid)};;`;
     }
 
-    function openQrModal() {
+    function openQrForNetwork(net) {
         if (typeof QRCode === 'undefined') {
             if (typeof toastr !== 'undefined') toastr.error('QR library not loaded');
             return;
         }
-        const drawer = document.getElementById('ld-network-drawer');
-        const netId = drawer && drawer.dataset.networkId;
-        const net = netId ? data.find(n => String(n.id) === String(netId)) : null;
         if (!net) return;
-
         const ssidDisplay = document.getElementById('ld-network-qr-ssid');
         const canvas = document.getElementById('ld-network-qr-canvas');
         if (ssidDisplay) ssidDisplay.textContent = net.ssid || '—';
-        if (canvas) canvas.innerHTML = '';
+        if (canvas) {
+            canvas.innerHTML = '';
+            canvas.dataset.networkId = net.id;
+        }
         new QRCode(canvas, {
             text: buildWifiQrString(net),
             width: 240,
@@ -1901,11 +1900,18 @@ const ldNetworks = (function () {
         }).modal('show');
     }
 
-    function downloadQr() {
-        const canvas = document.querySelector('#ld-network-qr-canvas canvas');
-        if (!canvas) return;
+    function openQrModal() {
         const drawer = document.getElementById('ld-network-drawer');
         const netId = drawer && drawer.dataset.networkId;
+        const net = netId ? data.find(n => String(n.id) === String(netId)) : null;
+        if (net) openQrForNetwork(net);
+    }
+
+    function downloadQr() {
+        const canvasWrap = document.getElementById('ld-network-qr-canvas');
+        const canvas = canvasWrap && canvasWrap.querySelector('canvas');
+        if (!canvas) return;
+        const netId = canvasWrap.dataset.networkId;
         const net = netId ? data.find(n => String(n.id) === String(netId)) : null;
         const slug = ((net && net.ssid) || 'wifi').replace(/[^a-z0-9]/gi, '_').toLowerCase();
         const link = document.createElement('a');
@@ -2002,8 +2008,42 @@ const ldNetworks = (function () {
             removeRange(dayRow.dataset.day, parseInt(rangeEl.dataset.idx, 10));
             return;
         }
+        const kebabBtn = e.target.closest('.ld-net-kebab-btn');
+        if (kebabBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const menu = kebabBtn.nextElementSibling;
+            const wasOpen = menu && menu.classList.contains('open');
+            document.querySelectorAll('.ld-net-menu.open').forEach(m => m.classList.remove('open'));
+            if (!wasOpen && menu) menu.classList.add('open');
+            return;
+        }
+
+        const menuItem = e.target.closest('.ld-net-menu-item');
+        if (menuItem) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll('.ld-net-menu.open').forEach(m => m.classList.remove('open'));
+            const action = menuItem.dataset.action;
+            const menuRow = menuItem.closest('.ld-network-row');
+            const netId = menuRow && menuRow.dataset.networkId;
+            if (!netId) return;
+            if (action === 'qr') {
+                const net = data.find(n => String(n.id) === String(netId));
+                if (net) openQrForNetwork(net);
+            } else if (action === 'delete') {
+                remove(netId);
+            }
+            return;
+        }
+
+        // Close any open kebab menu on outside click
+        if (!e.target.closest('.ld-net-kebab-wrap')) {
+            document.querySelectorAll('.ld-net-menu.open').forEach(m => m.classList.remove('open'));
+        }
+
         const row = e.target.closest('.ld-network-row');
-        if (row && row.dataset.networkId) {
+        if (row && row.dataset.networkId && !e.target.closest('.ld-net-kebab-wrap')) {
             openForNetwork(row.dataset.networkId);
         }
     });

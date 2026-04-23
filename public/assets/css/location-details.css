@@ -314,7 +314,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 }
 .ld-network-row:first-child { border-top: none; }
 .ld-network-row:hover { background: var(--mw-bg-hover); }
-.ld-network-row:hover .ld-net-chevron { color: var(--mw-primary); }
 
 .ld-net-icon {
     width: 36px;
@@ -400,13 +399,38 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     margin-top: 4px;
 }
 
-.ld-net-chevron {
-    flex-shrink: 0;
-    color: var(--mw-text-muted);
-    width: 18px !important;
-    height: 18px !important;
-    transition: color 0.12s;
+.ld-net-kebab-wrap { position: relative; flex-shrink: 0; }
+.ld-net-kebab-btn {
+    width: 32px; height: 32px;
+    border: 1px solid var(--mw-border);
+    background: var(--mw-bg-surface);
+    border-radius: var(--mw-radius-sm);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--mw-text-secondary);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    padding: 0;
 }
+.ld-net-kebab-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
+.ld-net-menu {
+    display: none; position: absolute; top: calc(100% + 4px); right: 0;
+    background: var(--mw-bg-surface); border: 1px solid var(--mw-border);
+    border-radius: var(--mw-radius-md); box-shadow: var(--mw-shadow-elevated);
+    min-width: 160px; z-index: 100; padding: 4px 0;
+}
+.ld-net-menu.open { display: block; }
+.ld-net-menu-item {
+    display: flex; align-items: center; gap: var(--mw-space-sm);
+    width: 100%; padding: 7px 14px; border: none; background: transparent;
+    font-size: 13px; color: var(--mw-text-secondary); cursor: pointer;
+    text-align: left; transition: background 0.1s, color 0.1s;
+    font-family: inherit;
+}
+.ld-net-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+.ld-net-menu-item [data-feather] { width: 14px !important; height: 14px !important; flex-shrink: 0; }
+.ld-net-menu-danger { color: var(--mw-danger) !important; }
+.ld-net-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
+.ld-net-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
 
 /* Drawer body form sections (Tab 4 SSID editing) */
 .ld-drawer-section + .ld-drawer-section {
