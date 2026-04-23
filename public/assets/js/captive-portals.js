@@ -758,10 +758,23 @@ $(document).ready(function() {
     });
 
     $('#open-full-preview').on('click', function() {
-        if (currentDesignId) {
-            const locale = document.documentElement.lang || 'en';
-            window.open('/' + locale + '/captive-portals/preview/' + currentDesignId, '_blank');
-        }
+        const locale = document.documentElement.lang || 'en';
+        const gradDisabled = $('#gradient-start').data('disabled') === true;
+        const draft = {
+            name:             $('#portal-name').val(),
+            theme_color:      $('#theme-color').val(),
+            welcome_message:  $('#portal-welcome').val(),
+            login_instructions: $('#login-instructions').val(),
+            button_text:      $('#portal-button-text').val(),
+            show_terms:       $('#show-terms').is(':checked'),
+            terms_of_service: $('#terms-of-service').val(),
+            privacy_policy:   $('#privacy-policy').val(),
+            background_color_gradient_start: gradDisabled ? null : $('#gradient-start').val(),
+            background_color_gradient_end:   gradDisabled ? null : $('#gradient-end').val(),
+        };
+        localStorage.setItem('cp_preview_draft', JSON.stringify(draft));
+        const base = currentDesignId ? ('/' + locale + '/captive-portals/' + currentDesignId + '/preview') : ('/' + locale + '/captive-portals/preview/new');
+        window.open(base, '_blank');
     });
 
     $('#create-new-design').on('click', function() {
@@ -770,7 +783,7 @@ $(document).ready(function() {
         resetDesignerTabs();
         $('#captive-portal-designs-list').hide();
         $('#captive-portal-designer').show();
-        $('#open-full-preview').hide();
+        $('#open-full-preview').show();
         currentDesignId = null;
         resetDesignForm();
         if (typeof feather !== 'undefined') feather.replace();

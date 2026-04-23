@@ -117,6 +117,10 @@ foreach (['en', 'fr'] as $loc) {
             return view('captive-portals');
         })->name('captive-portals');
 
+        Route::get('/captive-portals/preview/new', function () {
+            return view('captive-portal-preview', ['design' => null]);
+        })->name('captive-portals.preview.new');
+
         Route::get('/captive-portals/{design_id}', [CaptivePortalController::class, 'showDesigner'])
             ->name('captive-portals.edit');
 
