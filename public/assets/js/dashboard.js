@@ -4,6 +4,7 @@ let allLocations = [];
 let currentLocationFilter = 'all';
 let networkMap = null;
 let dataUsageChart = null;
+let trafficDonut = null;
 
 // ── API calls ──────────────────────────────────────────────────────────────
 
@@ -85,6 +86,7 @@ function updateOverviewDisplay(data) {
     $('#uptime-percentage').html(ns.uptime_percentage + '<span class="db-summary-suffix">%</span>');
 
     initializeNetworkMap(loc.data);
+    renderTrafficDonut(loc.data);
 }
 
 function updateAnalyticsDisplay(data) {
@@ -267,13 +269,70 @@ function updateDataUsageChart(data) {
 }
 
 new MutationObserver(function () {
-    if (!dataUsageChart) return;
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    dataUsageChart.updateOptions({
-        theme: { mode: dark ? 'dark' : 'light' },
-        tooltip: { theme: dark ? 'dark' : 'light' }
-    });
+    if (dataUsageChart) {
+        dataUsageChart.updateOptions({
+            theme: { mode: dark ? 'dark' : 'light' },
+            tooltip: { theme: dark ? 'dark' : 'light' }
+        });
+    }
+    if (trafficDonut) {
+        trafficDonut.updateOptions({
+            theme: { mode: dark ? 'dark' : 'light' },
+            tooltip: { theme: dark ? 'dark' : 'light' }
+        });
+    }
 }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+// ── Traffic-by-location donut ──────────────────────────────────────────────
+
+function renderTrafficDonut(locations) {
+    if (typeof ApexCharts === 'undefined') return;
+    const container = document.querySelector('#traffic-by-location-chart');
+    if (!container) return;
+
+    const T = window.DASHBOARD_T || { other_locations: 'Other', no_traffic_data: 'No traffic data yet' };
+
+    const ranked = (locations || [])
+        .map(function(l) { return { name: l.name || '—', gb: parseFloat(l.data_usage_gb) || 0 }; })
+        .filter(function(l) { return l.gb > 0; })
+        .sort(function(a, b) { return b.gb - a.gb; });
+
+    if (trafficDonut) { try { trafficDonut.destroy(); } catch (e) {} trafficDonut = null; }
+
+    if (!ranked.length) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--mw-text-muted);font-size:13px;">' + T.no_traffic_data + '</div>';
+        return;
+    }
+
+    const top = ranked.slice(0, 5);
+    const rest = ranked.slice(5);
+    const labels = top.map(function(l) { return l.name; });
+    const series = top.map(function(l) { return +l.gb.toFixed(2); });
+    if (rest.length) {
+        labels.push(T.other_locations);
+        series.push(+rest.reduce(function(s, l) { return s + l.gb; }, 0).toFixed(2));
+    }
+
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    container.innerHTML = '';
+    trafficDonut = new ApexCharts(container, {
+        theme: { mode: dark ? 'dark' : 'light' },
+        chart: { type: 'donut', height: 300, background: 'transparent' },
+        colors: ['#6366F1', '#22C55E', '#F59E0B', '#8B5CF6', '#EF4444', '#64748B'],
+        labels: labels,
+        series: series,
+        stroke: { width: 2, colors: ['transparent'] },
+        legend: { position: 'bottom', fontSize: '12px' },
+        dataLabels: { enabled: false },
+        plotOptions: { pie: { donut: { size: '65%' } } },
+        tooltip: {
+            theme: dark ? 'dark' : 'light',
+            y: { formatter: function(v) { return v.toFixed(2) + ' GB'; } }
+        }
+    });
+    trafficDonut.render();
+}
 
 // ── Loading / error states ─────────────────────────────────────────────────
 

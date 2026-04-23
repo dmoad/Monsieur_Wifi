@@ -32,6 +32,9 @@ return [
 
     // Data usage trends card
     'data_usage_trends' => 'Data Usage Trends',
+    'traffic_by_location' => 'Traffic by Location',
+    'other_locations' => 'Other',
+    'no_traffic_data' => 'No traffic data yet',
     'last_7_days' => 'Last 7 Days',
     'last_month' => 'Last Month',
     'last_year' => 'Last Year',

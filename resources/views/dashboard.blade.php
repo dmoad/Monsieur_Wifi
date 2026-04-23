@@ -159,9 +159,9 @@
 
         <div id="dashboard-errors"></div>
 
-        <!-- Data Usage Trends -->
-        <div class="row">
-            <div class="col-12">
+        <!-- Data Usage Trends + Traffic by Location donut -->
+        <div class="row match-height">
+            <div class="col-lg-8 col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">{{ __('dashboard.data_usage_trends') }}</h4>
@@ -212,8 +212,18 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-4 col-12">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="card-title">{{ __('dashboard.traffic_by_location') }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="traffic-by-location-chart" style="min-height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!--/ Data Usage Trends -->
+        <!--/ Data Usage Trends + Traffic by Location -->
 
         <div class="row">
             <div class="col-12">
@@ -369,6 +379,13 @@
 
 <!-- Charts -->
 <script src="/assets/vendors/js/charts/apexcharts.min.js"></script>
+
+<script>
+    window.DASHBOARD_T = {
+        other_locations: @json(__('dashboard.other_locations')),
+        no_traffic_data: @json(__('dashboard.no_traffic_data'))
+    };
+</script>
 
 <!-- Dashboard JS -->
 <script src="/assets/js/dashboard.js?v={{ filemtime(public_path('assets/js/dashboard.js')) }}"></script>
