@@ -2,45 +2,6 @@
 let token;
 let currentDesignId = null;
 
-// Update onboarding timeline when designs are loaded
-function updateOnboardingTimeline(hasDesigns) {
-    const circle1 = document.getElementById('timeline-circle-1');
-    const circle2 = document.getElementById('timeline-circle-2');
-    const label2 = document.getElementById('timeline-label-2');
-    const sub2 = document.getElementById('timeline-sub-2');
-    if (!circle1) return;
-
-    if (hasDesigns) {
-        // Step 1 completed: green check
-        circle1.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
-        circle1.style.boxShadow = '0 4px 12px rgba(40, 167, 69, 0.3)';
-        circle1.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-
-        // Step 2 active: purple + clickable
-        circle2.style.background = 'linear-gradient(135deg, #7367f0, #9e95f5)';
-        circle2.style.color = 'white';
-        circle2.style.border = 'none';
-        circle2.style.boxShadow = '0 4px 15px rgba(115, 103, 240, 0.4)';
-        label2.style.color = '#333';
-        sub2.style.color = '#888';
-
-        // Hover effect on step 2
-        const step2 = document.getElementById('timeline-step-2');
-        step2.style.transition = 'transform 0.2s ease';
-        circle2.style.transition = 'box-shadow 0.2s ease, transform 0.2s ease';
-        step2.addEventListener('mouseenter', function() {
-            step2.style.transform = 'translateY(-4px)';
-            circle2.style.boxShadow = '0 8px 25px rgba(115, 103, 240, 0.5)';
-            circle2.style.transform = 'scale(1.1)';
-        });
-        step2.addEventListener('mouseleave', function() {
-            step2.style.transform = 'translateY(0)';
-            circle2.style.boxShadow = '0 4px 15px rgba(115, 103, 240, 0.4)';
-            circle2.style.transform = 'scale(1)';
-        });
-    }
-}
-
 // Translation bundle injected by the blade (lang/{en,fr}/captive_portals.php)
 const t = window.APP_I18N.captive_portals;
 
@@ -255,42 +216,6 @@ function fetchDesignDetails(designId) {
     });
 }
 
-function checkUserSubscription() {
-    const ctaBannerHtml = `
-        <div class="alert alert-primary d-flex align-items-center justify-content-between mb-2" style="border-left: 4px solid #7367f0; background: linear-gradient(135deg, rgba(115,103,240,0.08), rgba(115,103,240,0.02)); border-radius: 8px; padding: 1.25rem 1.5rem;">
-            <div class="d-flex align-items-center">
-                <div style="background: rgba(115,103,240,0.15); border-radius: 50%; padding: 0.75rem; margin-right: 1rem;">
-                    <i data-feather="wifi" style="width: 24px; height: 24px; color: #7367f0;"></i>
-                </div>
-                <div>
-                    <h5 class="mb-0" style="color: #7367f0;">${t.cta_title}</h5>
-                    <p class="mb-0 text-muted">${t.cta_text}</p>
-                </div>
-            </div>
-            <a href="/pricing" class="btn btn-primary ml-2 d-flex align-items-center" style="white-space: nowrap; padding: 0.6rem 1.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; gap: 0.4rem;">
-                <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.cta_button}
-            </a>
-        </div>
-    `;
-
-    $.ajax({
-        url: '/api/subscription/status',
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token },
-        success: function(response) {
-            if (!response.has_subscription) {
-                $('#device-cta-banner').html(ctaBannerHtml).show();
-                if (typeof feather !== 'undefined') feather.replace();
-            }
-        },
-        error: function() {
-            // If subscription check fails, show CTA as fallback
-            $('#device-cta-banner').html(ctaBannerHtml).show();
-            if (typeof feather !== 'undefined') feather.replace();
-        }
-    });
-}
-
 function fetchDesigns(openFirstDesign = false) {
     $('#portal-designs-container').html(
         `<div class="col-12 text-center py-3">
@@ -308,9 +233,6 @@ function fetchDesigns(openFirstDesign = false) {
         },
         success: function(response) {
             $('#portal-designs-container').empty();
-            
-            // Update timeline based on whether user has designs
-            updateOnboardingTimeline(response.data && response.data.length > 0);
 
             if (response.data && response.data.length > 0) {
                 const isAdmin = response.is_admin || false;
@@ -594,7 +516,6 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const fromRegistration = urlParams.get('from') === 'registration';
     fetchDesigns(fromRegistration);
-    checkUserSubscription();
 
     initializePreview();
     updatePreviewBackground();

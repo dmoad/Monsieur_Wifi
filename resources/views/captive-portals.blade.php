@@ -46,9 +46,6 @@
         'edit' => __('captive_portals.js_edit'),
         'delete_button_title' => __('captive_portals.js_delete_button_title'),
         'logged_out' => __('captive_portals.js_logged_out'),
-        'cta_title' => __('captive_portals.js_cta_title'),
-        'cta_text' => __('captive_portals.js_cta_text'),
-        'cta_button' => __('captive_portals.js_cta_button'),
         'change_owner_body_with_owner' => __('captive_portals.js_change_owner_body_with_owner'),
     ];
 @endphp
@@ -621,30 +618,62 @@
 </div>
 
 <div class="content-body">
-    <!-- Timeline -->
-    <div id="onboarding-timeline" style="max-width:700px; margin:0 auto 25px; padding:0 20px;">
-        <div style="display:flex; align-items:flex-start; justify-content:center; position:relative;">
-            <div style="position:absolute; top:24px; left:calc(16.66% + 20px); right:calc(16.66% + 20px); height:3px; background:#e0e0e0; z-index:0;"></div>
-            <div id="timeline-step-1" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
-                <div id="timeline-circle-1" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:var(--mw-primary); color:white; box-shadow:0 4px 15px rgba(99,102,241,0.4);">1</div>
-                <div style="font-size:0.85rem; font-weight:600; color:#333; text-align:center;">{{ __('captive_portals.timeline_step1_label') }}</div>
-                <div style="font-size:0.75rem; color:#888; text-align:center; margin-top:4px;">{{ __('captive_portals.timeline_step1_sub') }}</div>
-            </div>
-            <a id="timeline-step-2" href="/pricing" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1; text-decoration:none; cursor:pointer;">
-                <div id="timeline-circle-2" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:#f0f0f0; color:#999; border:2px solid #ddd;">2</div>
-                <div id="timeline-label-2" style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">{{ __('captive_portals.timeline_step2_label') }}</div>
-                <div id="timeline-sub-2" style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">{{ __('captive_portals.timeline_step2_sub') }}</div>
-            </a>
-            <div id="timeline-step-3" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
-                <div id="timeline-circle-3" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px; background:#f0f0f0; color:#999; border:2px solid #ddd;">3</div>
-                <div style="font-size:0.85rem; font-weight:600; color:#999; text-align:center;">{{ __('captive_portals.timeline_step3_label') }}</div>
-                <div style="font-size:0.75rem; color:#bbb; text-align:center; margin-top:4px;">{{ __('captive_portals.timeline_step3_sub') }}</div>
+    @php
+        $timelineStep = (int) request()->query('step', 0);
+        if ($timelineStep < 1 || $timelineStep > 3) { $timelineStep = 0; }
+    @endphp
+    @if ($timelineStep)
+        @php
+            $tlCircleBase = 'width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px;';
+            $tlCircleOn   = $tlCircleBase . ' background:var(--mw-primary); color:white; box-shadow:0 4px 15px rgba(99,102,241,0.4);';
+            $tlCircleOff  = $tlCircleBase . ' background:#f0f0f0; color:#999; border:2px solid #ddd;';
+            $tlLabelBase  = 'font-size:0.85rem; font-weight:600; text-align:center;';
+            $tlLabelOn    = $tlLabelBase . ' color:#333;';
+            $tlLabelOff   = $tlLabelBase . ' color:#999;';
+            $tlSubBase    = 'font-size:0.75rem; text-align:center; margin-top:4px;';
+            $tlSubOn      = $tlSubBase . ' color:#888;';
+            $tlSubOff     = $tlSubBase . ' color:#bbb;';
+        @endphp
+        <!-- Timeline (showcase-site flow; active step via ?step=1|2|3) -->
+        <div id="onboarding-timeline" style="max-width:700px; margin:0 auto 25px; padding:0 20px;">
+            <div style="display:flex; align-items:flex-start; justify-content:center; position:relative;">
+                <div style="position:absolute; top:24px; left:calc(16.66% + 20px); right:calc(16.66% + 20px); height:3px; background:#e0e0e0; z-index:0;"></div>
+                <div id="timeline-step-1" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
+                    <div id="timeline-circle-1" style="{{ $timelineStep === 1 ? $tlCircleOn : $tlCircleOff }}">1</div>
+                    <div style="{{ $timelineStep === 1 ? $tlLabelOn : $tlLabelOff }}">{{ __('captive_portals.timeline_step1_label') }}</div>
+                    <div style="{{ $timelineStep === 1 ? $tlSubOn : $tlSubOff }}">{{ __('captive_portals.timeline_step1_sub') }}</div>
+                </div>
+                <a id="timeline-step-2" href="/pricing" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1; text-decoration:none; cursor:pointer;">
+                    <div id="timeline-circle-2" style="{{ $timelineStep === 2 ? $tlCircleOn : $tlCircleOff }}">2</div>
+                    <div id="timeline-label-2" style="{{ $timelineStep === 2 ? $tlLabelOn : $tlLabelOff }}">{{ __('captive_portals.timeline_step2_label') }}</div>
+                    <div id="timeline-sub-2" style="{{ $timelineStep === 2 ? $tlSubOn : $tlSubOff }}">{{ __('captive_portals.timeline_step2_sub') }}</div>
+                </a>
+                <div id="timeline-step-3" style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; z-index:1;">
+                    <div id="timeline-circle-3" style="{{ $timelineStep === 3 ? $tlCircleOn : $tlCircleOff }}">3</div>
+                    <div style="{{ $timelineStep === 3 ? $tlLabelOn : $tlLabelOff }}">{{ __('captive_portals.timeline_step3_label') }}</div>
+                    <div style="{{ $timelineStep === 3 ? $tlSubOn : $tlSubOff }}">{{ __('captive_portals.timeline_step3_sub') }}</div>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 
-    <!-- Device CTA Banner - hidden by default, shown via JS if user has no devices -->
-    <div id="device-cta-banner" style="display: none;"></div>
+    @if (request()->has('showOffers'))
+        <!-- Device CTA Banner (showcase-site flow; gated by ?showOffers) -->
+        <div class="alert alert-primary d-flex align-items-center justify-content-between mb-2" style="border-left: 4px solid #7367f0; background: linear-gradient(135deg, rgba(115,103,240,0.08), rgba(115,103,240,0.02)); border-radius: 8px; padding: 1.25rem 1.5rem;">
+            <div class="d-flex align-items-center">
+                <div style="background: rgba(115,103,240,0.15); border-radius: 50%; padding: 0.75rem; margin-right: 1rem;">
+                    <i data-feather="wifi" style="width: 24px; height: 24px; color: #7367f0;"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0" style="color: #7367f0;">{{ __('captive_portals.js_cta_title') }}</h5>
+                    <p class="mb-0 text-muted">{{ __('captive_portals.js_cta_text') }}</p>
+                </div>
+            </div>
+            <a href="/pricing" class="btn btn-primary ml-2 d-flex align-items-center" style="white-space: nowrap; padding: 0.6rem 1.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; gap: 0.4rem;">
+                <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> {{ __('captive_portals.js_cta_button') }}
+            </a>
+        </div>
+    @endif
 
     <!-- Captive Portal Designs List -->
     <section id="captive-portal-designs-list">
