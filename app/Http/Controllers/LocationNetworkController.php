@@ -16,7 +16,7 @@ class LocationNetworkController extends Controller
 
     public function __construct()
     {
-        $this->maxNetworks = (int) env('MAX_NETWORKS_PER_LOCATION', 4);
+        $this->maxNetworks = (int) env('MAX_NETWORKS_PER_LOCATION', 8);
     }
 
     // -------------------------------------------------------------------------
