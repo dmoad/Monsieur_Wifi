@@ -22,7 +22,26 @@
 
                             <!-- Radio Settings -->
                             <div class="content-section">
-                                <div class="section-header"><h5 class="section-title">{{ __('location_details.wifi_radio_channel') }}</h5></div>
+                                <div class="section-header d-flex justify-content-between align-items-center">
+                                    <h5 class="section-title mb-0">{{ __('location_details.wifi_radio_channel') }}</h5>
+                                    <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn">
+                                        <i data-feather="wifi" class="mr-1"></i>{{ __('location_details.scan_button') }}
+                                    </button>
+                                </div>
+
+                                <div class="alert alert-info py-2 px-3 mb-3" id="scan-status-alert">
+                                    <i data-feather="info" class="mr-2" style="width:14px;height:14px;vertical-align:text-bottom;"></i>
+                                    <span id="scan-status-text">{{ __('location_details.scan_default_status') }}</span>
+                                    <span class="ml-3">
+                                        <strong>{{ __('location_details.best_2g') }}:</strong> <span id="last-optimal-2g">--</span>
+                                        <span class="mx-2">•</span>
+                                        <strong>{{ __('location_details.best_5g') }}:</strong> <span id="last-optimal-5g">--</span>
+                                    </span>
+                                    <button class="btn btn-sm btn-success float-right" id="save-channels-btn" disabled>
+                                        <i data-feather="check" class="mr-1"></i>{{ __('location_details.apply_optimal') }}
+                                    </button>
+                                    <small class="d-block mt-1 text-muted" id="last-scan-timestamp">{{ __('location_details.no_scan_yet') }}</small>
+                                </div>
 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
@@ -64,7 +83,7 @@
                                             </div>
                                             <div class="radio-band-card-body">
                                                 <div class="form-group">
-                                                    <label for="power-level-2g">{{ __('location_details.power_2g') }}</label>
+                                                    <label for="power-level-2g">{{ __('location_details.band_power') }}</label>
                                                     <select class="form-control" id="power-level-2g">
                                                         <option value="20">Maximum (20 dBm)</option>
                                                         <option value="17">High (17 dBm)</option>
@@ -74,11 +93,11 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="channel-width-2g">{{ __('location_details.width_2g') }}</label>
+                                                    <label for="channel-width-2g">{{ __('location_details.band_channel_width') }}</label>
                                                     <select class="form-control" id="channel-width-2g"><option value="20">20 MHz</option><option value="40" selected>40 MHz</option></select>
                                                 </div>
                                                 <div class="form-group mb-0">
-                                                    <label for="channel-2g">{{ __('location_details.channel_2g') }}</label>
+                                                    <label for="channel-2g">{{ __('location_details.band_channel') }}</label>
                                                     <select class="form-control" id="channel-2g">
                                                         <option value="1">Ch 1 (2412)</option><option value="2">Ch 2</option><option value="3">Ch 3</option><option value="4">Ch 4</option><option value="5">Ch 5</option>
                                                         <option value="6" selected>Ch 6 (2437)</option><option value="7">Ch 7</option><option value="8">Ch 8</option><option value="9">Ch 9</option><option value="10">Ch 10</option>
@@ -102,7 +121,7 @@
                                             </div>
                                             <div class="radio-band-card-body">
                                                 <div class="form-group">
-                                                    <label for="power-level-5g">{{ __('location_details.power_5g') }}</label>
+                                                    <label for="power-level-5g">{{ __('location_details.band_power') }}</label>
                                                     <select class="form-control" id="power-level-5g">
                                                         <option value="23">Maximum (23 dBm)</option>
                                                         <option value="20">High (20 dBm)</option>
@@ -112,11 +131,11 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="channel-width-5g">{{ __('location_details.width_5g') }}</label>
+                                                    <label for="channel-width-5g">{{ __('location_details.band_channel_width') }}</label>
                                                     <select class="form-control" id="channel-width-5g"><option value="20">20 MHz</option><option value="40">40 MHz</option><option value="80" selected>80 MHz</option><option value="160">160 MHz</option></select>
                                                 </div>
                                                 <div class="form-group mb-0">
-                                                    <label for="channel-5g">{{ __('location_details.channel_5g') }}</label>
+                                                    <label for="channel-5g">{{ __('location_details.band_channel') }}</label>
                                                     <select class="form-control" id="channel-5g">
                                                         <option value="36" selected>Ch 36</option><option value="40">Ch 40</option><option value="44">Ch 44</option><option value="48">Ch 48</option>
                                                         <option value="52">Ch 52</option><option value="56">Ch 56</option><option value="60">Ch 60</option><option value="64">Ch 64</option>
@@ -128,24 +147,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <label class="mb-0">{{ __('location_details.channel_optimization') }}</label>
-                                            <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn"><i data-feather="wifi" class="mr-1"></i>{{ __('location_details.scan_button') }}</button>
-                                        </div>
-                                        <div class="alert alert-info mb-3" id="scan-status-alert">
-                                            <div class="alert-body"><i data-feather="info" class="mr-2"></i><span id="scan-status-text">{{ __('location_details.scan_default_status') }}</span></div>
-                                        </div>
-                                        <div class="row text-center mb-3">
-                                            <div class="col-6"><div class="stat-value text-primary" id="last-optimal-2g">--</div><div class="stat-label">{{ __('location_details.best_2g') }}</div></div>
-                                            <div class="col-6"><div class="stat-value text-success" id="last-optimal-5g">--</div><div class="stat-label">{{ __('location_details.best_5g') }}</div></div>
-                                        </div>
-                                        <div class="text-center mb-2"><small class="text-muted" id="last-scan-timestamp">{{ __('location_details.no_scan_yet') }}</small></div>
-                                        <button class="btn btn-success btn-sm" id="save-channels-btn" disabled><i data-feather="check" class="mr-1"></i>{{ __('location_details.apply_optimal') }}</button>
                                     </div>
                                 </div>
 
