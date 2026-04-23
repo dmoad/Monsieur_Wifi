@@ -126,37 +126,41 @@ function renderLocationCards() {
     }
 
     if (filtered.length === 0) {
-        $container.html('<div style="padding:var(--mw-space-xl);text-align:center;color:var(--mw-text-muted);grid-column:1/-1;">' +
+        const emptyLabel = currentLocationFilter === 'online'
+            ? 'No online locations'
+            : currentLocationFilter === 'offline'
+                ? 'No offline locations'
+                : 'No locations found';
+        $container.html('<div style="padding:var(--mw-space-xl);text-align:center;color:var(--mw-text-muted);">' +
             '<i data-feather="map-pin" style="width:24px;height:24px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;"></i>' +
-            '<span>' + (currentLocationFilter === 'online' ? 'No online locations' : currentLocationFilter === 'offline' ? 'No offline locations' : 'No locations found') + '</span>' +
+            '<span>' + emptyLabel + '</span>' +
             '</div>');
         if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
         return;
     }
 
-    const cards = filtered.slice(0, 6).map(function(loc) {
+    const rows = filtered.map(function(loc) {
         const online = loc.online_status === 'online';
         const iconBg = online ? 'rgba(22,163,74,0.12)' : 'rgba(220,38,38,0.10)';
         const iconColor = online ? 'var(--mw-success)' : 'var(--mw-danger)';
-        const badgeClass = online ? 'status-badge status-online' : 'status-badge status-offline';
-        const badgeLabel = online ? 'Online' : 'Offline';
+        const statusClass = online ? 'db-loc-status-online' : 'db-loc-status-offline';
+        const statusLabel = online ? 'Online' : 'Offline';
         const users = (loc.users || 0).toLocaleString();
         const gb = (loc.data_usage_gb || 0).toFixed(1);
         const detailUrl = '/' + dashLocale + '/locations/' + loc.id;
 
-        return '<div class="card location-card" style="cursor:pointer;margin:0;" onclick="window.location.href=\'' + detailUrl + '\'">' +
-            '<div class="card-body" style="padding:var(--mw-space-lg);">' +
-            '<div style="display:flex;align-items:center;gap:var(--mw-space-sm);margin-bottom:var(--mw-space-md);">' +
-            '<div style="width:32px;height:32px;background:' + iconBg + ';border-radius:var(--mw-radius-md);display:flex;align-items:center;justify-content:center;color:' + iconColor + ';flex-shrink:0;">' +
-            '<i data-feather="wifi" style="width:16px;height:16px;"></i></div>' +
-            '<div style="font-size:13px;font-weight:600;color:var(--mw-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + loc.name + '</div>' +
+        return '<div class="db-loc-row" onclick="window.location.href=\'' + detailUrl + '\'">' +
+            '<div class="db-loc-icon" style="background:' + iconBg + ';color:' + iconColor + ';">' +
+            '<i data-feather="wifi"></i></div>' +
+            '<div class="db-loc-body">' +
+            '<div class="db-loc-name">' + loc.name + '</div>' +
+            '<div class="db-loc-sub">' + users + ' users &middot; ' + gb + ' GB</div>' +
             '</div>' +
-            '<span class="' + badgeClass + '">' + badgeLabel + '</span>' +
-            '<div style="font-size:11px;color:var(--mw-text-muted);margin-top:var(--mw-space-sm);">' + users + ' users &middot; ' + gb + ' GB</div>' +
-            '</div></div>';
+            '<span class="db-loc-status ' + statusClass + '">' + statusLabel + '</span>' +
+            '</div>';
     }).join('');
 
-    $container.html(cards);
+    $container.html(rows);
     if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
 }
 

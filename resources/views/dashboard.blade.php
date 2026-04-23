@@ -38,11 +38,52 @@
 .leaflet-popup-content { margin: 0; padding: 0; }
 .custom-div-icon, .marker-icon { background: transparent; border: none; }
 
-#locations-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--mw-space-md);
+/* Locations overview list (right column next to map) */
+#locations-section .card-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 var(--mw-space-xl);
 }
+#locations-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex: 1;
+}
+.db-loc-row {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-md);
+    padding: var(--mw-space-md) 0;
+    border-bottom: 1px solid var(--mw-border-light);
+    cursor: pointer;
+    transition: background 0.12s;
+}
+.db-loc-row:last-child { border-bottom: none; }
+.db-loc-row:hover { background: var(--mw-bg-hover); }
+.db-loc-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.db-loc-icon [data-feather] { width: 16px !important; height: 16px !important; }
+.db-loc-body { flex: 1; min-width: 0; }
+.db-loc-name {
+    font-size: 13px; font-weight: 600; color: var(--mw-text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.db-loc-sub { font-size: 11px; color: var(--mw-text-muted); margin-top: 2px; }
+.db-loc-status {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--mw-radius-full);
+    flex-shrink: 0;
+}
+.db-loc-status-online  { background: rgba(22,163,74,0.12); color: var(--mw-success); }
+.db-loc-status-offline { background: rgba(220,38,38,0.10); color: var(--mw-danger); }
 
 /* Top-row summary cards — larger stacked layout (icon top-left, value + label below) */
 .db-summary-card {
@@ -303,35 +344,10 @@
         </div>
         <!--/ Data Usage Trends + Analytics list -->
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">{{ __('dashboard.locations_overview') }}</h4>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ __('dashboard.all_locations') }}
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="locationDropdown">
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="all">{{ __('dashboard.all_locations') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="online">{{ __('dashboard.online_only') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="offline">{{ __('dashboard.offline_only') }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="locations-container">
-                            <!-- Location cards populated by dashboard.js -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Network Map -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
+        <!-- Map + Locations list side-by-side -->
+        <div class="row match-height">
+            <div class="col-lg-8 col-12">
+                <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">{{ __('dashboard.network_map') }}</h4>
                         <div class="d-flex">
@@ -350,6 +366,28 @@
                                     <p class="text-muted">{{ __('dashboard.loading_network_map') }}</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="card h-100" id="locations-section">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">{{ __('dashboard.locations_overview') }}</h4>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ __('dashboard.all_locations') }}
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="locationDropdown">
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="all">{{ __('dashboard.all_locations') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="online">{{ __('dashboard.online_only') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="offline">{{ __('dashboard.offline_only') }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="locations-container">
+                            <!-- Location rows populated by dashboard.js -->
                         </div>
                     </div>
                 </div>
