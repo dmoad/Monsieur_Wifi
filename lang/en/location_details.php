@@ -5,7 +5,8 @@ return [
     'heading' => 'Location Details',
 
     // Header buttons
-    'clone_button' => 'Clone',
+    'actions_button' => 'Actions',
+    'clone_button' => 'Duplicate config to another location',
 
     // Router info card
     'mac_prefix' => 'MAC:',

@@ -155,9 +155,16 @@
     </div>
     <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
         <div class="form-group breadcrumb-right d-flex align-items-center justify-content-end">
-            <button id="clone-location-btn" class="btn btn-outline-secondary">
-                <i data-feather="copy" class="mr-1"></i>{{ __('location_details.clone_button') }}
-            </button>
+            <div class="dropdown">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" id="location-actions-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i data-feather="settings" class="mr-1"></i>{{ __('location_details.actions_button') }}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="location-actions-btn">
+                    <button type="button" class="dropdown-item" id="clone-location-btn">
+                        <i data-feather="copy" class="mr-1"></i>{{ __('location_details.clone_button') }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
