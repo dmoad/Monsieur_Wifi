@@ -78,6 +78,29 @@
     font-size: 13px;
     color: var(--mw-text-muted);
 }
+
+/* Right-column analytics list (colored icon + label/sub + value) */
+.db-metric-list { display: flex; flex-direction: column; }
+.db-metric-row {
+    display: flex;
+    align-items: center;
+    gap: var(--mw-space-md);
+    padding: var(--mw-space-md) 0;
+    border-bottom: 1px solid var(--mw-border-light);
+}
+.db-metric-row:last-child { border-bottom: none; padding-bottom: 0; }
+.db-metric-row:first-child { padding-top: 0; }
+.db-metric-row .mw-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.db-metric-row .mw-stat-icon [data-feather] { width: 18px !important; height: 18px !important; }
+.db-metric-body { flex: 1; min-width: 0; }
+.db-metric-name { font-size: 13px; font-weight: 600; color: var(--mw-text-primary); }
+.db-metric-sub  { font-size: 11px; color: var(--mw-text-muted); margin-top: 2px; }
+.db-metric-val  { font-size: 20px; font-weight: 700; color: var(--mw-text-primary); flex-shrink: 0; text-align: right; }
 </style>
 @endpush
 
@@ -213,17 +236,62 @@
                 </div>
             </div>
             <div class="col-lg-4 col-12">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('dashboard.traffic_by_location') }}</h4>
+                <div class="card h-100" id="analytics-section">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">{{ __('dashboard.analytics_overview') }}</h4>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="analyticsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ __('dashboard.last_7_days') }}
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="analyticsDropdown">
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="1">{{ __('dashboard.today') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="7">{{ __('dashboard.last_7_days') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="30">{{ __('dashboard.last_30_days') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="90">{{ __('dashboard.last_90_days') }}</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div id="traffic-by-location-chart" style="min-height: 300px;"></div>
+                        <div id="analytics-errors"></div>
+                        <div class="db-metric-list">
+                            <div class="db-metric-row">
+                                <div class="mw-stat-icon mw-stat-icon-primary"><i data-feather="users"></i></div>
+                                <div class="db-metric-body">
+                                    <div class="db-metric-name">{{ __('dashboard.total_users') }}</div>
+                                    <div class="db-metric-sub">{{ __('dashboard.unique_users_connected') }}</div>
+                                </div>
+                                <div class="db-metric-val" id="analytics-total-users">—</div>
+                            </div>
+                            <div class="db-metric-row">
+                                <div class="mw-stat-icon mw-stat-icon-info"><i data-feather="activity"></i></div>
+                                <div class="db-metric-body">
+                                    <div class="db-metric-name">{{ __('dashboard.data_usage') }}</div>
+                                    <div class="db-metric-sub">{{ __('dashboard.total_bandwidth_consumed') }}</div>
+                                </div>
+                                <div class="db-metric-val" id="analytics-data-usage">—</div>
+                            </div>
+                            <div class="db-metric-row">
+                                <div class="mw-stat-icon mw-stat-icon-success"><i data-feather="wifi"></i></div>
+                                <div class="db-metric-body">
+                                    <div class="db-metric-name">{{ __('dashboard.uptime') }}</div>
+                                    <div class="db-metric-sub">{{ __('dashboard.network_availability') }}</div>
+                                </div>
+                                <div class="db-metric-val" id="analytics-uptime">—</div>
+                            </div>
+                            <div class="db-metric-row">
+                                <div class="mw-stat-icon mw-stat-icon-warning"><i data-feather="monitor"></i></div>
+                                <div class="db-metric-body">
+                                    <div class="db-metric-name">{{ __('dashboard.total_sessions') }}</div>
+                                    <div class="db-metric-sub">{{ __('dashboard.connection_sessions') }}</div>
+                                </div>
+                                <div class="db-metric-val" id="analytics-sessions">—</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!--/ Data Usage Trends + Traffic by Location -->
+        <!--/ Data Usage Trends + Analytics list -->
 
         <div class="row">
             <div class="col-12">
@@ -244,85 +312,6 @@
                     <div class="card-body">
                         <div id="locations-container">
                             <!-- Location cards populated by dashboard.js -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Network Analytics Overview -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card" id="analytics-section">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">{{ __('dashboard.analytics_overview') }}</h4>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="analyticsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ __('dashboard.last_7_days') }}
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="analyticsDropdown">
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="1">{{ __('dashboard.today') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="7">{{ __('dashboard.last_7_days') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="30">{{ __('dashboard.last_30_days') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="90">{{ __('dashboard.last_90_days') }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="analytics-errors"></div>
-                        
-                        <div class="row mb-2">
-                            <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                <div class="d-flex align-items-center mb-1">
-                                    <div class="mw-stat-icon mw-stat-icon-primary mr-1">
-                                        <i data-feather="users"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="mb-0" id="analytics-total-users">-</h4>
-                                        <span>{{ __('dashboard.total_users') }}</span>
-                                    </div>
-                                </div>
-                                <span class="text-muted">{{ __('dashboard.unique_users_connected') }}</span>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                <div class="d-flex align-items-center mb-1">
-                                    <div class="mw-stat-icon mw-stat-icon-info mr-1">
-                                        <i data-feather="activity"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="mb-0" id="analytics-data-usage">- GB</h4>
-                                        <span>{{ __('dashboard.data_usage') }}</span>
-                                    </div>
-                                </div>
-                                <span class="text-muted">{{ __('dashboard.total_bandwidth_consumed') }}</span>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                <div class="d-flex align-items-center mb-1">
-                                    <div class="mw-stat-icon mw-stat-icon-success mr-1">
-                                        <i data-feather="wifi"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="mb-0" id="analytics-uptime">-%</h4>
-                                        <span>{{ __('dashboard.uptime') }}</span>
-                                    </div>
-                                </div>
-                                <span class="text-muted">{{ __('dashboard.network_availability') }}</span>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                <div class="d-flex align-items-center mb-1">
-                                    <div class="mw-stat-icon mw-stat-icon-warning mr-1">
-                                        <i data-feather="monitor"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="mb-0" id="analytics-sessions">-</h4>
-                                        <span>{{ __('dashboard.total_sessions') }}</span>
-                                    </div>
-                                </div>
-                                <span class="text-muted">{{ __('dashboard.connection_sessions') }}</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -379,13 +368,6 @@
 
 <!-- Charts -->
 <script src="/assets/vendors/js/charts/apexcharts.min.js"></script>
-
-<script>
-    window.DASHBOARD_T = {
-        other_locations: @json(__('dashboard.other_locations')),
-        no_traffic_data: @json(__('dashboard.no_traffic_data'))
-    };
-</script>
 
 <!-- Dashboard JS -->
 <script src="/assets/js/dashboard.js?v={{ filemtime(public_path('assets/js/dashboard.js')) }}"></script>
