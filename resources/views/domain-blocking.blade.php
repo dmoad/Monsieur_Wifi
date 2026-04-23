@@ -7,11 +7,6 @@
 @section('title', __('domain_blocking.page_title'))
 
 @push('styles')
-<!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-
 <style>
     [data-feather] {
         display: inline-block !important;
@@ -74,6 +69,79 @@
         line-height: 1.3;
         margin-top: 2px;
     }
+
+    /* Domain list table */
+    .db-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .db-table thead th {
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--mw-text-muted);
+        text-align: left;
+        padding: 10px var(--mw-space-lg);
+        border-bottom: 1px solid var(--mw-border-light);
+    }
+    .db-table tbody tr {
+        border-bottom: 1px solid var(--mw-border-light);
+        cursor: pointer;
+        transition: background 0.12s;
+    }
+    .db-table tbody tr:last-child { border-bottom: none; }
+    .db-table tbody tr:hover { background: var(--mw-bg-hover); }
+    .db-table td { padding: var(--mw-space-md) var(--mw-space-lg); vertical-align: middle; color: var(--mw-text-secondary); }
+    .db-table td.db-col-actions { text-align: right; width: 1%; white-space: nowrap; }
+
+    .db-list-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--mw-space-md) var(--mw-space-xl);
+        border-bottom: 1px solid var(--mw-border-light);
+    }
+    .db-list-title { font-size: 15px; font-weight: 600; color: var(--mw-text-primary); }
+    .db-list-tools { display: flex; align-items: center; gap: var(--mw-space-sm); }
+    .db-search {
+        width: 220px;
+        font-size: 13px;
+        padding: 6px 10px;
+        border: 1px solid var(--mw-border-light);
+        border-radius: var(--mw-radius-sm);
+        background: var(--mw-bg-surface);
+        color: var(--mw-text-primary);
+    }
+    .db-search:focus { outline: none; border-color: var(--mw-primary); }
+
+    .db-kebab-wrap { position: relative; display: inline-block; }
+    .db-kebab-btn {
+        width: 32px; height: 32px;
+        border: 1px solid var(--mw-border);
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s, border-color 0.12s;
+        padding: 0;
+    }
+    .db-kebab-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
+    .db-menu {
+        display: none; position: absolute; top: calc(100% + 4px); right: 0;
+        background: var(--mw-bg-surface); border: 1px solid var(--mw-border);
+        border-radius: var(--mw-radius-md); box-shadow: var(--mw-shadow-elevated);
+        min-width: 140px; z-index: 100; padding: 4px 0;
+    }
+    .db-menu.open { display: block; }
+    .db-menu-item {
+        display: flex; align-items: center; gap: var(--mw-space-sm);
+        width: 100%; padding: 7px 14px; border: none; background: transparent;
+        font-size: 13px; color: var(--mw-text-secondary); cursor: pointer;
+        text-align: left; transition: background 0.1s, color 0.1s; font-family: inherit;
+    }
+    .db-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+    .db-menu-danger { color: var(--mw-danger) !important; }
+    .db-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
+    .db-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
 
 </style>
 @endpush
@@ -199,40 +267,33 @@
     </div>
 
     <!-- Domain List Table -->
-    <section id="basic-datatable">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">{{ __('domain_blocking.blocked_domains_title') }}</h4>
-                        <div>
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-domain">
-                                <i data-feather="plus" class="mr-25"></i>
-                                <span>{{ __('domain_blocking.add_domain') }}</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-datatable table-responsive">
-                            <table class="datatables-domains table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('domain_blocking.col_domain') }}</th>
-                                        <th>{{ __('domain_blocking.col_category') }}</th>
-                                        <th>{{ __('domain_blocking.col_added_date') }}</th>
-                                        <th>{{ __('domain_blocking.col_last_updated') }}</th>
-                                        <th>{{ __('domain_blocking.col_actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+    <div class="card">
+        <div class="db-list-head">
+            <span class="db-list-title">{{ __('domain_blocking.blocked_domains_title') }}</span>
+            <div class="db-list-tools">
+                <input type="text" id="db-search" class="db-search" placeholder="{{ __('domain_blocking.search_placeholder') }}" autocomplete="off">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-domain">
+                    <i data-feather="plus" class="mr-25"></i>
+                    <span>{{ __('domain_blocking.add_domain') }}</span>
+                </button>
             </div>
         </div>
-    </section>
+        <div class="table-responsive">
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('domain_blocking.col_domain') }}</th>
+                        <th>{{ __('domain_blocking.col_category') }}</th>
+                        <th>{{ __('domain_blocking.col_added_date') }}</th>
+                        <th>{{ __('domain_blocking.col_last_updated') }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="db-domains-tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Add New Domain Modal -->
@@ -440,14 +501,6 @@
 @endsection
 
 @push('scripts')
-<!-- DataTables JS -->
-<script src="/assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-<script src="/assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
-
 <script>
     const locale = '{{ $locale }}';
 </script>

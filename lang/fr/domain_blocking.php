@@ -20,6 +20,8 @@ return [
 
     // Table
     'blocked_domains_title' => 'Domaines bloqués',
+    'search_placeholder' => 'Rechercher des domaines...',
+    'no_domains' => 'Aucun domaine trouvé',
     'add_domain' => 'Ajouter un domaine',
     'col_domain' => 'Domaine',
     'col_category' => 'Catégorie',
