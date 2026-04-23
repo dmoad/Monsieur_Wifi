@@ -314,6 +314,12 @@
         object-fit: contain;
         display: inline-block;
         margin: 0;
+        /* Soft white pill so the PNG's baked-in white bg reads as an intentional
+           branding element rather than a pasted rectangle on a gradient. */
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        padding: 4px 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 
     .terms {
