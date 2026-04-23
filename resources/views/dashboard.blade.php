@@ -80,7 +80,14 @@
 }
 
 /* Right-column analytics list (colored icon + label/sub + value) */
-.db-metric-list { display: flex; flex-direction: column; }
+#analytics-section .card-body { display: flex; flex-direction: column; }
+.db-metric-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    gap: var(--mw-space-sm);
+}
 .db-metric-row {
     display: flex;
     align-items: center;
