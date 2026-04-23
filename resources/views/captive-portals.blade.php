@@ -747,6 +747,108 @@
     .cp-menu-item-danger { color: var(--mw-danger); }
     .cp-menu-item-danger:hover { background: rgba(220, 38, 38, 0.08); color: var(--mw-danger); }
     .cp-menu-item [data-feather] { width: 14px !important; height: 14px !important; }
+
+    /* ============================================================
+       Designer layout — back link, page header, 2-col with sticky
+       preview, multi-card form sections (mirror #page-cpdetail mockup)
+       ============================================================ */
+    .cp-designer-back-row { margin-bottom: var(--mw-space-md); }
+    .cp-designer-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--mw-text-secondary);
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+    .cp-designer-back:hover { color: var(--mw-primary); }
+    .cp-designer-back [data-feather] { width: 16px !important; height: 16px !important; }
+
+    .cp-designer-head {
+        display: flex;
+        align-items: center;
+        gap: var(--mw-space-md);
+        margin-bottom: var(--mw-space-md);
+    }
+    .cp-designer-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--mw-text-primary);
+        margin: 0;
+    }
+    .cp-designer-actions { margin-left: auto; display: flex; gap: var(--mw-space-sm); }
+
+    .cp-designer-layout {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: var(--mw-space-xl);
+        align-items: start;
+    }
+    @media (max-width: 1200px) {
+        .cp-designer-layout { grid-template-columns: 1fr; }
+        .cp-designer-preview-col { position: static !important; }
+    }
+    .cp-designer-preview-col {
+        position: sticky;
+        top: var(--mw-space-xl);
+    }
+
+    .cp-section-card {
+        background: var(--mw-bg-surface);
+        border: 1px solid var(--mw-border-light);
+        border-radius: var(--mw-radius-md);
+        margin-bottom: var(--mw-space-lg);
+        overflow: hidden;
+    }
+    .cp-section-card-head {
+        padding: var(--mw-space-md) var(--mw-space-xl);
+        border-bottom: 1px solid var(--mw-border-light);
+    }
+    .cp-section-card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--mw-text-primary);
+        margin: 0;
+    }
+    .cp-section-card-body { padding: var(--mw-space-lg) var(--mw-space-xl); }
+    .cp-section-card-body .form-group:last-child { margin-bottom: 0; }
+
+    .cp-preview-card {
+        background: var(--mw-bg-surface);
+        border: 1px solid var(--mw-border-light);
+        border-radius: var(--mw-radius-md);
+        overflow: hidden;
+    }
+    .cp-preview-card-head {
+        padding: var(--mw-space-md) var(--mw-space-xl);
+        border-bottom: 1px solid var(--mw-border-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .cp-preview-card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--mw-text-primary);
+        margin: 0;
+    }
+    .cp-preview-card-tools { display: flex; gap: 4px; }
+    .cp-preview-card-tools a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: var(--mw-radius-sm);
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+    }
+    .cp-preview-card-tools a:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+    .cp-preview-card-tools [data-feather] { width: 16px !important; height: 16px !important; }
 </style>
 @endpush
 
@@ -858,237 +960,222 @@
 
     <!-- Captive Portal Design Content Starts - Initially hidden -->
     <section id="captive-portal-designer" style="display: none;">
-        <div class="row">
-            <div class="col-12 mb-1">
-                <button class="btn btn-outline-secondary waves-effect" id="back-to-list">
-                    <i data-feather="arrow-left" class="mr-50"></i>
-                    <span>{{ __('captive_portals.back_to_designs') }}</span>
+        <div class="cp-designer-back-row">
+            <button type="button" id="back-to-list" class="cp-designer-back">
+                <i data-feather="arrow-left"></i>
+                <span>{{ __('captive_portals.back_to_designs') }}</span>
+            </button>
+        </div>
+
+        <div class="cp-designer-head">
+            <h1 class="cp-designer-title">{{ __('captive_portals.designer_title') }}</h1>
+            <div class="cp-designer-actions">
+                <button id="save-design" type="button" class="btn btn-primary">
+                    <i data-feather="save" class="mr-50"></i>{{ __('captive_portals.save_design') }}
                 </button>
             </div>
         </div>
-        <div class="row match-height">
-            <div class="col-lg-8 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('captive_portals.designer_title') }}</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" aria-controls="general" role="tab" aria-selected="true">
-                                    <i data-feather="settings" class="mr-25"></i>
-                                    <span class="font-weight-bold">{{ __('captive_portals.tab_general') }}</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="branding-tab" data-toggle="tab" href="#branding" aria-controls="branding" role="tab" aria-selected="false">
-                                    <i data-feather="image" class="mr-25"></i>
-                                    <span class="font-weight-bold">{{ __('captive_portals.tab_branding') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <!-- General Tab -->
-                            <div class="tab-pane active" id="general" aria-labelledby="general-tab" role="tabpanel">
-                                <form class="mt-2">
-                                    <div class="row">
-                                        <div class="col-12 mb-1">
-                                            <h6 class="mb-1">{{ __('captive_portals.section_basic_info') }}</h6>
-                                        </div>
-                                        <div class="col-md-6 col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="portal-name">{{ __('captive_portals.label_portal_name') }}</label>
-                                                <input type="text" class="form-control" id="portal-name" placeholder="{{ __('captive_portals.placeholder_portal_name') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="portal-description">{{ __('captive_portals.label_description') }}</label>
-                                                <textarea class="form-control" id="portal-description" rows="2" placeholder="{{ __('captive_portals.placeholder_description') }}"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="theme-color">{{ __('captive_portals.label_theme_color') }}</label>
-                                                <div class="color-picker-container">
-                                                    <input type="color" class="form-control form-control-color" id="theme-color" value="#6366f1">
-                                                    <div class="color-preview" style="background-color: #6366f1;"></div>
-                                                    <span class="color-value">#6366f1</span>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-12 mt-2 mb-1">
-                                            <h6 class="mb-1">{{ __('captive_portals.section_portal_content') }}</h6>
-                                        </div>
-                                        <div class="col-md-6 col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="welcome-message">{{ __('captive_portals.label_welcome_message') }}</label>
-                                                <input type="text" class="form-control" id="welcome-message" placeholder="{{ __('captive_portals.welcome_default') }}" value="{{ __('captive_portals.welcome_default') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="button-text">{{ __('captive_portals.label_button_text') }}</label>
-                                                <input type="text" class="form-control" id="button-text" placeholder="{{ __('captive_portals.button_default') }}" value="{{ __('captive_portals.button_default') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="login-instructions">{{ __('captive_portals.label_login_instructions') }}</label>
-                                                <textarea class="form-control" id="login-instructions" rows="2" placeholder="{{ __('captive_portals.instructions_default') }}">{{ __('captive_portals.instructions_default') }}</textarea>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="show-terms" checked>
-                                                    <label class="custom-control-label" for="show-terms">{{ __('captive_portals.label_show_terms') }}</label>
-                                                </div>
-                                            </div>
-                                        </div>
+        <div class="mw-tabs" role="tablist">
+            <button type="button" class="mw-tab active" data-tab="general" role="tab">{{ __('captive_portals.tab_general') }}</button>
+            <button type="button" class="mw-tab" data-tab="branding" role="tab">{{ __('captive_portals.tab_branding') }}</button>
+        </div>
 
-                                        <div class="col-12 mt-2 mb-1">
-                                            <h6 class="mb-1">{{ __('captive_portals.section_legal_content') }}</h6>
+        <div class="cp-designer-layout">
+            <div class="cp-designer-main">
+                <!-- General Tab -->
+                <div class="mw-panel active" id="general" role="tabpanel">
+                    <form>
+                        <div class="cp-section-card">
+                            <div class="cp-section-card-head">
+                                <h4 class="cp-section-card-title">{{ __('captive_portals.section_basic_info') }}</h4>
+                            </div>
+                            <div class="cp-section-card-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="portal-name">{{ __('captive_portals.label_portal_name') }}</label>
+                                            <input type="text" class="form-control" id="portal-name" placeholder="{{ __('captive_portals.placeholder_portal_name') }}">
                                         </div>
-                                        <div class="col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="terms-of-service">{{ __('captive_portals.label_terms_content') }}</label>
-                                                <textarea class="form-control" id="terms-of-service" rows="3" placeholder="{{ __('captive_portals.placeholder_terms_content') }}">{{ __('captive_portals.terms_default') }}</textarea>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="portal-description">{{ __('captive_portals.label_description') }}</label>
+                                            <textarea class="form-control" id="portal-description" rows="2" placeholder="{{ __('captive_portals.placeholder_description') }}"></textarea>
                                         </div>
-                                        <div class="col-12 mb-1">
-                                            <div class="form-group">
-                                                <label for="privacy-policy">{{ __('captive_portals.label_privacy_content') }}</label>
-                                                <textarea class="form-control" id="privacy-policy" rows="3" placeholder="{{ __('captive_portals.placeholder_privacy_content') }}">{{ __('captive_portals.privacy_default') }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cp-section-card">
+                            <div class="cp-section-card-head">
+                                <h4 class="cp-section-card-title">{{ __('captive_portals.section_portal_content') }}</h4>
+                            </div>
+                            <div class="cp-section-card-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="welcome-message">{{ __('captive_portals.label_welcome_message') }}</label>
+                                            <input type="text" class="form-control" id="welcome-message" placeholder="{{ __('captive_portals.welcome_default') }}" value="{{ __('captive_portals.welcome_default') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="button-text">{{ __('captive_portals.label_button_text') }}</label>
+                                            <input type="text" class="form-control" id="button-text" placeholder="{{ __('captive_portals.button_default') }}" value="{{ __('captive_portals.button_default') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="login-instructions">{{ __('captive_portals.label_login_instructions') }}</label>
+                                    <textarea class="form-control" id="login-instructions" rows="2" placeholder="{{ __('captive_portals.instructions_default') }}">{{ __('captive_portals.instructions_default') }}</textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="show-terms" checked>
+                                        <label class="custom-control-label" for="show-terms">{{ __('captive_portals.label_show_terms') }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cp-section-card">
+                            <div class="cp-section-card-head">
+                                <h4 class="cp-section-card-title">{{ __('captive_portals.section_legal_content') }}</h4>
+                            </div>
+                            <div class="cp-section-card-body">
+                                <div class="form-group">
+                                    <label for="terms-of-service">{{ __('captive_portals.label_terms_content') }}</label>
+                                    <textarea class="form-control" id="terms-of-service" rows="3" placeholder="{{ __('captive_portals.placeholder_terms_content') }}">{{ __('captive_portals.terms_default') }}</textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label for="privacy-policy">{{ __('captive_portals.label_privacy_content') }}</label>
+                                    <textarea class="form-control" id="privacy-policy" rows="3" placeholder="{{ __('captive_portals.placeholder_privacy_content') }}">{{ __('captive_portals.privacy_default') }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Branding Tab -->
+                <div class="mw-panel" id="branding" role="tabpanel">
+                    <form>
+                        <div class="cp-section-card">
+                            <div class="cp-section-card-head">
+                                <h4 class="cp-section-card-title">{{ __('captive_portals.section_theme') }}</h4>
+                            </div>
+                            <div class="cp-section-card-body">
+                                <div class="form-group mb-0">
+                                    <div class="color-picker-container">
+                                        <input type="color" class="form-control form-control-color" id="theme-color" value="#6366f1">
+                                        <div class="color-preview" style="background-color: #6366f1;"></div>
+                                        <span class="color-value">#6366f1</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cp-section-card">
+                            <div class="cp-section-card-head">
+                                <h4 class="cp-section-card-title">{{ __('captive_portals.section_gradient') }}</h4>
+                            </div>
+                            <div class="cp-section-card-body">
+                                <p class="text-muted small mb-2">{{ __('captive_portals.note_gradient') }}</p>
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="gradient-start">{{ __('captive_portals.label_gradient_start') }}</label>
+                                            <div class="color-picker-container">
+                                                <input type="color" class="form-control form-control-color" id="gradient-start">
+                                                <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
+                                                <span class="color-value" id="gradient-start-value">{{ __('captive_portals.none') }}</span>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
-                            </div>
-
-                            <!-- Branding Tab -->
-                            <div class="tab-pane" id="branding" aria-labelledby="branding-tab" role="tabpanel">
-                                <form class="mt-2">
-                                    <div class="row">
-                                        <div class="col-12 mb-2">
-                                            <div class="form-group">
-                                                <label for="location-logo">{{ __('captive_portals.label_location_logo') }}</label>
-                                                <div class="upload-area" id="location-logo-upload">
-                                                    <i data-feather="upload-cloud" class="upload-icon"></i>
-                                                    <h5 class="upload-text">{{ __('captive_portals.upload_location_logo') }}</h5>
-                                                    <p class="text-muted small">{{ __('captive_portals.recommended_logo') }}</p>
-                                                </div>
-                                                <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
-                                                <img src="" id="location-logo-preview" class="image-preview">
-                                                <p class="note">{{ __('captive_portals.note_location_logo') }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 mb-2">
-                                            <div class="form-group">
-                                                <label for="background-image">{{ __('captive_portals.label_background_image') }}</label>
-                                                <div class="upload-area" id="background-upload">
-                                                    <i data-feather="image" class="upload-icon"></i>
-                                                    <h5 class="upload-text">{{ __('captive_portals.upload_background') }}</h5>
-                                                    <p class="text-muted small">{{ __('captive_portals.recommended_background') }}</p>
-                                                </div>
-                                                <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
-                                                <img src="" id="background-preview" class="image-preview">
-                                                <p class="note">{{ __('captive_portals.note_background') }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 mb-2">
-                                            <h6 class="mb-1">{{ __('captive_portals.section_gradient') }}</h6>
-                                            <p class="text-muted small mb-2">{{ __('captive_portals.note_gradient') }}</p>
-                                            <div class="row">
-                                                <div class="col-md-6 col-12 mb-1">
-                                                    <div class="form-group">
-                                                        <label for="gradient-start">{{ __('captive_portals.label_gradient_start') }}</label>
-                                                        <div class="color-picker-container">
-                                                            <input type="color" class="form-control form-control-color" id="gradient-start">
-                                                            <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
-                                                            <span class="color-value" id="gradient-start-value">{{ __('captive_portals.none') }}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 col-12 mb-1">
-                                                    <div class="form-group">
-                                                        <label for="gradient-end">{{ __('captive_portals.label_gradient_end') }}</label>
-                                                        <div class="color-picker-container">
-                                                            <input type="color" class="form-control form-control-color" id="gradient-end">
-                                                            <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
-                                                            <span class="color-value" id="gradient-end-value">{{ __('captive_portals.none') }}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
-                                                        <i data-feather="x" class="mr-25"></i>{{ __('captive_portals.btn_clear_gradient') }}
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
-                                                        {{ __('captive_portals.btn_preset_blue_purple') }}
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
-                                                        {{ __('captive_portals.btn_preset_orange_pink') }}
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
-                                                        {{ __('captive_portals.btn_test_gradient') }}
-                                                    </button>
-                                                </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="gradient-end">{{ __('captive_portals.label_gradient_end') }}</label>
+                                            <div class="color-picker-container">
+                                                <input type="color" class="form-control form-control-color" id="gradient-end">
+                                                <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
+                                                <span class="color-value" id="gradient-end-value">{{ __('captive_portals.none') }}</span>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
+                                        <i data-feather="x" class="mr-25"></i>{{ __('captive_portals.btn_clear_gradient') }}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
+                                        {{ __('captive_portals.btn_preset_blue_purple') }}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
+                                        {{ __('captive_portals.btn_preset_orange_pink') }}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
+                                        {{ __('captive_portals.btn_test_gradient') }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-12 d-flex justify-content-end">
-                                <button id="save-design" class="btn btn-primary">
-                                    <i data-feather="save" class="mr-50"></i>{{ __('captive_portals.save_design') }}
-                                </button>
+
+                        <div class="cp-section-card">
+                            <div class="cp-section-card-head">
+                                <h4 class="cp-section-card-title">{{ __('captive_portals.section_logo_images') }}</h4>
+                            </div>
+                            <div class="cp-section-card-body">
+                                <div class="form-group">
+                                    <label for="location-logo">{{ __('captive_portals.label_location_logo') }}</label>
+                                    <div class="upload-area" id="location-logo-upload">
+                                        <i data-feather="upload-cloud" class="upload-icon"></i>
+                                        <h5 class="upload-text">{{ __('captive_portals.upload_location_logo') }}</h5>
+                                        <p class="text-muted small mb-0">{{ __('captive_portals.recommended_logo') }}</p>
+                                    </div>
+                                    <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
+                                    <img src="" id="location-logo-preview" class="image-preview">
+                                    <p class="note text-muted small mb-0 mt-1">{{ __('captive_portals.note_location_logo') }}</p>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label for="background-image">{{ __('captive_portals.label_background_image') }}</label>
+                                    <div class="upload-area" id="background-upload">
+                                        <i data-feather="image" class="upload-icon"></i>
+                                        <h5 class="upload-text">{{ __('captive_portals.upload_background') }}</h5>
+                                        <p class="text-muted small mb-0">{{ __('captive_portals.recommended_background') }}</p>
+                                    </div>
+                                    <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
+                                    <img src="" id="background-preview" class="image-preview">
+                                    <p class="note text-muted small mb-0 mt-1">{{ __('captive_portals.note_background') }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
-            <!-- Preview Column -->
-            <div class="col-lg-4 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('captive_portals.preview_title') }}</h4>
-                        <div class="heading-elements">
-                            <ul class="list-inline mb-0">
-                                <li>
-                                    <a data-action="reload"><i data-feather="rotate-cw"></i></a>
-                                </li>
-                                <li>
-                                    <a data-action="expand" id="expand-preview"><i data-feather="maximize"></i></a>
-                                </li>
-                            </ul>
+            <!-- Preview column (sticky) -->
+            <div class="cp-designer-preview-col">
+                <div class="cp-preview-card">
+                    <div class="cp-preview-card-head">
+                        <h4 class="cp-preview-card-title">{{ __('captive_portals.preview_title') }}</h4>
+                        <div class="cp-preview-card-tools">
+                            <a data-action="reload" title="Reload"><i data-feather="rotate-cw"></i></a>
+                            <a data-action="expand" id="expand-preview" title="Expand"><i data-feather="maximize"></i></a>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="portal-preview">
                             <div class="preview-main">
-                                <!-- Header with Location Logo -->
                                 <div class="logo-container">
                                     <img src="/img/wifi-placeholder.png" alt="{{ __('captive_portals.alt_location_logo') }}" id="preview-logo" class="preview-logo">
                                 </div>
-
-                                <!-- Welcome Text -->
                                 <h2 id="preview-welcome">{{ __('captive_portals.welcome_default') }}</h2>
                                 <p id="preview-instructions">{{ __('captive_portals.instructions_default') }}</p>
-
-                                <!-- Login Form -->
                                 <div class="input-container">
                                     <input type="text" class="preview-input" placeholder="{{ __('captive_portals.placeholder_email') }}">
                                     <button id="preview-button" class="preview-button">{{ __('captive_portals.button_default') }}</button>
                                 </div>
-
-                                <!-- Footer with Brand Logo and Terms -->
                                 <div class="footer">
                                     <div class="brand-logo">
                                         <img src="/assets/images/Mr-Wifi.PNG" alt="{{ __('captive_portals.alt_brand_logo') }}">

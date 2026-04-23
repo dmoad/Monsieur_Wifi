@@ -27,6 +27,15 @@ function clearDesignUrl() {
     window.history.replaceState({}, '', url);
 }
 
+// Reset designer tabs to "General" active (called when opening designer)
+function resetDesignerTabs() {
+    const $designer = $('#captive-portal-designer');
+    $designer.find('.mw-tab').removeClass('active');
+    $designer.find('.mw-tab[data-tab="general"]').addClass('active');
+    $designer.find('.mw-panel').removeClass('active');
+    $('#general').addClass('active');
+}
+
 function updatePreviewBackground() {
     const startColor = $('#gradient-start').val();
     const endColor = $('#gradient-end').val();
@@ -120,6 +129,7 @@ function fetchDesignDetails(designId) {
     console.log("Fetching design details for ID:", designId);
 
     setDesignUrl(designId);
+    resetDesignerTabs();
 
     $('#captive-portal-designer').prepend(
         `<div class="loading-overlay">
@@ -664,6 +674,15 @@ $(document).ready(function() {
         fetchDesignDetails($(this).data('id'));
     });
 
+    // Designer tab switching (.mw-tab / .mw-panel pattern)
+    $(document).on('click', '#captive-portal-designer .mw-tab', function() {
+        const key = $(this).data('tab');
+        $('#captive-portal-designer .mw-tab').removeClass('active');
+        $(this).addClass('active');
+        $('#captive-portal-designer .mw-panel').removeClass('active');
+        $('#' + key).addClass('active');
+    });
+
     // Kebab toggle
     $(document).on('click', '.cp-kebab-btn', function(e) {
         e.preventDefault();
@@ -717,6 +736,7 @@ $(document).ready(function() {
 
     $('#create-new-design').on('click', function() {
         clearDesignUrl();
+        resetDesignerTabs();
         $('#captive-portal-designs-list').hide();
         $('#captive-portal-designer').show();
         currentDesignId = null;

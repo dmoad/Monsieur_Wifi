@@ -58,6 +58,8 @@ return [
     'note_background' => 'This image will be displayed as the page background.',
 
     'section_gradient' => 'Background Gradient (Alternative to Image)',
+    'section_theme' => 'Theme Color',
+    'section_logo_images' => 'Logo & Images',
     'note_gradient' => 'Create a gradient background instead of using an image. This will override the background image if both are set.',
     'label_gradient_start' => 'Gradient Start Color',
     'label_gradient_end' => 'Gradient End Color',

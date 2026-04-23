@@ -58,6 +58,8 @@ return [
     'note_background' => 'Cette image sera affichée comme arrière-plan de la page.',
 
     'section_gradient' => 'Dégradé d\'arrière-plan (Alternative à l\'image)',
+    'section_theme' => 'Couleur du thème',
+    'section_logo_images' => 'Logo et images',
     'note_gradient' => 'Créez un arrière-plan dégradé au lieu d\'utiliser une image. Cela remplacera l\'image d\'arrière-plan si les deux sont définis.',
     'label_gradient_start' => 'Couleur de début du dégradé',
     'label_gradient_end' => 'Couleur de fin du dégradé',
