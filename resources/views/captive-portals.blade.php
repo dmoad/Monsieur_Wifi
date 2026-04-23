@@ -719,7 +719,6 @@
         color: var(--mw-text-muted);
         text-align: left;
         padding: 10px var(--mw-space-lg);
-        background: var(--mw-bg-page);
         border-bottom: 1px solid var(--mw-border-light);
     }
     .cp-table tbody tr {

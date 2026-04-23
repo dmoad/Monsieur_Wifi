@@ -33,7 +33,6 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: var(--mw-text-muted);
-        background: var(--mw-bg-muted);
         border-bottom: 1px solid var(--mw-border);
         white-space: nowrap;
     }
