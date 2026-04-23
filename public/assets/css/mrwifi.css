@@ -889,6 +889,12 @@ button.mw-av-item {
         gap: var(--mw-space-sm);
     }
 
+    /* h-100 cards in stacked match-height rows can end up flush on mobile —
+       bump margin so they breathe like section-to-section spacing */
+    .row.match-height > [class*="col-"] > .card.h-100 {
+        margin-bottom: 2.5rem !important;
+    }
+
     /* Content full-width; push down for the top bar */
     .app-content.content,
     body.mw-sb-expanded .app-content.content {
