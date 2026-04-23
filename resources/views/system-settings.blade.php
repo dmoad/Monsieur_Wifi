@@ -64,32 +64,16 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <ul class="nav nav-pills mb-3" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="captive-portal-tab" data-toggle="pill" href="#captive-portal" role="tab" aria-selected="true">
-                                    <i data-feather="wifi" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_captive_portal') }}</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="radius-tab" data-toggle="pill" href="#radius" role="tab" aria-selected="false">
-                                    <i data-feather="shield" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_radius') }}</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="branding-tab" data-toggle="pill" href="#branding" role="tab" aria-selected="false">
-                                    <i data-feather="image" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_branding') }}</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="system-tab" data-toggle="pill" href="#system" role="tab" aria-selected="false">
-                                    <i data-feather="server" class="mr-50"></i><span class="font-weight-bold">{{ __('system_settings.tab_system') }}</span>
-                                </a>
-                            </li>
-                        </ul>
+                        <div class="mw-tabs" role="tablist">
+                            <button type="button" class="mw-tab active" data-tab="captive-portal" role="tab">{{ __('system_settings.tab_captive_portal') }}</button>
+                            <button type="button" class="mw-tab" data-tab="radius" role="tab">{{ __('system_settings.tab_radius') }}</button>
+                            <button type="button" class="mw-tab" data-tab="branding" role="tab">{{ __('system_settings.tab_branding') }}</button>
+                            <button type="button" class="mw-tab" data-tab="system" role="tab">{{ __('system_settings.tab_system') }}</button>
+                        </div>
 
                         <div class="tab-content">
                             <!-- Captive Portal Tab -->
-                            <div role="tabpanel" class="tab-pane active" id="captive-portal" aria-labelledby="captive-portal-tab">
+                            <div class="mw-panel active" id="captive-portal" role="tabpanel">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
@@ -195,7 +179,7 @@
                             </div>
 
                             <!-- RADIUS Tab -->
-                            <div class="tab-pane" id="radius" role="tabpanel" aria-labelledby="radius-tab">
+                            <div class="mw-panel" id="radius" role="tabpanel">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
@@ -250,7 +234,7 @@
                             </div>
 
                             <!-- Branding Tab -->
-                            <div class="tab-pane" id="branding" role="tabpanel" aria-labelledby="branding-tab">
+                            <div class="mw-panel" id="branding" role="tabpanel">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
@@ -408,7 +392,7 @@
                             </div>
 
                             <!-- System Tab -->
-                            <div class="tab-pane" id="system" role="tabpanel" aria-labelledby="system-tab">
+                            <div class="mw-panel" id="system" role="tabpanel">
                                 <form class="validate-form">
                                     <div class="setting-section">
                                         <div class="setting-section-header">
@@ -510,15 +494,29 @@
             }
         });
 
-        const hash = window.location.hash;
-        if (hash) $('.nav-pills a[href="' + hash + '"]').tab('show');
-
-        $('.nav-pills a').on('shown.bs.tab', function(e) {
-            if (history.pushState) history.pushState(null, null, e.target.hash);
-            else window.location.hash = e.target.hash;
-        });
+        const initialHash = window.location.hash.replace(/^#/, '');
+        if (initialHash) activateSysTab(initialHash, { updateHash: false });
 
         loadSettings();
+    });
+
+    function activateSysTab(key, { updateHash = true } = {}) {
+        const tab = document.querySelector('.mw-tab[data-tab="' + key + '"]');
+        const panel = document.getElementById(key);
+        if (!tab || !panel) return;
+        document.querySelectorAll('.mw-tab').forEach(t => t.classList.toggle('active', t === tab));
+        document.querySelectorAll('.mw-panel').forEach(p => p.classList.toggle('active', p === panel));
+        if (updateHash) {
+            if (history.pushState) history.pushState(null, null, '#' + key);
+            else window.location.hash = '#' + key;
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const tab = e.target.closest('.mw-tab');
+        if (!tab) return;
+        const key = tab.dataset.tab;
+        if (key) activateSysTab(key);
     });
 
     $(document).ready(function() {
@@ -527,7 +525,7 @@
             const form = $(this);
             const submitBtn = form.find('button[type="submit"]');
             const originalText = submitBtn.html();
-            const tabId = form.closest('.tab-pane').attr('id');
+            const tabId = form.closest('.mw-panel').attr('id');
 
             submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + T.saving).attr('disabled', true);
 
