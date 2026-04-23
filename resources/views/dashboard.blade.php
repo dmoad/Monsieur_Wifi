@@ -40,17 +40,11 @@
 
 /* Locations overview list (right column next to map) */
 #locations-section .card-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow: hidden;
     padding: 0 var(--mw-space-xl);
 }
 #locations-container {
-    display: flex;
-    flex-direction: column;
+    max-height: 400px;
     overflow-y: auto;
-    flex: 1;
 }
 .db-loc-row {
     display: flex;
