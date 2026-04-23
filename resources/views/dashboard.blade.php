@@ -45,7 +45,17 @@
 #locations-container {
     max-height: 400px;
     overflow-y: auto;
+    scrollbar-gutter: stable;
+    padding-right: var(--mw-space-sm);
+    margin-right: calc(-1 * var(--mw-space-sm));
 }
+#locations-container::-webkit-scrollbar { width: 6px; }
+#locations-container::-webkit-scrollbar-track { background: transparent; }
+#locations-container::-webkit-scrollbar-thumb {
+    background: var(--mw-border);
+    border-radius: 3px;
+}
+#locations-container::-webkit-scrollbar-thumb:hover { background: var(--mw-text-muted); }
 .db-loc-row {
     display: flex;
     align-items: center;
@@ -227,8 +237,58 @@
 
         <div id="dashboard-errors"></div>
 
-        <!-- Data Usage Trends + Traffic by Location donut -->
+        <!-- Map + Locations list side-by-side -->
         <div class="row match-height" style="margin-bottom: 1.5rem;">
+            <div class="col-lg-8 col-12">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">{{ __('dashboard.network_map') }}</h4>
+                        <div class="d-flex">
+                            <button id="fullscreen-btn" class="btn btn-sm btn-outline-primary mr-1">
+                                <i data-feather="maximize"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="network-map" style="height: 400px;">
+                            <div class="d-flex align-items-center justify-content-center h-100" id="map-loading">
+                                <div class="text-center">
+                                    <div class="spinner-border text-primary mb-2" role="status">
+                                        <span class="sr-only">{{ __('common.loading') }}</span>
+                                    </div>
+                                    <p class="text-muted">{{ __('dashboard.loading_network_map') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-12">
+                <div class="card h-100" id="locations-section">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">{{ __('dashboard.locations_overview') }}</h4>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ __('dashboard.all_locations') }}
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="locationDropdown">
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="all">{{ __('dashboard.all_locations') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="online">{{ __('dashboard.online_only') }}</a>
+                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="offline">{{ __('dashboard.offline_only') }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="locations-container">
+                            <!-- Location rows populated by dashboard.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Usage Trends + Analytics list -->
+        <div class="row match-height">
             <div class="col-lg-8 col-12">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -337,56 +397,6 @@
             </div>
         </div>
         <!--/ Data Usage Trends + Analytics list -->
-
-        <!-- Map + Locations list side-by-side -->
-        <div class="row match-height">
-            <div class="col-lg-8 col-12">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">{{ __('dashboard.network_map') }}</h4>
-                        <div class="d-flex">
-                            <button id="fullscreen-btn" class="btn btn-sm btn-outline-primary mr-1">
-                                <i data-feather="maximize"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="network-map" style="height: 400px;">
-                            <div class="d-flex align-items-center justify-content-center h-100" id="map-loading">
-                                <div class="text-center">
-                                    <div class="spinner-border text-primary mb-2" role="status">
-                                        <span class="sr-only">{{ __('common.loading') }}</span>
-                                    </div>
-                                    <p class="text-muted">{{ __('dashboard.loading_network_map') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-12">
-                <div class="card h-100" id="locations-section">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">{{ __('dashboard.locations_overview') }}</h4>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ __('dashboard.all_locations') }}
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="locationDropdown">
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="all">{{ __('dashboard.all_locations') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="online">{{ __('dashboard.online_only') }}</a>
-                                <a class="dropdown-item" href="javascript:void(0);" data-location-filter="offline">{{ __('dashboard.offline_only') }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="locations-container">
-                            <!-- Location rows populated by dashboard.js -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
     <!-- Dashboard Content Ends -->
 </div>
