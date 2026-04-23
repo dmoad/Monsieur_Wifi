@@ -72,6 +72,42 @@
 
     .ac-empty-row td { text-align: center; padding: 32px; color: var(--mw-text-secondary); }
 
+    /* Segmented control for password method */
+    .pw-toggle {
+        display: flex;
+        background: var(--mw-bg-muted);
+        border-radius: var(--mw-radius-md);
+        padding: 3px;
+        gap: 2px;
+    }
+    .pw-toggle-option {
+        flex: 1;
+        position: relative;
+    }
+    .pw-toggle-option input[type="radio"] { display: none; }
+    .pw-toggle-option label {
+        display: block;
+        text-align: center;
+        padding: 7px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--mw-text-secondary);
+        border-radius: calc(var(--mw-radius-md) - 2px);
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        user-select: none;
+    }
+    .pw-toggle-option input[type="radio"]:checked + label {
+        background: var(--mw-bg-surface);
+        color: var(--mw-primary);
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+    }
+
     .ac-kebab-wrap { position: relative; }
     .ac-kebab-btn {
         width: 32px; height: 32px;
@@ -198,13 +234,15 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label>{{ __('accounts.password_setup') }}</label>
-                                <div class="btn-group btn-group-toggle w-100" data-toggle="buttons" id="password-method-toggle">
-                                    <label class="btn btn-outline-primary active">
-                                        <input type="radio" name="password-method" value="manual" checked> {{ __('accounts.set_password_btn') }}
-                                    </label>
-                                    <label class="btn btn-outline-primary">
-                                        <input type="radio" name="password-method" value="email"> {{ __('accounts.send_verification_email_btn') }}
-                                    </label>
+                                <div class="pw-toggle" id="password-method-toggle">
+                                    <div class="pw-toggle-option">
+                                        <input type="radio" name="password-method" id="pw-method-manual" value="manual" checked>
+                                        <label for="pw-method-manual">{{ __('accounts.set_password_btn') }}</label>
+                                    </div>
+                                    <div class="pw-toggle-option">
+                                        <input type="radio" name="password-method" id="pw-method-email" value="email">
+                                        <label for="pw-method-email">{{ __('accounts.send_verification_email_btn') }}</label>
+                                    </div>
                                 </div>
                                 <small class="form-text text-muted mt-50">{{ __('accounts.password_method_help') }}</small>
                             </div>
