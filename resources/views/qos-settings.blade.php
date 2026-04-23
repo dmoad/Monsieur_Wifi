@@ -46,7 +46,6 @@
         gap: 0.75rem;
         padding: 1rem 1.25rem;
         border-bottom: 1px solid var(--mw-border-light);
-        background: var(--mw-bg-muted);
     }
     .qos-class-badge {
         display: inline-flex;
