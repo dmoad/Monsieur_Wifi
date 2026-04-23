@@ -43,6 +43,25 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--mw-space-md);
 }
+
+/* Top-row summary cards — mirrors .lc-summary-card from locations */
+.db-summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--mw-space-lg) var(--mw-space-xl);
+}
+.db-summary-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mw-text-primary);
+    line-height: 1.1;
+    margin-bottom: 2px;
+}
+.db-summary-lbl {
+    font-size: 12px;
+    color: var(--mw-text-muted);
+}
 </style>
 @endpush
 
@@ -66,67 +85,60 @@
 <div class="content-body">
     <!-- Dashboard Content Starts -->
     <section id="dashboard-analytics">
-        <div class="row match-height">
-            <!-- Statistics Card -->
-            <div class="col-12">
-                <div class="card card-statistics" id="network-stats">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('dashboard.network_statistics') }}</h4>
-                        <div class="d-flex align-items-center">
-                            <p class="card-text mr-25 mb-0">{{ __('dashboard.updated_just_now') }}</p>
+        <!-- Network statistics summary cards -->
+        <div class="row">
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="card">
+                    <div class="db-summary-card">
+                        <div>
+                            <div class="db-summary-num" id="routers-online-count">—</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.routers_online') }}</div>
                         </div>
-                    </div>
-                    <div class="card-body statistics-body">
-                        <div class="row">
-                            <div class="col-md-3 col-sm-6 col-12 mb-2 mb-md-0">
-                                <div class="media">
-                                    <div class="mw-stat-icon mw-stat-icon-primary mr-2">
-                                        <i data-feather="wifi"></i>
-                                    </div>
-                                    <div class="media-body my-auto">
-                                        <h4 class="mb-0" id="routers-online-count">-/-</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.routers_online') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12 mb-2 mb-md-0">
-                                <div class="media">
-                                    <div class="mw-stat-icon mw-stat-icon-info mr-2">
-                                        <i data-feather="users"></i>
-                                    </div>
-                                    <div class="media-body my-auto">
-                                        <h4 class="mb-0" id="active-users-count">-</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.active_users') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12 mb-2 mb-sm-0">
-                                <div class="media">
-                                    <div class="mw-stat-icon mw-stat-icon-warning mr-2">
-                                        <i data-feather="download"></i>
-                                    </div>
-                                    <div class="media-body my-auto">
-                                        <h4 class="mb-0" id="data-used-count">-</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.data_used') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <div class="media">
-                                    <div class="mw-stat-icon mw-stat-icon-success mr-2">
-                                        <i data-feather="activity"></i>
-                                    </div>
-                                    <div class="media-body my-auto">
-                                        <h4 class="mb-0" id="uptime-percentage">-%</h4>
-                                        <p class="card-text mb-0" style="font-size:12px;color:var(--mw-text-secondary);">{{ __('dashboard.uptime') }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="mw-stat-icon mw-stat-icon-primary">
+                            <i data-feather="wifi"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--/ Statistics Card -->
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="card">
+                    <div class="db-summary-card">
+                        <div>
+                            <div class="db-summary-num" id="active-users-count">—</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.active_users') }}</div>
+                        </div>
+                        <div class="mw-stat-icon mw-stat-icon-info">
+                            <i data-feather="users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="card">
+                    <div class="db-summary-card">
+                        <div>
+                            <div class="db-summary-num" id="data-used-count">—</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.data_used') }}</div>
+                        </div>
+                        <div class="mw-stat-icon mw-stat-icon-warning">
+                            <i data-feather="download"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="card">
+                    <div class="db-summary-card">
+                        <div>
+                            <div class="db-summary-num" id="uptime-percentage">—%</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.uptime') }}</div>
+                        </div>
+                        <div class="mw-stat-icon mw-stat-icon-success">
+                            <i data-feather="activity"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="dashboard-errors"></div>
