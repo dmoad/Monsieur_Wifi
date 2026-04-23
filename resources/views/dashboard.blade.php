@@ -193,7 +193,7 @@
         <div id="dashboard-errors"></div>
 
         <!-- Data Usage Trends + Traffic by Location donut -->
-        <div class="row match-height">
+        <div class="row match-height mb-2">
             <div class="col-lg-8 col-12">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
