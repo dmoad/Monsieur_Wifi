@@ -16,7 +16,6 @@ return [
     // Designs list
     'your_designs_title' => 'Vos conceptions de portail captif',
     'create_new_design' => 'Créer une nouvelle conception',
-    'back_to_designs' => 'Retour aux conceptions',
     'search_placeholder' => 'Rechercher des conceptions...',
     'col_design' => 'Conception',
     'col_last_modified' => 'Dernière modification',
@@ -98,6 +97,8 @@ return [
 
     // JS-only strings (consumed via window.CAPTIVE_T injected by the blade)
     'design_default' => 'Nouvelle conception',
+    'cancel' => 'Annuler',
+    'help_show_terms' => 'Lien vers vos CGU et politique de confidentialité',
     'terms_link_html' => 'En vous connectant, vous acceptez nos <a href="#" data-toggle="modal" data-target="#previewTermsModal">Conditions de service</a> et notre <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Politique de confidentialité</a>.',
     'js_saving' => 'Enregistrement...',
     'js_deleting' => 'Suppression...',

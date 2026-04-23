@@ -16,7 +16,6 @@ return [
     // Designs list
     'your_designs_title' => 'Your Captive Portal Designs',
     'create_new_design' => 'Create New Design',
-    'back_to_designs' => 'Back to Designs',
     'search_placeholder' => 'Search designs...',
     'col_design' => 'Design',
     'col_last_modified' => 'Last modified',
@@ -98,6 +97,8 @@ return [
 
     // JS-only strings (consumed via window.CAPTIVE_T injected by the blade)
     'design_default' => 'New Design',
+    'cancel' => 'Cancel',
+    'help_show_terms' => 'Link to your terms of service and privacy policy',
     'terms_link_html' => 'By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#previewTermsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Privacy Policy</a>.',
     'js_saving' => 'Saving...',
     'js_deleting' => 'Deleting...',

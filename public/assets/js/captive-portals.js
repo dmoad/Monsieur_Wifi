@@ -711,7 +711,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#back-to-list').on('click', function() {
+    $('#designer-cancel').on('click', function() {
         clearDesignUrl();
         $('#captive-portal-designer').hide();
         $('#captive-portal-designs-list').show();

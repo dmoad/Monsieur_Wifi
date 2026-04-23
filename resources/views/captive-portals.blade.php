@@ -103,6 +103,27 @@
     /* Native color input already shows the chosen color — hide the duplicate swatch */
     .color-picker-container .color-preview { display: none; }
 
+    /* Toggle row — label + description on left, switch on right, separator above */
+    .cp-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--mw-space-md);
+        padding: 10px 0 0;
+        border-top: 1px solid var(--mw-border-light);
+        margin-top: var(--mw-space-md);
+    }
+    .cp-toggle-info { flex: 1; min-width: 0; }
+    .cp-toggle-label { font-size: 13px; font-weight: 600; color: var(--mw-text-primary); }
+    .cp-toggle-desc { font-size: 11px; color: var(--mw-text-muted); margin-top: 2px; }
+    /* Switch sits right-aligned; ::before/::after position from .custom-control left:0 */
+    .cp-toggle-switch.custom-control.custom-switch {
+        padding-left: 2.5rem;
+        min-height: 1.5rem;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
     .image-preview {
         width: 100%;
         max-height: 150px;
@@ -760,21 +781,6 @@
        Designer layout — back link, page header, 2-col with sticky
        preview, multi-card form sections (mirror #page-cpdetail mockup)
        ============================================================ */
-    .cp-designer-back-row { margin-bottom: var(--mw-space-md); }
-    .cp-designer-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--mw-text-secondary);
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-    }
-    .cp-designer-back:hover { color: var(--mw-primary); }
-    .cp-designer-back [data-feather] { width: 16px !important; height: 16px !important; }
 
     .cp-designer-head {
         display: flex;
@@ -966,16 +972,10 @@
 
     <!-- Captive Portal Design Content Starts - Initially hidden -->
     <section id="captive-portal-designer" style="display: none;">
-        <div class="cp-designer-back-row">
-            <button type="button" id="back-to-list" class="cp-designer-back">
-                <i data-feather="arrow-left"></i>
-                <span>{{ __('captive_portals.back_to_designs') }}</span>
-            </button>
-        </div>
-
         <div class="cp-designer-head">
             <h1 class="cp-designer-title">{{ __('captive_portals.designer_title') }}</h1>
             <div class="cp-designer-actions">
+                <button id="designer-cancel" type="button" class="btn btn-outline-secondary">{{ __('captive_portals.cancel') }}</button>
                 <button id="save-design" type="button" class="btn btn-primary">{{ __('captive_portals.save_design') }}</button>
             </div>
         </div>
@@ -1035,10 +1035,14 @@
                                     <label for="login-instructions">{{ __('captive_portals.label_login_instructions') }}</label>
                                     <textarea class="form-control" id="login-instructions" rows="2" placeholder="{{ __('captive_portals.instructions_default') }}">{{ __('captive_portals.instructions_default') }}</textarea>
                                 </div>
-                                <div class="form-group mb-0">
-                                    <div class="custom-control custom-switch">
+                                <div class="cp-toggle-row">
+                                    <div class="cp-toggle-info">
+                                        <div class="cp-toggle-label">{{ __('captive_portals.label_show_terms') }}</div>
+                                        <div class="cp-toggle-desc">{{ __('captive_portals.help_show_terms') }}</div>
+                                    </div>
+                                    <div class="custom-control custom-switch cp-toggle-switch">
                                         <input type="checkbox" class="custom-control-input" id="show-terms" checked>
-                                        <label class="custom-control-label" for="show-terms">{{ __('captive_portals.label_show_terms') }}</label>
+                                        <label class="custom-control-label" for="show-terms"><span class="sr-only">{{ __('captive_portals.label_show_terms') }}</span></label>
                                     </div>
                                 </div>
                             </div>
@@ -1127,27 +1131,33 @@
                                 <h4 class="cp-section-card-title">{{ __('captive_portals.section_logo_images') }}</h4>
                             </div>
                             <div class="cp-section-card-body">
-                                <div class="form-group">
-                                    <label for="location-logo">{{ __('captive_portals.label_location_logo') }}</label>
-                                    <div class="upload-area" id="location-logo-upload">
-                                        <i data-feather="upload-cloud" class="upload-icon"></i>
-                                        <h5 class="upload-text">{{ __('captive_portals.upload_location_logo') }}</h5>
-                                        <p class="text-muted small mb-0">{{ __('captive_portals.recommended_logo') }}</p>
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group mb-0">
+                                            <label for="location-logo">{{ __('captive_portals.label_location_logo') }}</label>
+                                            <div class="upload-area" id="location-logo-upload">
+                                                <i data-feather="upload-cloud" class="upload-icon"></i>
+                                                <h5 class="upload-text">{{ __('captive_portals.upload_location_logo') }}</h5>
+                                                <p class="text-muted small mb-0">{{ __('captive_portals.recommended_logo') }}</p>
+                                            </div>
+                                            <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
+                                            <img src="" id="location-logo-preview" class="image-preview">
+                                            <p class="note text-muted small mb-0 mt-1">{{ __('captive_portals.note_location_logo') }}</p>
+                                        </div>
                                     </div>
-                                    <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
-                                    <img src="" id="location-logo-preview" class="image-preview">
-                                    <p class="note text-muted small mb-0 mt-1">{{ __('captive_portals.note_location_logo') }}</p>
-                                </div>
-                                <div class="form-group mb-0">
-                                    <label for="background-image">{{ __('captive_portals.label_background_image') }}</label>
-                                    <div class="upload-area" id="background-upload">
-                                        <i data-feather="image" class="upload-icon"></i>
-                                        <h5 class="upload-text">{{ __('captive_portals.upload_background') }}</h5>
-                                        <p class="text-muted small mb-0">{{ __('captive_portals.recommended_background') }}</p>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group mb-0">
+                                            <label for="background-image">{{ __('captive_portals.label_background_image') }}</label>
+                                            <div class="upload-area" id="background-upload">
+                                                <i data-feather="image" class="upload-icon"></i>
+                                                <h5 class="upload-text">{{ __('captive_portals.upload_background') }}</h5>
+                                                <p class="text-muted small mb-0">{{ __('captive_portals.recommended_background') }}</p>
+                                            </div>
+                                            <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
+                                            <img src="" id="background-preview" class="image-preview">
+                                            <p class="note text-muted small mb-0 mt-1">{{ __('captive_portals.note_background') }}</p>
+                                        </div>
                                     </div>
-                                    <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
-                                    <img src="" id="background-preview" class="image-preview">
-                                    <p class="note text-muted small mb-0 mt-1">{{ __('captive_portals.note_background') }}</p>
                                 </div>
                             </div>
                         </div>
