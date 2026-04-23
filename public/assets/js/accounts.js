@@ -69,6 +69,14 @@ function roleBadge(role) {
     return `<span class="ac-role-badge badge-role-${role}">${escapeHtml(label)}</span>`;
 }
 
+const _kebabSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
+const _editSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const _trashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+
+function closeAllAcMenus() {
+    $('.ac-menu.open').removeClass('open');
+}
+
 function renderRows(users, currentUser) {
     const $tbody = $('#accounts-tbody');
     if (!users.length) {
@@ -83,10 +91,11 @@ function renderRows(users, currentUser) {
             ? `/uploads/profile_pictures/${escapeHtml(u.profile_picture)}`
             : '/assets/avatar-default.jpg';
         const role = u.role || 'user';
-        const deleteBtn = canDelete
-            ? `<button class="btn btn-sm btn-outline-danger delete-user-btn ml-50"
-                  data-user-id="${u.id}" data-user-name="${escapeHtml(u.name)}" data-user-role="${role}">
-                  <i data-feather="trash-2"></i>
+        const deleteItem = canDelete
+            ? `<div class="ac-menu-divider"></div>
+               <button class="ac-menu-item ac-menu-danger" data-action="delete"
+                   data-user-id="${u.id}" data-user-name="${escapeHtml(u.name)}" data-user-role="${role}">
+                   ${_trashSvg} ${t.delete}
                </button>`
             : '';
         return `
@@ -101,20 +110,29 @@ function renderRows(users, currentUser) {
                     </div>
                 </td>
                 <td>${roleBadge(role)}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary edit-user-btn"
-                        data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
-                        data-email="${escapeHtml(u.email)}" data-role="${role}"
-                        data-profile-picture="${avatarSrc}">
-                        <i data-feather="edit-2"></i>
-                    </button>
-                    ${deleteBtn}
+                <td class="ac-col-actions">
+                    <div class="ac-kebab-wrap" onclick="event.stopPropagation()">
+                        <button class="ac-kebab-btn ac-kebab-toggle"
+                            data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
+                            data-email="${escapeHtml(u.email)}" data-role="${role}"
+                            data-profile-picture="${avatarSrc}">
+                            ${_kebabSvg}
+                        </button>
+                        <div class="ac-menu" id="ac-menu-${u.id}">
+                            <button class="ac-menu-item" data-action="edit"
+                                data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
+                                data-email="${escapeHtml(u.email)}" data-role="${role}"
+                                data-profile-picture="${avatarSrc}">
+                                ${_editSvg} ${t.edit}
+                            </button>
+                            ${deleteItem}
+                        </div>
+                    </div>
                 </td>
             </tr>`;
     }).join('');
 
     $tbody.html(html);
-    if (typeof feather !== 'undefined') feather.replace();
 }
 
 $(window).on('load', function() {
@@ -172,6 +190,23 @@ $(document).ready(function() {
             $(this).toggle(!q || $(this).data('search').indexOf(q) !== -1);
         });
     });
+
+    // Row click → open edit (kebab click stops propagation so it doesn't fire here)
+    $(document).on('click', '#accounts-tbody tr[data-search]', function() {
+        $(this).find('.ac-menu-item[data-action="edit"]').trigger('click');
+    });
+
+    // Kebab toggle
+    $(document).on('click', '.ac-kebab-toggle', function(e) {
+        e.stopPropagation();
+        const $menu = $('#ac-menu-' + $(this).data('user-id'));
+        const wasOpen = $menu.hasClass('open');
+        closeAllAcMenus();
+        if (!wasOpen) $menu.addClass('open');
+    });
+
+    // Close menus on outside click
+    $(document).on('click', function() { closeAllAcMenus(); });
 
     // Profile picture previews
     $('#new-account-upload').on('change', function() {
@@ -273,8 +308,38 @@ $(document).ready(function() {
         });
     });
 
+    // Menu actions
+    $(document).on('click', '.ac-menu-item[data-action="delete"]', function(e) {
+        e.stopPropagation();
+        closeAllAcMenus();
+        if (user.role !== 'superadmin') {
+            toastr.error('Only Super Admin can delete accounts'); return;
+        }
+        const userId   = $(this).data('user-id');
+        const userName = $(this).data('user-name');
+        const userRole = $(this).data('user-role');
+        if (!confirm(`${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`)) return;
+
+        const $btn = $(this);
+        $btn.prop('disabled', true);
+        $.ajax({
+            url: `/api/accounts/users/${userId}`, type: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function() {
+                toastr.success(`${userName} ${t.accountDeletedSuccess}`);
+                loadUsersData();
+            },
+            error: function(xhr) {
+                toastr.error(xhr.responseJSON?.message || t.failedDeleteAccount);
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+
     // Open edit modal
-    $(document).on('click', '.edit-user-btn', function() {
+    $(document).on('click', '.ac-menu-item[data-action="edit"]', function(e) {
+        e.stopPropagation();
+        closeAllAcMenus();
         const userId   = $(this).data('user-id');
         const userName = $(this).data('name');
         const userEmail= $(this).data('email');

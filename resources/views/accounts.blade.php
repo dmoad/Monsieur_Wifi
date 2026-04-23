@@ -26,10 +26,12 @@
     .ac-table tbody tr {
         border-bottom: 1px solid var(--mw-border-light);
         transition: background 0.12s;
+        cursor: pointer;
     }
     .ac-table tbody tr:last-child { border-bottom: none; }
     .ac-table tbody tr:hover { background: var(--mw-bg-page); }
     .ac-table td { padding: 10px var(--mw-space-lg); vertical-align: middle; }
+    .ac-table td.ac-col-actions { text-align: right; width: 1%; white-space: nowrap; }
 
     .ac-list-head {
         display: flex;
@@ -69,6 +71,38 @@
     }
 
     .ac-empty-row td { text-align: center; padding: 32px; color: var(--mw-text-secondary); }
+
+    .ac-kebab-wrap { position: relative; }
+    .ac-kebab-btn {
+        width: 32px; height: 32px;
+        border: 1px solid var(--mw-border);
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s, border-color 0.12s;
+        padding: 0;
+    }
+    .ac-kebab-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
+    .ac-menu {
+        display: none; position: absolute; top: calc(100% + 4px); right: 0;
+        background: var(--mw-bg-surface); border: 1px solid var(--mw-border);
+        border-radius: var(--mw-radius-md); box-shadow: var(--mw-shadow-elevated);
+        min-width: 140px; z-index: 100; padding: 4px 0;
+        animation: mw-fade-in 0.1s ease;
+    }
+    .ac-menu.open { display: block; }
+    .ac-menu-item {
+        display: flex; align-items: center; gap: var(--mw-space-sm);
+        width: 100%; padding: 7px 14px; border: none; background: transparent;
+        font-size: 13px; color: var(--mw-text-secondary); cursor: pointer;
+        text-align: left; transition: background 0.1s, color 0.1s; font-family: var(--mw-font);
+    }
+    .ac-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+    .ac-menu-danger { color: var(--mw-danger) !important; }
+    .ac-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
+    .ac-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
 </style>
 @endpush
 
