@@ -143,6 +143,22 @@
     .db-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
     .db-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
 
+    .db-per-page { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--mw-text-muted); }
+    .db-per-page select { width: auto; }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-md);
+        box-shadow: var(--mw-shadow-card);
+    }
+    .pagination-info { color: var(--mw-text-muted); font-size: 0.9rem; }
+    .pagination-buttons { display: flex; gap: 0.5rem; align-items: center; }
+
 </style>
 @endpush
 
@@ -271,6 +287,15 @@
         <div class="db-list-head">
             <span class="db-list-title">{{ __('domain_blocking.blocked_domains_title') }}</span>
             <div class="db-list-tools">
+                <div class="db-per-page">
+                    <label for="db-items-per-page" class="mb-0">{{ __('common.items_per_page') }}</label>
+                    <select id="db-items-per-page" class="form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
                 <input type="text" id="db-search" class="db-search" placeholder="{{ __('domain_blocking.search_placeholder') }}" autocomplete="off">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-domain">
                     <i data-feather="plus" class="mr-25"></i>
@@ -294,6 +319,7 @@
             </table>
         </div>
     </div>
+    <div id="db-pagination"></div>
 </div>
 
 <!-- Add New Domain Modal -->

@@ -59,6 +59,8 @@ const PAGE_LOCALE = typeof locale !== 'undefined' ? locale : 'en';
 const t = TRANSLATIONS[PAGE_LOCALE];
 
 let domainsData = [];
+let dbCurrentPage = 1;
+let dbItemsPerPage = 25;
 
 const _dbDotsSvg  = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
 const _dbEditSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
@@ -130,24 +132,33 @@ function loadDomains() {
 
 function renderDomains() {
     const $tbody = $('#db-domains-tbody');
+    const $pg = $('#db-pagination');
     const query  = ($('#db-search').val() || '').trim().toLowerCase();
     const cat    = window.selectedCategory || null;
 
-    let list = domainsData;
+    let filtered = domainsData;
     if (query) {
-        list = list.filter(d =>
+        filtered = filtered.filter(d =>
             (d.domain || '').toLowerCase().includes(query) ||
             ((d.category && d.category.name) || '').toLowerCase().includes(query)
         );
     }
     if (cat) {
-        list = list.filter(d => d.category && d.category.name === cat);
+        filtered = filtered.filter(d => d.category && d.category.name === cat);
     }
 
-    if (!list.length) {
+    if (!filtered.length) {
         $tbody.html(`<tr><td colspan="5" class="text-center py-4" style="color:var(--mw-text-muted)">${t.noDomains}</td></tr>`);
+        $pg.empty();
         return;
     }
+
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / dbItemsPerPage));
+    if (dbCurrentPage > totalPages) dbCurrentPage = totalPages;
+    const startIdx = (dbCurrentPage - 1) * dbItemsPerPage;
+    const endIdx = Math.min(startIdx + dbItemsPerPage, totalItems);
+    const list = filtered.slice(startIdx, endIdx);
 
     const rows = list.map(function(domain) {
         const slug        = domain.category ? domain.category.slug : 'custom-list';
@@ -185,6 +196,38 @@ function renderDomains() {
         </tr>`;
     }).join('');
     $tbody.html(rows);
+    renderDbPagination(totalItems, totalPages, startIdx, endIdx);
+}
+
+function renderDbPagination(totalItems, totalPages, startIdx, endIdx) {
+    const $pg = $('#db-pagination');
+    if (totalPages <= 1) { $pg.empty(); return; }
+    const localeStr = (PAGE_LOCALE === 'fr')
+        ? `Affichage ${startIdx + 1}-${endIdx} sur ${totalItems}`
+        : `Showing ${startIdx + 1}-${endIdx} of ${totalItems}`;
+    let buttons = `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(${dbCurrentPage - 1})" ${dbCurrentPage === 1 ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg></button>`;
+    const maxBtns = 5;
+    let startP = Math.max(1, dbCurrentPage - Math.floor(maxBtns / 2));
+    let endP = Math.min(totalPages, startP + maxBtns - 1);
+    if (endP - startP < maxBtns - 1) startP = Math.max(1, endP - maxBtns + 1);
+    if (startP > 1) {
+        buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(1)">1</button>`;
+        if (startP > 2) buttons += `<span class="mx-2">...</span>`;
+    }
+    for (let i = startP; i <= endP; i++) {
+        buttons += `<button class="btn btn-sm ${i === dbCurrentPage ? 'btn-primary' : 'btn-outline-primary'}" onclick="goToDbPage(${i})">${i}</button>`;
+    }
+    if (endP < totalPages) {
+        if (endP < totalPages - 1) buttons += `<span class="mx-2">...</span>`;
+        buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(${totalPages})">${totalPages}</button>`;
+    }
+    buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(${dbCurrentPage + 1})" ${dbCurrentPage === totalPages ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+    $pg.html(`<div class="pagination-controls"><div class="pagination-info">${localeStr}</div><div class="pagination-buttons">${buttons}</div></div>`);
+}
+
+function goToDbPage(p) {
+    dbCurrentPage = p;
+    renderDomains();
 }
 
 $(window).on('load', function() {
@@ -216,7 +259,8 @@ $(window).on('load', function() {
     });
 
     // Search
-    $('#db-search').on('input', function() { renderDomains(); });
+    $('#db-search').on('input', function() { dbCurrentPage = 1; renderDomains(); });
+    $('#db-items-per-page').on('change', function() { dbItemsPerPage = parseInt($(this).val(), 10) || 25; dbCurrentPage = 1; renderDomains(); });
 
     function loadCategoriesData() {
         $.ajax({
@@ -441,6 +485,7 @@ $(window).on('load', function() {
 
     $(document).on('click', '#view-all-domains', function() {
         window.selectedCategory = null;
+        dbCurrentPage = 1;
         renderDomains();
     });
 
