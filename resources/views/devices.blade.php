@@ -54,17 +54,37 @@
     .dc-badge-unassigned { background: rgba(234,139,9,0.1);   color: var(--mw-warning); }
     .dc-badge-owner      { background: var(--mw-primary-tint); color: var(--mw-primary); }
     .dc-badge-no-owner   { background: var(--mw-bg-muted);    color: var(--mw-text-muted); }
-    .dc-actions { display: flex; gap: var(--mw-space-sm); align-items: center; }
-    .dc-btn {
-        display: inline-flex; align-items: center; gap: 4px;
-        padding: 4px 10px; border-radius: var(--mw-radius-sm);
-        font-size: 12px; font-weight: 500; cursor: pointer;
-        border: 1px solid var(--mw-border); background: var(--mw-bg-surface);
-        color: var(--mw-text-secondary); text-decoration: none !important;
-        transition: background 0.1s, color 0.1s;
+    .dc-table td.dc-col-actions { text-align: right; width: 1%; white-space: nowrap; }
+
+    .dc-kebab-wrap { position: relative; display: inline-block; }
+    .dc-kebab-btn {
+        width: 32px; height: 32px;
+        border: 1px solid var(--mw-border);
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s, border-color 0.12s;
+        padding: 0;
     }
-    .dc-btn:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
-    .dc-btn [data-feather] { width: 11px !important; height: 11px !important; }
+    .dc-kebab-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
+    .dc-menu {
+        display: none; position: absolute; top: calc(100% + 4px); right: 0;
+        background: var(--mw-bg-surface); border: 1px solid var(--mw-border);
+        border-radius: var(--mw-radius-md); box-shadow: var(--mw-shadow-elevated);
+        min-width: 160px; z-index: 100; padding: 4px 0;
+    }
+    .dc-menu.open { display: block; }
+    .dc-menu-item {
+        display: flex; align-items: center; gap: var(--mw-space-sm);
+        width: 100%; padding: 7px 14px; border: none; background: transparent;
+        font-size: 13px; color: var(--mw-text-secondary); cursor: pointer;
+        text-align: left; transition: background 0.1s, color 0.1s;
+        font-family: inherit; text-decoration: none !important;
+    }
+    .dc-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+    .dc-menu-item [data-feather] { width: 14px !important; height: 14px !important; flex-shrink: 0; }
 
     .empty-state { text-align: center; padding: 3rem 2rem; }
 </style>

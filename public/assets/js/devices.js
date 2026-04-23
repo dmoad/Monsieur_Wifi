@@ -65,29 +65,58 @@ let currentPage = 1;
 let totalPages = 1;
 let allUsers = [];
 
+const _dcDotsSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>`;
+
+function closeAllDcMenus() {
+    document.querySelectorAll('.dc-menu.open').forEach(m => m.classList.remove('open'));
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof UserManager === 'undefined') {
         console.error('UserManager not loaded');
         window.location.href = '/';
         return;
     }
-    
+
     const token = UserManager.getToken();
     const user = UserManager.getUser();
-    
+
     if (!token || !user) {
         window.location.href = '/';
         return;
     }
-    
+
     loadUsers();
     loadDevices();
-    
-    // Enter key on search
+
     document.getElementById('search').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            loadDevices();
+        if (e.key === 'Enter') loadDevices();
+    });
+
+    document.addEventListener('click', function(e) {
+        const toggleBtn = e.target.closest('.dc-kebab-toggle');
+        if (toggleBtn) {
+            const deviceId = toggleBtn.dataset.deviceId;
+            const menu = document.getElementById(`dc-menu-${deviceId}`);
+            const wasOpen = menu && menu.classList.contains('open');
+            closeAllDcMenus();
+            if (!wasOpen && menu) menu.classList.add('open');
+            return;
         }
+        const menuItem = e.target.closest('.dc-menu-item[data-action]');
+        if (menuItem) {
+            const action = menuItem.dataset.action;
+            if (action === 'change-owner') {
+                e.preventDefault();
+                closeAllDcMenus();
+                showChangeOwnerModal(parseInt(menuItem.dataset.deviceId));
+                return;
+            }
+            // view-location and other anchor-based items: let the href navigate
+            closeAllDcMenus();
+            return;
+        }
+        if (!e.target.closest('.dc-kebab-wrap')) closeAllDcMenus();
     });
 });
 
@@ -192,13 +221,20 @@ function displayDevices(devices) {
             ? `<span class="dc-badge dc-badge-assigned">${device.location.name}</span>`
             : `<span class="dc-badge dc-badge-unassigned">${T.unassigned}</span>`;
 
-        const actions = [];
+        const menuItems = [];
         if (hasLocation) {
-            actions.push(`<a class="dc-btn" href="${locationUrl}"><i data-feather="map-pin"></i>${T.viewLocation}</a>`);
+            menuItems.push(`<a class="dc-menu-item" href="${locationUrl}" data-action="view-location"><i data-feather="map-pin"></i>${T.viewLocation}</a>`);
         }
         if (canChangeOwner) {
-            actions.push(`<button class="dc-btn" onclick="showChangeOwnerModal(${device.id})"><i data-feather="user"></i>${T.changeOwner}</button>`);
+            menuItems.push(`<button class="dc-menu-item" data-action="change-owner" data-device-id="${device.id}"><i data-feather="user"></i>${T.changeOwner}</button>`);
         }
+
+        const actionsCell = menuItems.length > 0
+            ? `<div class="dc-kebab-wrap">
+                <button type="button" class="dc-kebab-btn dc-kebab-toggle" data-device-id="${device.id}">${_dcDotsSvg}</button>
+                <div class="dc-menu" id="dc-menu-${device.id}">${menuItems.join('')}</div>
+               </div>`
+            : '';
 
         return `
             <tr>
@@ -206,7 +242,7 @@ function displayDevices(devices) {
                 <td><span class="dc-mac">${mac}</span></td>
                 <td>${ownerBadge}</td>
                 <td>${locationBadge}</td>
-                <td><div class="dc-actions">${actions.join('')}</div></td>
+                <td class="dc-col-actions">${actionsCell}</td>
             </tr>
         `;
     }).join('');
