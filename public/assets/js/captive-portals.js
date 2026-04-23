@@ -2,6 +2,11 @@
 let token;
 let currentDesignId = null;
 
+const _cpKebabSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
+const _cpEditSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const _cpTrashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+const _cpUserSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>`;
+
 // Translation bundle injected by the blade (lang/{en,fr}/captive_portals.php)
 const t = window.APP_I18N.captive_portals;
 
@@ -330,19 +335,19 @@ function fetchDesigns(openFirstDesign = false) {
 
                     let menuItems = `
                         <button type="button" class="cp-menu-item" data-action="edit" data-id="${design.id}">
-                            <i data-feather="edit-2"></i>${t.edit}
+                            ${_cpEditSvg}${t.edit}
                         </button>`;
                     if (isAdmin) {
                         const ownerArg = (design.owner_name || design.creator_name || '').replace(/'/g, "\\'");
                         const ownerId = design.current_owner_id || design.user_id;
                         menuItems += `
                         <button type="button" class="cp-menu-item" data-action="change-owner" data-id="${design.id}" data-owner-name="${escapeHtml(ownerArg)}" data-owner-id="${ownerId}">
-                            <i data-feather="user-check"></i>${t.change_owner}
+                            ${_cpUserSvg}${t.change_owner}
                         </button>`;
                     }
                     menuItems += `
                         <button type="button" class="cp-menu-item cp-menu-item-danger" data-action="delete" data-id="${design.id}">
-                            <i data-feather="trash-2"></i>${t.delete_button_title}
+                            ${_cpTrashSvg}${t.delete_button_title}
                         </button>`;
 
                     const row = `
@@ -358,7 +363,7 @@ function fetchDesigns(openFirstDesign = false) {
                             <td class="cp-col-actions">
                                 <div class="cp-kebab-wrap">
                                     <button type="button" class="cp-kebab-btn" data-kebab="${design.id}" aria-haspopup="true" aria-expanded="false">
-                                        <i data-feather="more-vertical"></i>
+                                        ${_cpKebabSvg}
                                     </button>
                                     <div class="cp-menu" data-menu="${design.id}">
                                         ${menuItems}

@@ -676,17 +676,13 @@
     /* ============================================================
        Captive-portal designs list — .cp-table (mirror of .lc-table)
        ============================================================ */
-    .cp-list-card { overflow: visible; margin-bottom: var(--mw-space-md); }
+    .cp-list-card { overflow: hidden; margin-bottom: var(--mw-space-md); }
     .cp-list-head {
         display: flex;
         align-items: center;
         gap: var(--mw-space-md);
         padding: var(--mw-space-lg) var(--mw-space-xl);
-        background: var(--mw-bg-surface);
-        border: 1px solid var(--mw-border-light);
-        border-bottom: none;
-        border-top-left-radius: var(--mw-radius-md);
-        border-top-right-radius: var(--mw-radius-md);
+        border-bottom: 1px solid var(--mw-border-light);
     }
     .cp-list-title { font-size: 15px; font-weight: 700; color: var(--mw-text-primary); margin: 0; flex-shrink: 0; }
     .cp-list-tools { display: flex; align-items: center; gap: var(--mw-space-sm); margin-left: auto; }
@@ -704,10 +700,6 @@
     .cp-search:focus { outline: none; border-color: var(--mw-primary); }
 
     .cp-table-wrap {
-        background: var(--mw-bg-surface);
-        border: 1px solid var(--mw-border-light);
-        border-bottom-left-radius: var(--mw-radius-md);
-        border-bottom-right-radius: var(--mw-radius-md);
         overflow: hidden;
     }
     .cp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -984,7 +976,7 @@
 
     <!-- Captive Portal Designs List -->
     <section id="captive-portal-designs-list">
-        <div class="cp-list-card">
+        <div class="card cp-list-card">
             <div class="cp-list-head">
                 <h4 class="cp-list-title">{{ __('captive_portals.your_designs_title') }}</h4>
                 <div class="cp-list-tools">
