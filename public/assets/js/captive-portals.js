@@ -564,21 +564,6 @@ $(document).ready(function() {
         $($(this).data('target')).modal('show');
     });
     
-    $('[data-action="expand"]').on('click', function(e) {
-        e.preventDefault();
-        const $previewCard = $(this).closest('.card');
-        
-        if ($previewCard.hasClass('card-fullscreen')) {
-            $previewCard.removeClass('card-fullscreen');
-            $(this).find('i').replaceWith(feather.icons['maximize'].toSvg());
-        } else {
-            $previewCard.addClass('card-fullscreen');
-            $(this).find('i').replaceWith(feather.icons['minimize'].toSvg());
-            $('#previewTermsModal, #previewPrivacyModal').appendTo('body');
-        }
-        feather.replace();
-    });
-
     $('#welcome-message').on('input', function() {
         $('#preview-welcome').text($(this).val() || t.welcome_default);
     });

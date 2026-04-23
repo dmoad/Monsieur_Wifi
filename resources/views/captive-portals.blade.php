@@ -836,19 +836,6 @@
         color: var(--mw-text-primary);
         margin: 0;
     }
-    .cp-preview-card-tools { display: flex; gap: 4px; }
-    .cp-preview-card-tools a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: var(--mw-radius-sm);
-        color: var(--mw-text-secondary);
-        cursor: pointer;
-    }
-    .cp-preview-card-tools a:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
-    .cp-preview-card-tools [data-feather] { width: 16px !important; height: 16px !important; }
 </style>
 @endpush
 
@@ -1159,10 +1146,6 @@
                 <div class="cp-preview-card">
                     <div class="cp-preview-card-head">
                         <h4 class="cp-preview-card-title">{{ __('captive_portals.preview_title') }}</h4>
-                        <div class="cp-preview-card-tools">
-                            <a data-action="reload" title="Reload"><i data-feather="rotate-cw"></i></a>
-                            <a data-action="expand" id="expand-preview" title="Expand"><i data-feather="maximize"></i></a>
-                        </div>
                     </div>
                     <div class="card-body">
                         <div class="portal-preview">
