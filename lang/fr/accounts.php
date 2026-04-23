@@ -14,6 +14,9 @@ return [
     'col_role' => 'Rôle',
     'col_profile_picture' => 'Photo de profil',
     'col_actions' => 'Actions',
+    'search_placeholder' => 'Rechercher des comptes...',
+    'loading' => 'Chargement des comptes...',
+    'no_accounts' => 'Aucun compte trouvé',
 
     // Shared form labels
     'upload_profile_picture' => 'Télécharger une photo de profil',

@@ -7,49 +7,68 @@
 @section('title', __('accounts.page_title'))
 
 @push('styles')
-<!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
-
 <style>
-    .avatar-content svg {
-        color: inherit;
-        width: 24px !important;
-        height: 24px !important;
-        stroke-width: 2;
-        display: block !important;
+    .ac-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+    .ac-table thead th {
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--mw-text-muted);
+        text-align: left;
+        padding: 10px var(--mw-space-lg);
+        border-bottom: 1px solid var(--mw-border-light);
+    }
+    .ac-table tbody tr {
+        border-bottom: 1px solid var(--mw-border-light);
+        transition: background 0.12s;
+    }
+    .ac-table tbody tr:last-child { border-bottom: none; }
+    .ac-table tbody tr:hover { background: var(--mw-bg-page); }
+    .ac-table td { padding: 10px var(--mw-space-lg); vertical-align: middle; }
+
+    .ac-list-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--mw-space-md) var(--mw-space-xl);
+        border-bottom: 1px solid var(--mw-border-light);
+    }
+    .ac-list-title { font-size: 15px; font-weight: 600; color: var(--mw-text-primary); }
+    .ac-search {
+        width: 220px;
+        font-size: 13px;
+        padding: 6px 10px;
+        border: 1px solid var(--mw-border-light);
+        border-radius: var(--mw-radius-sm);
+        background: var(--mw-bg-surface);
+        color: var(--mw-text-primary);
+    }
+    .ac-search:focus { outline: none; border-color: var(--mw-primary); }
+
+    .ac-user-cell { display: flex; align-items: center; gap: 10px; }
+    .ac-avatar {
+        width: 34px; height: 34px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0;
+        background: var(--mw-bg-muted);
+    }
+    .ac-name { font-weight: 500; color: var(--mw-text-primary); }
+    .ac-email { font-size: 12px; color: var(--mw-text-secondary); }
+
+    .badge-role-admin      { background: rgba(99,102,241,0.12); color: var(--mw-primary); }
+    .badge-role-owner      { background: rgba(40,199,111,0.12);  color: #28c76f; }
+    .badge-role-superadmin { background: rgba(234,84,85,0.12);   color: #ea5455; }
+    .badge-role-user       { background: rgba(108,117,125,0.12); color: #6c757d; }
+    .ac-role-badge {
+        font-size: 11px; font-weight: 600; padding: 3px 8px;
+        border-radius: 20px; white-space: nowrap;
     }
 
-    [data-feather] {
-        display: inline-block !important;
-        vertical-align: middle;
-    }
-
-    .avatar-sm {
-        height: 32px;
-        width: 32px;
-    }
-
-    .badge-role-admin {
-        background-color: rgba(99, 102, 241, 0.12);
-        color: var(--mw-primary);
-    }
-
-    .badge-role-owner {
-        background-color: rgba(40, 199, 111, 0.12);
-        color: #28c76f;
-    }
-
-    .badge-light-secondary {
-        background-color: rgba(108, 117, 125, 0.12);
-        color: #6c757d;
-    }
-
-    .badge-role-superadmin {
-        background-color: rgba(234, 84, 85, 0.12);
-        color: #ea5455;
-    }
+    .ac-empty-row td { text-align: center; padding: 32px; color: var(--mw-text-secondary); }
 </style>
 @endpush
 
@@ -79,36 +98,26 @@
 </div>
 
 <div class="content-body">
-    <!-- Accounts Table -->
-    <section id="basic-datatable">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('accounts.card_title') }}</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-datatable table-responsive">
-                            <table class="datatables-accounts table" id="accounts-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>{{ __('accounts.col_name') }}</th>
-                                        <th>{{ __('accounts.email_label') }}</th>
-                                        <th>{{ __('accounts.col_role') }}</th>
-                                        <th>{{ __('accounts.col_profile_picture') }}</th>
-                                        <th>{{ __('accounts.col_actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="card">
+        <div class="ac-list-head">
+            <span class="ac-list-title">{{ __('accounts.card_title') }}</span>
+            <input type="text" id="search-accounts" class="ac-search" placeholder="{{ __('accounts.search_placeholder') }}">
         </div>
-    </section>
+        <div class="table-responsive">
+            <table class="ac-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('accounts.col_name') }}</th>
+                        <th>{{ __('accounts.col_role') }}</th>
+                        <th>{{ __('accounts.col_actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody id="accounts-tbody">
+                    <tr class="ac-empty-row"><td colspan="3">{{ __('accounts.loading') }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Add New Account Modal -->
@@ -300,14 +309,6 @@
 @endsection
 
 @push('scripts')
-<!-- DataTables JS -->
-<script src="/assets/vendors/js/tables/datatable/jquery.dataTables.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/dataTables.responsive.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/responsive.bootstrap4.js"></script>
-<script src="/assets/vendors/js/tables/datatable/datatables.buttons.min.js"></script>
-<script src="/assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js"></script>
-
 <script>
     const locale = '{{ $locale }}';
 </script>

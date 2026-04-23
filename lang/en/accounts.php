@@ -14,6 +14,9 @@ return [
     'col_role' => 'Role',
     'col_profile_picture' => 'Profile Picture',
     'col_actions' => 'Actions',
+    'search_placeholder' => 'Search accounts...',
+    'loading' => 'Loading accounts...',
+    'no_accounts' => 'No accounts found',
 
     // Shared form labels
     'upload_profile_picture' => 'Upload Profile Picture',
