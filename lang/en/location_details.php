@@ -85,6 +85,7 @@ return [
     'networks_tab_network' => 'Network',
     'networks_tab_security' => 'Security',
     'networks_tab_advanced' => 'Advanced',
+    'networks_section_qos' => 'Quality of Service',
     'networks_section_identity' => 'Identity',
     'networks_section_radio' => 'Radio & Transmission',
     'networks_field_type' => 'Network type',
