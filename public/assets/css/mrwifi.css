@@ -298,7 +298,12 @@
     gap: 0;
     border-bottom: 1px solid var(--mw-border);
     margin-bottom: var(--mw-space-xl);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+.mw-tabs::-webkit-scrollbar { display: none; }
 .mw-tab {
     padding: 10px var(--mw-space-xl);
     font-size: 13.5px;
@@ -310,6 +315,8 @@
     margin-bottom: -1px;
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 .mw-tab:hover { color: var(--mw-text-primary); }
 .mw-tab.active {
