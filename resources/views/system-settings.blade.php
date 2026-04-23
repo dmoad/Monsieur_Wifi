@@ -59,11 +59,6 @@
 </div>
 
 <div class="content-body">
-    <section id="settings-tabs">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
                         <div class="mw-tabs" role="tablist">
                             <button type="button" class="mw-tab active" data-tab="captive-portal" role="tab">{{ __('system_settings.tab_captive_portal') }}</button>
                             <button type="button" class="mw-tab" data-tab="radius" role="tab">{{ __('system_settings.tab_radius') }}</button>
@@ -453,11 +448,6 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 </div>
 @endsection
 
