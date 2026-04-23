@@ -912,7 +912,12 @@
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
-                        <li class="breadcrumb-item active">{{ __('captive_portals.breadcrumb') }}</li>
+                        @isset($editDesign)
+                            <li class="breadcrumb-item"><a href="/{{ $locale }}/captive-portals">{{ __('captive_portals.breadcrumb') }}</a></li>
+                            <li class="breadcrumb-item active">{{ $editDesign->name }}</li>
+                        @else
+                            <li class="breadcrumb-item active">{{ __('captive_portals.breadcrumb') }}</li>
+                        @endisset
                     </ol>
                 </div>
             </div>
@@ -1341,6 +1346,10 @@
 <script>
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.captive_portals = @json($captivePortalsT);
+    window.CAPTIVE_BASE_URL = '/{{ $locale }}/captive-portals';
+    @isset($editDesign)
+    window.CAPTIVE_EDIT_ID = {{ $editDesign->id }};
+    @endisset
 </script>
 <script src="/assets/js/captive-portals.js?v={{ filemtime(public_path('assets/js/captive-portals.js')) }}"></script>
 @endpush

@@ -14,17 +14,14 @@ function escapeHtml(s) {
         .replace(/'/g, '&#039;');
 }
 
-// URL sync: keep ?id=<design-id> in the address bar while editing so refresh
-// stays on the same design and the URL is shareable.
+// URL sync: use clean /{id} path so breadcrumb and refresh work correctly.
+const _captiveBase = window.CAPTIVE_BASE_URL || '/en/captive-portals';
+
 function setDesignUrl(designId) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('id', designId);
-    window.history.replaceState({}, '', url);
+    window.history.pushState({ designId }, '', _captiveBase + '/' + designId);
 }
 function clearDesignUrl() {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('id');
-    window.history.replaceState({}, '', url);
+    window.history.pushState({}, '', _captiveBase);
 }
 
 // Reset designer tabs to "General" active (called when opening designer)
@@ -558,11 +555,21 @@ $(document).ready(function() {
     const fromRegistration = urlParams.get('from') === 'registration';
     fetchDesigns(fromRegistration);
 
-    // Deep-link: ?id=<design-id> opens that design directly (refresh-safe).
-    const deepLinkId = urlParams.get('id');
-    if (deepLinkId && /^\d+$/.test(deepLinkId)) {
-        fetchDesignDetails(deepLinkId);
+    // Server-injected edit ID: /{id} route sets window.CAPTIVE_EDIT_ID.
+    if (window.CAPTIVE_EDIT_ID) {
+        fetchDesignDetails(window.CAPTIVE_EDIT_ID);
     }
+
+    // Back/forward button: if state has no designId, return to list view.
+    window.addEventListener('popstate', function(e) {
+        if (!e.state || !e.state.designId) {
+            $('#captive-portal-designer').hide();
+            $('#captive-portal-designs-list').show();
+            $('#open-full-preview').hide();
+            resetDesignForm();
+            currentDesignId = null;
+        }
+    });
 
     initializePreview();
     updatePreviewBackground();
