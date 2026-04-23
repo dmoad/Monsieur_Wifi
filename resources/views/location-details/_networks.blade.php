@@ -119,12 +119,28 @@
                 <div class="ld-drawer-section">
                     <h6 class="ld-drawer-section-title">{{ __('location_details.networks_field_type') }}</h6>
 
-                    <div class="form-group mb-0">
-                        <select class="form-control" id="ld-net-type">
-                            <option value="password">{{ __('location_details.networks_type_password') }}</option>
-                            <option value="captive_portal">{{ __('location_details.networks_type_captive_portal') }}</option>
-                            <option value="open">{{ __('location_details.networks_type_open') }}</option>
-                        </select>
+                    <div class="ld-type-card-group" id="ld-net-type-cards">
+                        <label class="ld-type-card">
+                            <input type="radio" name="ld-net-type" value="password" checked>
+                            <div class="ld-type-card-body">
+                                <div class="ld-type-card-title">{{ __('location_details.networks_type_password_card') }}</div>
+                                <div class="ld-type-card-sub">{{ __('location_details.networks_type_password_desc') }}</div>
+                            </div>
+                        </label>
+                        <label class="ld-type-card">
+                            <input type="radio" name="ld-net-type" value="captive_portal">
+                            <div class="ld-type-card-body">
+                                <div class="ld-type-card-title">{{ __('location_details.networks_type_captive_portal_card') }}</div>
+                                <div class="ld-type-card-sub">{{ __('location_details.networks_type_captive_portal_desc') }}</div>
+                            </div>
+                        </label>
+                        <label class="ld-type-card">
+                            <input type="radio" name="ld-net-type" value="open">
+                            <div class="ld-type-card-body">
+                                <div class="ld-type-card-title">{{ __('location_details.networks_type_open_card') }}</div>
+                                <div class="ld-type-card-sub">{{ __('location_details.networks_type_open_desc') }}</div>
+                            </div>
+                        </label>
                     </div>
                 </div>
 

@@ -1185,7 +1185,7 @@ const ldNetworks = (function () {
     }
 
     function applyReservationsVisibility() {
-        const type    = document.getElementById('ld-net-type').value;
+        const type    = getNetType();
         const ipMode  = document.getElementById('ld-net-ip-mode').value;
         const subMode = document.getElementById('ld-net-bridge-lan-mode').value || 'dhcp_client';
         const dhcpOn  = document.getElementById('ld-net-dhcp-enabled').checked;
@@ -1254,7 +1254,7 @@ const ldNetworks = (function () {
     function addMacEntry() {
         const inputEl = document.getElementById('ld-net-mac-input');
         const typeEl  = document.getElementById('ld-net-mac-type');
-        const networkType = document.getElementById('ld-net-type').value;
+        const networkType = getNetType();
         const mac = (inputEl.value || '').trim().toUpperCase().replace(/-/g, ':');
         const rawType = typeEl.value || 'block';
         const entryType = macAllowsBypass(networkType) ? rawType : 'block';
@@ -1672,7 +1672,7 @@ const ldNetworks = (function () {
         activateDrawerTab('general');
 
         const type = net.type || 'password';
-        document.getElementById('ld-net-type').value = type;
+        setNetType(type);
         document.getElementById('ld-net-ssid').value = net.ssid || '';
         document.getElementById('ld-net-visible').value = net.visible === false ? '0' : '1';
         document.getElementById('ld-net-radio').value = net.radio || 'all';
@@ -1762,7 +1762,7 @@ const ldNetworks = (function () {
             return;
         }
 
-        const type = document.getElementById('ld-net-type').value;
+        const type = getNetType();
         const payload = {
             type,
             ssid,
@@ -1863,6 +1863,16 @@ const ldNetworks = (function () {
         } finally {
             btn.disabled = false;
         }
+    }
+
+    function getNetType() {
+        const checked = document.querySelector('input[name="ld-net-type"]:checked');
+        return checked ? checked.value : 'password';
+    }
+
+    function setNetType(value) {
+        const radio = document.querySelector('input[name="ld-net-type"][value="' + value + '"]');
+        if (radio) radio.checked = true;
     }
 
     function activateDrawerTab(key) {
@@ -2054,12 +2064,13 @@ const ldNetworks = (function () {
     });
 
     document.addEventListener('change', function (e) {
-        if (e.target && e.target.id === 'ld-net-type') {
-            applyTypeVisibility(e.target.value);
-            applyMacBypassUi(e.target.value);
+        if (e.target && e.target.name === 'ld-net-type') {
+            const newType = e.target.value;
+            applyTypeVisibility(newType);
+            applyMacBypassUi(newType);
             applyReservationsVisibility();
             // If switching to captive and designs aren't loaded, fetch now
-            if (e.target.value === 'captive_portal') {
+            if (newType === 'captive_portal') {
                 ensureCaptiveDesigns().then(() => populateCaptiveDesignSelect(null));
             }
         }
