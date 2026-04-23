@@ -1,4 +1,4 @@
-<div class="ld-panel active" id="ld-panel-overview">
+<div class="mw-panel active" id="ld-panel-overview">
 
     <!-- Location Overview -->
     <div class="stats-grid">

@@ -288,6 +288,39 @@
 .mw-stat-icon-muted   { background: var(--mw-bg-muted);              color: var(--mw-text-muted); }
 
 /* ============================================================
+   PAGE-LEVEL TAB NAV — flat underline tab bar used to switch
+   between sibling panels on a single page (zone-details,
+   location-details, system-settings, …). Consumers keep their
+   own `id="<prefix>-panel-<key>"` so JS selectors stay local.
+   ============================================================ */
+.mw-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--mw-border);
+    margin-bottom: var(--mw-space-xl);
+}
+.mw-tab {
+    padding: 10px var(--mw-space-xl);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--mw-text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+.mw-tab:hover { color: var(--mw-text-primary); }
+.mw-tab.active {
+    color: var(--mw-primary);
+    font-weight: 600;
+    border-bottom-color: var(--mw-primary);
+}
+.mw-panel { display: none; }
+.mw-panel.active { display: block; }
+
+/* ============================================================
    VUEXY SPACING SHIMS
    Vuexy defined fractional spacing utilities (0.25/0.5/0.75rem)
    inside their bundled bootstrap.css. Standard Bootstrap CDN

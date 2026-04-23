@@ -13,34 +13,6 @@
 <link rel="stylesheet" type="text/css" href="/assets/vendors/css/maps/leaflet.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/css/location-details.css?v={{ filemtime(public_path('assets/css/location-details.css')) }}">
 <style>
-/* Page-level tab nav (matches zone-details .zd-tabs pattern) */
-.ld-tabs {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid var(--mw-border);
-    margin-bottom: var(--mw-space-xl);
-}
-.ld-tab {
-    padding: 10px var(--mw-space-xl);
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--mw-text-muted);
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-}
-.ld-tab:hover { color: var(--mw-text-primary); }
-.ld-tab.active {
-    color: var(--mw-primary);
-    font-weight: 600;
-    border-bottom-color: var(--mw-primary);
-}
-.ld-panel { display: none; }
-.ld-panel.active { display: block; }
-
 /* Overview cards — flat tokenised look (override .stat-card gradient/hover-lift) */
 #ld-panel-overview .stat-card {
     background: var(--mw-bg-surface);
@@ -190,11 +162,11 @@
     </div>
 </div>
 
-<div class="ld-tabs">
-    <button type="button" class="ld-tab active" data-tab="overview">{{ __('location_details.tab_overview') }}</button>
-    <button type="button" class="ld-tab" data-tab="settings">{{ __('location_details.tab_location_details') }}</button>
-    <button type="button" class="ld-tab" data-tab="router">{{ __('location_details.tab_router_settings') }}</button>
-    <button type="button" class="ld-tab" data-tab="networks">{{ __('location_details.tab_networks') }}</button>
+<div class="mw-tabs">
+    <button type="button" class="mw-tab active" data-tab="overview">{{ __('location_details.tab_overview') }}</button>
+    <button type="button" class="mw-tab" data-tab="settings">{{ __('location_details.tab_location_details') }}</button>
+    <button type="button" class="mw-tab" data-tab="router">{{ __('location_details.tab_router_settings') }}</button>
+    <button type="button" class="mw-tab" data-tab="networks">{{ __('location_details.tab_networks') }}</button>
 </div>
 
 <div class="content-body">

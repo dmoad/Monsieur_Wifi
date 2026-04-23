@@ -2849,11 +2849,11 @@ function initEventHandlers() {
 
 // Page-level tab switching (Overview / Settings / Router / Networks)
 function activateLdTab(key, { updateUrl = true } = {}) {
-    const tab = document.querySelector(`.ld-tab[data-tab="${key}"]`);
+    const tab = document.querySelector(`.mw-tab[data-tab="${key}"]`);
     const panel = document.getElementById('ld-panel-' + key);
     if (!tab || !panel) return;
-    document.querySelectorAll('.ld-tab').forEach(t => t.classList.toggle('active', t === tab));
-    document.querySelectorAll('.ld-panel').forEach(p => p.classList.toggle('active', p === panel));
+    document.querySelectorAll('.mw-tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.querySelectorAll('.mw-panel').forEach(p => p.classList.toggle('active', p === panel));
     if (updateUrl) {
         const url = new URL(window.location.href);
         url.searchParams.set('tab', key);
@@ -2865,7 +2865,7 @@ function activateLdTab(key, { updateUrl = true } = {}) {
 }
 
 document.addEventListener('click', function (e) {
-    const tab = e.target.closest('.ld-tab');
+    const tab = e.target.closest('.mw-tab');
     if (!tab) return;
     const key = tab.dataset.tab;
     if (!key) return;

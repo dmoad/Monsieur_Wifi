@@ -1,4 +1,4 @@
-<div class="ld-panel" id="ld-panel-settings">
+<div class="mw-panel" id="ld-panel-settings">
                             <form id="location-info-form" novalidate>
 
                                 <!-- Panel 1: Identity & Address -->

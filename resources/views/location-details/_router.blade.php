@@ -1,4 +1,4 @@
-<div class="ld-panel" id="ld-panel-router">
+<div class="mw-panel" id="ld-panel-router">
                             <!-- WAN -->
                             <div class="content-section wan-section">
                                 <div class="wan-head">

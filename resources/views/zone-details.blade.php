@@ -215,33 +215,6 @@
     .lz-menu-danger:hover { background: rgba(220, 38, 38, 0.06) !important; }
     .lz-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
 
-    /* Tab nav */
-    .zd-tabs {
-        display: flex;
-        gap: 0;
-        border-bottom: 1px solid var(--mw-border);
-        margin-bottom: var(--mw-space-xl);
-    }
-    .zd-tab {
-        padding: 10px var(--mw-space-xl);
-        font-size: 13.5px;
-        font-weight: 500;
-        color: var(--mw-text-muted);
-        background: none;
-        border: none;
-        border-bottom: 2px solid transparent;
-        margin-bottom: -1px;
-        cursor: pointer;
-        transition: color 0.15s, border-color 0.15s;
-    }
-    .zd-tab:hover { color: var(--mw-text-primary); }
-    .zd-tab.active {
-        color: var(--mw-primary);
-        font-weight: 600;
-        border-bottom-color: var(--mw-primary);
-    }
-    .zd-panel { display: none; }
-    .zd-panel.active { display: block; }
     .add-location-section {
         background: var(--mw-bg-muted);
         border: 2px dashed var(--mw-border);
@@ -322,17 +295,17 @@
     </div>
     
     <div id="zone-content" style="display: none;">
-        <div class="zd-tabs" role="tablist">
-            <button class="zd-tab active" data-tab="info" role="tab">{{ __('zone_details.tab_information') }}</button>
-            <button class="zd-tab" data-tab="locations" role="tab">{{ __('zone_details.tab_locations') }}</button>
+        <div class="mw-tabs" role="tablist">
+            <button class="mw-tab active" data-tab="info" role="tab">{{ __('zone_details.tab_information') }}</button>
+            <button class="mw-tab" data-tab="locations" role="tab">{{ __('zone_details.tab_locations') }}</button>
         </div>
 
-        <div class="zd-panel active" id="zd-panel-info" role="tabpanel">
+        <div class="mw-panel active" id="zd-panel-info" role="tabpanel">
             <div id="zone-info-container"></div>
             <div id="zone-settings-container"></div>
         </div>
 
-        <div class="zd-panel" id="zd-panel-locations" role="tabpanel">
+        <div class="mw-panel" id="zd-panel-locations" role="tabpanel">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">{{ __('zone_details.locations_in_zone') }}</h4>
