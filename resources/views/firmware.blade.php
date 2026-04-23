@@ -103,11 +103,27 @@
     .fw-list-head {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: var(--mw-space-md);
         padding: var(--mw-space-md) var(--mw-space-xl);
         border-bottom: 1px solid var(--mw-border-light);
     }
-    .fw-list-title { font-size: 15px; font-weight: 600; color: var(--mw-text-primary); }
+    .fw-list-title { font-size: 15px; font-weight: 600; color: var(--mw-text-primary); flex-shrink: 0; }
+    .fw-list-tools { display: flex; align-items: center; gap: var(--mw-space-md); margin-left: auto; }
+    .fw-per-page { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--mw-text-muted); }
+    .fw-per-page select { width: auto; }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-md);
+        box-shadow: var(--mw-shadow-card);
+    }
+    .pagination-info { color: var(--mw-text-muted); font-size: 0.9rem; }
+    .pagination-buttons { display: flex; gap: 0.5rem; align-items: center; }
     .fw-search {
         width: 220px;
         font-size: 13px;
@@ -189,7 +205,18 @@
     <div class="card fw-list-card">
         <div class="fw-list-head">
             <span class="fw-list-title">{{ __('firmware.card_title') }}</span>
-            <input type="text" id="fw-search" class="fw-search" placeholder="{{ __('firmware.search_placeholder') }}" autocomplete="off">
+            <div class="fw-list-tools">
+                <div class="fw-per-page">
+                    <label for="fw-items-per-page" class="mb-0">{{ __('common.items_per_page') }}</label>
+                    <select id="fw-items-per-page" class="form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <input type="text" id="fw-search" class="fw-search" placeholder="{{ __('firmware.search_placeholder') }}" autocomplete="off">
+            </div>
         </div>
         <div class="table-responsive">
             <table class="datatables-firmware">
@@ -207,6 +234,7 @@
             </table>
         </div>
     </div>
+    <div id="fw-pagination"></div>
 </div>
 
 <!-- Add New Firmware Modal -->
@@ -352,10 +380,13 @@
 <script>
     window.FIRMWARE_T = {!! json_encode($firmwareT) !!};
     const T = window.FIRMWARE_T;
+    const PAGE_LOCALE = document.documentElement.lang || 'en';
 
     let firmwareData = [];
     let currentEditingId = null;
     let productModels = [];
+    let fwCurrentPage = 1;
+    let fwItemsPerPage = 25;
 
     const _fwDotsSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
     const _fwEditSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
@@ -391,7 +422,8 @@
             $(this).next('.custom-file-label').html($(this).val().split('\\').pop() || T.choose_file);
         });
 
-        $('#fw-search').on('input', function() { renderFirmwareTable($(this).val()); });
+        $('#fw-search').on('input', function() { fwCurrentPage = 1; renderFirmwareTable(); });
+        $('#fw-items-per-page').on('change', function() { fwItemsPerPage = parseInt($(this).val(), 10) || 25; fwCurrentPage = 1; renderFirmwareTable(); });
 
         $(document).on('click', function(e) {
             const toggleBtn = $(e.target).closest('.fw-kebab-toggle');
@@ -444,23 +476,31 @@
         });
     }
 
-    function renderFirmwareTable(filterText) {
+    function renderFirmwareTable() {
         const $tbody = $('.datatables-firmware tbody');
-        const query = (filterText || '').trim().toLowerCase();
+        const query = ($('#fw-search').val() || '').trim().toLowerCase();
         const sorted = [...firmwareData].sort((a, b) =>
             a.created_at && b.created_at ? new Date(b.created_at) - new Date(a.created_at) : b.id - a.id
         );
-        const list = query
+        const filtered = query
             ? sorted.filter(fw =>
                 (fw.name || '').toLowerCase().includes(query) ||
                 (fw.description || '').toLowerCase().includes(query) ||
                 getModelName(fw.model).toLowerCase().includes(query))
             : sorted;
 
-        if (!list.length) {
+        if (!filtered.length) {
             $tbody.html(`<tr><td colspan="6" class="text-center py-4" style="color:var(--mw-text-muted)">${T.no_firmware}</td></tr>`);
+            $('#fw-pagination').empty();
             return;
         }
+
+        const totalItems = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / fwItemsPerPage));
+        if (fwCurrentPage > totalPages) fwCurrentPage = totalPages;
+        const startIdx = (fwCurrentPage - 1) * fwItemsPerPage;
+        const endIdx = Math.min(startIdx + fwItemsPerPage, totalItems);
+        const list = filtered.slice(startIdx, endIdx);
 
         const rows = list.map(fw => {
             const statusPill  = fw.is_enabled
@@ -493,6 +533,40 @@
             </tr>`;
         }).join('');
         $tbody.html(rows);
+        renderFwPagination(totalItems, totalPages, startIdx, endIdx);
+    }
+
+    function renderFwPagination(totalItems, totalPages, startIdx, endIdx) {
+        const $pg = $('#fw-pagination');
+        if (totalPages <= 1) { $pg.empty(); return; }
+        const localeStr = (PAGE_LOCALE === 'fr')
+            ? `Affichage ${startIdx + 1}-${endIdx} sur ${totalItems}`
+            : `Showing ${startIdx + 1}-${endIdx} of ${totalItems}`;
+        let buttons = `<button class="btn btn-sm btn-outline-primary" onclick="goToFwPage(${fwCurrentPage - 1})" ${fwCurrentPage === 1 ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg></button>`;
+        const maxBtns = 5;
+        let startP = Math.max(1, fwCurrentPage - Math.floor(maxBtns / 2));
+        let endP = Math.min(totalPages, startP + maxBtns - 1);
+        if (endP - startP < maxBtns - 1) startP = Math.max(1, endP - maxBtns + 1);
+        if (startP > 1) {
+            buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToFwPage(1)">1</button>`;
+            if (startP > 2) buttons += `<span class="mx-2">...</span>`;
+        }
+        for (let i = startP; i <= endP; i++) {
+            buttons += `<button class="btn btn-sm ${i === fwCurrentPage ? 'btn-primary' : 'btn-outline-primary'}" onclick="goToFwPage(${i})">${i}</button>`;
+        }
+        if (endP < totalPages) {
+            if (endP < totalPages - 1) buttons += `<span class="mx-2">...</span>`;
+            buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToFwPage(${totalPages})">${totalPages}</button>`;
+        }
+        buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToFwPage(${fwCurrentPage + 1})" ${fwCurrentPage === totalPages ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+        $pg.html(`<div class="pagination-controls"><div class="pagination-info">${localeStr}</div><div class="pagination-buttons">${buttons}</div></div>`);
+    }
+
+    function goToFwPage(p) {
+        const totalPages = Math.max(1, Math.ceil(firmwareData.length / fwItemsPerPage));
+        if (p < 1 || p > totalPages) return;
+        fwCurrentPage = p;
+        renderFirmwareTable();
     }
 
     function uploadFirmware() {

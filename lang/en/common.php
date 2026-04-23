@@ -8,6 +8,7 @@ return [
     'cloning' => 'Cloning…',
     'home' => 'Home',
     'inactive' => 'Inactive',
+    'items_per_page' => 'Items per page:',
     'loading' => 'Loading...',
     'logout' => 'Logout',
     'maintenance' => 'Maintenance',
