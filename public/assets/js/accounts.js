@@ -111,7 +111,7 @@ function renderRows(users, currentUser) {
                 </td>
                 <td>${roleBadge(role)}</td>
                 <td class="ac-col-actions">
-                    <div class="ac-kebab-wrap" onclick="event.stopPropagation()">
+                    <div class="ac-kebab-wrap">
                         <button class="ac-kebab-btn ac-kebab-toggle"
                             data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
                             data-email="${escapeHtml(u.email)}" data-role="${role}"
@@ -191,22 +191,25 @@ $(document).ready(function() {
         });
     });
 
-    // Row click → open edit (kebab click stops propagation so it doesn't fire here)
-    $(document).on('click', '#accounts-tbody tr[data-search]', function() {
-        $(this).find('.ac-menu-item[data-action="edit"]').trigger('click');
+    // Row click → open edit (skip if clicking inside the kebab area)
+    $(document).on('click', '#accounts-tbody tr[data-search]', function(e) {
+        if ($(e.target).closest('.ac-kebab-wrap').length) return;
+        const $editBtn = $(this).find('.ac-menu-item[data-action="edit"]');
+        if ($editBtn.length) openEditModal($editBtn);
     });
 
     // Kebab toggle
-    $(document).on('click', '.ac-kebab-toggle', function(e) {
-        e.stopPropagation();
+    $(document).on('click', '.ac-kebab-toggle', function() {
         const $menu = $('#ac-menu-' + $(this).data('user-id'));
         const wasOpen = $menu.hasClass('open');
         closeAllAcMenus();
         if (!wasOpen) $menu.addClass('open');
     });
 
-    // Close menus on outside click
-    $(document).on('click', function() { closeAllAcMenus(); });
+    // Close menus on outside click (but not when clicking the kebab itself)
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.ac-kebab-wrap').length) closeAllAcMenus();
+    });
 
     // Profile picture previews
     $('#new-account-upload').on('change', function() {
@@ -308,6 +311,36 @@ $(document).ready(function() {
         });
     });
 
+    function openEditModal($btn) {
+        const userId   = $btn.data('user-id');
+        const userName = $btn.data('name');
+        const userEmail= $btn.data('email');
+        const userRole = $btn.data('role');
+        const userPic  = $btn.data('profile-picture');
+
+        if (userRole === 'superadmin' && user.role !== 'superadmin') {
+            toastr.error('Only Super Admin can edit Super Admin accounts'); return;
+        }
+
+        $('#edit-user-modal').data('user-id', userId).data('original-role', userRole);
+        $('#edit-user-name').val(userName);
+        $('#edit-user-email').val(userEmail);
+        $('#edit-user-role').val(userRole);
+        $('#edit-user-password, #edit-user-confirm-password').val('');
+
+        if (user.role === 'superadmin') {
+            $('#edit-user-role').closest('.form-group').show();
+            $('#edit-user-role option.superadmin-only').show();
+        } else {
+            $('#edit-user-role').closest('.form-group').hide();
+        }
+
+        $('#edit-user-upload-img').attr('src',
+            (userPic && userPic !== 'null' && userPic !== '') ? userPic : '/assets/avatar-default.jpg'
+        );
+        $('#edit-user-modal').modal('show');
+    }
+
     // Menu actions
     $(document).on('click', '.ac-menu-item[data-action="delete"]', function(e) {
         e.stopPropagation();
@@ -336,37 +369,10 @@ $(document).ready(function() {
         });
     });
 
-    // Open edit modal
-    $(document).on('click', '.ac-menu-item[data-action="edit"]', function(e) {
-        e.stopPropagation();
+    // Edit menu item
+    $(document).on('click', '.ac-menu-item[data-action="edit"]', function() {
         closeAllAcMenus();
-        const userId   = $(this).data('user-id');
-        const userName = $(this).data('name');
-        const userEmail= $(this).data('email');
-        const userRole = $(this).data('role');
-        const userPic  = $(this).data('profile-picture');
-
-        if (userRole === 'superadmin' && user.role !== 'superadmin') {
-            toastr.error('Only Super Admin can edit Super Admin accounts'); return;
-        }
-
-        $('#edit-user-modal').data('user-id', userId).data('original-role', userRole);
-        $('#edit-user-name').val(userName);
-        $('#edit-user-email').val(userEmail);
-        $('#edit-user-role').val(userRole);
-        $('#edit-user-password, #edit-user-confirm-password').val('');
-
-        if (user.role === 'superadmin') {
-            $('#edit-user-role').closest('.form-group').show();
-            $('#edit-user-role option.superadmin-only').show();
-        } else {
-            $('#edit-user-role').closest('.form-group').hide();
-        }
-
-        $('#edit-user-upload-img').attr('src',
-            (userPic && userPic !== 'null' && userPic !== '') ? userPic : '/assets/avatar-default.jpg'
-        );
-        $('#edit-user-modal').modal('show');
+        openEditModal($(this));
     });
 
     // Update account
