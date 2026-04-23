@@ -901,7 +901,7 @@ async function loadWebFilterCategories(selectedIds) {
         categories.forEach(cat => {
             $select.append(new Option(cat.name, cat.id, false, selectedIds.includes(cat.id)));
         });
-        $select.select2({ placeholder: 'Select categories to block', allowClear: true });
+        $select.select2({ placeholder: 'Select categories to block', allowClear: true, width: '100%' });
     } catch (err) {
         console.error('Error loading web filter categories:', err);
     }
