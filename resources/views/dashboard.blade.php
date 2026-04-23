@@ -238,7 +238,7 @@
         <div id="dashboard-errors"></div>
 
         <!-- Map + Locations list side-by-side -->
-        <div class="row match-height" style="margin-bottom: 1.5rem;">
+        <div class="row match-height">
             <div class="col-lg-8 col-12">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
