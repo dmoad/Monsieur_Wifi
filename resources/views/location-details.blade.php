@@ -471,6 +471,7 @@
 <script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script src="/assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/vendors/js/maps/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     window.APP_CONFIG_V5 = {
         apiBase: '{{ rtrim(config("app.url"), "/") }}/api'

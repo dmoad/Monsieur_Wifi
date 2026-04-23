@@ -489,9 +489,41 @@
             <button type="button" class="btn btn-link text-danger mr-auto" id="ld-network-drawer-delete">
                 <i data-feather="trash-2" class="mr-1"></i>{{ __('location_details.networks_drawer_delete') }}
             </button>
+            <button type="button" class="btn btn-outline-primary" id="ld-network-drawer-qr" style="display:none;">
+                <i data-feather="smartphone" class="mr-1"></i>{{ __('location_details.networks_show_qr') }}
+            </button>
             <button type="button" class="btn btn-outline-secondary" data-mw-drawer-close>{{ __('common.cancel') }}</button>
             <button type="button" class="btn btn-primary" id="ld-network-drawer-save" disabled>{{ __('location_details.networks_drawer_save') }}</button>
         </footer>
     </aside>
+
+    <!-- SSID QR Code Modal -->
+    <div class="modal fade" id="ld-network-qr-modal" tabindex="-1" role="dialog" aria-labelledby="ld-network-qr-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ld-network-qr-title">
+                        <i data-feather="wifi" class="mr-2"></i>{{ __('location_details.networks_qr_title') }}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted mb-3">{{ __('location_details.networks_qr_help') }}</p>
+                    <h5 class="text-primary font-weight-bold mb-3" id="ld-network-qr-ssid">—</h5>
+                    <div class="d-flex justify-content-center mb-2">
+                        <div id="ld-network-qr-canvas" class="p-3 bg-white border rounded"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ __('common.close') }}</button>
+                    <button type="button" class="btn btn-primary" id="ld-network-qr-download">
+                        <i data-feather="download" class="mr-1"></i>{{ __('location_details.networks_qr_download') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>

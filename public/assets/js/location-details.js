@@ -1729,6 +1729,9 @@ const ldNetworks = (function () {
 
         document.getElementById('ld-network-drawer-save').disabled = false;
 
+        const qrBtn = document.getElementById('ld-network-drawer-qr');
+        if (qrBtn) qrBtn.style.display = '';
+
         const body = document.getElementById('ld-network-drawer-body');
         if (body) body.scrollTop = 0;
 
@@ -1862,6 +1865,51 @@ const ldNetworks = (function () {
         }
     }
 
+    function buildWifiQrString(net) {
+        const ssid = (net && net.ssid) || '';
+        const escape = s => String(s).replace(/([\\;,:"])/g, '\\$1');
+        if (net && net.type === 'password' && net.password) {
+            return `WIFI:T:WPA;S:${escape(ssid)};P:${escape(net.password)};;`;
+        }
+        return `WIFI:T:nopass;S:${escape(ssid)};;`;
+    }
+
+    function openQrModal() {
+        if (typeof QRCode === 'undefined') {
+            if (typeof toastr !== 'undefined') toastr.error('QR library not loaded');
+            return;
+        }
+        const drawer = document.getElementById('ld-network-drawer');
+        const netId = drawer && drawer.dataset.networkId;
+        const net = netId ? data.find(n => String(n.id) === String(netId)) : null;
+        if (!net) return;
+
+        const ssidDisplay = document.getElementById('ld-network-qr-ssid');
+        const canvas = document.getElementById('ld-network-qr-canvas');
+        if (ssidDisplay) ssidDisplay.textContent = net.ssid || '—';
+        if (canvas) canvas.innerHTML = '';
+        new QRCode(canvas, {
+            text: buildWifiQrString(net),
+            width: 240,
+            height: 240,
+            correctLevel: QRCode.CorrectLevel.M,
+        });
+        $('#ld-network-qr-modal').modal('show');
+    }
+
+    function downloadQr() {
+        const canvas = document.querySelector('#ld-network-qr-canvas canvas');
+        if (!canvas) return;
+        const drawer = document.getElementById('ld-network-drawer');
+        const netId = drawer && drawer.dataset.networkId;
+        const net = netId ? data.find(n => String(n.id) === String(netId)) : null;
+        const slug = ((net && net.ssid) || 'wifi').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        const link = document.createElement('a');
+        link.download = `wifi-qr-${slug}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
     document.addEventListener('submit', function (e) {
         if (e.target && e.target.id === 'ld-network-drawer-form') {
             e.preventDefault();
@@ -1884,6 +1932,16 @@ const ldNetworks = (function () {
             const drawer = document.getElementById('ld-network-drawer');
             const netId = drawer && drawer.dataset.networkId;
             if (netId) remove(netId);
+            return;
+        }
+        if (e.target.closest('#ld-network-drawer-qr')) {
+            e.preventDefault();
+            openQrModal();
+            return;
+        }
+        if (e.target.closest('#ld-network-qr-download')) {
+            e.preventDefault();
+            downloadQr();
             return;
         }
         const pwdToggle = e.target.closest('#ld-net-password-toggle, #ld-net-portal-password-toggle');
