@@ -1266,3 +1266,33 @@ body.mw-drawer-locked {
 :root[data-theme="dark"] .table .btn:not([class*=btn-outline-]):not(.btn-primary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info) {
     color: var(--mw-text-secondary);
 }
+
+/* ================================================================
+   MODALS — Bootstrap ships a white .modal-content + near-black ×
+   close icon that turn illegible on dark surfaces. Token-ise the
+   surface, borders, and the × so every dialog in the app
+   (create-zone, edit-WAN, restart-device, domain-info, add-account,
+   …) picks up the theme without per-page overrides.
+================================================================ */
+:root[data-theme="dark"] .modal-content {
+    background: var(--mw-bg-surface);
+    color: var(--mw-text-primary);
+    border-color: var(--mw-border);
+}
+:root[data-theme="dark"] .modal-header {
+    border-bottom-color: var(--mw-border-light);
+}
+:root[data-theme="dark"] .modal-footer {
+    border-top-color: var(--mw-border-light);
+}
+:root[data-theme="dark"] .modal-title {
+    color: var(--mw-text-primary);
+}
+:root[data-theme="dark"] .modal-header .close {
+    color: var(--mw-text-secondary);
+    text-shadow: none;
+    opacity: 1;
+}
+:root[data-theme="dark"] .modal-header .close:hover {
+    color: var(--mw-text-primary);
+}
