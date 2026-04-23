@@ -85,15 +85,23 @@
     .color-picker-container {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: var(--mw-space-sm);
     }
-
-    .color-preview {
-        width: 30px;
-        height: 30px;
-        border-radius: 4px;
-        border: 1px solid #dee2e6;
+    .color-picker-container input[type="color"].form-control-color {
+        width: 44px;
+        height: 34px;
+        padding: 2px;
+        border-radius: var(--mw-radius-sm);
+        cursor: pointer;
     }
+    .color-picker-container .color-value {
+        font-family: SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        font-size: 12.5px;
+        color: var(--mw-text-secondary);
+        letter-spacing: 0.3px;
+    }
+    /* Native color input already shows the chosen color — hide the duplicate swatch */
+    .color-picker-container .color-preview { display: none; }
 
     .image-preview {
         width: 100%;
@@ -1091,18 +1099,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div>
+                                <div class="d-flex flex-wrap" style="gap:var(--mw-space-sm);">
                                     <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
                                         <i data-feather="x" class="mr-25"></i>{{ __('captive_portals.btn_clear_gradient') }}
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-1">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="preset-gradient-1">
                                         {{ __('captive_portals.btn_preset_blue_purple') }}
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary ml-1" id="preset-gradient-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="preset-gradient-2">
                                         {{ __('captive_portals.btn_preset_orange_pink') }}
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-success ml-1" id="test-gradient">
-                                        {{ __('captive_portals.btn_test_gradient') }}
                                     </button>
                                 </div>
                             </div>
