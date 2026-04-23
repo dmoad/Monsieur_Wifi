@@ -824,6 +824,17 @@
     }
     .cp-section-card-body { padding: var(--mw-space-lg) var(--mw-space-xl); }
     .cp-section-card-body .form-group:last-child { margin-bottom: 0; }
+    /* Typography — tighter than Bootstrap defaults to match mockup density */
+    .cp-section-card-body .form-group label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--mw-text-secondary);
+        margin-bottom: 6px;
+    }
+    .cp-section-card-body .form-control {
+        font-size: 13.5px;
+    }
+    .cp-section-card-body .form-group { margin-bottom: var(--mw-space-md); }
 
     .cp-preview-card {
         background: var(--mw-bg-surface);
