@@ -180,7 +180,7 @@
     <!-- Dashboard Content Starts -->
     <section id="dashboard-analytics">
         <!-- Network statistics summary cards -->
-        <div class="row">
+        <div class="row" style="margin-bottom: 1.5rem;">
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="card">
                     <div class="db-summary-card">
