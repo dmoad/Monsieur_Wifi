@@ -32,15 +32,17 @@
                                 <div class="alert alert-info py-2 px-3 mb-3" id="scan-status-alert">
                                     <i data-feather="info" class="mr-2" style="width:14px;height:14px;vertical-align:text-bottom;"></i>
                                     <span id="scan-status-text">{{ __('location_details.scan_default_status') }}</span>
-                                    <span class="ml-3">
-                                        <strong>{{ __('location_details.best_2g') }}:</strong> <span id="last-optimal-2g">--</span>
-                                        <span class="mx-2">•</span>
-                                        <strong>{{ __('location_details.best_5g') }}:</strong> <span id="last-optimal-5g">--</span>
+                                    <span id="scan-results-inline" style="display:none;">
+                                        <span class="ml-3">
+                                            <strong>{{ __('location_details.best_2g') }}:</strong> <span id="last-optimal-2g">--</span>
+                                            <span class="mx-2">•</span>
+                                            <strong>{{ __('location_details.best_5g') }}:</strong> <span id="last-optimal-5g">--</span>
+                                        </span>
+                                        <button class="btn btn-sm btn-success float-right" id="save-channels-btn">
+                                            <i data-feather="check" class="mr-1"></i>{{ __('location_details.apply_optimal') }}
+                                        </button>
+                                        <small class="d-block mt-1 text-muted" id="last-scan-timestamp"></small>
                                     </span>
-                                    <button class="btn btn-sm btn-success float-right" id="save-channels-btn" disabled>
-                                        <i data-feather="check" class="mr-1"></i>{{ __('location_details.apply_optimal') }}
-                                    </button>
-                                    <small class="d-block mt-1 text-muted" id="last-scan-timestamp">{{ __('location_details.no_scan_yet') }}</small>
                                 </div>
 
                                 <div class="row mb-3">

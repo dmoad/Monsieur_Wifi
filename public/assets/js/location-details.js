@@ -669,8 +669,6 @@ async function loadLocationSettings() {
         $('#channel-width-5g').val(s.channel_width_5g || 80);
         $('#channel-2g').val(s.channel_2g || 6);
         $('#channel-5g').val(s.channel_5g || 36);
-        $('#last-optimal-2g').text(s.channel_2g || 6);
-        $('#last-optimal-5g').text(s.channel_5g || 36);
 
         // Web filter
         const filterOn = !!s.web_filter_enabled;
@@ -2690,6 +2688,7 @@ async function loadScanResults() {
         const ts = results.completed_at ? new Date(results.completed_at).toLocaleString() : new Date().toLocaleString();
         $('#last-scan-timestamp').text('Last scan: ' + ts);
         $('#scan-status-text').text('Scan complete. Optimal channels identified.');
+        $('#scan-results-inline').show();
         $('#save-channels-btn').prop('disabled', false);
     } catch (err) {
         handleApiError(err, 'loadScanResults');
