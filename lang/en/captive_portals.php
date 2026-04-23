@@ -63,9 +63,6 @@ return [
     'label_gradient_start' => 'Gradient Start Color',
     'label_gradient_end' => 'Gradient End Color',
     'btn_clear_gradient' => 'Clear Gradient',
-    'btn_preset_blue_purple' => 'Blue to Purple',
-    'btn_preset_orange_pink' => 'Orange to Pink',
-    'btn_test_gradient' => 'Test Gradient',
 
     // Preview panel
     'preview_title' => 'Preview',

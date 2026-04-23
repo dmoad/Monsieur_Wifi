@@ -63,9 +63,6 @@ return [
     'label_gradient_start' => 'Couleur de début du dégradé',
     'label_gradient_end' => 'Couleur de fin du dégradé',
     'btn_clear_gradient' => 'Effacer le dégradé',
-    'btn_preset_blue_purple' => 'Bleu vers violet',
-    'btn_preset_orange_pink' => 'Orange vers rose',
-    'btn_test_gradient' => 'Tester le dégradé',
 
     // Preview panel
     'preview_title' => 'Aperçu',

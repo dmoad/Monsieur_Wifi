@@ -631,16 +631,12 @@ $(document).ready(function() {
         updateGradientBar();
     });
 
-    $('#preset-gradient-1').on('click', function() {
+    $(document).on('click', '.cp-gradient-preset', function() {
+        const start = $(this).data('start');
+        const end   = $(this).data('end');
         $('#gradient-start, #gradient-end').data('disabled', false);
-        $('#gradient-start').val('#667eea').trigger('change');
-        $('#gradient-end').val('#764ba2').trigger('change');
-    });
-
-    $('#preset-gradient-2').on('click', function() {
-        $('#gradient-start, #gradient-end').data('disabled', false);
-        $('#gradient-start').val('#f093fb').trigger('change');
-        $('#gradient-end').val('#f5576c').trigger('change');
+        $('#gradient-start').val(start).trigger('change');
+        $('#gradient-end').val(end).trigger('change');
     });
 
     function readURL(input, previewId) {

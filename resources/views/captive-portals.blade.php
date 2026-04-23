@@ -1159,14 +1159,18 @@
                                 <div id="gradient-preview-bar" class="cp-gradient-bar"></div>
 
                                 <div class="cp-gradient-presets">
-                                    <button type="button" class="cp-gradient-preset" id="preset-gradient-1"
-                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                        {{ __('captive_portals.btn_preset_blue_purple') }}
-                                    </button>
-                                    <button type="button" class="cp-gradient-preset" id="preset-gradient-2"
-                                        style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                                        {{ __('captive_portals.btn_preset_orange_pink') }}
-                                    </button>
+                                    <button type="button" class="cp-gradient-preset" data-start="#EEF2FF" data-end="#C7D2FE"
+                                        style="background: linear-gradient(135deg, #EEF2FF 0%, #C7D2FE 100%); color: #4338CA;">Indigo</button>
+                                    <button type="button" class="cp-gradient-preset" data-start="#0EA5E9" data-end="#0284C7"
+                                        style="background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);">Ocean</button>
+                                    <button type="button" class="cp-gradient-preset" data-start="#059669" data-end="#047857"
+                                        style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">Forest</button>
+                                    <button type="button" class="cp-gradient-preset" data-start="#6366F1" data-end="#4338CA"
+                                        style="background: linear-gradient(135deg, #6366F1 0%, #4338CA 100%);">Dusk</button>
+                                    <button type="button" class="cp-gradient-preset" data-start="#F97316" data-end="#DC2626"
+                                        style="background: linear-gradient(135deg, #F97316 0%, #DC2626 100%);">Sunset</button>
+                                    <button type="button" class="cp-gradient-preset" data-start="#475569" data-end="#1E293B"
+                                        style="background: linear-gradient(135deg, #475569 0%, #1E293B 100%);">Slate</button>
                                 </div>
                             </div>
                         </div>
