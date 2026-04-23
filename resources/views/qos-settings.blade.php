@@ -35,8 +35,8 @@
 <style>
     .qos-class-card {
         border-radius: 10px;
-        border: 1px solid #e4e9f0;
-        background: #fff;
+        border: 1px solid var(--mw-border-light);
+        background: var(--mw-bg-surface);
         margin-bottom: 1.5rem;
         overflow: hidden;
     }
@@ -45,8 +45,8 @@
         align-items: center;
         gap: 0.75rem;
         padding: 1rem 1.25rem;
-        border-bottom: 1px solid #e4e9f0;
-        background: #f9fafb;
+        border-bottom: 1px solid var(--mw-border-light);
+        background: var(--mw-bg-muted);
     }
     .qos-class-badge {
         display: inline-flex;
@@ -66,8 +66,8 @@
     .qos-badge-cs1  { background: rgba(99,102,241,0.12);color: var(--mw-primary); }
     .qos-class-meta { flex: 1; min-width: 0; }
     .qos-class-meta h6 { margin: 0 0 1px; font-weight: 700; font-size: 1rem; }
-    .qos-class-meta .priority-desc { color: #6e6b7b; font-size: 0.78rem; margin-bottom: 3px; }
-    .qos-class-meta .tech-ids { font-size: 0.7rem; color: #aaa; letter-spacing: 0.3px; }
+    .qos-class-meta .priority-desc { color: var(--mw-text-secondary); font-size: 0.78rem; margin-bottom: 3px; }
+    .qos-class-meta .tech-ids { font-size: 0.7rem; color: var(--mw-text-muted); letter-spacing: 0.3px; }
     .qos-dscp-pill { display: none; }
     .qos-class-body { padding: 1rem 1.25rem; }
     .domain-list { list-style: none; padding: 0; margin: 0 0 1rem; }
@@ -79,25 +79,25 @@
         border-radius: 6px;
         font-size: 0.85rem;
         font-family: 'SFMono-Regular', Consolas, monospace;
-        background: #f9fafb;
-        border: 1px solid #e4e9f0;
+        background: var(--mw-bg-muted);
+        border: 1px solid var(--mw-border-light);
         margin-bottom: 0.4rem;
     }
     .domain-list li .btn-remove {
         background: none;
         border: none;
-        color: #aaa;
+        color: var(--mw-text-muted);
         cursor: pointer;
         padding: 0 4px;
         font-size: 1rem;
         line-height: 1;
         transition: color 0.15s;
     }
-    .domain-list li .btn-remove:hover { color: #ea5455; }
+    .domain-list li .btn-remove:hover { color: var(--mw-danger); }
     .add-domain-form { display: flex; gap: 0.5rem; }
     .add-domain-form input { flex: 1; }
     .be-placeholder {
-        color: #6e6b7b;
+        color: var(--mw-text-secondary);
         font-size: 0.85rem;
         font-style: italic;
         padding: 0.5rem 0;
