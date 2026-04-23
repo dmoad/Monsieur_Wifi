@@ -1170,6 +1170,9 @@
                 <div class="cp-preview-card">
                     <div class="cp-preview-card-head">
                         <h4 class="cp-preview-card-title">{{ __('captive_portals.preview_title') }}</h4>
+                        <button type="button" id="open-full-preview" class="btn btn-sm btn-outline-secondary" style="display:none;" title="{{ __('captive_portals.open_full_preview') }}">
+                            <i data-feather="external-link" style="width:14px;height:14px;"></i>
+                        </button>
                     </div>
                     <div class="card-body">
                         <div class="portal-preview">

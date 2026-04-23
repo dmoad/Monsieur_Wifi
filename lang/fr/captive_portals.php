@@ -69,6 +69,7 @@ return [
 
     // Preview panel
     'preview_title' => 'Aperçu',
+    'open_full_preview' => 'Ouvrir en plein écran',
     'alt_location_logo' => 'Logo de l\'emplacement',
     'alt_brand_logo' => 'Logo de marque',
     'placeholder_email' => 'Adresse e-mail',

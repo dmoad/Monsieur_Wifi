@@ -152,7 +152,8 @@ function fetchDesignDetails(designId) {
             console.log('Design details received:', response);
             
             currentDesignId = designId;
-            
+            $('#open-full-preview').show();
+
             if (response.success && response.data) {
                 const design = response.data;
                 
@@ -715,8 +716,16 @@ $(document).ready(function() {
         clearDesignUrl();
         $('#captive-portal-designer').hide();
         $('#captive-portal-designs-list').show();
+        $('#open-full-preview').hide();
         resetDesignForm();
         currentDesignId = null;
+    });
+
+    $('#open-full-preview').on('click', function() {
+        if (currentDesignId) {
+            const locale = document.documentElement.lang || 'en';
+            window.open('/' + locale + '/captive-portals/preview/' + currentDesignId, '_blank');
+        }
     });
 
     $('#create-new-design').on('click', function() {
@@ -724,6 +733,7 @@ $(document).ready(function() {
         resetDesignerTabs();
         $('#captive-portal-designs-list').hide();
         $('#captive-portal-designer').show();
+        $('#open-full-preview').hide();
         currentDesignId = null;
         resetDesignForm();
         if (typeof feather !== 'undefined') feather.replace();

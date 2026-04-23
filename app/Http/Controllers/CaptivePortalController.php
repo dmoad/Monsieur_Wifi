@@ -75,6 +75,20 @@ class CaptivePortalController extends Controller
     }
     
     /**
+     * Render a design as a full-page preview (authenticated admin use only).
+     */
+    public function showPreview($design_id)
+    {
+        $design = CaptivePortalDesign::find($design_id);
+
+        if (!$design) {
+            return response()->view('errors.404', [], 404);
+        }
+
+        return view('captive-portal-preview', compact('design'));
+    }
+
+    /**
      * Handle the login request
      *
      * @param  \Illuminate\Http\Request  $request
