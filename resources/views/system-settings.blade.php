@@ -25,7 +25,7 @@
     .setting-section {
         padding: 1.5rem;
         border-radius: 0.428rem;
-        border: 1px solid #ebe9f1;
+        border: 1px solid var(--mw-border-light);
         margin-bottom: 1.5rem;
     }
     .setting-section-header {
