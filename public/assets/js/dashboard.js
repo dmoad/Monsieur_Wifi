@@ -79,10 +79,10 @@ function updateOverviewDisplay(data) {
     const loc = data.locations;
     const ns = data.network_stats;
 
-    $('#routers-online-count').text(ns.routers_online + '/' + ns.routers_total);
+    $('#routers-online-count').html(ns.routers_online + '<span class="db-summary-suffix">/ ' + ns.routers_total + '</span>');
     $('#active-users-count').text(ns.active_users.toLocaleString());
-    $('#data-used-count').text(ns.data_used_tb + 'TB');
-    $('#uptime-percentage').text(ns.uptime_percentage + '%');
+    $('#data-used-count').html(ns.data_used_tb + '<span class="db-summary-suffix">TB</span>');
+    $('#uptime-percentage').html(ns.uptime_percentage + '<span class="db-summary-suffix">%</span>');
 
     initializeNetworkMap(loc.data);
 }

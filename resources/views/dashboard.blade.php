@@ -44,22 +44,38 @@
     gap: var(--mw-space-md);
 }
 
-/* Top-row summary cards — mirrors .lc-summary-card from locations */
+/* Top-row summary cards — larger stacked layout (icon top-left, value + label below) */
 .db-summary-card {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--mw-space-lg) var(--mw-space-xl);
+    flex-direction: column;
+    gap: var(--mw-space-lg);
+    padding: var(--mw-space-xl);
+    min-height: 150px;
+}
+.db-summary-card .mw-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+}
+.db-summary-card .mw-stat-icon [data-feather] {
+    width: 22px !important;
+    height: 22px !important;
 }
 .db-summary-num {
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 700;
     color: var(--mw-text-primary);
     line-height: 1.1;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+}
+.db-summary-suffix {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mw-text-muted);
+    margin-left: 4px;
 }
 .db-summary-lbl {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--mw-text-muted);
 }
 </style>
@@ -90,51 +106,51 @@
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="card">
                     <div class="db-summary-card">
-                        <div>
-                            <div class="db-summary-num" id="routers-online-count">—</div>
-                            <div class="db-summary-lbl">{{ __('dashboard.routers_online') }}</div>
-                        </div>
                         <div class="mw-stat-icon mw-stat-icon-primary">
                             <i data-feather="wifi"></i>
                         </div>
+                        <div class="mt-auto">
+                            <div class="db-summary-num" id="routers-online-count">—</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.routers_online') }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="card">
                     <div class="db-summary-card">
-                        <div>
-                            <div class="db-summary-num" id="active-users-count">—</div>
-                            <div class="db-summary-lbl">{{ __('dashboard.active_users') }}</div>
-                        </div>
                         <div class="mw-stat-icon mw-stat-icon-info">
                             <i data-feather="users"></i>
                         </div>
+                        <div class="mt-auto">
+                            <div class="db-summary-num" id="active-users-count">—</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.active_users') }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="card">
                     <div class="db-summary-card">
-                        <div>
-                            <div class="db-summary-num" id="data-used-count">—</div>
-                            <div class="db-summary-lbl">{{ __('dashboard.data_used') }}</div>
-                        </div>
                         <div class="mw-stat-icon mw-stat-icon-warning">
                             <i data-feather="download"></i>
                         </div>
+                        <div class="mt-auto">
+                            <div class="db-summary-num" id="data-used-count">—</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.data_used') }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="card">
                     <div class="db-summary-card">
-                        <div>
-                            <div class="db-summary-num" id="uptime-percentage">—%</div>
-                            <div class="db-summary-lbl">{{ __('dashboard.uptime') }}</div>
-                        </div>
                         <div class="mw-stat-icon mw-stat-icon-success">
                             <i data-feather="activity"></i>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="db-summary-num" id="uptime-percentage">—%</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.uptime') }}</div>
                         </div>
                     </div>
                 </div>
