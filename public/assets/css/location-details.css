@@ -540,6 +540,48 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     color: var(--mw-success);
 }
 
+/* Radio band cards (Router tab, 2.4 & 5 GHz) */
+.radio-band-card {
+    border: 1px solid var(--mw-border);
+    border-radius: var(--mw-radius-md);
+    background: var(--mw-bg-surface);
+    margin-bottom: var(--mw-space-md);
+    overflow: hidden;
+    transition: border-color 0.12s, opacity 0.15s;
+}
+.radio-band-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--mw-space-md);
+    padding: var(--mw-space-md) var(--mw-space-lg);
+    border-bottom: 1px solid var(--mw-border-light);
+    background: var(--mw-bg-surface);
+}
+.radio-band-card-title-wrap {
+    display: flex;
+    align-items: center;
+    color: var(--mw-text-primary);
+}
+.radio-band-card-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+.radio-band-card-head [data-feather] {
+    width: 16px !important;
+    height: 16px !important;
+    color: var(--mw-primary);
+}
+.radio-band-card-body {
+    padding: var(--mw-space-lg);
+}
+.radio-band-card.is-disabled {
+    opacity: 0.55;
+}
+.radio-band-card.is-disabled .radio-band-card-body {
+    display: none;
+}
+
 /* Network type radio cards (Security tab) */
 .ld-type-card-group {
     display: flex;

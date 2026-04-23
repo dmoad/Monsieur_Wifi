@@ -2764,6 +2764,16 @@ function initEventHandlers() {
     // Save radio
     $('#save-radio-settings').on('click', saveRadioSettings);
 
+    // Band enable/disable toggles — collapse card body when off (UI only; state
+    // doesn't persist until backend fields exist)
+    function applyRadioBandToggle(bandId, cardId) {
+        const $card = $(cardId);
+        const on = $(bandId).is(':checked');
+        $card.toggleClass('is-disabled', !on);
+    }
+    $('#radio-band-2g-enabled').on('change', () => applyRadioBandToggle('#radio-band-2g-enabled', '#radio-band-card-2g'));
+    $('#radio-band-5g-enabled').on('change', () => applyRadioBandToggle('#radio-band-5g-enabled', '#radio-band-card-5g'));
+
     // Save web filter
     $('#save-web-filter-settings').on('click', saveWebFilterSettings);
 

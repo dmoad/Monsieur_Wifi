@@ -23,9 +23,10 @@
                             <!-- Radio Settings -->
                             <div class="content-section">
                                 <div class="section-header"><h5 class="section-title">{{ __('location_details.wifi_radio_channel') }}</h5></div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-0">
                                             <label for="wifi-country">{{ __('location_details.country_region') }}</label>
                                             <select class="form-control" id="wifi-country">
                                                 <option value="US" selected>United States (US)</option>
@@ -45,57 +46,93 @@
                                                 <option value="SG">Singapore (SG)</option>
                                             </select>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="power-level-2g">{{ __('location_details.power_2g') }}</label>
-                                            <select class="form-control" id="power-level-2g">
-                                                <option value="20">Maximum (20 dBm)</option>
-                                                <option value="17">High (17 dBm)</option>
-                                                <option value="15" selected>Medium (15 dBm)</option>
-                                                <option value="12">Low (12 dBm)</option>
-                                                <option value="10">Minimum (10 dBm)</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="power-level-5g">{{ __('location_details.power_5g') }}</label>
-                                            <select class="form-control" id="power-level-5g">
-                                                <option value="23">Maximum (23 dBm)</option>
-                                                <option value="20">High (20 dBm)</option>
-                                                <option value="17" selected>Medium (17 dBm)</option>
-                                                <option value="14">Low (14 dBm)</option>
-                                                <option value="10">Minimum (10 dBm)</option>
-                                            </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-6 col-12">
+                                        <div class="radio-band-card" id="radio-band-card-2g">
+                                            <div class="radio-band-card-head">
+                                                <div class="radio-band-card-title-wrap">
+                                                    <i data-feather="wifi" class="mr-2"></i>
+                                                    <span class="radio-band-card-title">{{ __('location_details.band_24_title') }}</span>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="radio-band-2g-enabled" checked>
+                                                    <label class="custom-control-label" for="radio-band-2g-enabled"></label>
+                                                </div>
+                                            </div>
+                                            <div class="radio-band-card-body">
+                                                <div class="form-group">
+                                                    <label for="power-level-2g">{{ __('location_details.power_2g') }}</label>
+                                                    <select class="form-control" id="power-level-2g">
+                                                        <option value="20">Maximum (20 dBm)</option>
+                                                        <option value="17">High (17 dBm)</option>
+                                                        <option value="15" selected>Medium (15 dBm)</option>
+                                                        <option value="12">Low (12 dBm)</option>
+                                                        <option value="10">Minimum (10 dBm)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="channel-width-2g">{{ __('location_details.width_2g') }}</label>
+                                                    <select class="form-control" id="channel-width-2g"><option value="20">20 MHz</option><option value="40" selected>40 MHz</option></select>
+                                                </div>
+                                                <div class="form-group mb-0">
+                                                    <label for="channel-2g">{{ __('location_details.channel_2g') }}</label>
+                                                    <select class="form-control" id="channel-2g">
+                                                        <option value="1">Ch 1 (2412)</option><option value="2">Ch 2</option><option value="3">Ch 3</option><option value="4">Ch 4</option><option value="5">Ch 5</option>
+                                                        <option value="6" selected>Ch 6 (2437)</option><option value="7">Ch 7</option><option value="8">Ch 8</option><option value="9">Ch 9</option><option value="10">Ch 10</option>
+                                                        <option value="11">Ch 11</option><option value="12">Ch 12</option><option value="13">Ch 13</option><option value="14">Ch 14 (2484)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="channel-width-2g">{{ __('location_details.width_2g') }}</label>
-                                            <select class="form-control" id="channel-width-2g"><option value="20">20 MHz</option><option value="40" selected>40 MHz</option></select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="channel-width-5g">{{ __('location_details.width_5g') }}</label>
-                                            <select class="form-control" id="channel-width-5g"><option value="20">20 MHz</option><option value="40">40 MHz</option><option value="80" selected>80 MHz</option><option value="160">160 MHz</option></select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="channel-2g">{{ __('location_details.channel_2g') }}</label>
-                                            <select class="form-control" id="channel-2g">
-                                                <option value="1">Ch 1 (2412)</option><option value="2">Ch 2</option><option value="3">Ch 3</option><option value="4">Ch 4</option><option value="5">Ch 5</option>
-                                                <option value="6" selected>Ch 6 (2437)</option><option value="7">Ch 7</option><option value="8">Ch 8</option><option value="9">Ch 9</option><option value="10">Ch 10</option>
-                                                <option value="11">Ch 11</option><option value="12">Ch 12</option><option value="13">Ch 13</option><option value="14">Ch 14 (2484)</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="channel-5g">{{ __('location_details.channel_5g') }}</label>
-                                            <select class="form-control" id="channel-5g">
-                                                <option value="36" selected>Ch 36</option><option value="40">Ch 40</option><option value="44">Ch 44</option><option value="48">Ch 48</option>
-                                                <option value="52">Ch 52</option><option value="56">Ch 56</option><option value="60">Ch 60</option><option value="64">Ch 64</option>
-                                                <option value="100">Ch 100</option><option value="104">Ch 104</option><option value="108">Ch 108</option><option value="112">Ch 112</option>
-                                                <option value="116">Ch 116</option><option value="120">Ch 120</option><option value="124">Ch 124</option><option value="128">Ch 128</option>
-                                                <option value="132">Ch 132</option><option value="136">Ch 136</option><option value="140">Ch 140</option><option value="149">Ch 149</option>
-                                                <option value="153">Ch 153</option><option value="157">Ch 157</option><option value="161">Ch 161</option><option value="165">Ch 165</option>
-                                            </select>
+                                    <div class="col-lg-6 col-12">
+                                        <div class="radio-band-card" id="radio-band-card-5g">
+                                            <div class="radio-band-card-head">
+                                                <div class="radio-band-card-title-wrap">
+                                                    <i data-feather="wifi" class="mr-2"></i>
+                                                    <span class="radio-band-card-title">{{ __('location_details.band_5_title') }}</span>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="radio-band-5g-enabled" checked>
+                                                    <label class="custom-control-label" for="radio-band-5g-enabled"></label>
+                                                </div>
+                                            </div>
+                                            <div class="radio-band-card-body">
+                                                <div class="form-group">
+                                                    <label for="power-level-5g">{{ __('location_details.power_5g') }}</label>
+                                                    <select class="form-control" id="power-level-5g">
+                                                        <option value="23">Maximum (23 dBm)</option>
+                                                        <option value="20">High (20 dBm)</option>
+                                                        <option value="17" selected>Medium (17 dBm)</option>
+                                                        <option value="14">Low (14 dBm)</option>
+                                                        <option value="10">Minimum (10 dBm)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="channel-width-5g">{{ __('location_details.width_5g') }}</label>
+                                                    <select class="form-control" id="channel-width-5g"><option value="20">20 MHz</option><option value="40">40 MHz</option><option value="80" selected>80 MHz</option><option value="160">160 MHz</option></select>
+                                                </div>
+                                                <div class="form-group mb-0">
+                                                    <label for="channel-5g">{{ __('location_details.channel_5g') }}</label>
+                                                    <select class="form-control" id="channel-5g">
+                                                        <option value="36" selected>Ch 36</option><option value="40">Ch 40</option><option value="44">Ch 44</option><option value="48">Ch 48</option>
+                                                        <option value="52">Ch 52</option><option value="56">Ch 56</option><option value="60">Ch 60</option><option value="64">Ch 64</option>
+                                                        <option value="100">Ch 100</option><option value="104">Ch 104</option><option value="108">Ch 108</option><option value="112">Ch 112</option>
+                                                        <option value="116">Ch 116</option><option value="120">Ch 120</option><option value="124">Ch 124</option><option value="128">Ch 128</option>
+                                                        <option value="132">Ch 132</option><option value="136">Ch 136</option><option value="140">Ch 140</option><option value="149">Ch 149</option>
+                                                        <option value="153">Ch 153</option><option value="157">Ch 157</option><option value="161">Ch 161</option><option value="165">Ch 165</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-12">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <label class="mb-0">{{ __('location_details.channel_optimization') }}</label>
                                             <button class="btn btn-outline-primary btn-sm" id="scan-channels-btn"><i data-feather="wifi" class="mr-1"></i>{{ __('location_details.scan_button') }}</button>
@@ -108,9 +145,10 @@
                                             <div class="col-6"><div class="stat-value text-success" id="last-optimal-5g">--</div><div class="stat-label">{{ __('location_details.best_5g') }}</div></div>
                                         </div>
                                         <div class="text-center mb-2"><small class="text-muted" id="last-scan-timestamp">{{ __('location_details.no_scan_yet') }}</small></div>
-                                        <button class="btn btn-success btn-block btn-sm" id="save-channels-btn" disabled><i data-feather="check" class="mr-1"></i>{{ __('location_details.apply_optimal') }}</button>
+                                        <button class="btn btn-success btn-sm" id="save-channels-btn" disabled><i data-feather="check" class="mr-1"></i>{{ __('location_details.apply_optimal') }}</button>
                                     </div>
                                 </div>
+
                                 <div class="text-center mt-3">
                                     <button class="btn btn-primary" id="save-radio-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_all_radio') }}</button>
                                 </div>

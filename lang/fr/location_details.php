@@ -201,6 +201,8 @@ return [
     // Router Settings tab - Radio & Channel
     'wifi_radio_channel' => 'Configuration radio et canal WiFi',
     'country_region' => 'Pays / Région',
+    'band_24_title' => 'Radio 2,4 GHz',
+    'band_5_title' => 'Radio 5 GHz',
     'power_2g' => 'Puissance 2,4 GHz',
     'power_5g' => 'Puissance 5 GHz',
     'width_2g' => 'Largeur de canal 2,4 GHz',
