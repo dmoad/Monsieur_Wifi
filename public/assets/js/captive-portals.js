@@ -24,6 +24,29 @@ function clearDesignUrl() {
     window.history.pushState({}, '', _captiveBase);
 }
 
+function setBreadcrumbDesign(name) {
+    const $portals = $('#bc-portals');
+    const $design  = $('#bc-design');
+    if (!$portals.length) return;
+    if (!$portals.find('a').length) {
+        // currently plain text — convert to link
+        $portals.html('<a href="' + _captiveBase + '">' + $portals.text() + '</a>');
+    }
+    $portals.removeClass('active');
+    if ($design.length) {
+        $design.text(name);
+    } else {
+        $portals.after('<li class="breadcrumb-item active" id="bc-design">' + escapeHtml(name) + '</li>');
+    }
+}
+function clearBreadcrumbDesign() {
+    const $portals = $('#bc-portals');
+    const $design  = $('#bc-design');
+    $design.remove();
+    // restore plain text (no link)
+    $portals.addClass('active').text($portals.find('a').text() || $portals.text());
+}
+
 // Reset designer tabs to "General" active (called when opening designer)
 function resetDesignerTabs() {
     const $designer = $('#captive-portal-designer');
@@ -165,7 +188,8 @@ function fetchDesignDetails(designId) {
 
             if (response.success && response.data) {
                 const design = response.data;
-                
+                setBreadcrumbDesign(design.name || t.design_default);
+
                 $('#portal-name').val(design.name || t.design_default);
                 $('#portal-description').val(design.description || '');
                 $('#theme-color').val(design.theme_color || '#7367f0');
@@ -563,6 +587,7 @@ $(document).ready(function() {
     // Back/forward button: if state has no designId, return to list view.
     window.addEventListener('popstate', function(e) {
         if (!e.state || !e.state.designId) {
+            clearBreadcrumbDesign();
             $('#captive-portal-designer').hide();
             $('#captive-portal-designs-list').show();
             $('#open-full-preview').hide();
@@ -724,6 +749,7 @@ $(document).ready(function() {
 
     $('#designer-cancel').on('click', function() {
         clearDesignUrl();
+        clearBreadcrumbDesign();
         $('#captive-portal-designer').hide();
         $('#captive-portal-designs-list').show();
         $('#open-full-preview').hide();
@@ -740,6 +766,7 @@ $(document).ready(function() {
 
     $('#create-new-design').on('click', function() {
         clearDesignUrl();
+        clearBreadcrumbDesign();
         resetDesignerTabs();
         $('#captive-portal-designs-list').hide();
         $('#captive-portal-designer').show();

@@ -913,10 +913,10 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
                         @isset($editDesign)
-                            <li class="breadcrumb-item"><a href="/{{ $locale }}/captive-portals">{{ __('captive_portals.breadcrumb') }}</a></li>
-                            <li class="breadcrumb-item active">{{ $editDesign->name }}</li>
+                            <li class="breadcrumb-item" id="bc-portals"><a href="/{{ $locale }}/captive-portals">{{ __('captive_portals.breadcrumb') }}</a></li>
+                            <li class="breadcrumb-item active" id="bc-design">{{ $editDesign->name }}</li>
                         @else
-                            <li class="breadcrumb-item active">{{ __('captive_portals.breadcrumb') }}</li>
+                            <li class="breadcrumb-item active" id="bc-portals">{{ __('captive_portals.breadcrumb') }}</li>
                         @endisset
                     </ol>
                 </div>
