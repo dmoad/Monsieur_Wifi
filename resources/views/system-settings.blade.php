@@ -26,6 +26,7 @@
         padding: 1.5rem;
         border-radius: 0.428rem;
         border: 1px solid var(--mw-border-light);
+        background: var(--mw-bg-surface);
         margin-bottom: 1.5rem;
     }
     .setting-section-header {
