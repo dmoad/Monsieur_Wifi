@@ -14,6 +14,19 @@ function escapeHtml(s) {
         .replace(/'/g, '&#039;');
 }
 
+// URL sync: keep ?id=<design-id> in the address bar while editing so refresh
+// stays on the same design and the URL is shareable.
+function setDesignUrl(designId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('id', designId);
+    window.history.replaceState({}, '', url);
+}
+function clearDesignUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('id');
+    window.history.replaceState({}, '', url);
+}
+
 function updatePreviewBackground() {
     const startColor = $('#gradient-start').val();
     const endColor = $('#gradient-end').val();
@@ -105,7 +118,9 @@ function initializePreview() {
 
 function fetchDesignDetails(designId) {
     console.log("Fetching design details for ID:", designId);
-    
+
+    setDesignUrl(designId);
+
     $('#captive-portal-designer').prepend(
         `<div class="loading-overlay">
             <div class="spinner-border text-primary" role="status">
@@ -113,7 +128,7 @@ function fetchDesignDetails(designId) {
             </div>
         </div>`
     );
-    
+
     $('#captive-portal-designs-list').hide();
     $('#captive-portal-designer').show();
     
@@ -218,6 +233,7 @@ function fetchDesignDetails(designId) {
         error: function(xhr) {
             console.error('Error fetching design details:', xhr.responseText);
             toastr.error(t.error_loading_details);
+            clearDesignUrl();
             $('.loading-overlay').remove();
             $('#captive-portal-designer').hide();
             $('#captive-portal-designs-list').show();
@@ -362,6 +378,7 @@ function saveDesign(formData, url) {
         },
         success: function(response) {
             toastr.success(t.saved_success);
+            clearDesignUrl();
             $('#captive-portal-designer').hide();
             $('#captive-portal-designs-list').show();
             fetchDesigns();
@@ -521,6 +538,12 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const fromRegistration = urlParams.get('from') === 'registration';
     fetchDesigns(fromRegistration);
+
+    // Deep-link: ?id=<design-id> opens that design directly (refresh-safe).
+    const deepLinkId = urlParams.get('id');
+    if (deepLinkId && /^\d+$/.test(deepLinkId)) {
+        fetchDesignDetails(deepLinkId);
+    }
 
     initializePreview();
     updatePreviewBackground();
@@ -685,6 +708,7 @@ $(document).ready(function() {
     });
 
     $('#back-to-list').on('click', function() {
+        clearDesignUrl();
         $('#captive-portal-designer').hide();
         $('#captive-portal-designs-list').show();
         resetDesignForm();
@@ -692,6 +716,7 @@ $(document).ready(function() {
     });
 
     $('#create-new-design').on('click', function() {
+        clearDesignUrl();
         $('#captive-portal-designs-list').hide();
         $('#captive-portal-designer').show();
         currentDesignId = null;
