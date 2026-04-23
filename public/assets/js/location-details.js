@@ -1666,7 +1666,10 @@ const ldNetworks = (function () {
         if (!drawer) return;
 
         drawer.dataset.networkId = net.id;
-        document.getElementById('ld-network-drawer-title').textContent = net.ssid || '';
+        const titlePrefix = (i18n && i18n.networks_drawer_title_prefix) || 'SSID Configuration:';
+        document.getElementById('ld-network-drawer-title').textContent = titlePrefix + ' ' + (net.ssid || '');
+        // Reset drawer tabs to the first one each time the drawer opens
+        activateDrawerTab('general');
 
         const type = net.type || 'password';
         document.getElementById('ld-net-type').value = type;
@@ -1862,6 +1865,17 @@ const ldNetworks = (function () {
         }
     }
 
+    function activateDrawerTab(key) {
+        const drawer = document.getElementById('ld-network-drawer');
+        if (!drawer) return;
+        const tabs = drawer.querySelectorAll('[data-drawer-tab]');
+        const panels = drawer.querySelectorAll('[data-drawer-panel]');
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.drawerTab === key));
+        panels.forEach(p => p.classList.toggle('active', p.dataset.drawerPanel === key));
+        const body = document.getElementById('ld-network-drawer-body');
+        if (body) body.scrollTop = 0;
+    }
+
     function buildWifiQrString(net) {
         const ssid = (net && net.ssid) || '';
         const escape = s => String(s).replace(/([\\;,:"])/g, '\\$1');
@@ -1937,6 +1951,12 @@ const ldNetworks = (function () {
         if (e.target.closest('#ld-network-qr-download')) {
             e.preventDefault();
             downloadQr();
+            return;
+        }
+        const drawerTab = e.target.closest('[data-drawer-tab]');
+        if (drawerTab) {
+            e.preventDefault();
+            activateDrawerTab(drawerTab.dataset.drawerTab);
             return;
         }
         const pwdToggle = e.target.closest('#ld-net-password-toggle, #ld-net-portal-password-toggle');
