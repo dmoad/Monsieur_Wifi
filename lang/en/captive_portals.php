@@ -17,6 +17,9 @@ return [
     'your_designs_title' => 'Your Captive Portal Designs',
     'create_new_design' => 'Create New Design',
     'back_to_designs' => 'Back to Designs',
+    'search_placeholder' => 'Search designs...',
+    'col_design' => 'Design',
+    'col_last_modified' => 'Last modified',
 
     // Designer
     'designer_title' => 'Design Your Login Page',

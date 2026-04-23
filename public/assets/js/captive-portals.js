@@ -5,6 +5,15 @@ let currentDesignId = null;
 // Translation bundle injected by the blade (lang/{en,fr}/captive_portals.php)
 const t = window.APP_I18N.captive_portals;
 
+function escapeHtml(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function updatePreviewBackground() {
     const startColor = $('#gradient-start').val();
     const endColor = $('#gradient-end').val();
@@ -217,13 +226,15 @@ function fetchDesignDetails(designId) {
 }
 
 function fetchDesigns(openFirstDesign = false) {
-    $('#portal-designs-container').html(
-        `<div class="col-12 text-center py-3">
-            <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">${t.loading}</span>
-            </div>
-        </div>`
-    );
+    $('#portal-designs-container').html(`
+        <tr class="cp-empty-row">
+            <td colspan="4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">${t.loading}</span>
+                </div>
+            </td>
+        </tr>
+    `);
     
     $.ajax({
         url: '/api/captive-portal-designs',
@@ -246,78 +257,72 @@ function fetchDesigns(openFirstDesign = false) {
                 }
                 
                 response.data.forEach(function(design) {
-                    const bgColorClass = getRandomBgColorClass();
                     const formattedDate = new Date(design.updated_at).toISOString().split('T')[0];
-                    
-                    let ownerInfo = '';
+                    const themeColor = (design.theme_color && /^#[0-9a-fA-F]{6}$/.test(design.theme_color)) ? design.theme_color : '';
+                    const swatchStyle = themeColor ? ` style="background:${themeColor}"` : '';
+
+                    let subLine = '';
                     if (isAdmin && design.owner_name) {
-                        ownerInfo = `<small class="text-info d-block">${t.owner}: ${design.owner_name}</small>`;
+                        subLine = `${t.owner}: ${escapeHtml(design.owner_name)}`;
                         if (design.creator_name && design.creator_name !== design.owner_name) {
-                            ownerInfo += `<small class="text-muted d-block">${t.creator}: ${design.creator_name}</small>`;
+                            subLine += ` · ${t.creator}: ${escapeHtml(design.creator_name)}`;
                         }
                     }
-                    
-                    let actionButtons = '';
+
+                    const searchKey = (design.name + ' ' + (design.owner_name || '') + ' ' + (design.creator_name || '')).toLowerCase();
+
+                    let menuItems = `
+                        <button type="button" class="cp-menu-item" data-action="edit" data-id="${design.id}">
+                            <i data-feather="edit-2"></i>${t.edit}
+                        </button>`;
                     if (isAdmin) {
-                        actionButtons += `
-                            <button class="btn btn-sm btn-outline-info" onclick="showChangeOwnerModal(${design.id}, '${design.owner_name || design.creator_name}', ${design.current_owner_id || design.user_id})" title="${t.owner}">
-                                <i data-feather="user-check"></i>
-                            </button>
-                        `;
+                        const ownerArg = (design.owner_name || design.creator_name || '').replace(/'/g, "\\'");
+                        const ownerId = design.current_owner_id || design.user_id;
+                        menuItems += `
+                        <button type="button" class="cp-menu-item" data-action="change-owner" data-id="${design.id}" data-owner-name="${escapeHtml(ownerArg)}" data-owner-id="${ownerId}">
+                            <i data-feather="user-check"></i>${t.change_owner}
+                        </button>`;
                     }
-                    actionButtons += `
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDesign(${design.id})" title="${t.delete_button_title}">
-                            <i data-feather="trash-2"></i>
-                        </button>
-                    `;
-                    
-                    const logoHtml = design.location_logo_url ? 
-                        `<img src="${design.location_logo_url}" alt="${design.name}" style="max-height: 20px;">` : 
-                        (design.location_logo_path ? 
-                        `<img src="/storage/${design.location_logo_path}" alt="${design.name}" style="max-height: 20px;">` :
-                        '<span>Logo</span>');
-                    
-                    const designCard = `
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <div class="card design-card">
-                                <div class="card-body p-2">
-                                    <div class="design-preview ${bgColorClass}">
-                                        <div class="preview-content">
-                                            <div class="location-logo-mini">${logoHtml}</div>
-                                            <div class="login-area-mini">${design.name}</div>
-                                            <div class="brand-logo-mini">
-                                                <img src="/assets/images/Mr-Wifi.PNG" alt="Mr WiFi" style="max-height: 15px;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-1">
-                                        <h5 class="mb-0">${design.name}</h5>
-                                        <small class="text-muted">${t.last_modified}: ${formattedDate}</small>
-                                        ${ownerInfo}
-                                    </div>
-                                    <div class="design-actions mt-1 d-flex justify-content-between align-items-center">
-                                        <button class="btn btn-sm btn-outline-primary edit-design" data-id="${design.id}">
-                                            <i data-feather="edit-2" class="mr-25"></i> ${t.edit}
-                                        </button>
-                                        <div class="btn-group">${actionButtons}</div>
+                    menuItems += `
+                        <button type="button" class="cp-menu-item cp-menu-item-danger" data-action="delete" data-id="${design.id}">
+                            <i data-feather="trash-2"></i>${t.delete_button_title}
+                        </button>`;
+
+                    const row = `
+                        <tr class="cp-row" data-id="${design.id}" data-search="${escapeHtml(searchKey)}">
+                            <td class="cp-col-preview">
+                                <div class="cp-preview-swatch"${swatchStyle}><i data-feather="wifi"></i></div>
+                            </td>
+                            <td>
+                                <div class="cp-name-main">${escapeHtml(design.name)}</div>
+                                ${subLine ? `<div class="cp-name-sub">${subLine}</div>` : ''}
+                            </td>
+                            <td class="cp-col-modified">${formattedDate}</td>
+                            <td class="cp-col-actions">
+                                <div class="cp-kebab-wrap">
+                                    <button type="button" class="cp-kebab-btn" data-kebab="${design.id}" aria-haspopup="true" aria-expanded="false">
+                                        <i data-feather="more-vertical"></i>
+                                    </button>
+                                    <div class="cp-menu" data-menu="${design.id}">
+                                        ${menuItems}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                     `;
-                    
-                    $('#portal-designs-container').append(designCard);
+
+                    $('#portal-designs-container').append(row);
                 });
             } else {
-                $('#portal-designs-container').html(
-                    `<div class="col-12 text-center py-5">
-                        <div class="empty-state">
-                            <i data-feather="layout" style="height: 64px; width: 64px; color: #d0d0d0;"></i>
-                            <h4 class="mt-2">${t.no_designs}</h4>
-                            <p>${t.create_first}</p>
-                        </div>
-                    </div>`
-                );
+                $('#portal-designs-container').html(`
+                    <tr class="cp-empty-row">
+                        <td colspan="4">
+                            <i data-feather="layout"></i>
+                            <h5 class="mb-1">${t.no_designs}</h5>
+                            <p class="mb-0">${t.create_first}</p>
+                        </td>
+                    </tr>
+                `);
             }
             
             if (typeof feather !== 'undefined') {
@@ -326,11 +331,11 @@ function fetchDesigns(openFirstDesign = false) {
         },
         error: function(xhr) {
             console.error('Error fetching designs:', xhr.responseText);
-            $('#portal-designs-container').html(
-                `<div class="col-12 text-center py-3">
-                    <div class="alert alert-danger">${t.error_loading}</div>
-                </div>`
-            );
+            $('#portal-designs-container').html(`
+                <tr class="cp-empty-row">
+                    <td colspan="4"><div class="alert alert-danger mb-0">${t.error_loading}</div></td>
+                </tr>
+            `);
         }
     });
 }
@@ -630,10 +635,53 @@ $(document).ready(function() {
     $('#location-logo-file').on('change', function() { readURL(this, 'location-logo-preview'); });
     $('#background-file').on('change', function() { readURL(this, 'background-preview'); });
 
-    $(document).on('click', '.edit-design', function(e) {
+    // Row click → open editor (excluding kebab/menu clicks)
+    $(document).on('click', 'tr.cp-row', function(e) {
+        if ($(e.target).closest('.cp-kebab-wrap').length) return;
+        fetchDesignDetails($(this).data('id'));
+    });
+
+    // Kebab toggle
+    $(document).on('click', '.cp-kebab-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        fetchDesignDetails($(this).data('id'));
+        const id = $(this).data('kebab');
+        const menu = $(`.cp-menu[data-menu="${id}"]`);
+        const isOpen = menu.hasClass('open');
+        $('.cp-menu.open').removeClass('open');
+        if (!isOpen) menu.addClass('open');
+    });
+
+    // Close any open kebab menu on outside click
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.cp-menu, .cp-kebab-btn').length) {
+            $('.cp-menu.open').removeClass('open');
+        }
+    });
+
+    // Kebab menu actions
+    $(document).on('click', '.cp-menu-item', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const action = $(this).data('action');
+        const id = $(this).data('id');
+        $('.cp-menu.open').removeClass('open');
+        if (action === 'edit') {
+            fetchDesignDetails(id);
+        } else if (action === 'change-owner') {
+            showChangeOwnerModal(id, $(this).data('owner-name') || '', $(this).data('owner-id'));
+        } else if (action === 'delete') {
+            deleteDesign(id);
+        }
+    });
+
+    // Search filter (client-side, matches name + owner + creator)
+    $('#cp-search-input').on('input', function() {
+        const q = this.value.trim().toLowerCase();
+        $('#portal-designs-container tr.cp-row').each(function() {
+            const key = $(this).data('search') || '';
+            $(this).toggle(!q || key.indexOf(q) !== -1);
+        });
     });
 
     $('#back-to-list').on('click', function() {
@@ -754,14 +802,8 @@ $(document).ready(function() {
         const designId = $('#deleteDesignModal').data('designId');
         $('#deleteDesignModal').modal('hide');
         
-        const designCard = $(`.edit-design[data-id="${designId}"]`).closest('.design-card');
-        designCard.addClass('opacity-50').append(`
-            <div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center" style="top: 0; left: 0; background: rgba(255,255,255,0.7); z-index: 5;">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                    <span class="sr-only">${t.deleting}</span>
-                </div>
-            </div>
-        `);
+        const row = $(`tr.cp-row[data-id="${designId}"]`);
+        row.addClass('opacity-50').css('pointer-events', 'none');
 
         const formData = new FormData();
         formData.append('_method', 'DELETE');

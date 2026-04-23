@@ -46,6 +46,7 @@
         'edit' => __('captive_portals.js_edit'),
         'delete_button_title' => __('captive_portals.js_delete_button_title'),
         'logged_out' => __('captive_portals.js_logged_out'),
+        'change_owner' => __('captive_portals.btn_change_owner'),
         'change_owner_body_with_owner' => __('captive_portals.js_change_owner_body_with_owner'),
     ];
 @endphp
@@ -597,6 +598,149 @@
             max-width: 100%;
         }
     }
+
+    /* ============================================================
+       Captive-portal designs list — .cp-table (mirror of .lc-table)
+       ============================================================ */
+    .cp-list-card { overflow: visible; margin-bottom: var(--mw-space-md); }
+    .cp-list-head {
+        display: flex;
+        align-items: center;
+        gap: var(--mw-space-md);
+        padding: var(--mw-space-lg) var(--mw-space-xl);
+        background: var(--mw-bg-surface);
+        border: 1px solid var(--mw-border-light);
+        border-bottom: none;
+        border-top-left-radius: var(--mw-radius-md);
+        border-top-right-radius: var(--mw-radius-md);
+    }
+    .cp-list-title { font-size: 15px; font-weight: 700; color: var(--mw-text-primary); margin: 0; flex-shrink: 0; }
+    .cp-list-tools { display: flex; align-items: center; gap: var(--mw-space-sm); margin-left: auto; }
+    .cp-search {
+        min-width: 260px;
+        height: 34px;
+        padding: 4px 12px;
+        border: 1px solid var(--mw-border);
+        border-radius: var(--mw-radius-md);
+        font-size: 13px;
+        background: var(--mw-bg-surface);
+        color: var(--mw-text-primary);
+    }
+    .cp-search::placeholder { color: var(--mw-text-muted); opacity: 0.55; }
+    .cp-search:focus { outline: none; border-color: var(--mw-primary); }
+
+    .cp-table-wrap {
+        background: var(--mw-bg-surface);
+        border: 1px solid var(--mw-border-light);
+        border-bottom-left-radius: var(--mw-radius-md);
+        border-bottom-right-radius: var(--mw-radius-md);
+        overflow: hidden;
+    }
+    .cp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .cp-table thead th {
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--mw-text-muted);
+        text-align: left;
+        padding: 10px var(--mw-space-lg);
+        background: var(--mw-bg-page);
+        border-bottom: 1px solid var(--mw-border-light);
+    }
+    .cp-table tbody tr {
+        border-bottom: 1px solid var(--mw-border-light);
+        cursor: pointer;
+        transition: background 0.12s;
+    }
+    .cp-table tbody tr:last-child { border-bottom: none; }
+    .cp-table tbody tr:hover { background: var(--mw-bg-hover); }
+    .cp-table td {
+        padding: var(--mw-space-md) var(--mw-space-lg);
+        vertical-align: middle;
+        color: var(--mw-text-secondary);
+    }
+    .cp-col-preview { width: 1%; padding-right: 0 !important; }
+    .cp-col-modified { width: 180px; color: var(--mw-text-muted); }
+    .cp-col-actions { text-align: right; width: 1%; white-space: nowrap; }
+
+    .cp-preview-swatch {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--mw-radius-md);
+        background: var(--mw-primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .cp-preview-swatch [data-feather] { width: 18px !important; height: 18px !important; }
+
+    .cp-name-main { font-size: 13px; font-weight: 700; color: var(--mw-text-primary); }
+    .cp-name-sub  { font-size: 11px; color: var(--mw-text-muted); margin-top: 1px; }
+
+    .cp-empty-row td {
+        padding: 48px var(--mw-space-lg);
+        text-align: center;
+        color: var(--mw-text-muted);
+    }
+    .cp-empty-row [data-feather] { width: 48px !important; height: 48px !important; opacity: 0.5; margin-bottom: 12px; }
+
+    /* Kebab (mirror .lc-kebab-*) */
+    .cp-kebab-wrap { position: relative; display: inline-block; }
+    .cp-kebab-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--mw-border);
+        background: var(--mw-bg-surface);
+        border-radius: var(--mw-radius-sm);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s, border-color 0.12s;
+        padding: 0;
+    }
+    .cp-kebab-btn:hover {
+        background: var(--mw-primary-tint);
+        border-color: var(--mw-primary);
+        color: var(--mw-primary);
+    }
+    .cp-kebab-btn [data-feather] { width: 16px !important; height: 16px !important; }
+    .cp-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        right: 0;
+        background: var(--mw-bg-surface);
+        border: 1px solid var(--mw-border);
+        border-radius: var(--mw-radius-md);
+        box-shadow: var(--mw-shadow-elevated);
+        min-width: 160px;
+        z-index: 100;
+        padding: 4px 0;
+    }
+    .cp-menu.open { display: block; }
+    .cp-menu-item {
+        display: flex;
+        align-items: center;
+        gap: var(--mw-space-sm);
+        width: 100%;
+        padding: 7px 14px;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        color: var(--mw-text-secondary);
+        cursor: pointer;
+        text-align: left;
+        font-family: inherit;
+    }
+    .cp-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
+    .cp-menu-item-danger { color: var(--mw-danger); }
+    .cp-menu-item-danger:hover { background: rgba(220, 38, 38, 0.08); color: var(--mw-danger); }
+    .cp-menu-item [data-feather] { width: 14px !important; height: 14px !important; }
 </style>
 @endpush
 
@@ -677,28 +821,31 @@
 
     <!-- Captive Portal Designs List -->
     <section id="captive-portal-designs-list">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('captive_portals.your_designs_title') }}</h4>
-                        <div class="heading-elements">
-                            <ul class="list-inline mb-0">
-                                <li>
-                                    <button type="button" class="btn btn-primary waves-effect waves-float waves-light" id="create-new-design">
-                                        <i data-feather="plus" class="mr-50"></i>
-                                        <span>{{ __('captive_portals.create_new_design') }}</span>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row" id="portal-designs-container">
-                            <!-- Design Cards will be populated by JavaScript -->
-                        </div>
-                    </div>
+        <div class="cp-list-card">
+            <div class="cp-list-head">
+                <h4 class="cp-list-title">{{ __('captive_portals.your_designs_title') }}</h4>
+                <div class="cp-list-tools">
+                    <input type="search" class="cp-search" id="cp-search-input" placeholder="{{ __('captive_portals.search_placeholder') }}" autocomplete="off">
+                    <button type="button" class="btn btn-primary" id="create-new-design">
+                        <i data-feather="plus" class="mr-50"></i>
+                        <span>{{ __('captive_portals.create_new_design') }}</span>
+                    </button>
                 </div>
+            </div>
+            <div class="cp-table-wrap">
+                <table class="cp-table">
+                    <thead>
+                        <tr>
+                            <th class="cp-col-preview"></th>
+                            <th>{{ __('captive_portals.col_design') }}</th>
+                            <th class="cp-col-modified">{{ __('captive_portals.col_last_modified') }}</th>
+                            <th class="cp-col-actions"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="portal-designs-container">
+                        <!-- Design rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>

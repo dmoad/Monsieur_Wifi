@@ -17,6 +17,9 @@ return [
     'your_designs_title' => 'Vos conceptions de portail captif',
     'create_new_design' => 'Créer une nouvelle conception',
     'back_to_designs' => 'Retour aux conceptions',
+    'search_placeholder' => 'Rechercher des conceptions...',
+    'col_design' => 'Conception',
+    'col_last_modified' => 'Dernière modification',
 
     // Designer
     'designer_title' => 'Concevez votre page de connexion',
