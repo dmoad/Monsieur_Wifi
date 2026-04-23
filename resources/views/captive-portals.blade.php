@@ -103,6 +103,45 @@
     /* Native color input already shows the chosen color — hide the duplicate swatch */
     .color-picker-container .color-preview { display: none; }
 
+    /* Gradient card */
+    .cp-gradient-row {
+        display: flex;
+        align-items: flex-end;
+        gap: var(--mw-space-md);
+        margin-bottom: var(--mw-space-sm);
+    }
+    .cp-gradient-stop { flex: 1; min-width: 0; }
+    .cp-gradient-stop label { font-size: 12px; font-weight: 500; color: var(--mw-text-secondary); margin-bottom: 4px; }
+    .cp-gradient-arrow {
+        font-size: 20px;
+        color: var(--mw-text-secondary);
+        padding-bottom: 5px;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+    .cp-gradient-bar {
+        height: 36px;
+        border-radius: var(--mw-radius-sm);
+        margin-bottom: var(--mw-space-md);
+        background: linear-gradient(135deg, #EEF2FF 0%, #C7D2FE 100%);
+        transition: background 0.25s;
+    }
+    .cp-gradient-bar.is-disabled { background: var(--mw-bg-muted) !important; }
+    .cp-gradient-presets { display: flex; gap: var(--mw-space-sm); flex-wrap: wrap; }
+    .cp-gradient-preset {
+        padding: 5px 14px;
+        border-radius: 20px;
+        border: none;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+        transition: opacity 0.15s, transform 0.1s;
+        line-height: 1.4;
+    }
+    .cp-gradient-preset:hover { opacity: 0.85; transform: translateY(-1px); }
+
     /* Toggle row — label + description on left, switch on right, separator above */
     .cp-toggle-row {
         display: flex;
@@ -1087,39 +1126,40 @@
                         <div class="cp-section-card">
                             <div class="cp-section-card-head">
                                 <h4 class="cp-section-card-title">{{ __('captive_portals.section_gradient') }}</h4>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-muted" id="clear-gradient" style="font-size:12px;">
+                                    {{ __('captive_portals.btn_clear_gradient') }}
+                                </button>
                             </div>
                             <div class="cp-section-card-body">
-                                <p class="text-muted small mb-2">{{ __('captive_portals.note_gradient') }}</p>
-                                <div class="row">
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="gradient-start">{{ __('captive_portals.label_gradient_start') }}</label>
-                                            <div class="color-picker-container">
-                                                <input type="color" class="form-control form-control-color" id="gradient-start">
-                                                <div class="color-preview" id="gradient-start-preview" style="background-color: transparent;"></div>
-                                                <span class="color-value" id="gradient-start-value">{{ __('captive_portals.none') }}</span>
-                                            </div>
+                                <p class="text-muted small mb-3">{{ __('captive_portals.note_gradient') }}</p>
+
+                                <div class="cp-gradient-row">
+                                    <div class="cp-gradient-stop">
+                                        <label for="gradient-start">{{ __('captive_portals.label_gradient_start') }}</label>
+                                        <div class="color-picker-container">
+                                            <input type="color" class="form-control form-control-color" id="gradient-start">
+                                            <span class="color-value" id="gradient-start-value">#EEF2FF</span>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="gradient-end">{{ __('captive_portals.label_gradient_end') }}</label>
-                                            <div class="color-picker-container">
-                                                <input type="color" class="form-control form-control-color" id="gradient-end">
-                                                <div class="color-preview" id="gradient-end-preview" style="background-color: transparent;"></div>
-                                                <span class="color-value" id="gradient-end-value">{{ __('captive_portals.none') }}</span>
-                                            </div>
+                                    <div class="cp-gradient-arrow">→</div>
+                                    <div class="cp-gradient-stop">
+                                        <label for="gradient-end">{{ __('captive_portals.label_gradient_end') }}</label>
+                                        <div class="color-picker-container">
+                                            <input type="color" class="form-control form-control-color" id="gradient-end">
+                                            <span class="color-value" id="gradient-end-value">#C7D2FE</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex flex-wrap" style="gap:var(--mw-space-sm);">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-gradient">
-                                        <i data-feather="x" class="mr-25"></i>{{ __('captive_portals.btn_clear_gradient') }}
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="preset-gradient-1">
+
+                                <div id="gradient-preview-bar" class="cp-gradient-bar"></div>
+
+                                <div class="cp-gradient-presets">
+                                    <button type="button" class="cp-gradient-preset" id="preset-gradient-1"
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                                         {{ __('captive_portals.btn_preset_blue_purple') }}
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="preset-gradient-2">
+                                    <button type="button" class="cp-gradient-preset" id="preset-gradient-2"
+                                        style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                                         {{ __('captive_portals.btn_preset_orange_pink') }}
                                     </button>
                                 </div>

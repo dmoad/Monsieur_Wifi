@@ -36,6 +36,18 @@ function resetDesignerTabs() {
     $('#general').addClass('active');
 }
 
+function updateGradientBar() {
+    const disabled = $('#gradient-start').data('disabled') === true;
+    const start = $('#gradient-start').val();
+    const end   = $('#gradient-end').val();
+    const $bar  = $('#gradient-preview-bar');
+    if (disabled || !start || !end) {
+        $bar.addClass('is-disabled').css('background', '');
+    } else {
+        $bar.removeClass('is-disabled').css('background', `linear-gradient(135deg, ${start} 0%, ${end} 100%)`);
+    }
+}
+
 function updatePreviewBackground() {
     const startColor = $('#gradient-start').val();
     const endColor = $('#gradient-end').val();
@@ -174,21 +186,17 @@ function fetchDesignDetails(designId) {
                 
                 if (design.background_color_gradient_start) {
                     $('#gradient-start').val(design.background_color_gradient_start);
-                    $('#gradient-start-preview').css('background-color', design.background_color_gradient_start);
                     $('#gradient-start-value').text(design.background_color_gradient_start);
                 } else {
                     $('#gradient-start').val('');
-                    $('#gradient-start-preview').css('background-color', 'transparent');
                     $('#gradient-start-value').text(t.none);
                 }
-                
+
                 if (design.background_color_gradient_end) {
                     $('#gradient-end').val(design.background_color_gradient_end);
-                    $('#gradient-end-preview').css('background-color', design.background_color_gradient_end);
                     $('#gradient-end-value').text(design.background_color_gradient_end);
                 } else {
                     $('#gradient-end').val('');
-                    $('#gradient-end-preview').css('background-color', 'transparent');
                     $('#gradient-end-value').text(t.none);
                 }
                 
@@ -201,7 +209,8 @@ function fetchDesignDetails(designId) {
                     $('#gradient-start').data('disabled', false);
                     $('#gradient-end').data('disabled', false);
                 }
-                
+                updateGradientBar();
+
                 $('#preview-welcome').text(design.welcome_message || t.welcome_default);
                 $('#preview-instructions').text(design.login_instructions || t.instructions_default);
                 $('#preview-button').text(design.button_text || t.button_default);
@@ -456,10 +465,9 @@ function resetDesignForm() {
     const defaultGradEnd   = '#C7D2FE';
     $('#gradient-start').val(defaultGradStart).data('disabled', false);
     $('#gradient-end').val(defaultGradEnd).data('disabled', false);
-    $('#gradient-start-preview').css('background-color', defaultGradStart);
-    $('#gradient-end-preview').css('background-color', defaultGradEnd);
     $('#gradient-start-value').text(defaultGradStart);
     $('#gradient-end-value').text(defaultGradEnd);
+    updateGradientBar();
     
     $('#preview-welcome').text(t.welcome_default);
     $('#preview-instructions').text(t.instructions_default);
@@ -604,16 +612,16 @@ $(document).ready(function() {
         const isStart = $(this).attr('id') === 'gradient-start';
         const color = $(this).val();
         $('#gradient-start, #gradient-end').data('disabled', false);
-        $(`#${isStart ? 'gradient-start' : 'gradient-end'}-preview`).css('background-color', color);
         $(`#${isStart ? 'gradient-start' : 'gradient-end'}-value`).text(color);
         updatePreviewBackground();
+        updateGradientBar();
     });
 
     $('#clear-gradient').on('click', function() {
         $('#gradient-start, #gradient-end').data('disabled', true).val('');
-        $('#gradient-start-preview, #gradient-end-preview').css('background-color', 'transparent');
         $('#gradient-start-value, #gradient-end-value').text(t.none);
         updatePreviewBackground();
+        updateGradientBar();
     });
 
     $('#preset-gradient-1').on('click', function() {
@@ -639,9 +647,8 @@ $(document).ready(function() {
                     $('#preview-logo').attr('src', e.target.result).show();
                 } else if (previewId === 'background-preview') {
                     $('#gradient-start, #gradient-end').data('disabled', true);
-                    $('#gradient-start-preview, #gradient-end-preview').css('background-color', 'transparent');
                     $('#gradient-start-value, #gradient-end-value').text(t.none_image_active);
-                    setTimeout(() => updatePreviewBackground(), 50);
+                    setTimeout(() => { updatePreviewBackground(); updateGradientBar(); }, 50);
                 }
             };
             reader.readAsDataURL(input.files[0]);
