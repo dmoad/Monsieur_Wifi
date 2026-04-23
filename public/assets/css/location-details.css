@@ -575,12 +575,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
 .radio-band-card-body {
     padding: var(--mw-space-lg);
 }
-.radio-band-card:has(input[type="checkbox"]:not(:checked)) {
-    opacity: 0.55;
-}
-.radio-band-card:has(input[type="checkbox"]:not(:checked)) .radio-band-card-body {
-    display: none;
-}
 
 /* Network type radio cards (Security tab) */
 .ld-type-card-group {

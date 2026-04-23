@@ -78,10 +78,6 @@
                                                     <i data-feather="wifi" class="mr-2"></i>
                                                     <span class="radio-band-card-title">{{ __('location_details.band_24_title') }}</span>
                                                 </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="radio-band-2g-enabled" checked>
-                                                    <label class="custom-control-label" for="radio-band-2g-enabled"></label>
-                                                </div>
                                             </div>
                                             <div class="radio-band-card-body">
                                                 <div class="form-group">
@@ -115,10 +111,6 @@
                                                 <div class="radio-band-card-title-wrap">
                                                     <i data-feather="wifi" class="mr-2"></i>
                                                     <span class="radio-band-card-title">{{ __('location_details.band_5_title') }}</span>
-                                                </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="radio-band-5g-enabled" checked>
-                                                    <label class="custom-control-label" for="radio-band-5g-enabled"></label>
                                                 </div>
                                             </div>
                                             <div class="radio-band-card-body">
