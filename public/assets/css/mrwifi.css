@@ -1296,3 +1296,20 @@ body.mw-drawer-locked {
 :root[data-theme="dark"] .modal-header .close:hover {
     color: var(--mw-text-primary);
 }
+
+/* ================================================================
+   CUSTOM-FILE INPUT — Bootstrap's .custom-file-label ships with a
+   white bg + light-grey "Browse" pseudo-button that collapses to
+   white-on-white in dark. Token-ise so file pickers on Branding tab
+   (and any other page) render with the theme surface.
+================================================================ */
+:root[data-theme="dark"] .custom-file-label {
+    background: transparent;
+    color: var(--mw-text-primary);
+    border-color: var(--mw-border);
+}
+:root[data-theme="dark"] .custom-file-label::after {
+    background: var(--mw-bg-muted);
+    color: var(--mw-text-secondary);
+    border-left: 1px solid var(--mw-border);
+}
