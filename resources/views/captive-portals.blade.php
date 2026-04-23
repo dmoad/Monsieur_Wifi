@@ -976,9 +976,7 @@
         <div class="cp-designer-head">
             <h1 class="cp-designer-title">{{ __('captive_portals.designer_title') }}</h1>
             <div class="cp-designer-actions">
-                <button id="save-design" type="button" class="btn btn-primary">
-                    <i data-feather="save" class="mr-50"></i>{{ __('captive_portals.save_design') }}
-                </button>
+                <button id="save-design" type="button" class="btn btn-primary">{{ __('captive_portals.save_design') }}</button>
             </div>
         </div>
 
