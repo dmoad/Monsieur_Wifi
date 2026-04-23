@@ -155,6 +155,7 @@
             window.addEventListener('resize', () => {
                 if (isMobile()) {
                     sb.classList.remove('expanded');
+                    document.body.classList.remove('mw-sb-expanded');
                     if (backdrop) backdrop.classList.remove('open');
                 } else {
                     sb.classList.remove('expanded');
