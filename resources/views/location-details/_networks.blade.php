@@ -498,7 +498,7 @@
     </aside>
 
     <!-- SSID QR Code Modal -->
-    <div class="modal fade" id="ld-network-qr-modal" tabindex="-1" role="dialog" aria-labelledby="ld-network-qr-title" aria-hidden="true">
+    <div class="modal fade" id="ld-network-qr-modal" tabindex="-1" role="dialog" aria-labelledby="ld-network-qr-title" aria-hidden="true" style="z-index: 1080;">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">

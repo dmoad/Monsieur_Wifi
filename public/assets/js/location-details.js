@@ -1894,7 +1894,11 @@ const ldNetworks = (function () {
             height: 240,
             correctLevel: QRCode.CorrectLevel.M,
         });
-        $('#ld-network-qr-modal').modal('show');
+        $('#ld-network-qr-modal').one('shown.bs.modal', function () {
+            // Raise the modal-backdrop above the drawer (drawer is at z-index 1060,
+            // default Bootstrap backdrop sits at 1040). Keep modal inline-styled at 1080.
+            $('.modal-backdrop').last().css('z-index', 1070);
+        }).modal('show');
     }
 
     function downloadQr() {
