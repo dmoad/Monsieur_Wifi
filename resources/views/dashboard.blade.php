@@ -80,30 +80,33 @@
 }
 
 /* Right-column analytics list (colored icon + label/sub + value) */
-#analytics-section .card-body { display: flex; flex-direction: column; }
+#analytics-section .card-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
 .db-metric-list {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     flex: 1;
-    gap: var(--mw-space-sm);
+    min-height: 0;
 }
 .db-metric-row {
     display: flex;
     align-items: center;
     gap: var(--mw-space-md);
-    padding: var(--mw-space-md) 0;
+    padding: 10px 0;
     border-bottom: 1px solid var(--mw-border-light);
 }
-.db-metric-row:last-child { border-bottom: none; padding-bottom: 0; }
-.db-metric-row:first-child { padding-top: 0; }
+.db-metric-row:last-child { border-bottom: none; }
 .db-metric-row .mw-stat-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     flex-shrink: 0;
 }
-.db-metric-row .mw-stat-icon [data-feather] { width: 18px !important; height: 18px !important; }
+.db-metric-row .mw-stat-icon [data-feather] { width: 16px !important; height: 16px !important; }
 .db-metric-body { flex: 1; min-width: 0; }
 .db-metric-name { font-size: 13px; font-weight: 600; color: var(--mw-text-primary); }
 .db-metric-sub  { font-size: 11px; color: var(--mw-text-muted); margin-top: 2px; }
@@ -192,7 +195,7 @@
         <!-- Data Usage Trends + Traffic by Location donut -->
         <div class="row match-height">
             <div class="col-lg-8 col-12">
-                <div class="card">
+                <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">{{ __('dashboard.data_usage_trends') }}</h4>
                         <div class="dropdown chart-dropdown">
