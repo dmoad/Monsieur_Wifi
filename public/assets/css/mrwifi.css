@@ -882,6 +882,13 @@ button.mw-av-item {
        scroll that shifts headers/content off-screen */
     html, body { overflow-x: hidden; }
 
+    /* Flex card-headers wrap title + control to separate lines instead of
+       squashing the title into two lines */
+    .card-header.d-flex.justify-content-between {
+        flex-wrap: wrap;
+        gap: var(--mw-space-sm);
+    }
+
     /* Content full-width; push down for the top bar */
     .app-content.content,
     body.mw-sb-expanded .app-content.content {

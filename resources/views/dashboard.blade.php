@@ -40,7 +40,7 @@
 
 /* Locations overview list (right column next to map) */
 #locations-section .card-body {
-    padding: 0 var(--mw-space-xl);
+    padding: var(--mw-space-sm) var(--mw-space-xl);
 }
 #locations-container {
     max-height: 400px;
