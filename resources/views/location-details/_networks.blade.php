@@ -499,12 +499,6 @@
             </form>
         </div>
         <footer class="mw-drawer-footer">
-            <button type="button" class="btn btn-link text-danger mr-auto" id="ld-network-drawer-delete">
-                <i data-feather="trash-2" class="mr-1"></i>{{ __('location_details.networks_drawer_delete') }}
-            </button>
-            <button type="button" class="btn btn-outline-primary" id="ld-network-drawer-qr" style="display:none;">
-                <i data-feather="smartphone" class="mr-1"></i>{{ __('location_details.networks_show_qr') }}
-            </button>
             <button type="button" class="btn btn-outline-secondary" data-mw-drawer-close>{{ __('common.cancel') }}</button>
             <button type="button" class="btn btn-primary" id="ld-network-drawer-save" disabled>{{ __('location_details.networks_drawer_save') }}</button>
         </footer>

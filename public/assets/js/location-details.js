@@ -1729,9 +1729,6 @@ const ldNetworks = (function () {
 
         document.getElementById('ld-network-drawer-save').disabled = false;
 
-        const qrBtn = document.getElementById('ld-network-drawer-qr');
-        if (qrBtn) qrBtn.style.display = '';
-
         const body = document.getElementById('ld-network-drawer-body');
         if (body) body.scrollTop = 0;
 
@@ -1935,18 +1932,6 @@ const ldNetworks = (function () {
         if (e.target.closest('#ld-network-drawer-save')) {
             e.preventDefault();
             save();
-            return;
-        }
-        if (e.target.closest('#ld-network-drawer-delete')) {
-            e.preventDefault();
-            const drawer = document.getElementById('ld-network-drawer');
-            const netId = drawer && drawer.dataset.networkId;
-            if (netId) remove(netId);
-            return;
-        }
-        if (e.target.closest('#ld-network-drawer-qr')) {
-            e.preventDefault();
-            openQrModal();
             return;
         }
         if (e.target.closest('#ld-network-qr-download')) {
