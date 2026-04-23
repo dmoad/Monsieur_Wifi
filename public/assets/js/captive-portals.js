@@ -420,18 +420,18 @@ function resetDesignForm() {
     $('#location-logo-preview').attr('src', '').hide();
     $('#background-preview').attr('src', '').hide();
     
-    $('#gradient-start').val('');
-    $('#gradient-end').val('');
-    $('#gradient-start-preview').css('background-color', 'transparent');
-    $('#gradient-end-preview').css('background-color', 'transparent');
-    $('#gradient-start-value').text(t.none);
-    $('#gradient-end-value').text(t.none);
-    
-    $('.portal-preview').css({
-        'background-image': 'none',
-        'background-color': '#fff',
-        'background': '#fff'
-    });
+    // Soft brand-indigo wash as default gradient (indigo-50 → indigo-200).
+    // Black empty-state is a `<input type="color">` quirk — browser coerces
+    // empty values to #000000; an explicit brand default avoids that pitfall
+    // and matches app palette.
+    const defaultGradStart = '#EEF2FF';
+    const defaultGradEnd   = '#C7D2FE';
+    $('#gradient-start').val(defaultGradStart).data('disabled', false);
+    $('#gradient-end').val(defaultGradEnd).data('disabled', false);
+    $('#gradient-start-preview').css('background-color', defaultGradStart);
+    $('#gradient-end-preview').css('background-color', defaultGradEnd);
+    $('#gradient-start-value').text(defaultGradStart);
+    $('#gradient-end-value').text(defaultGradEnd);
     
     $('#preview-welcome').text(t.welcome_default);
     $('#preview-instructions').text(t.instructions_default);
