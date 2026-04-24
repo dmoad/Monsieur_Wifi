@@ -107,6 +107,7 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.js" integrity="sha384-RyE9TSx1shZZA6GS7TToIk1J7zY1mU8evbLDXYgOz4zgduwPFEtnHd1bswt8PG/u" crossorigin="anonymous"></script>
     <script src="/assets/vendors/js/extensions/toastr.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/mw-primitives.js?v={{ filemtime(public_path('assets/js/mw-primitives.js')) }}"></script>
 
     @stack('scripts')
 
