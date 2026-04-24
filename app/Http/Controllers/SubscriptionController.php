@@ -101,6 +101,12 @@ class SubscriptionController extends Controller
             // Create checkout session with subscription + deposit
             \Stripe\Stripe::setApiKey(config('cashier.secret'));
 
+            $trialDays = (int) env('STRIPE_TRIAL_DAYS', 7);
+            $depositCents = (int) env('DEPOSIT_AMOUNT_CENTS', 5000);
+            $shippingCents = (int) env('SHIPPING_FEE_CENTS', 1500);
+            $depositLabel = number_format($depositCents / 100, 0, ',', ' ');
+            $shippingLabel = number_format($shippingCents / 100, 0, ',', ' ');
+
             $checkout = \Stripe\Checkout\Session::create([
                 'customer' => $user->stripe_id,
                 'customer_update' => [
@@ -121,10 +127,24 @@ class SubscriptionController extends Controller
                                 'name' => 'Caution borne WiFi',
                                 'description' => 'Caution remboursable pour la borne WiFi Monsieur WiFi',
                             ],
-                            'unit_amount' => 5000, // 50€ in cents
+                            'unit_amount' => $depositCents,
                         ],
                         'quantity' => 1,
                     ],
+                    [
+                        'price_data' => [
+                            'currency' => 'eur',
+                            'product_data' => [
+                                'name' => 'Frais de livraison',
+                                'description' => 'Livraison de la borne WiFi',
+                            ],
+                            'unit_amount' => $shippingCents,
+                        ],
+                        'quantity' => 1,
+                    ],
+                ],
+                'subscription_data' => [
+                    'trial_period_days' => $trialDays,
                 ],
                 'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}'),
                 'cancel_url' => url('/subscription/cancel'),
@@ -139,7 +159,7 @@ class SubscriptionController extends Controller
                 ],
                 'custom_text' => [
                     'submit' => [
-                        'message' => 'Votre abonnement inclut : une borne WiFi avec portail captif pré-paramétré et une assistance à la mise en service. Une caution de 50€ est appliquée.',
+                        'message' => "Votre abonnement inclut : borne WiFi avec portail captif pré-paramétré et assistance à la mise en service. Aujourd'hui vous payez uniquement la caution ({$depositLabel}€) + frais de livraison ({$shippingLabel}€). Votre abonnement est offert pendant {$trialDays} jours, puis facturé automatiquement.",
                     ],
                     'terms_of_service_acceptance' => [
                         'message' => 'J\'accepte les [Conditions Générales de Vente](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')',
@@ -633,12 +653,23 @@ class SubscriptionController extends Controller
                 }
             }
 
+            $trialEnd = null;
+            if (!empty($stripeSubscription->trial_end)) {
+                $trialEnd = \Carbon\Carbon::createFromTimestamp($stripeSubscription->trial_end)->format('d/m/Y');
+            }
+
+            $depositCents = (int) env('DEPOSIT_AMOUNT_CENTS', 5000);
+            $shippingCents = (int) env('SHIPPING_FEE_CENTS', 1500);
+
             $subscriptionData = [
                 'plan_name' => $planName,
                 'amount' => $amount,
                 'interval' => $interval,
                 'start_date' => $startDate,
                 'shipping_address' => $shippingAddress,
+                'trial_end' => $trialEnd,
+                'deposit_amount' => number_format($depositCents / 100, 2) . ' EUR',
+                'shipping_fee' => number_format($shippingCents / 100, 2) . ' EUR',
             ];
 
             // Detect user language preference (default to French)

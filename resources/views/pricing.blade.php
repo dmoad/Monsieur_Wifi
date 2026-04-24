@@ -218,6 +218,18 @@
             letter-spacing: 1px;
         }
 
+        .trial-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.25);
+        }
+
         .plan-name {
             font-size: 0.85rem;
             font-weight: 600;
@@ -599,6 +611,8 @@
             </div>
             <div class="plan-subtitle" id="price-subtitle-1">/mois, HT et sans engagement</div>
 
+            <div class="trial-badge" id="trial-badge-1">7 jours offerts</div>
+
             <ul class="plan-features">
                 <li id="feature-s1">Accès WiFi Clients</li>
                 <li id="feature-s2">Authentification par email/SMS/Facebook/Twitter/Google</li>
@@ -629,6 +643,8 @@
                 <span class="currency">€</span>
             </div>
             <div class="plan-subtitle" id="price-subtitle-2">/mois, HT et sans engagement</div>
+
+            <div class="trial-badge" id="trial-badge-2">7 jours offerts</div>
 
             <p class="premium-intro" id="premium-intro">Bénéficiez de l'offre Standard +</p>
 
@@ -672,6 +688,7 @@
                 btnStandard: 'Subscribe to Standard',
                 btnPremium: 'Subscribe to Premium',
                 popularBadge: 'Popular',
+                trialBadge: '7 days free',
                 back: 'Back to login',
                 backDashboard: 'Back to dashboard',
                 processing: 'Processing...',
@@ -714,6 +731,7 @@
                 btnStandard: 'Adhérez au Standard',
                 btnPremium: 'Adhérez au Premium',
                 popularBadge: 'Populaire',
+                trialBadge: '7 jours offerts',
                 back: 'Retour à la connexion',
                 backDashboard: 'Retour au tableau de bord',
                 processing: 'Traitement...',
@@ -769,6 +787,8 @@
         document.getElementById('btn-standard').textContent = t.btnStandard;
         document.getElementById('btn-premium').textContent = t.btnPremium;
         document.getElementById('popular-badge').textContent = t.popularBadge;
+        document.getElementById('trial-badge-1').textContent = t.trialBadge;
+        document.getElementById('trial-badge-2').textContent = t.trialBadge;
         document.getElementById('back-label').textContent = t.back;
 
         // Update timeline

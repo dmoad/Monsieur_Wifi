@@ -11,6 +11,7 @@ const TRANSLATIONS = {
         failedUpdateProfile: 'Failed to update profile. Please try again.',
         uploadingPhoto: 'Uploading Photo...',
         subscriptionActive: 'Active',
+        subscriptionTrialing: 'Free trial',
         subscriptionCanceled: 'Cancelled',
         subscriptionNone: 'No active subscription',
         subscriptionPlan: 'Plan',
@@ -30,6 +31,7 @@ const TRANSLATIONS = {
         failedUpdateProfile: 'Échec de la mise à jour du profil. Veuillez réessayer.',
         uploadingPhoto: 'Téléchargement de la photo...',
         subscriptionActive: 'Actif',
+        subscriptionTrialing: 'Période d\'essai',
         subscriptionCanceled: 'Annulé',
         subscriptionNone: 'Aucun abonnement actif',
         subscriptionPlan: 'Plan',
@@ -279,10 +281,14 @@ function renderSubscription(data) {
         `);
     } else {
         const sub = data.subscription;
-        const isActive = sub.stripe_status === 'active';
-        const statusBadge = isActive
-            ? `<span class="badge badge-light-success">${t.subscriptionActive}</span>`
-            : `<span class="badge badge-light-danger">${t.subscriptionCanceled}</span>`;
+        let statusBadge;
+        if (sub.stripe_status === 'active') {
+            statusBadge = `<span class="badge badge-light-success">${t.subscriptionActive}</span>`;
+        } else if (sub.stripe_status === 'trialing') {
+            statusBadge = `<span class="badge badge-light-info">${t.subscriptionTrialing}</span>`;
+        } else {
+            statusBadge = `<span class="badge badge-light-danger">${t.subscriptionCanceled}</span>`;
+        }
 
         let graceNote = '';
         if (sub.on_grace_period && sub.ends_at) {
