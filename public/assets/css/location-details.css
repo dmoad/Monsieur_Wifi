@@ -105,14 +105,6 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     color: var(--mw-text-primary);
     margin: 0;
 }
-.interface-detail {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--mw-border-light);
-}
-.interface-detail:last-child { border-bottom: none; }
 .interface-label {
     color: var(--mw-text-muted);
     font-size: 0.9rem;
