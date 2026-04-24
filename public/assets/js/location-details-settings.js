@@ -211,11 +211,6 @@ async function loadUserDropdowns(currentOwnerId, sharedUsers = []) {
     }
 }
 
-// Keep backward-compat alias (used in clone modal path)
-async function loadOwnerDropdown(currentOwnerId) {
-    return loadUserDropdowns(currentOwnerId, []);
-}
-
 // ============================================================================
 // EVENT HANDLERS
 // ============================================================================
