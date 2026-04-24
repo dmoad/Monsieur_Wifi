@@ -1,15 +1,25 @@
 /**
  * location-details.js
  *
- * Main page script for the Location Details page (4 tabs).
+ * Shell for the Location Details page. Owns cross-module concerns only:
+ *  - Shared globals (location_id, API, i18n/commonI18n, zone-member flags,
+ *    QoS-bw primary/local cache, currentDeviceData, currentUsagePeriod)
+ *  - Shared utility helpers (apiFetch, handleApiError, reRenderFeather,
+ *    formatBytes, formatDuration, IPv4 validators)
+ *  - Page bootstrap: loadRouterModels → loadLocationDetails → initial fetches
+ *    → initEventHandlers (which delegates to per-tab init*Handlers)
+ *  - loadLocationDetails coordinator: populates header/device/map/info-form
+ *    and dispatches into each tab module's load-/populate- helpers
+ *  - Tab routing: activateLdTab + ?tab= URL sync + tab click delegation
  *
- * Responsibilities:
- *  - Overview tab: device info, usage, map, analytics chart, live users
- *  - Location Details tab: location info form, clone
- *  - Router Settings tab: WAN / Radio / Web filter / QoS / VLAN, channel scan, firmware, device restart, reboot schedule, MAC edit
- *  - WiFi Networks tab: SSID list + right-drawer editor (ldNetworks IIFE)
+ * Tab-specific code lives in:
+ *   location-details-overview.js  — Overview (usage, chart, online users, map)
+ *   location-details-settings.js  — Location Details (info form, clone, users)
+ *   location-details-router.js    — Router Settings (WAN/Radio/Filter/QoS/VLAN,
+ *                                   firmware, restart, reboot schedule, scan, MAC edit)
+ *   location-details-networks.js  — WiFi Networks (SSID list + drawer editor)
  *
- * MwDrawer + MwConfirm live in mw-primitives.js (loaded before this file).
+ * UI primitives (MwDrawer, MwConfirm) live in mw-primitives.js.
  */
 
 'use strict';
@@ -205,7 +215,6 @@ async function loadLocationDetails() {
     }
     applyQosZoneLock();
 
-    console.log("location:::::", location.device);
     // Status badge
     const isOnline = location.device && location.device.is_online;
     const $badge = $('.status-badge');
