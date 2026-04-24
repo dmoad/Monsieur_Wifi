@@ -489,6 +489,7 @@
 </script>
 <script src="/assets/js/mw-primitives.js?v={{ filemtime(public_path('assets/js/mw-primitives.js')) }}"></script>
 <script src="/assets/js/location-details-overview.js?v={{ filemtime(public_path('assets/js/location-details-overview.js')) }}"></script>
+<script src="/assets/js/location-details-settings.js?v={{ filemtime(public_path('assets/js/location-details-settings.js')) }}"></script>
 <script src="/assets/js/location-details-router.js?v={{ filemtime(public_path('assets/js/location-details-router.js')) }}"></script>
 <script src="/assets/js/location-details-networks.js?v={{ filemtime(public_path('assets/js/location-details-networks.js')) }}"></script>
 <script src="/assets/js/location-details.js?v={{ filemtime(public_path('assets/js/location-details.js')) }}"></script>
