@@ -19,7 +19,7 @@
         
         body {
             min-height: 100vh;
-            background-image: url('/app-assets/mrwifi-assets/captive-portal/images/background.jpg');
+            background-image: url('/assets/images/captive-portal/images/background.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -253,7 +253,7 @@
         <!-- Footer with Brand Logo and Terms -->
         <div class="footer">
             <div class="brand-logo">
-                <img src="/app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Brand Logo">
+                <img src="/assets/images/Mr-Wifi.PNG" alt="Brand Logo">
             </div>
             <div class="terms" id="terms-text" data-i18n-default="footer">
                 Powered by Mr WiFi
@@ -308,7 +308,7 @@
     </div>
     
     <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
-    <script src="/app-assets/vendors/js/bootstrap/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     <script>
         // Language system - Initialize before DOM ready
         const translations = {

@@ -16,7 +16,7 @@ class LocationNetworkController extends Controller
 
     public function __construct()
     {
-        $this->maxNetworks = (int) env('MAX_NETWORKS_PER_LOCATION', 4);
+        $this->maxNetworks = (int) env('MAX_NETWORKS_PER_LOCATION', 8);
     }
 
     // -------------------------------------------------------------------------
@@ -26,7 +26,7 @@ class LocationNetworkController extends Controller
     private function authorizeLocation(int $locationId): ?Location
     {
         $user = Auth::user();
-        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+        $isAdmin = $user->isAdminOrAbove();
 
         $location = $isAdmin
             ? Location::find($locationId)

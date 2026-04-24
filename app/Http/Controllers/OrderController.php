@@ -70,7 +70,7 @@ class OrderController extends Controller
             'user_email' => $user->email
         ]);
 
-        $isAdmin = in_array($user->role, ['admin', 'superadmin']);
+        $isAdmin = $user->isAdminOrAbove();
 
         $query = Order::with(['items.productModel.images', 'shippingAddress', 'billingAddress'])
             ->where('order_number', $orderNumber);
@@ -239,7 +239,7 @@ class OrderController extends Controller
         Log::info($orderNumber);
         
         $user = Auth::user();
-        $isAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+        $isAdmin = $user && $user->isAdminOrAbove();
         
         // Admin can process any order, regular users can only process their own
         $query = Order::with([
@@ -308,9 +308,7 @@ class OrderController extends Controller
      */
     public function checkoutView(Request $request)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        return view("checkout-{$locale}");
+        return view('checkout');
     }
 
     /**
@@ -318,9 +316,7 @@ class OrderController extends Controller
      */
     public function listView(Request $request)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        return view("orders-{$locale}");
+        return view('orders');
     }
 
     /**
@@ -328,9 +324,7 @@ class OrderController extends Controller
      */
     public function successView(Request $request, $orderNumber)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        return view("order-success-{$locale}", ['orderNumber' => $orderNumber]);
+        return view('order-success', ['orderNumber' => $orderNumber]);
     }
     
     /**

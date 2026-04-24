@@ -1,5 +1,5 @@
-// Checkout page (English)
-const LOCALE = 'en';
+// Checkout page — translations injected by blade (lang/{en,fr}/checkout.php)
+const t = window.APP_I18N.checkout;
 let cart = null;
 let shippingRates = [];
 let selectedShipping = null;
@@ -10,7 +10,7 @@ let currentOrderNumber = null;
 document.addEventListener('DOMContentLoaded', function() {
     const token = UserManager.getToken();
     if (!token) {
-        toastr.warning('Please login to checkout');
+        toastr.warning(t.toast_login_required);
         window.location.href = '/login';
         return;
     }
@@ -41,8 +41,8 @@ async function loadCart() {
             const data = await response.json();
             cart = data;  // Store the whole response with cart, total, item_count
             if (!data.cart.items || data.cart.items.length === 0) {
-                toastr.warning('Your cart is empty');
-                window.location.href = '/en/shop';
+                toastr.warning(t.toast_cart_empty);
+                window.location.href = t.shop_url;
                 return;
             }
             displayOrderSummary();
@@ -79,7 +79,7 @@ function displayShippingMethods() {
                    ${index === 0 ? 'checked' : ''} 
                    onchange="selectShipping(${rate.id}, ${rate.cost})">
             <label class="custom-control-label d-flex justify-content-between w-100" for="shipping-${rate.id}">
-                <span>${rate.name_en} - ${rate.estimated_days_min}-${rate.estimated_days_max} days</span>
+                <span>${rate['name_' + t.locale]} - ${rate.estimated_days_min}-${rate.estimated_days_max} ${t.shipping_days_suffix}</span>
                 <strong>€${parseFloat(rate.cost).toFixed(2)}</strong>
             </label>
         </div>
@@ -129,7 +129,7 @@ async function handleSubmit(e) {
     const token = UserManager.getToken();
     
     if (!token) {
-        toastr.error('Session expired. Please login again.');
+        toastr.error(t.toast_session_expired);
         window.location.href = '/login';
         return;
     }
@@ -137,7 +137,7 @@ async function handleSubmit(e) {
     const sameAsShipping = document.getElementById('same_as_shipping').checked;
     
     document.getElementById('place-order-btn').disabled = true;
-    document.getElementById('place-order-btn').innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+    document.getElementById('place-order-btn').innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${t.processing}`;
     
     try {
         // Step 1: Save shipping address
@@ -167,12 +167,12 @@ async function handleSubmit(e) {
         
         if (!shippingResponse.ok) {
             if (shippingResponse.status === 401) {
-                toastr.error('Session expired. Please login again.');
+                toastr.error(t.toast_session_expired);
                 setTimeout(() => window.location.href = '/login', 1500);
                 return;
             }
             const error = await shippingResponse.json();
-            throw new Error(error.message || 'Failed to save shipping address');
+            throw new Error(error.message || t.error_save_shipping);
         }
         
         const shippingData = await shippingResponse.json();
@@ -208,12 +208,12 @@ async function handleSubmit(e) {
             
             if (!billingResponse.ok) {
                 if (billingResponse.status === 401) {
-                    toastr.error('Session expired. Please login again.');
+                    toastr.error(t.toast_session_expired);
                     setTimeout(() => window.location.href = '/login', 1500);
                     return;
                 }
                 const error = await billingResponse.json();
-                throw new Error(error.message || 'Failed to save billing address');
+                throw new Error(error.message || t.error_save_billing);
             }
             
             const billingData = await billingResponse.json();
@@ -239,12 +239,12 @@ async function handleSubmit(e) {
         
         if (!orderResponse.ok) {
             if (orderResponse.status === 401) {
-                toastr.error('Session expired. Please login again.');
+                toastr.error(t.toast_session_expired);
                 setTimeout(() => window.location.href = '/login', 1500);
                 return;
             }
             const orderResult = await orderResponse.json();
-            throw new Error(orderResult.message || 'Failed to place order');
+            throw new Error(orderResult.message || t.error_place_order);
         }
         
         const orderResult = await orderResponse.json();
@@ -259,16 +259,16 @@ async function handleSubmit(e) {
             await initializeStripePayment(orderResult.order_number);
         } else {
             // Mock payment mode - redirect to order page
-            toastr.success('Order placed successfully! Your order is pending payment confirmation.');
+            toastr.success(t.toast_order_success);
             setTimeout(() => {
-                window.location.href = `/en/orders/${orderResult.order_number}`;
+                window.location.href = `${t.orders_base}/${orderResult.order_number}`;
             }, 500);
         }
     } catch (error) {
         console.error('Error placing order:', error);
-        toastr.error(error.message || 'Failed to place order');
+        toastr.error(error.message || t.error_place_order);
         document.getElementById('place-order-btn').disabled = false;
-        document.getElementById('place-order-btn').innerHTML = 'Place Order';
+        document.getElementById('place-order-btn').innerHTML = t.btn_place_order;
     }
 }
 
@@ -287,7 +287,7 @@ async function initializeStripePayment(orderNumber) {
         });
         
         if (!response.ok) {
-            throw new Error('Failed to initialize payment');
+            throw new Error(t.error_init_payment);
         }
         
         const data = await response.json();
@@ -338,13 +338,13 @@ async function initializeStripePayment(orderNumber) {
         
         // Re-enable place order button
         document.getElementById('place-order-btn').disabled = false;
-        document.getElementById('place-order-btn').innerHTML = 'Place Order';
-        
+        document.getElementById('place-order-btn').innerHTML = t.btn_place_order;
+
     } catch (error) {
         console.error('Error initializing Stripe payment:', error);
-        toastr.error('Failed to initialize payment. Please try again.');
+        toastr.error(t.toast_init_payment_failed);
         document.getElementById('place-order-btn').disabled = false;
-        document.getElementById('place-order-btn').innerHTML = 'Place Order';
+        document.getElementById('place-order-btn').innerHTML = t.btn_place_order;
     }
 }
 
@@ -355,7 +355,7 @@ async function handlePaymentSubmit(clientSecret) {
     
     // Show processing state
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${t.processing}`;
     
     try {
         const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
@@ -368,14 +368,14 @@ async function handlePaymentSubmit(clientSecret) {
             // Show error
             document.getElementById('card-errors').textContent = error.message;
             submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Pay Now';
+            submitBtn.innerHTML = t.btn_pay_now;
             toastr.error(error.message);
         } else if (paymentIntent.status === 'succeeded') {
             // Payment successful - verify and confirm with backend
             paymentForm.style.display = 'none';
             processingDiv.style.display = 'block';
             
-            toastr.success('Payment successful! Confirming your order...');
+            toastr.success(t.toast_payment_success);
             
             // Verify payment with backend
             try {
@@ -392,44 +392,50 @@ async function handlePaymentSubmit(clientSecret) {
                 const verifyResult = await verifyResponse.json();
                 
                 if (verifyResponse.ok && verifyResult.success) {
-                    toastr.success('Order confirmed! Redirecting...');
+                    toastr.success(t.toast_order_confirmed);
                     setTimeout(() => {
-                        window.location.href = `/en/orders/${currentOrderNumber}`;
+                        window.location.href = `${t.orders_base}/${currentOrderNumber}`;
                     }, 1000);
                 } else {
                     console.error('Payment verification failed:', verifyResult);
-                    toastr.warning('Payment processed but confirmation pending. Please contact support if needed.');
+                    toastr.warning(t.toast_payment_confirmation_pending);
                     setTimeout(() => {
-                        window.location.href = `/en/orders/${currentOrderNumber}`;
+                        window.location.href = `${t.orders_base}/${currentOrderNumber}`;
                     }, 2000);
                 }
             } catch (verifyError) {
                 console.error('Error verifying payment:', verifyError);
-                toastr.warning('Payment processed. Redirecting to your order...');
+                toastr.warning(t.toast_payment_processed);
                 setTimeout(() => {
-                    window.location.href = `/en/orders/${currentOrderNumber}`;
+                    window.location.href = `${t.orders_base}/${currentOrderNumber}`;
                 }, 2000);
             }
         } else {
             // Handle other statuses
-            toastr.warning('Payment is being processed. Please check your order status.');
+            toastr.warning(t.toast_payment_processing);
             setTimeout(() => {
-                window.location.href = `/en/orders/${currentOrderNumber}`;
+                window.location.href = `${t.orders_base}/${currentOrderNumber}`;
             }, 2000);
         }
     } catch (error) {
         console.error('Payment error:', error);
-        toastr.error('Payment failed. Please try again.');
+        toastr.error(t.toast_payment_failed);
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Pay Now';
+        submitBtn.innerHTML = t.btn_pay_now;
     }
 }
 
-function closePaymentModal() {
-    if (confirm('Are you sure you want to cancel the payment? Your order will remain pending.')) {
-        document.getElementById('payment-modal').style.display = 'none';
-        if (currentOrderNumber) {
-            window.location.href = `/en/orders/${currentOrderNumber}`;
-        }
+async function closePaymentModal() {
+    const ok = await MwConfirm.open({
+        title: t.confirm_cancel_payment_title || 'Cancel payment?',
+        message: t.confirm_cancel_payment,
+        confirmText: t.cancel_payment_btn || 'Cancel Payment',
+        cancelText: t.keep_paying_btn || 'Keep Paying',
+        destructive: true,
+    });
+    if (!ok) return;
+    document.getElementById('payment-modal').style.display = 'none';
+    if (currentOrderNumber) {
+        window.location.href = `${t.orders_base}/${currentOrderNumber}`;
     }
 }

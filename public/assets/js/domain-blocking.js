@@ -12,6 +12,8 @@ const TRANSLATIONS = {
         delete: 'Delete',
         confirmDelete: 'Are you sure you want to delete',
         confirmDeleteSuffix: 'from the block list?',
+        confirmDeleteTitle: 'Delete blocked domain?',
+        deleteBtn: 'Delete',
         failedLoadDomainData: 'Failed to load domain data',
         failedAddDomain: 'Failed to add domain',
         failedUpdateDomain: 'Failed to update domain',
@@ -24,7 +26,8 @@ const TRANSLATIONS = {
         malware: 'Malware',
         socialMedia: 'Social Media',
         streaming: 'Streaming',
-        customList: 'Custom List'
+        customList: 'Custom List',
+        noDomains: 'No domains found',
     },
     fr: {
         domainCount: 'domaines',
@@ -37,6 +40,8 @@ const TRANSLATIONS = {
         delete: 'Supprimer',
         confirmDelete: 'Êtes-vous sûr de vouloir supprimer',
         confirmDeleteSuffix: 'de la liste de blocage ?',
+        confirmDeleteTitle: 'Supprimer le domaine bloqué ?',
+        deleteBtn: 'Supprimer',
         failedLoadDomainData: 'Échec du chargement des données du domaine',
         failedAddDomain: 'Échec de l\'ajout du domaine',
         failedUpdateDomain: 'Échec de la mise à jour du domaine',
@@ -49,228 +54,236 @@ const TRANSLATIONS = {
         malware: 'Logiciels malveillants',
         socialMedia: 'Réseaux sociaux',
         streaming: 'Streaming',
-        customList: 'Liste personnalisée'
+        customList: 'Liste personnalisée',
+        noDomains: 'Aucun domaine trouvé',
     }
 };
 
 const PAGE_LOCALE = typeof locale !== 'undefined' ? locale : 'en';
 const t = TRANSLATIONS[PAGE_LOCALE];
 
-let domainsTable;
+let domainsData = [];
+let dbCurrentPage = 1;
+let dbItemsPerPage = 25;
 
-const CATEGORY_NAMES = {
-    en: {
-        'Adult Content': 'Adult Content',
-        'Gambling': 'Gambling',
-        'Malware': 'Malware',
-        'Social Media': 'Social Media',
-        'Streaming': 'Streaming',
-        'Custom List': 'Custom List'
-    },
-    fr: {
-        'Contenu adulte': 'Adult Content',
-        'Jeux d\'argent': 'Gambling',
-        'Logiciels malveillants': 'Malware',
-        'Réseaux sociaux': 'Social Media',
-        'Streaming': 'Streaming',
-        'Liste personnalisée': 'Custom List'
+const _dbDotsSvg  = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
+const _dbEditSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const _dbTrashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+
+function getCategoryBadgeClass(slug) {
+    switch (slug) {
+        case 'adult-content': return 'badge-category-adult';
+        case 'gambling':      return 'badge-category-gambling';
+        case 'malware':       return 'badge-category-malware';
+        case 'social-media':  return 'badge-category-social';
+        case 'streaming':     return 'badge-category-streaming';
+        case 'custom-list':   return 'badge-category-custom';
+        default:              return 'badge-category-custom';
     }
-};
+}
+
+function getCategoryAvatarClass(slug) {
+    switch (slug) {
+        case 'adult-content': return 'bg-light-danger';
+        case 'gambling':      return 'bg-light-warning';
+        case 'malware':       return 'bg-light-primary';
+        case 'social-media':  return 'bg-light-info';
+        case 'streaming':     return 'bg-light-success';
+        case 'custom-list':   return 'bg-light-secondary';
+        default:              return 'bg-light-secondary';
+    }
+}
+
+function getCategoryIdByName(categoryName) {
+    const categoryMapping = {
+        'Adult Content': '1',
+        'Gambling': '2',
+        'Malware': '3',
+        'Social Media': '4',
+        'Streaming': '5',
+        'Custom List': '6',
+        'Contenu adulte': '1',
+        'Jeux d\'argent': '2',
+        'Logiciels malveillants': '3',
+        'Réseaux sociaux': '4',
+        'Liste personnalisée': '6'
+    };
+    return categoryMapping[categoryName] || null;
+}
+
+function closeAllDbMenus() {
+    document.querySelectorAll('.db-menu.open').forEach(m => m.classList.remove('open'));
+}
+
+function loadDomains() {
+    $.ajax({
+        url: '/api/blocked-domains',
+        type: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            'Authorization': 'Bearer ' + UserManager.getToken(),
+        },
+        success: function(json) {
+            domainsData = json.data || [];
+            renderDomains();
+        },
+        error: function() {
+            $('#db-domains-tbody').html(`<tr><td colspan="5" class="text-center py-4 text-danger">${t.failedLoadDomainData}</td></tr>`);
+        }
+    });
+}
+
+function renderDomains() {
+    const $tbody = $('#db-domains-tbody');
+    const $pg = $('#db-pagination');
+    const query  = ($('#db-search').val() || '').trim().toLowerCase();
+    const cat    = window.selectedCategory || null;
+
+    let filtered = domainsData;
+    if (query) {
+        filtered = filtered.filter(d =>
+            (d.domain || '').toLowerCase().includes(query) ||
+            ((d.category && d.category.name) || '').toLowerCase().includes(query)
+        );
+    }
+    if (cat) {
+        filtered = filtered.filter(d => d.category && d.category.name === cat);
+    }
+
+    if (!filtered.length) {
+        $tbody.html(`<tr><td colspan="5" class="text-center py-4" style="color:var(--mw-text-muted)">${t.noDomains}</td></tr>`);
+        $pg.empty();
+        return;
+    }
+
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / dbItemsPerPage));
+    if (dbCurrentPage > totalPages) dbCurrentPage = totalPages;
+    const startIdx = (dbCurrentPage - 1) * dbItemsPerPage;
+    const endIdx = Math.min(startIdx + dbItemsPerPage, totalItems);
+    const list = filtered.slice(startIdx, endIdx);
+
+    const rows = list.map(function(domain) {
+        const slug        = domain.category ? domain.category.slug : 'custom-list';
+        const catName     = domain.category ? domain.category.name : '—';
+        const badgeClass  = getCategoryBadgeClass(slug);
+        const avatarClass = getCategoryAvatarClass(slug);
+        const addedDate   = domain.created_at
+            ? new Date(domain.created_at).toLocaleDateString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : '—';
+        const updatedDate = domain.updated_at
+            ? new Date(domain.updated_at).toLocaleDateString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : '—';
+        return `<tr>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="avatar ${avatarClass} mr-1 p-25">
+                        <div class="avatar-content"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                    </div>
+                    <span>${domain.domain}</span>
+                </div>
+            </td>
+            <td><span class="badge badge-pill ${badgeClass}">${catName}</span></td>
+            <td>${addedDate}</td>
+            <td>${updatedDate}</td>
+            <td class="db-col-actions">
+                <div class="db-kebab-wrap">
+                    <button type="button" class="db-kebab-btn db-kebab-toggle" data-domain-id="${domain.id}">${_dbDotsSvg}</button>
+                    <div class="db-menu" id="db-menu-${domain.id}">
+                        <button type="button" class="db-menu-item edit-domain-btn" data-id="${domain.id}">${_dbEditSvg} ${t.edit}</button>
+                        <div class="db-menu-divider"></div>
+                        <button type="button" class="db-menu-item db-menu-danger delete-domain-btn" data-id="${domain.id}" data-domain="${domain.domain}">${_dbTrashSvg} ${t.delete}</button>
+                    </div>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+    $tbody.html(rows);
+    renderDbPagination(totalItems, totalPages, startIdx, endIdx);
+}
+
+function renderDbPagination(totalItems, totalPages, startIdx, endIdx) {
+    const $pg = $('#db-pagination');
+    if (totalPages <= 1) { $pg.empty(); return; }
+    const localeStr = (PAGE_LOCALE === 'fr')
+        ? `Affichage ${startIdx + 1}-${endIdx} sur ${totalItems}`
+        : `Showing ${startIdx + 1}-${endIdx} of ${totalItems}`;
+    let buttons = `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(${dbCurrentPage - 1})" ${dbCurrentPage === 1 ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg></button>`;
+    const maxBtns = 5;
+    let startP = Math.max(1, dbCurrentPage - Math.floor(maxBtns / 2));
+    let endP = Math.min(totalPages, startP + maxBtns - 1);
+    if (endP - startP < maxBtns - 1) startP = Math.max(1, endP - maxBtns + 1);
+    if (startP > 1) {
+        buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(1)">1</button>`;
+        if (startP > 2) buttons += `<span class="mx-2">...</span>`;
+    }
+    for (let i = startP; i <= endP; i++) {
+        buttons += `<button class="btn btn-sm ${i === dbCurrentPage ? 'btn-primary' : 'btn-outline-primary'}" onclick="goToDbPage(${i})">${i}</button>`;
+    }
+    if (endP < totalPages) {
+        if (endP < totalPages - 1) buttons += `<span class="mx-2">...</span>`;
+        buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(${totalPages})">${totalPages}</button>`;
+    }
+    buttons += `<button class="btn btn-sm btn-outline-primary" onclick="goToDbPage(${dbCurrentPage + 1})" ${dbCurrentPage === totalPages ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+    $pg.html(`<div class="pagination-controls"><div class="pagination-info">${localeStr}</div><div class="pagination-buttons">${buttons}</div></div>`);
+}
+
+function goToDbPage(p) {
+    dbCurrentPage = p;
+    renderDomains();
+}
 
 $(window).on('load', function() {
     if (feather) {
-        feather.replace({
-            width: 14,
-            height: 14
-        });
-        
+        feather.replace({ width: 14, height: 14 });
         $('.avatar-icon').each(function() {
-            $(this).css({
-                'width': '24px',
-                'height': '24px'
-            });
+            $(this).css({ 'width': '24px', 'height': '24px' });
         });
     }
 
     const profile_picture = localStorage.getItem('profile_picture');
     $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
-    
+
     loadCategoriesData();
-    
-    domainsTable = $('.datatables-domains').DataTable({
-        processing: true,
-        serverSide: false,
-        ajax: {
-            url: '/api/blocked-domains',
+    loadDomains();
+
+    // Kebab toggle
+    $(document).on('click', function(e) {
+        const toggleBtn = $(e.target).closest('.db-kebab-toggle');
+        if (toggleBtn.length) {
+            const id = toggleBtn.data('domain-id');
+            const $menu = $(`#db-menu-${id}`);
+            const wasOpen = $menu.hasClass('open');
+            closeAllDbMenus();
+            if (!wasOpen) $menu.addClass('open');
+            return;
+        }
+        if (!$(e.target).closest('.db-kebab-wrap').length) closeAllDbMenus();
+    });
+
+    // Search
+    $('#db-search').on('input', function() { dbCurrentPage = 1; renderDomains(); });
+    $('#db-items-per-page').on('change', function() { dbItemsPerPage = parseInt($(this).val(), 10) || 25; dbCurrentPage = 1; renderDomains(); });
+
+    function loadCategoriesData() {
+        $.ajax({
+            url: '/api/categories',
             type: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                 'Authorization': 'Bearer ' + UserManager.getToken(),
             },
-            dataSrc: function(json) {
-                console.log("blocked-domains", json);
-                return json.data;
-            }
-        },
-        columns: [
-            { 
-                data: 'domain',
-                render: function(data, type, row) {
-                    const avatarClass = getCategoryAvatarClass(row.category.slug);
-                    return `
-                        <div class="d-flex align-items-center">
-                            <div class="avatar ${avatarClass} mr-1 p-25">
-                                <div class="avatar-content">
-                                    <i data-feather="globe"></i>
-                                </div>
-                            </div>
-                            <span>${data}</span>
-                        </div>
-                    `;
-                }
-            },
-            { 
-                data: 'category',
-                render: function(data, type, row) {
-                    const badgeClass = getCategoryBadgeClass(data.slug);
-                    return `<span class="badge badge-pill ${badgeClass}">${data.name}</span>`;
-                }
-            },
-            { 
-                data: 'created_at',
-                render: function(data) {
-                    return new Date(data).toLocaleDateString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                    });
-                }
-            },
-            { 
-                data: 'updated_at',
-                render: function(data) {
-                    return new Date(data).toLocaleDateString(PAGE_LOCALE === 'fr' ? 'fr-FR' : 'en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                    });
-                }
-            },
-            {
-                data: 'id',
-                orderable: false,
-                render: function(data, type, row) {
-                    return `
-                        <div class="dropdown">
-                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                <i data-feather="more-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item edit-domain-btn" href="javascript:void(0);" data-id="${data}">
-                                    <i data-feather="edit-2" class="mr-50"></i>
-                                    <span>${t.edit}</span>
-                                </a>
-                                <a class="dropdown-item delete-domain-btn" href="javascript:void(0);" data-id="${data}">
-                                    <i data-feather="trash" class="mr-50"></i>
-                                    <span>${t.delete}</span>
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-        ],
-        responsive: true,
-        columnDefs: [
-            {
-                targets: [4],
-                orderable: false
-            }
-        ],
-        dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-        language: {
-            paginate: {
-                previous: '&nbsp;',
-                next: '&nbsp;'
-            }
-        },
-        drawCallback: function() {
-            feather.replace({
-                width: 14,
-                height: 14
-            });
-        }
-    });
-    
-    function getCategoryBadgeClass(slug) {
-        switch(slug) {
-            case 'adult-content': return 'badge-category-adult';
-            case 'gambling': return 'badge-category-gambling';
-            case 'malware': return 'badge-category-malware';
-            case 'social-media': return 'badge-category-social';
-            case 'streaming': return 'badge-category-streaming';
-            case 'custom-list': return 'badge-category-custom';
-            default: return 'badge-category-custom';
-        }
-    }
-    
-    function getCategoryAvatarClass(slug) {
-        switch(slug) {
-            case 'adult-content': return 'bg-light-danger';
-            case 'gambling': return 'bg-light-warning';
-            case 'malware': return 'bg-light-primary';
-            case 'social-media': return 'bg-light-info';
-            case 'streaming': return 'bg-light-success';
-            case 'custom-list': return 'bg-light-secondary';
-            default: return 'bg-light-secondary';
-        }
-    }
-    
-    function loadCategoriesData() {
-        const csrfToken = $('meta[name="csrf-token"]').attr('content');
-        const authToken = UserManager.getToken();
-        
-        console.log('Loading categories with CSRF:', csrfToken ? 'present' : 'MISSING');
-        console.log('Loading categories with Auth:', authToken ? 'present' : 'MISSING');
-        
-        $.ajax({
-            url: '/api/categories',
-            type: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Authorization': 'Bearer ' + authToken,
-            },
-            success: function(response) {
-                console.log('Categories API Response:', response);
-                updateCategoryCounters(response);
-            },
-            error: function(xhr, status, error) {
-                console.error('Failed to load categories:', error);
-                console.error('Status:', xhr.status);
-                console.error('Response:', xhr.responseText);
-            }
+            success: function(response) { updateCategoryCounters(response); },
+            error: function(xhr, status, error) { console.error('Failed to load categories:', error); }
         });
     }
 
     function updateCategoryCounters(categories) {
-        console.log("Raw categories data:", categories);
-        
-        // Handle different response structures
-        let categoryArray = categories;
-        if (categories.categories) {
-            categoryArray = categories.categories;
-        }
-        
-        console.log("Category array:", categoryArray);
-        
-        if (!Array.isArray(categoryArray)) {
-            console.error('Categories is not an array:', categoryArray);
-            return;
-        }
-        
-        // Map category IDs to checkbox IDs
+        let categoryArray = categories.categories || categories;
+        if (!Array.isArray(categoryArray)) return;
+
         const categoryCheckboxMap = {
             1: '#category-adult',
             2: '#category-gambling',
@@ -279,72 +292,26 @@ $(window).on('load', function() {
             5: '#category-streaming',
             6: '#category-custom'
         };
-        
+
         categoryArray.forEach(function(category) {
-            console.log(`Processing category: ${category.name} (ID: ${category.id}), enabled: ${category.is_enabled}, count: ${category.blocked_domains_count}`);
-            
             const checkboxId = categoryCheckboxMap[category.id];
-            if (!checkboxId) {
-                console.warn(`No checkbox mapping for category ID: ${category.id}`);
-                return;
-            }
-            
+            if (!checkboxId) return;
             const checkbox = $(checkboxId);
-            if (!checkbox.length) {
-                console.warn(`Checkbox not found: ${checkboxId} for category: ${category.name}`);
-                return;
-            }
-            
+            if (!checkbox.length) return;
             const categoryCard = checkbox.closest('.card');
-            if (!categoryCard.length) {
-                console.warn(`Card not found for checkbox: ${checkboxId}`);
-                return;
-            }
-            
-            // Update domain count
+            if (!categoryCard.length) return;
+
             const countSpan = categoryCard.find('h4').next('span');
             countSpan.text(`${category.active_blocked_domains_count || 0} ${t.domainCount}`);
-
-            // Update checkbox state
-            const wasChecked = checkbox.prop('checked');
             checkbox.prop('checked', category.is_enabled);
-            
-            console.log(`${category.name}: checkbox was ${wasChecked}, now set to ${category.is_enabled}`);
-
-            // Update border
-            if (category.is_enabled) {
-                categoryCard.addClass('border-primary');
-            } else {
-                categoryCard.removeClass('border-primary');
-            }
+            category.is_enabled ? categoryCard.addClass('border-primary') : categoryCard.removeClass('border-primary');
         });
-        
-        console.log('All categories updated successfully');
     }
 
-    
     $('.custom-file-input').on('change', function() {
         let fileName = $(this).val().split('\\').pop();
         $(this).next('.custom-file-label').html(fileName || 'Choose file');
     });
-
-    function getCategoryIdByName(categoryName) {
-        const categoryMapping = {
-            'Adult Content': '1',
-            'Gambling': '2',
-            'Malware': '3',
-            'Social Media': '4',
-            'Streaming': '5',
-            'Custom List': '6',
-            'Contenu adulte': '1',
-            'Jeux d\'argent': '2',
-            'Logiciels malveillants': '3',
-            'Réseaux sociaux': '4',
-            'Streaming': '5',
-            'Liste personnalisée': '6'
-        };
-        return categoryMapping[categoryName] || null;
-    }
 
     $('.custom-switch input[type="checkbox"]').on('change', function() {
         const categoryCard = $(this).closest('.card');
@@ -352,33 +319,14 @@ $(window).on('load', function() {
         const isEnabled = $(this).is(':checked');
         const checkbox = $(this);
 
-        console.log(`Toggle clicked: ${categoryName}, new state: ${isEnabled}`);
-
         let categoryId = getCategoryIdByName(categoryName);
-        
         if (!categoryId) {
-            console.error('Category ID not found for:', categoryName);
-            console.error('Available mappings:', Object.keys({
-                'Adult Content': '1',
-                'Gambling': '2',
-                'Malware': '3',
-                'Social Media': '4',
-                'Streaming': '5',
-                'Custom List': '6',
-                'Contenu adulte': '1',
-                'Jeux d\'argent': '2',
-                'Logiciels malveillants': '3',
-                'Réseaux sociaux': '4',
-                'Streaming': '5',
-                'Liste personnalisée': '6'
-            }));
             checkbox.prop('checked', !isEnabled);
             return;
         }
 
-        console.log(`Sending toggle request for category ID ${categoryId} to: /api/categories/${categoryId}/toggle`);
         checkbox.prop('disabled', true);
-        
+
         $.ajax({
             url: `/api/categories/${categoryId}/toggle`,
             type: 'POST',
@@ -389,76 +337,33 @@ $(window).on('load', function() {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-                console.log("Toggle API response:", response);
-                
                 if (response.success) {
-                    // Update visual state
-                    if (isEnabled) {
-                        categoryCard.addClass('border-primary');
-                    } else {
-                        categoryCard.removeClass('border-primary');
-                    }
-
-                    // Show success message
+                    isEnabled ? categoryCard.addClass('border-primary') : categoryCard.removeClass('border-primary');
                     if (typeof toastr !== 'undefined') {
                         toastr.success(`${categoryName} ${isEnabled ? t.enabled : t.disabled} ${t.successfully}`);
                     }
-
-                    console.log(`Category "${categoryName}" (ID: ${categoryId}) successfully toggled to: ${isEnabled}`);
-                    
-                    // Reload categories to ensure UI is in sync
                     setTimeout(function() {
                         loadCategoriesData();
-                        if (domainsTable && typeof domainsTable.ajax !== 'undefined') {
-                            domainsTable.ajax.reload(null, false);
-                        }
+                        loadDomains();
                     }, 500);
                 } else {
-                    console.error('API returned success: false', response);
                     checkbox.prop('checked', !isEnabled);
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message || t.failedUpdateCategory);
-                    } else {
-                        alert('Error: ' + (response.message || t.failedUpdateCategory));
-                    }
+                    if (typeof toastr !== 'undefined') toastr.error(response.message || t.failedUpdateCategory);
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('Toggle API error:', {
-                    status: xhr.status,
-                    statusText: xhr.statusText,
-                    responseText: xhr.responseText,
-                    error: error
-                });
-                
+            error: function(xhr) {
                 checkbox.prop('checked', !isEnabled);
-                
                 let errorMessage = t.failedUpdateCategory;
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                }
-                
-                if (typeof toastr !== 'undefined') {
-                    toastr.error(errorMessage);
-                } else {
-                    alert('Error: ' + errorMessage);
-                }
-                console.error('Category toggle error:', error);
+                if (xhr.responseJSON && xhr.responseJSON.message) errorMessage = xhr.responseJSON.message;
+                if (typeof toastr !== 'undefined') toastr.error(errorMessage);
             },
-            complete: function() {
-                checkbox.prop('disabled', false);
-            }
+            complete: function() { checkbox.prop('disabled', false); }
         });
     });
-    
+
     $('#add-new-domain form').on('submit', function(e) {
         e.preventDefault();
-        
-        const domainName = $('#domain-name').val();
-        const categoryId = $('#domain-category').val();
-        const notes = $('#domain-notes').val();
-        const blockSubdomains = true;
-        
+
         $.ajax({
             url: '/api/blocked-domains',
             type: 'POST',
@@ -469,48 +374,34 @@ $(window).on('load', function() {
                 'Authorization': 'Bearer ' + UserManager.getToken(),
             },
             data: JSON.stringify({
-                domain: domainName,
-                category_id: categoryId,
-                notes: notes,
-                block_subdomains: blockSubdomains
+                domain: $('#domain-name').val(),
+                category_id: $('#domain-category').val(),
+                notes: $('#domain-notes').val(),
+                block_subdomains: true
             }),
             success: function(response) {
                 if (response.success) {
-                    domainsTable.ajax.reload();
+                    loadDomains();
                     $('#add-new-domain form').trigger('reset');
                     $('#add-new-domain').modal('hide');
                     loadCategoriesData();
-                    
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success(response.message);
-                    } else {
-                        alert(response.message);
-                    }
+                    if (typeof toastr !== 'undefined') toastr.success(response.message);
                 } else {
-                    if (typeof toastr !== 'undefined') {
-                        toastr.error(response.message);
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
+                    if (typeof toastr !== 'undefined') toastr.error(response.message);
                 }
             },
-            error: function(xhr, status, error) {
-                let errorMessage = t.failedAddDomain;
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                }
-                if (typeof toastr !== 'undefined') {
-                    toastr.error(errorMessage);
-                } else {
-                    alert('Error: ' + errorMessage);
-                }
+            error: function(xhr) {
+                let msg = t.failedAddDomain;
+                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                if (typeof toastr !== 'undefined') toastr.error(msg);
             }
         });
     });
-    
+
     $(document).on('click', '.edit-domain-btn', function() {
         const domainId = $(this).data('id');
-        
+        closeAllDbMenus();
+
         $.ajax({
             url: `/api/blocked-domains/${domainId}`,
             type: 'GET',
@@ -522,30 +413,22 @@ $(window).on('load', function() {
             success: function(response) {
                 if (response.success) {
                     const domain = response.domain;
-                    
                     $('#edit-domain-name').val(domain.domain);
                     $('#edit-domain-category').val(domain.category_id).trigger('change');
                     $('#edit-domain-notes').val(domain.notes || '');
                     $('#edit-block-subdomains').prop('checked', domain.block_subdomains);
-                    
-                    $('#edit-domain').data('domain-id', domainId);
-                    $('#edit-domain').modal('show');
+                    $('#edit-domain').data('domain-id', domainId).modal('show');
                 }
             },
-            error: function(xhr, status, error) {
-                alert(t.failedLoadDomainData);
-            }
+            error: function() { toastr.error(t.failedLoadDomainData); }
         });
     });
-    
+
     $('#edit-domain form').on('submit', function(e) {
         e.preventDefault();
-        
+
         const domainId = $('#edit-domain').data('domain-id');
-        const categoryId = $('#edit-domain-category').val();
-        const notes = $('#edit-domain-notes').val();
-        const blockSubdomains = $('#edit-block-subdomains').is(':checked');
-        
+
         $.ajax({
             url: `/api/blocked-domains/${domainId}`,
             type: 'PUT',
@@ -556,163 +439,101 @@ $(window).on('load', function() {
                 'Authorization': 'Bearer ' + UserManager.getToken(),
             },
             data: JSON.stringify({
-                category_id: categoryId,
-                notes: notes,
-                block_subdomains: blockSubdomains
+                category_id: $('#edit-domain-category').val(),
+                notes: $('#edit-domain-notes').val(),
+                block_subdomains: $('#edit-block-subdomains').is(':checked')
             }),
             success: function(response) {
                 if (response.success) {
-                    domainsTable.ajax.reload();
+                    loadDomains();
                     $('#edit-domain').modal('hide');
                     loadCategoriesData();
-                    
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success(response.message);
-                    } else {
-                        alert(response.message);
-                    }
+                    if (typeof toastr !== 'undefined') toastr.success(response.message);
                 }
             },
-            error: function(xhr, status, error) {
-                let errorMessage = t.failedUpdateDomain;
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                }
-                alert('Error: ' + errorMessage);
+            error: function(xhr) {
+                let msg = t.failedUpdateDomain;
+                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                toastr.error(msg);
             }
         });
     });
-    
-    $(document).on('click', '.delete-domain-btn', function() {
+
+    $(document).on('click', '.delete-domain-btn', async function() {
         const domainId = $(this).data('id');
-        const row = $(this).closest('tr');
-        const domain = row.find('td:first span').text();
-        
-        if (confirm(`${t.confirmDelete} "${domain}" ${t.confirmDeleteSuffix}`)) {
-            $.ajax({
-                url: `/api/blocked-domains/${domainId}`,
-                type: 'DELETE',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                    'Authorization': 'Bearer ' + UserManager.getToken(),
-                },
-                success: function(response) {
-                    if (response.success) {
-                        domainsTable.ajax.reload();
-                        loadCategoriesData();
-                        
-                        if (typeof toastr !== 'undefined') {
-                            toastr.success(response.message);
-                        } else {
-                            alert(response.message);
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert(t.failedDeleteDomain);
+        const domainName = $(this).data('domain');
+        closeAllDbMenus();
+
+        const ok = await MwConfirm.open({
+            title: t.confirmDeleteTitle || 'Delete domain?',
+            message: `${t.confirmDelete} "${domainName}" ${t.confirmDeleteSuffix}`,
+            confirmText: t.deleteBtn || 'Delete',
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+            destructive: true,
+        });
+        if (!ok) return;
+
+        $.ajax({
+            url: `/api/blocked-domains/${domainId}`,
+            type: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'Authorization': 'Bearer ' + UserManager.getToken(),
+            },
+            success: function(response) {
+                if (response.success) {
+                    loadDomains();
+                    loadCategoriesData();
+                    if (typeof toastr !== 'undefined') toastr.success(response.message);
                 }
-            });
-        }
-    });
-    
-    $(document).on('click', '.category-card', function(e) {
-        if ($(e.target).hasClass('custom-control-input') || $(e.target).hasClass('custom-control-label')) {
-            return;
-        }
-        
-        const categoryName = $(this).find('h4').text();
-        const categoryCount = parseInt($(this).find('span').text()) || 0;
-        
-        $(`.card-title:contains("${t.blockedDomains}")`).html(`${categoryName} ${t.blockedDomains} <span class="text-muted font-small-3">(${categoryCount} ${t.domainCount})</span>`);
-        
-        domainsTable.search(categoryName).draw();
-        
-        $('html, body').animate({
-            scrollTop: $("#basic-datatable").offset().top - 100
-        }, 500);
-        
-        window.selectedCategory = categoryName;
-    });
-    
-    $('#add-new-domain').on('show.bs.modal', function() {
-        if (window.selectedCategory) {
-            let categoryValue = getCategoryIdByName(window.selectedCategory);
-            if (categoryValue) {
-                $('#domain-category').val(categoryValue).trigger('change');
-            }
-        }
+            },
+            error: function() { toastr.error(t.failedDeleteDomain); }
+        });
     });
 
+    $('.card.cursor-pointer').addClass('category-card');
+
     $(document).on('click', '#view-all-domains', function() {
-        $(`.card-title:contains("${t.blockedDomains}")`).html(t.allBlockedDomains);
-        domainsTable.search('').draw();
         window.selectedCategory = null;
+        dbCurrentPage = 1;
+        renderDomains();
     });
 
     $(document).on('click', '#export-all-domains', function() {
         const button = $(this);
         const originalText = button.html();
-        
-        button.prop('disabled', true).html('<i data-feather="loader" class="mr-25"></i>Exporting...');
-        feather.replace();
-        
+        button.prop('disabled', true).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.28"/></svg>Exporting...');
+
         let exportUrl = '/api/blocked-domains/export?format=txt&active_only=true';
-        
         if (window.selectedCategory) {
             const categoryId = getCategoryIdByName(window.selectedCategory);
-            if (categoryId) {
-                exportUrl += `&category_id=${categoryId}`;
-            }
+            if (categoryId) exportUrl += `&category_id=${categoryId}`;
         }
-        
+
         const link = document.createElement('a');
         link.href = exportUrl;
         link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
-        setTimeout(function() {
-            button.prop('disabled', false).html(originalText);
-            feather.replace();
-        }, 1000);
-        
-        if (typeof toastr !== 'undefined') {
-            toastr.success(t.exportStarted);
-        } else {
-            alert(t.exportStarted);
-        }
+
+        setTimeout(function() { button.prop('disabled', false).html(originalText); }, 1000);
+        if (typeof toastr !== 'undefined') toastr.success(t.exportStarted);
     });
 
-    $('.card.cursor-pointer').addClass('category-card');
-
-    $(`.card-title:contains("${t.blockedDomains}")`).after(`
-        <div class="mb-2">
-            <button class="btn btn-sm btn-outline-primary mr-1" id="view-all-domains">
-                <i data-feather="list" class="mr-25"></i>View All Domains
-            </button>
-            <button class="btn btn-sm btn-outline-secondary" id="export-all-domains">
-                <i data-feather="download" class="mr-25"></i>Export All
-            </button>
-        </div>
-    `);
-
-    feather.replace({
-        width: 14,
-        height: 14
-    });
+    feather.replace({ width: 14, height: 14 });
 });
 
 $(document).ready(function() {
     const user = UserManager.getUser();
     const token = UserManager.getToken();
-    
+
     if (!token || !user) {
         window.location.href = '/';
         return;
     }
-    
+
     $('.user-name').text(user.name);
     $('.user-status').text(user.role);
 });

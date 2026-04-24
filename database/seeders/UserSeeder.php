@@ -20,12 +20,14 @@ class UserSeeder extends Seeder
                 'email' => 'admin@monsieur-wifi.com',
                 'password' => Hash::make('abcd1234'),
                 'role' => 'admin',
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'Administrator',
                 'email' => 'administrator@monsieur-wifi.com',
                 'password' => Hash::make('abcd1234'),
                 'role' => 'admin',
+                'email_verified_at' => now(),
             ],
         ];
 

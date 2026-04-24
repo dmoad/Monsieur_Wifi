@@ -9,7 +9,7 @@
     <meta name="author" content="monsieur-wifi">
     <title id="page-title">Tarifs - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
@@ -47,15 +47,15 @@
             overflow: hidden;
             background-color: #f8f8f8;
             background-image:
-                radial-gradient(at 40% 20%, rgba(115, 103, 240, 0.03) 0px, transparent 50%),
+                radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
                 radial-gradient(at 80% 0%, rgba(23, 193, 232, 0.03) 0px, transparent 50%),
-                radial-gradient(at 0% 50%, rgba(115, 103, 240, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
                 radial-gradient(at 80% 100%, rgba(23, 193, 232, 0.03) 0px, transparent 50%);
         }
 
         .animated-bg .wifi-wave {
             position: absolute;
-            border: 2px solid rgba(115, 103, 240, 0.05);
+            border: 2px solid rgba(99, 102, 241, 0.05);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             animation: ripple 15s linear infinite;
@@ -71,7 +71,7 @@
 
         .animated-bg .dot {
             position: absolute;
-            background-color: rgba(115, 103, 240, 0.15);
+            background-color: rgba(99, 102, 241, 0.15);
             border-radius: 50%;
             transform: translate(-50%, -50%);
         }
@@ -87,7 +87,7 @@
         .network-line {
             position: absolute;
             height: 1px;
-            background: linear-gradient(90deg, rgba(115, 103, 240, 0), rgba(115, 103, 240, 0.2), rgba(115, 103, 240, 0));
+            background: linear-gradient(90deg, rgba(99,102,241,0), rgba(99,102,241,0.2), rgba(99,102,241,0));
             animation: networkPulse 10s infinite ease-in-out;
             transform-origin: left center;
         }
@@ -138,7 +138,7 @@
         }
 
         .brand-logo h2 {
-            color: #7367f0;
+            color: var(--mw-primary);
             font-size: 1.5rem;
             font-weight: 600;
             margin: 0;
@@ -191,7 +191,7 @@
 
         .pricing-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 45px rgba(115, 103, 240, 0.15);
+            box-shadow: 0 15px 45px rgba(99, 102, 241, 0.15);
         }
 
         .pricing-card.popular::before {
@@ -201,14 +201,14 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #7367f0, #9e95f5);
+            background: var(--mw-primary);
         }
 
         .popular-badge {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: linear-gradient(135deg, #7367f0, #9e95f5);
+            background: var(--mw-primary);
             color: white;
             padding: 5px 15px;
             border-radius: 20px;
@@ -223,7 +223,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #7367f0;
+            color: var(--mw-primary);
             margin-bottom: 15px;
         }
 
@@ -258,9 +258,9 @@
             color: #555;
             margin-bottom: 15px;
             padding: 10px 15px;
-            background: rgba(115, 103, 240, 0.05);
+            background: rgba(99, 102, 241, 0.05);
             border-radius: 10px;
-            border-left: 3px solid #7367f0;
+            border-left: 3px solid var(--mw-primary);
         }
 
         .plan-features {
@@ -288,7 +288,7 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            background: linear-gradient(135deg, #7367f0, #9e95f5);
+            background: var(--mw-primary);
             border-radius: 50%;
             margin-right: 12px;
             flex-shrink: 0;
@@ -322,24 +322,24 @@
         }
 
         .btn-subscribe.primary {
-            background: linear-gradient(135deg, #7367f0, #9e95f5);
+            background: var(--mw-primary);
             color: white;
-            box-shadow: 0 4px 15px rgba(115, 103, 240, 0.35);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
         }
 
         .btn-subscribe.primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(115, 103, 240, 0.45);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.45);
         }
 
         .btn-subscribe.outline {
             background: white;
-            color: #7367f0;
-            border: 2px solid #7367f0;
+            color: var(--mw-primary);
+            border: 2px solid var(--mw-primary);
         }
 
         .btn-subscribe.outline:hover {
-            background: #7367f0;
+            background: var(--mw-primary);
             color: white;
         }
 
@@ -360,8 +360,8 @@
         }
 
         .btn-subscribe.outline .loading-spinner {
-            border-color: rgba(115, 103, 240, 0.3);
-            border-top-color: #7367f0;
+            border-color: rgba(99, 102, 241, 0.3);
+            border-top-color: var(--mw-primary);
         }
 
         @keyframes spin {
@@ -377,7 +377,7 @@
         }
 
         .back-link a {
-            color: #7367f0;
+            color: var(--mw-primary);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
@@ -447,9 +447,9 @@
         }
 
         .timeline-step.active .timeline-circle {
-            background: linear-gradient(135deg, #7367f0, #9e95f5);
+            background: var(--mw-primary);
             color: white;
-            box-shadow: 0 4px 15px rgba(115, 103, 240, 0.4);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
             animation: pulse-ring 2s ease-in-out infinite;
         }
 
@@ -460,8 +460,8 @@
         }
 
         @keyframes pulse-ring {
-            0%, 100% { box-shadow: 0 4px 15px rgba(115, 103, 240, 0.4); }
-            50% { box-shadow: 0 4px 25px rgba(115, 103, 240, 0.6); }
+            0%, 100% { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 4px 25px rgba(99, 102, 241, 0.6); }
         }
 
         .timeline-label {
@@ -538,7 +538,7 @@
     <!-- Header -->
     <div class="pricing-header">
         <a href="/" class="brand-logo">
-            <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Monsieur WiFi">
+            <img src="assets/images/Mr-Wifi.PNG" alt="Monsieur WiFi">
             <h2>monsieur-wifi</h2>
         </a>
 
@@ -570,7 +570,7 @@
 
         <!-- Billing Toggle -->
         <div class="billing-toggle" style="display:inline-flex; align-items:center; gap:12px; margin-top:25px; background:rgba(255,255,255,0.95); padding:8px 20px; border-radius:50px; box-shadow:0 2px 15px rgba(0,0,0,0.08);">
-            <span id="toggle-monthly" class="toggle-label active" style="font-size:0.9rem; font-weight:600; color:#7367f0; cursor:pointer; transition:color 0.3s;">Mensuel</span>
+            <span id="toggle-monthly" class="toggle-label active" style="font-size:0.9rem; font-weight:600; color:var(--mw-primary); cursor:pointer; transition:color 0.3s;">Mensuel</span>
             <label style="position:relative; display:inline-block; width:50px; height:28px; cursor:pointer;">
                 <input type="checkbox" id="billing-toggle" style="opacity:0; width:0; height:0;">
                 <span style="position:absolute; top:0; left:0; right:0; bottom:0; background:#ccc; border-radius:28px; transition:0.3s;"></span>
@@ -584,7 +584,7 @@
 
     <!-- Loading Spinner -->
     <div id="pricing-loader" style="display:none; text-align:center; padding:80px 20px;">
-        <div style="display:inline-block; width:40px; height:40px; border:3px solid rgba(115,103,240,0.2); border-top-color:#7367f0; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+        <div style="display:inline-block; width:40px; height:40px; border:3px solid rgba(99,102,241,0.2); border-top-color:var(--mw-primary); border-radius:50%; animation:spin 0.8s linear infinite;"></div>
         <p style="margin-top:15px; color:#888; font-size:0.95rem;" id="loader-text">Chargement...</p>
     </div>
 
@@ -828,7 +828,7 @@
                             </div>
                             <h2 style="font-size:1.6rem;font-weight:700;color:#333;margin-bottom:12px;">${alreadyMsg.title}</h2>
                             <p style="font-size:1rem;color:#666;margin-bottom:30px;line-height:1.6;">${alreadyMsg.text}</p>
-                            <a href="/${lang}/profile" style="display:inline-block;background:linear-gradient(135deg,#7367f0,#9e95f5);color:white;padding:14px 35px;border-radius:10px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 4px 15px rgba(115,103,240,0.35);">${alreadyMsg.btn}</a>
+                            <a href="/${lang}/profile" style="display:inline-block;background:var(--mw-primary);color:white;padding:14px 35px;border-radius:10px;text-decoration:none;font-weight:600;font-size:1rem;box-shadow:0 4px 15px rgba(99,102,241,0.35);">${alreadyMsg.btn}</a>
                         </div>
                     `;
                 }
@@ -888,15 +888,15 @@
             // Toggle visual state
             if (isAnnual) {
                 toggleKnob.style.left = '25px';
-                toggleKnob.parentElement.querySelector('span:first-of-type').style.background = 'linear-gradient(135deg, #7367f0, #9e95f5)';
+                toggleKnob.parentElement.querySelector('span:first-of-type').style.background = 'var(--mw-primary)';
                 toggleMonthly.style.color = '#999';
                 toggleMonthly.style.fontWeight = '500';
-                toggleAnnual.style.color = '#7367f0';
+                toggleAnnual.style.color = 'var(--mw-primary)';
                 toggleAnnual.style.fontWeight = '600';
             } else {
                 toggleKnob.style.left = '3px';
                 toggleKnob.parentElement.querySelector('span:first-of-type').style.background = '#ccc';
-                toggleMonthly.style.color = '#7367f0';
+                toggleMonthly.style.color = 'var(--mw-primary)';
                 toggleMonthly.style.fontWeight = '600';
                 toggleAnnual.style.color = '#999';
                 toggleAnnual.style.fontWeight = '500';

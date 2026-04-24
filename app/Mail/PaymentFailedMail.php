@@ -13,7 +13,6 @@ class PaymentFailedMail extends Mailable
     use Queueable;
 
     public $order;
-    public $locale;
 
     public function __construct(Order $order, string $locale = 'en')
     {
@@ -26,9 +25,7 @@ class PaymentFailedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->locale === 'fr' 
-                ? 'Échec du Paiement - Monsieur WiFi' 
-                : 'Payment Failed - Monsieur WiFi',
+            subject: __('emails/payment-failed.subject'),
         );
     }
 
@@ -38,12 +35,11 @@ class PaymentFailedMail extends Mailable
         if (!$this->order->relationLoaded('user')) {
             $this->order->load(['user', 'items.productModel']);
         }
-        
+
         return new Content(
-            view: $this->locale === 'fr' ? 'emails.payment-failed-fr' : 'emails.payment-failed-en',
+            view: 'emails.payment-failed',
             with: [
                 'order' => $this->order,
-                'locale' => $this->locale,
             ],
         );
     }

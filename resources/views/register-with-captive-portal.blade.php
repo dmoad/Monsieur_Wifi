@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
     <meta name="description" content="monsieur-wifi - Configure your captive portal design" id="meta-description">
     <title>Configure Captive Portal Design - Monsieur WiFi</title>
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
     
     <!-- BEGIN: Vendor CSS-->
@@ -163,7 +163,7 @@
                             </div>
                         </div>
                         <div class="text-center mb-3">
-                            <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="48">
+                            <img src="assets/images/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="48">
                             <h2 class="mt-2" id="page-title">Configure Your Captive Portal Design</h2>
                             <p class="text-muted" id="page-subtitle">Customize your WiFi login page before registration</p>
                         </div>

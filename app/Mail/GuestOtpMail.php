@@ -13,30 +13,27 @@ class GuestOtpMail extends Mailable
 
     public string $otp;
     public string $brandName;
-    public string $emailLocale;
 
     public function __construct(string $otp, string $brandName = 'Monsieur WiFi', string $emailLocale = 'en')
     {
-        $this->otp         = $otp;
-        $this->brandName   = $brandName;
-        $this->emailLocale = $emailLocale;
+        $this->otp = $otp;
+        $this->brandName = $brandName;
+        $this->locale = $emailLocale;
     }
 
     public function envelope(): Envelope
     {
-        $subject = $this->emailLocale === 'fr'
-            ? "Votre code d'accès WiFi – {$this->brandName}"
-            : "Your WiFi access code – {$this->brandName}";
-
-        return new Envelope(subject: $subject);
+        return new Envelope(
+            subject: __('emails/guest-otp.subject', ['brand' => $this->brandName]),
+        );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: $this->emailLocale === 'fr' ? 'emails.guest-otp-fr' : 'emails.guest-otp-en',
+            view: 'emails.guest-otp',
             with: [
-                'otp'       => $this->otp,
+                'otp' => $this->otp,
                 'brandName' => $this->brandName,
             ],
         );

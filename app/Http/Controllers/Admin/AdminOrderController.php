@@ -277,7 +277,7 @@ class AdminOrderController extends Controller
     {
         $user = auth()->user();
         
-        if (!in_array($user->role, ['admin', 'superadmin'])) {
+        if (!$user->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'

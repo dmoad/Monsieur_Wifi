@@ -169,8 +169,6 @@ class CartController extends Controller
      */
     public function view(Request $request)
     {
-        $path = $request->path();
-        $locale = (str_starts_with($path, 'fr/') || str_contains($path, '/fr/')) ? 'fr' : 'en';
-        return view("cart-{$locale}");
+        return view('cart');
     }
 }

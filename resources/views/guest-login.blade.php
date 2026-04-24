@@ -112,7 +112,7 @@
     </div>
 
     <div class="loading-container">
-        <img src="{{ asset('app-assets/mrwifi-assets/Mr-Wifi.PNG') }}" alt="MrWiFi Logo" class="logo">
+        <img src="{{ asset('assets/images/Mr-Wifi.PNG') }}" alt="MrWiFi Logo" class="logo">
         <div class="loading-spinner"></div>
         <div class="loading-text" data-i18n="loading"></div>
         <div class="footer" data-i18n="footer"></div>
@@ -191,6 +191,6 @@
         applyTranslations(getLanguage());
     </script>
     
-    <script src="{{ asset('app-assets/mrwifi-assets/captive-portal/js/loading.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('assets/images/captive-portal/js/loading.js') }}?v={{ time() }}"></script>
 </body>
 </html>

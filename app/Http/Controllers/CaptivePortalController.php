@@ -75,6 +75,34 @@ class CaptivePortalController extends Controller
     }
     
     /**
+     * Open the designer with a specific design pre-loaded.
+     */
+    public function showDesigner($design_id)
+    {
+        $design = CaptivePortalDesign::find($design_id);
+
+        if (!$design) {
+            return redirect()->route(app()->getLocale() . '.captive-portals');
+        }
+
+        return view('captive-portals', ['editDesign' => $design]);
+    }
+
+    /**
+     * Render a design as a full-page preview (authenticated admin use only).
+     */
+    public function showPreview($design_id)
+    {
+        $design = CaptivePortalDesign::find($design_id);
+
+        if (!$design) {
+            return response()->view('errors.404', [], 404);
+        }
+
+        return view('captive-portal-preview', compact('design'));
+    }
+
+    /**
      * Handle the login request
      *
      * @param  \Illuminate\Http\Request  $request

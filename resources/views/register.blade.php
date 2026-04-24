@@ -11,7 +11,7 @@
     <meta name="author" content="monsieur-wifi">
     <title>Login - Monsieur WiFi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
@@ -52,15 +52,15 @@
             overflow: hidden;
             background-color: #f8f8f8;
             background-image: 
-                radial-gradient(at 40% 20%, rgba(115, 103, 240, 0.03) 0px, transparent 50%),
+                radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
                 radial-gradient(at 80% 0%, rgba(23, 193, 232, 0.03) 0px, transparent 50%),
-                radial-gradient(at 0% 50%, rgba(115, 103, 240, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
                 radial-gradient(at 80% 100%, rgba(23, 193, 232, 0.03) 0px, transparent 50%);
         }
         
         .animated-bg .wifi-wave {
             position: absolute;
-            border: 2px solid rgba(115, 103, 240, 0.05);
+            border: 2px solid rgba(99, 102, 241, 0.05);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             animation: ripple 15s linear infinite;
@@ -117,7 +117,7 @@
         
         .animated-bg .dot {
             position: absolute;
-            background-color: rgba(115, 103, 240, 0.15);
+            background-color: rgba(99, 102, 241, 0.15);
             border-radius: 50%;
             transform: translate(-50%, -50%);
         }
@@ -168,7 +168,7 @@
         .network-line {
             position: absolute;
             height: 1px;
-            background: linear-gradient(90deg, rgba(115, 103, 240, 0), rgba(115, 103, 240, 0.2), rgba(115, 103, 240, 0));
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0), rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0));
             animation: networkPulse 10s infinite ease-in-out;
             transform-origin: left center;
         }
@@ -218,7 +218,7 @@
         
         .signal-bar {
             width: 4px;
-            background-color: #7367f0;
+            background-color: var(--mw-primary);
             border-radius: 1px;
         }
         
@@ -244,7 +244,7 @@
         .device-icon {
             position: absolute;
             opacity: 0.2;
-            color: #7367f0;
+            color: var(--mw-primary);
         }
         
         /* Card animations */
@@ -270,12 +270,12 @@
         
         .btn-primary {
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(115, 103, 240, 0.4);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(115, 103, 240, 0.5);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
         }
         
         /* Keyframes */
@@ -341,7 +341,7 @@
         
         .form-control:focus {
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(115, 103, 240, 0.2);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
         }
         
         /* Language switcher styles */
@@ -356,18 +356,18 @@
         
         .language-switcher #languageDropdown:hover {
             transform: scale(1.05);
-            border-color: #7367f0;
-            color: #7367f0;
+            border-color: var(--mw-primary);
+            color: var(--mw-primary);
         }
         
         .language-switcher #languageDropdown:focus {
-            box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.25);
-            border-color: #7367f0;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+            border-color: var(--mw-primary);
         }
         
         .language-switcher .dropdown-menu {
             border-radius: 10px;
-            border: 1px solid rgba(115, 103, 240, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.1);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             min-width: 120px;
             padding: 0.5rem 0;
@@ -381,8 +381,8 @@
         }
         
         .language-switcher .dropdown-item:hover {
-            background-color: rgba(115, 103, 240, 0.05);
-            color: #7367f0;
+            background-color: rgba(99, 102, 241, 0.05);
+            color: var(--mw-primary);
             transform: translateX(2px);
         }
         
@@ -474,7 +474,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <a href="javascript:void(0);" class="brand-logo">
-                                        <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
+                                        <img src="assets/images/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
                                         <h2 class="brand-text text-primary ml-1">monsieur-wifi</h2>
                                     </a>
                                     <div class="language-switcher">
@@ -567,7 +567,7 @@
     <!-- BEGIN Vendor JS-->
 
     <!-- BEGIN: Page Vendor JS-->
-    <script src="app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+    <script src="/assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <!-- END: Page Vendor JS-->
 
@@ -576,12 +576,9 @@
     <script src="app-assets/js/core/app.js"></script>
     <!-- END: Theme JS-->
 
-    <!-- BEGIN: Page JS-->
-    <script src="app-assets/js/scripts/pages/page-auth-login.js"></script>
-    <!-- END: Page JS-->
 
     <!-- Add this right after the Page JS scripts -->
-    <script src="/assets/js/config.js?v=3"></script>
+    <script src="/assets/js/config.js?v={{ filemtime(public_path('assets/js/config.js')) }}"></script>
 
     <script>
         // Language support system

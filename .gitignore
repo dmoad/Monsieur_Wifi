@@ -25,3 +25,9 @@ yarn-error.log
 # user uploads
 public/uploads/
 public/uploads/**
+
+# local-only UI mockups / design references
+/ui-mockups
+
+# Playwright MCP snapshot cache
+/.playwright-mcp

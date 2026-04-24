@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html class="loading" lang="{{ $locale ?? 'en' }}" data-textdirection="ltr">
 <head>
+    <script>
+        (function(){var t=localStorage.getItem('mwColorScheme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();
+    </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Monsieur WiFi')</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/app-assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" href="/app-assets/css/bootstrap.css">
-    <link rel="stylesheet" href="/app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" href="/app-assets/css/colors.css">
-    <link rel="stylesheet" href="/app-assets/css/components.css">
-    <link rel="stylesheet" href="/app-assets/css/themes/dark-layout.css">
-    <link rel="stylesheet" href="/app-assets/css/themes/bordered-layout.css">
-    <link rel="stylesheet" href="/app-assets/css/themes/semi-dark-layout.css">
-    <link rel="stylesheet" href="/app-assets/css/core/menu/menu-types/vertical-menu.css">
-    <link rel="stylesheet" href="/app-assets/vendors/css/extensions/toastr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/vendors/css/extensions/toastr.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/mrwifi.css">
 
     <style>
         .dropdown-cart .dropdown-menu-media {
@@ -88,37 +84,30 @@
 
     @stack('styles')
 </head>
-<body class="vertical-layout vertical-menu-modern navbar-floating footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
-    <!-- BEGIN: Header-->
-    @include('layouts.partials.navbar')
-    <!-- END: Header-->
-
-    <!-- BEGIN: Main Menu-->
+<body class="vertical-layout vertical-menu-modern footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
+    <!-- BEGIN: Sidebar-->
     @include('layouts.partials.sidebar')
-    <!-- END: Main Menu-->
+    <!-- END: Sidebar-->
 
     <!-- BEGIN: Content-->
     <div class="app-content content">
         <div class="content-overlay"></div>
-        <div class="header-navbar-shadow"></div>
         <div class="content-wrapper container-xxl p-0">
             @yield('content')
         </div>
     </div>
     <!-- END: Content-->
 
-    <div class="sidenav-overlay"></div>
-    <div class="drag-target"></div>
-
     <!-- BEGIN: Footer-->
     @include('layouts.partials.footer')
     <!-- END: Footer-->
 
-    <script src="/app-assets/vendors/js/vendors.min.js"></script>
-    <script src="/app-assets/vendors/js/extensions/toastr.min.js"></script>
-    <script src="/app-assets/js/core/app-menu.js"></script>
-    <script src="/app-assets/js/core/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.js" integrity="sha384-RyE9TSx1shZZA6GS7TToIk1J7zY1mU8evbLDXYgOz4zgduwPFEtnHd1bswt8PG/u" crossorigin="anonymous"></script>
+    <script src="/assets/vendors/js/extensions/toastr.min.js"></script>
     <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/mw-primitives.js?v={{ filemtime(public_path('assets/js/mw-primitives.js')) }}"></script>
 
     @stack('scripts')
 
@@ -136,6 +125,70 @@
             hideMethod: 'fadeOut'
         };
 
+        // ── Sidebar expand / collapse ──────────────────────────────
+        (function () {
+            const sb        = document.getElementById('mwSidebar');
+            const toggle    = document.getElementById('mwSbToggle');
+            const hamburger = document.getElementById('mwHamburger');
+            const avBtn     = document.getElementById('mwAvBtn');
+            const avMenu    = document.getElementById('mwAvMenu');
+            const backdrop  = document.getElementById('mwSbBackdrop');
+
+            const isMobile = () => window.innerWidth <= 640;
+
+            function setSidebar(expanded) {
+                sb.classList.toggle('expanded', expanded);
+                // On desktop: shift content. On mobile: overlay only (no body class).
+                if (!isMobile()) {
+                    document.body.classList.toggle('mw-sb-expanded', expanded);
+                    localStorage.setItem('mwSbExpanded', expanded ? '1' : '0');
+                }
+                // Backdrop only on mobile
+                if (backdrop) backdrop.classList.toggle('open', expanded && isMobile());
+            }
+
+            // Restore desktop expanded state on page load; force-close on mobile
+            if (!isMobile() && localStorage.getItem('mwSbExpanded') === '1') {
+                setSidebar(true);
+            }
+
+            // If viewport crosses the mobile breakpoint, reset sidebar state
+            window.addEventListener('resize', () => {
+                if (isMobile()) {
+                    sb.classList.remove('expanded');
+                    document.body.classList.remove('mw-sb-expanded');
+                    if (backdrop) backdrop.classList.remove('open');
+                } else {
+                    sb.classList.remove('expanded');
+                    document.body.classList.remove('mw-sb-expanded');
+                    if (backdrop) backdrop.classList.remove('open');
+                    if (localStorage.getItem('mwSbExpanded') === '1') {
+                        setSidebar(true);
+                    }
+                }
+            });
+
+            // Desktop: logo/chevron area toggles expand
+            toggle.addEventListener('click', () => {
+                if (!isMobile()) setSidebar(!sb.classList.contains('expanded'));
+            });
+
+            // Mobile: hamburger button toggles full sidebar overlay
+            if (hamburger) {
+                hamburger.addEventListener('click', () => setSidebar(!sb.classList.contains('expanded')));
+            }
+
+            // Backdrop always closes sidebar
+            if (backdrop) backdrop.addEventListener('click', () => setSidebar(false));
+
+            avBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                avMenu.classList.toggle('open');
+            });
+
+            document.addEventListener('click', () => avMenu.classList.remove('open'));
+        })();
+
         if (typeof feather !== 'undefined') feather.replace();
 
         // Authentication check and user display
@@ -150,6 +203,14 @@
 
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
+            $('.mw-av-display-name').text(user.name || '');
+            $('.mw-av-display-email').text(user.email || '');
+
+            // Avatar initials
+            if (user.name) {
+                const initials = user.name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                $('.mw-av-initials').text(initials);
+            }
             var profile_picture = localStorage.getItem('profile_picture');
             if (!profile_picture || profile_picture === 'null') {
                 profile_picture = '/assets/avatar-default.png';
@@ -206,9 +267,9 @@
                 // Update cart count badges
                 $('.cart-item-count').text(itemCount);
                 if (itemCount > 0) {
-                    $('.badge-up.cart-item-count').show();
+                    $('.cart-item-count').show();
                 } else {
-                    $('.badge-up.cart-item-count').hide();
+                    $('.cart-item-count').hide();
                 }
 
                 // Update cart dropdown
@@ -230,7 +291,7 @@
                         const subtotal = (item.price_at_add * item.quantity).toFixed(2);
 
                         html += `
-                            <a class="d-flex" href="/${locale === 'fr' ? 'fr/boutique' : 'en/shop'}/${product.slug}">
+                            <a class="d-flex" href="/${locale}/shop/${product.slug}">
                                 <div class="media d-flex align-items-start">
                                     <div class="media-left">
                                         <div class="avatar bg-light-primary rounded" style="width: 50px; height: 50px;">

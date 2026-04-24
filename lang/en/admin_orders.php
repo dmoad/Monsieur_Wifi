@@ -1,0 +1,102 @@
+<?php
+
+return [
+    'page_title' => 'Manage Orders - Monsieur WiFi',
+    'heading' => 'Manage Orders',
+    'breadcrumb' => 'Manage Orders',
+
+    'filter_orders' => 'Filter Orders',
+    'search_placeholder' => 'Search order number...',
+    'btn_apply_filter' => 'Apply Filter',
+
+    'status_all' => 'All Statuses',
+    'status_pending' => 'Pending',
+    'status_processing' => 'Processing',
+    'status_shipped' => 'Shipped',
+    'status_delivered' => 'Delivered',
+    'status_cancelled' => 'Cancelled',
+    'status_payment_failed' => 'Payment Failed',
+
+    'modal_assign_title' => 'Assign Inventory to Order',
+    'btn_assign_devices' => 'Assign & Create Devices',
+
+    // JS-only strings (consumed via window.APP_I18N.admin_orders)
+    'js_session_expired' => 'Session expired. Please login again.',
+    'js_no_permission' => 'You do not have permission to access this page.',
+    'js_load_orders_failed' => 'Failed to load orders: {message}',
+    'js_no_orders' => 'No orders found',
+    'js_no_tracking' => 'No tracking',
+    'js_btn_view' => 'View',
+    'js_btn_tracking' => 'Tracking',
+
+    'js_load_details_failed' => 'Failed to load order details',
+    'js_label_customer' => 'Customer',
+    'js_label_payment' => 'Payment',
+    'js_label_shipping_info' => 'Shipping',
+    'js_label_tracking_info' => 'Tracking',
+    'js_summary_title' => 'Order Summary',
+    'js_summary_subtotal' => 'Subtotal',
+    'js_summary_shipping' => 'Shipping',
+    'js_summary_tax' => 'Tax',
+    'js_summary_total' => 'Total',
+
+    'js_badge_awaiting_payment' => 'Awaiting payment',
+    'js_badge_paid' => 'Payment received',
+
+    'js_btn_invoice' => 'Invoice',
+    'js_btn_update_inventory' => 'Update Inventory',
+    'js_btn_assign_inventory' => 'Assign items from Inventory',
+    'js_btn_update_tracking' => 'Update Tracking',
+    'js_btn_add_tracking' => 'Add Tracking',
+    'js_btn_confirm_payment' => 'Confirm Payment',
+    'js_btn_mark_shipped' => 'Mark Shipped',
+    'js_btn_mark_delivered' => 'Mark Delivered',
+    'js_btn_cancel_order' => 'Cancel',
+
+    'js_confirm_payment_received' => 'Confirm payment has been received?',
+    'js_confirm_payment_received_title' => 'Confirm payment?',
+    'js_confirm_btn' => 'Confirm',
+    'js_confirm_cancel' => 'Are you sure you want to cancel this order?',
+    'js_confirm_cancel_title' => 'Cancel order?',
+    'js_cancel_order_btn' => 'Cancel Order',
+
+    'js_status_info_cancelled' => 'Order cancelled',
+    'js_status_info_completed' => 'Order completed',
+
+    'js_payment_stripe_confirmed' => 'Stripe payment confirmed successfully',
+    'js_payment_confirmed' => 'Payment confirmed successfully',
+    'js_payment_confirm_failed' => 'Failed to confirm payment',
+
+    'js_tracking_add_title' => 'Add Shipping Information',
+    'js_tracking_provider' => 'Shipping Provider',
+    'js_tracking_select_provider' => 'Select a provider...',
+    'js_tracking_major_carriers' => 'Major European Carriers',
+    'js_tracking_other_providers' => 'Other',
+    'js_tracking_other_provider_name' => 'Other Provider Name',
+    'js_tracking_enter_provider' => 'Enter provider name',
+    'js_tracking_id' => 'Tracking ID',
+    'js_tracking_enter_tracking' => 'Enter tracking number',
+    'js_tracking_btn_save' => 'Save Tracking',
+    'js_tracking_error_select_provider' => 'Please select a shipping provider',
+    'js_tracking_error_enter_provider' => 'Please enter provider name',
+    'js_tracking_error_enter_tracking' => 'Please enter tracking ID',
+    'js_tracking_updated' => 'Tracking information updated successfully',
+    'js_tracking_update_failed' => 'Failed to update tracking',
+
+    'js_status_updated' => 'Order status updated',
+    'js_status_update_failed' => 'Failed to update status',
+
+    'js_inv_instructions' => 'Select inventory items to assign to each order item. The number of items must match the ordered quantity.',
+    'js_inv_label_quantity' => 'Quantity',
+    'js_inv_label_available' => 'Available items',
+    'js_inv_select_items' => 'Select items (exactly {n})',
+    'js_inv_click_to_select' => 'Click to select/deselect items',
+    'js_inv_error_load_order' => 'Error loading order',
+    'js_inv_error_select_exactly' => 'You must select exactly {n} item(s)',
+    'js_inv_assigned_success' => 'Inventory assigned and devices created successfully',
+    'js_inv_error_assign' => 'Error assigning inventory',
+
+    'js_invoice_download_failed' => 'Failed to download invoice',
+    'js_invoice_downloaded' => 'Invoice downloaded successfully',
+    'js_invoice_filename' => 'invoice-{order}.pdf',
+];

@@ -13,7 +13,6 @@ class ShippingTrackingMail extends Mailable
     use Queueable;
 
     public $order;
-    public $locale;
 
     public function __construct(Order $order, string $locale = 'en')
     {
@@ -26,9 +25,7 @@ class ShippingTrackingMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->locale === 'fr' 
-                ? 'Votre Commande a été Expédiée - Monsieur WiFi' 
-                : 'Your Order Has Been Shipped - Monsieur WiFi',
+            subject: __('emails/shipping-tracking.subject'),
         );
     }
 
@@ -38,12 +35,11 @@ class ShippingTrackingMail extends Mailable
         if (!$this->order->relationLoaded('user')) {
             $this->order->load(['user', 'shippingAddress']);
         }
-        
+
         return new Content(
-            view: $this->locale === 'fr' ? 'emails.shipping-tracking-fr' : 'emails.shipping-tracking-en',
+            view: 'emails.shipping-tracking',
             with: [
                 'order' => $this->order,
-                'locale' => $this->locale,
             ],
         );
     }

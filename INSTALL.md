@@ -331,7 +331,7 @@ Customize the application branding:
 ```env
 # Branding Configuration for Facebook etc
 APP_BRAND_NAME=monsieur-wifi
-APP_BRAND_LOGO=/app-assets/mrwifi-assets/Mr-Wifi.PNG
+APP_BRAND_LOGO=/assets/images/Mr-Wifi.PNG
 APP_BRAND_WELCOME_MESSAGE="Welcome to {{APP_NAME}}"
 APP_BRAND_TERMS_OF_SERVICE_URL=/terms-of-service
 APP_BRAND_PRIVACY_POLICY_URL=/privacy-policy

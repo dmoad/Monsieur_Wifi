@@ -1,5 +1,5 @@
-// Product detail page (English)
-const LOCALE = 'en';
+// Product detail page — translations injected by blade (lang/{en,fr}/product.php)
+const t = window.APP_I18N.product;
 let currentProduct = null;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -29,8 +29,8 @@ async function loadProduct(slug) {
         console.error('Error loading product:', error);
         document.getElementById('product-loading').innerHTML = `
             <div class="col-12 text-center">
-                <p class="text-danger">Product not found.</p>
-                <a href="/en/shop" class="btn btn-primary">Back to Shop</a>
+                <p class="text-danger">${t.not_found}</p>
+                <a href="${t.shop_url}" class="btn btn-primary">${t.btn_back_to_shop}</a>
             </div>
         `;
     }
@@ -39,25 +39,25 @@ async function loadProduct(slug) {
 function displayProduct(product) {
     document.getElementById('product-name').textContent = product.name;
     document.getElementById('product-price').textContent = `€${parseFloat(product.price).toFixed(2)}`;
-    document.getElementById('product-description').innerHTML = product.description_en || '';
+    document.getElementById('product-description').innerHTML = product['description_' + t.locale] || '';
     
-    const mainImage = product.primary_image || '/app-assets/images/placeholder.png';
+    const mainImage = product.primary_image || '/assets/images/product-placeholder.png';
     document.getElementById('main-image').src = mainImage;
     
     if (product.images && product.images.length > 1) {
         const thumbnails = document.getElementById('thumbnails');
         thumbnails.innerHTML = product.images.map((img, index) => `
-            <img src="${img.image_url}" alt="Thumbnail" class="thumbnail ${index === 0 ? 'active' : ''}" 
+            <img src="${img.image_url}" alt="${t.alt_thumbnail}" class="thumbnail ${index === 0 ? 'active' : ''}"
                  onclick="changeImage('${img.image_url}', this)">
         `).join('');
     }
     
     const stockStatus = document.getElementById('stock-status');
     if (product.is_in_stock) {
-        stockStatus.innerHTML = `<span class="badge badge-success">In Stock (${product.available_quantity} available)</span>`;
+        stockStatus.innerHTML = `<span class="badge badge-success">${t.badge_in_stock_html.replace('{n}', product.available_quantity)}</span>`;
         document.getElementById('quantity').max = product.available_quantity;
     } else {
-        stockStatus.innerHTML = `<span class="badge badge-danger">Out of Stock</span>`;
+        stockStatus.innerHTML = `<span class="badge badge-danger">${t.badge_out_of_stock}</span>`;
         document.getElementById('add-to-cart-btn').disabled = true;
     }
     
@@ -68,14 +68,14 @@ function displayProduct(product) {
 
 function changeImage(url, thumbnail) {
     document.getElementById('main-image').src = url;
-    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('active'));
     thumbnail.classList.add('active');
 }
 
 async function addToCart() {
     const token = UserManager.getToken();
     if (!token) {
-        toastr.warning('Please login to add items to cart');
+        toastr.warning(t.toast_login_required);
         window.location.href = '/login';
         return;
     }
@@ -99,12 +99,12 @@ async function addToCart() {
         const data = await response.json();
         
         if (response.ok) {
-            toastr.success('Product added to cart!');
+            toastr.success(t.toast_added);
             // Refresh navbar cart if function exists
             if (typeof loadNavbarCart === 'function') {
                 loadNavbarCart();
             }
-            setTimeout(() => window.location.href = '/en/cart', 1000);
+            setTimeout(() => window.location.href = t.cart_url, 1000);
         } else {
             // Show validation errors if present
             if (data.errors) {
@@ -112,11 +112,11 @@ async function addToCart() {
                     toastr.error(Array.isArray(err) ? err[0] : err);
                 });
             } else {
-                toastr.error(data.message || 'Failed to add to cart');
+                toastr.error(data.message || t.toast_add_failed);
             }
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
-        toastr.error('Failed to add to cart');
+        toastr.error(t.toast_add_failed);
     }
 }

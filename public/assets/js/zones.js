@@ -28,6 +28,8 @@ const TRANSLATIONS = {
         delete: 'Delete',
         adminAlert: 'Note: Each zone can only contain locations from the same owner. When managing zones, ensure all locations belong to the zone\'s owner.',
         confirmDelete: 'Are you sure you want to delete this zone? All locations will be decoupled.',
+        confirmDeleteTitle: 'Delete zone?',
+        deleteBtn: 'Delete',
         zoneDeleted: 'Zone deleted successfully',
         zoneSaved: 'Zone saved successfully',
         errorLoading: 'Error loading zones',
@@ -50,6 +52,8 @@ const TRANSLATIONS = {
         delete: 'Supprimer',
         adminAlert: 'Note: Chaque zone ne peut contenir que des emplacements du même propriétaire. Lors de la gestion des zones, assurez-vous que tous les emplacements appartiennent au propriétaire de la zone.',
         confirmDelete: 'Êtes-vous sûr de vouloir supprimer cette zone? Tous les emplacements seront découplés.',
+        confirmDeleteTitle: 'Supprimer la zone ?',
+        deleteBtn: 'Supprimer',
         zoneDeleted: 'Zone supprimée avec succès',
         zoneSaved: 'Zone enregistrée avec succès',
         errorLoading: 'Erreur lors du chargement des zones',
@@ -98,7 +102,7 @@ function renderAdminAlert() {
     if (UserManager.isAdminOrAbove()) {
         container.innerHTML = `
             <div class="admin-alert">
-                <i data-feather="info" style="width: 24px; height: 24px;"></i>
+                <i data-feather="info"></i>
                 <div>${T.adminAlert}</div>
             </div>
         `;
@@ -259,34 +263,45 @@ function displayZones() {
     
     // Display zones
     listEl.innerHTML = currentZones.map(zone => {
-        const locationCount = zone.location_count || zone.locations?.length || 0;
-        const ownerName = zone.owner ? `${zone.owner.name}` : '';
-        const ownerEmail = zone.owner ? `${zone.owner.email}` : '';
-        
+        const locationCount = zone.location_count ?? (zone.locations?.length || 0);
+        const ownerName     = zone.owner ? zone.owner.name : '';
+        const managers      = isAdmin && ownerName
+            ? `<span class="zc-meta-item"><i data-feather="user"></i> ${ownerName}</span>`
+            : '';
+        const addressItem   = zone.description
+            ? `<span class="zc-meta-item" title="${zone.description}"><i data-feather="map-pin"></i> ${zone.description}</span>`
+            : '';
+
         return `
-            <div class="zone-card">
-                <div class="zone-row">
-                    <div class="zone-info">
-                        <div class="zone-name">${zone.name}</div>
-                        <div class="zone-meta">
-                            ${zone.description ? `<span class="zone-description" title="${zone.description}">${zone.description}</span>` : ''}
-                            <span class="zone-stat">
-                                <i data-feather="map-pin"></i>
-                                ${locationCount} ${T.locations}
-                            </span>
-                            ${isAdmin && zone.owner ? `<span class="zone-owner"><i data-feather="user"></i> ${ownerName}</span>` : ''}
+            <div class="zone-card card card-clickable" onclick="window.location.href='/${locale}/zones/${zone.id}'">
+                <div class="zc-head">
+                    <div class="zc-info">
+                        <div class="zc-name">${zone.name}</div>
+                        <div class="zc-meta">${addressItem}${managers}</div>
+                    </div>
+                    <div class="zc-kebab-wrap" onclick="event.stopPropagation()">
+                        <button class="zc-kebab-btn" onclick="toggleZoneMenu(event, ${zone.id})" title="${T.edit}">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                            </svg>
+                        </button>
+                        <div class="zc-menu" id="zc-menu-${zone.id}">
+                            <button class="zc-menu-item" onclick="showZoneModal(${zone.id}); closeAllZoneMenus()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                ${T.edit}
+                            </button>
+                            <div class="zc-menu-divider"></div>
+                            <button class="zc-menu-item zc-menu-danger" onclick="deleteZone(${zone.id}); closeAllZoneMenus()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                ${T.delete}
+                            </button>
                         </div>
                     </div>
-                    <div class="zone-actions">
-                        <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='/${locale}/zones/${zone.id}'" title="${T.viewDetails}">
-                            <i data-feather="eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="showZoneModal(${zone.id})" title="${T.edit}">
-                            <i data-feather="edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteZone(${zone.id})" title="${T.delete}">
-                            <i data-feather="trash-2"></i>
-                        </button>
+                </div>
+                <div class="zc-stats">
+                    <div class="zc-stat">
+                        <div class="zc-stat-val zc-p"><i data-feather="map-pin"></i> ${locationCount}</div>
+                        <div class="zc-stat-lbl">${T.locations}</div>
                     </div>
                 </div>
             </div>
@@ -391,13 +406,8 @@ function showZoneModal(zoneId = null) {
     
     document.getElementById('zone-form').reset();
     document.getElementById('zone-id').value = '';
-    
-    // Clear primary location info
-    const primaryInfoContainer = document.getElementById('primary-location-info-edit');
-    if (primaryInfoContainer) {
-        primaryInfoContainer.innerHTML = '';
-    }
-    
+
+
     // Show/hide owner dropdown based on admin status and mode
     console.log('showZoneModal - zoneId:', zoneId);
     console.log('showZoneModal - isAdminOrAbove:', UserManager.isAdminOrAbove());
@@ -466,80 +476,6 @@ async function loadZoneForEdit(zoneId) {
             initSharedUsersSelect2(zone.shared_users);
         }
 
-        // Show primary location info if available
-        const primaryInfoContainer = document.getElementById('primary-location-info-edit');
-        if (primaryInfoContainer) {
-            if (zone.primary_location) {
-                const settingsUrl = `/${PAGE_LOCALE}/locations/${zone.primary_location.id}`;
-                const inheritanceMessage = PAGE_LOCALE === 'fr' 
-                    ? `Les paramètres réseau, sécurité et configuration sont hérités de l'emplacement principal. Toute modification appliquée à l'emplacement principal sera automatiquement propagée à tous les autres emplacements de cette zone.`
-                    : `Network, security, and configuration settings are inherited from the Primary Location. Any changes applied to the Primary Location will automatically propagate to all other locations in this zone.`;
-                
-                const inheritanceTitle = PAGE_LOCALE === 'fr' ? 'Héritage des Paramètres' : 'Settings Inheritance';
-                primaryInfoContainer.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; color: white; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);">
-                        <div class="d-flex align-items-start">
-                            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 1rem;">
-                                <i data-feather="settings" style="width: 24px; height: 24px;"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
-                                    <div>
-                                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; margin-bottom: 0.25rem;">
-                                            ${PAGE_LOCALE === 'fr' ? 'Emplacement Principal' : 'Primary Location'}
-                                        </div>
-                                        <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.25rem;">
-                                            ${zone.primary_location.name}
-                                        </div>
-                                        <div style="font-size: 0.875rem; opacity: 0.85;">
-                                            <i data-feather="map-pin" style="width: 14px; height: 14px; margin-right: 0.25rem;"></i>
-                                            ${zone.primary_location.address || 'N/A'}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.15); border-left: 3px solid rgba(255,255,255,0.5); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem;">
-                                    <div style="font-weight: 600; font-size: 0.875rem; margin-bottom: 0.35rem;">
-                                        <i data-feather="info" style="width: 16px; height: 16px; margin-right: 0.25rem;"></i>
-                                        ${inheritanceTitle}
-                                    </div>
-                                    <div style="font-size: 0.8125rem; line-height: 1.5; opacity: 0.95;">
-                                        ${inheritanceMessage}
-                                    </div>
-                                </div>
-                                <a href="${settingsUrl}" class="btn btn-light btn-sm" style="font-weight: 500;">
-                                    <i data-feather="settings" style="width: 16px; height: 16px;"></i>
-                                    ${PAGE_LOCALE === 'fr' ? 'Gérer les Paramètres de la Zone' : 'Manage Zone Settings'}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                feather.replace();
-            } else {
-                const noPrimaryTitle = PAGE_LOCALE === 'fr' ? 'Aucun Emplacement Principal' : 'No Primary Location';
-                const noPrimaryMessage = PAGE_LOCALE === 'fr'
-                    ? 'Pour configurer les paramètres de cette zone, vous devez d\'abord ajouter des emplacements et définir l\'un d\'eux comme principal.'
-                    : 'To configure settings for this zone, you must first add locations and designate one as the primary location.';
-                primaryInfoContainer.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; color: white; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.2);">
-                        <div class="d-flex align-items-center">
-                            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 1rem;">
-                                <i data-feather="alert-triangle" style="width: 24px; height: 24px;"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; font-size: 1rem; margin-bottom: 0.35rem;">
-                                    ${noPrimaryTitle}
-                                </div>
-                                <div style="font-size: 0.875rem; opacity: 0.95; line-height: 1.4;">
-                                    ${noPrimaryMessage}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                feather.replace();
-            }
-        }
     } catch (error) {
         console.error('Error loading zone:', error);
         toastr.error(T.errorLoading);
@@ -617,10 +553,16 @@ async function saveZone() {
 }
 
 async function deleteZone(zoneId) {
-    if (!confirm(T.confirmDelete)) {
-        return;
-    }
-    
+    const ok = await MwConfirm.open({
+        title: T.confirmDeleteTitle || 'Delete zone?',
+        message: T.confirmDelete,
+        confirmText: T.deleteBtn || 'Delete',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        destructive: true,
+    });
+    if (!ok) return;
+
+
     const token = UserManager.getToken();
     
     try {
@@ -645,3 +587,17 @@ async function deleteZone(zoneId) {
         toastr.error(T.errorDeleting);
     }
 }
+
+function toggleZoneMenu(e, zoneId) {
+    e.stopPropagation();
+    const target = document.getElementById('zc-menu-' + zoneId);
+    const isOpen = target.classList.contains('open');
+    closeAllZoneMenus();
+    if (!isOpen) target.classList.add('open');
+}
+
+function closeAllZoneMenus() {
+    document.querySelectorAll('.zc-menu.open').forEach(m => m.classList.remove('open'));
+}
+
+document.addEventListener('click', closeAllZoneMenus);

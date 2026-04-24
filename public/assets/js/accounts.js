@@ -1,4 +1,4 @@
-// Accounts Management JavaScript with Bilingual Support
+// Accounts Management JavaScript
 
 const TRANSLATIONS = {
     en: {
@@ -23,7 +23,11 @@ const TRANSLATIONS = {
         failedUpdateAccount: 'Failed to update user account. Please try again.',
         failedDeleteAccount: 'Failed to delete user account. Please try again.',
         confirmDelete: 'Are you sure you want to delete the user account for',
-        confirmDeleteSuffix: '? This action cannot be undone.'
+        confirmDeleteSuffix: '? This action cannot be undone.',
+        confirmDeleteTitle: 'Delete account?',
+        deleteBtn: 'Delete',
+        loading: 'Loading accounts...',
+        noAccounts: 'No accounts found',
     },
     fr: {
         admin: 'Administrateur',
@@ -47,198 +51,198 @@ const TRANSLATIONS = {
         failedUpdateAccount: 'Échec de la mise à jour du compte utilisateur. Veuillez réessayer.',
         failedDeleteAccount: 'Échec de la suppression du compte utilisateur. Veuillez réessayer.',
         confirmDelete: 'Êtes-vous sûr de vouloir supprimer le compte utilisateur pour',
-        confirmDeleteSuffix: ' ? Cette action ne peut pas être annulée.'
+        confirmDeleteSuffix: ' ? Cette action ne peut pas être annulée.',
+        confirmDeleteTitle: 'Supprimer le compte ?',
+        deleteBtn: 'Supprimer',
+        loading: 'Chargement des comptes...',
+        noAccounts: 'Aucun compte trouvé',
     }
 };
 
 const PAGE_LOCALE = typeof locale !== 'undefined' ? locale : 'en';
 const t = TRANSLATIONS[PAGE_LOCALE];
 
-$(window).on('load', function() {
-    if (feather) {
-        feather.replace({
-            width: 14,
-            height: 14
-        });
-        
-        $('.avatar-icon').each(function() {
-            $(this).css({
-                'width': '24px',
-                'height': '24px'
-            });
-        });
-    }
-    
-    const user = UserManager.getUser();
-    if (user.role != 'admin' && user.role != 'superadmin') {
-        const dashboardUrl = PAGE_LOCALE === 'fr' ? '/fr/dashboard' : '/en/dashboard';
-        window.location.href = dashboardUrl;
+function escapeHtml(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+function roleBadge(role) {
+    const label = t[role] || role;
+    return `<span class="ac-role-badge badge-role-${role}">${escapeHtml(label)}</span>`;
+}
+
+const _kebabSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
+const _editSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const _trashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+
+function closeAllAcMenus() {
+    $('.ac-menu.open').removeClass('open');
+}
+
+function renderRows(users, currentUser) {
+    const $tbody = $('#accounts-tbody');
+    if (!users.length) {
+        $tbody.html(`<tr class="ac-empty-row"><td colspan="3">${t.noAccounts}</td></tr>`);
         return;
     }
-    
-    // Show superadmin option only if current user is superadmin
-    if (user.role === 'superadmin') {
-        $('.superadmin-only').show();
-    }
-    
-    if ($.fn.select2) {
-        $('#role').select2({
-            dropdownParent: $('#add-new-account'),
-            minimumResultsForSearch: Infinity
-        });
-    }
-    
-    $('.form-password-toggle .input-group-text').on('click', function() {
-        const $this = $(this);
-        const inputGroupText = $this.closest('.form-password-toggle');
-        const formPasswordToggleIcon = $this.find('i');
-        const formPasswordToggleInput = inputGroupText.parent().find('input');
 
-        if (formPasswordToggleInput.attr('type') === 'text') {
-            formPasswordToggleInput.attr('type', 'password');
-            if (feather) {
-                formPasswordToggleIcon.replaceWith(feather.icons.eye.toSvg({ class: 'font-small-4' }));
-            }
-        } else if (formPasswordToggleInput.attr('type') === 'password') {
-            formPasswordToggleInput.attr('type', 'text');
-            if (feather) {
-                formPasswordToggleIcon.replaceWith(feather.icons['eye-off'].toSvg({ class: 'font-small-4' }));
-            }
-        }
-    });
-    
-    $('#status').on('change', function() {
-        $(this).next('label').text($(this).prop('checked') ? 'Active' : 'Inactive');
-    });
+    const canDelete = currentUser.role === 'superadmin';
+
+    const html = users.map(u => {
+        const avatarSrc = u.profile_picture
+            ? `/uploads/profile_pictures/${escapeHtml(u.profile_picture)}`
+            : '/assets/avatar-default.jpg';
+        const role = u.role || 'user';
+        const deleteItem = canDelete
+            ? `<div class="ac-menu-divider"></div>
+               <button class="ac-menu-item ac-menu-danger" data-action="delete"
+                   data-user-id="${u.id}" data-user-name="${escapeHtml(u.name)}" data-user-role="${role}">
+                   ${_trashSvg} ${t.delete}
+               </button>`
+            : '';
+        return `
+            <tr data-search="${escapeHtml((u.name + ' ' + u.email + ' ' + role).toLowerCase())}">
+                <td>
+                    <div class="ac-user-cell">
+                        <img src="${avatarSrc}" alt="" class="ac-avatar">
+                        <div>
+                            <div class="ac-name">${escapeHtml(u.name)}</div>
+                            <div class="ac-email">${escapeHtml(u.email)}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${roleBadge(role)}</td>
+                <td class="ac-col-actions">
+                    <div class="ac-kebab-wrap">
+                        <button class="ac-kebab-btn ac-kebab-toggle"
+                            data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
+                            data-email="${escapeHtml(u.email)}" data-role="${role}"
+                            data-profile-picture="${avatarSrc}">
+                            ${_kebabSvg}
+                        </button>
+                        <div class="ac-menu" id="ac-menu-${u.id}">
+                            <button class="ac-menu-item" data-action="edit"
+                                data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
+                                data-email="${escapeHtml(u.email)}" data-role="${role}"
+                                data-profile-picture="${avatarSrc}">
+                                ${_editSvg} ${t.edit}
+                            </button>
+                            ${deleteItem}
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+
+    $tbody.html(html);
+}
+
+$(window).on('load', function() {
+    if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
 });
 
 $(document).ready(function() {
     const user = UserManager.getUser();
     const token = UserManager.getToken();
-    
-    if (!token || !user) {
-        window.location.href = '/';
+
+    if (!token || !user) { window.location.href = '/'; return; }
+
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+        window.location.href = `/${PAGE_LOCALE}/dashboard`;
         return;
     }
-    
-    const profile_picture = localStorage.getItem('profile_picture');
-    $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + profile_picture);
-    $('.user-name').text(user.name);
-    $('.user-status').text(user.role);
 
-    if (!$.fn.DataTable.isDataTable('#accounts-table')) {
-        $('#accounts-table').DataTable({
-            responsive: true,
-            columnDefs: [
-                {
-                    targets: [5],
-                    orderable: false
-                }
-            ],
-            dom: '<"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-            language: {
-                paginate: {
-                    previous: '&nbsp;',
-                    next: '&nbsp;'
-                }
-            }
-        });
-    }
+    if (user.role === 'superadmin') $('.superadmin-only').show();
+
+    // Password visibility toggles
+    $('.form-password-toggle .input-group-text').on('click', function() {
+        const $input = $(this).closest('.form-password-toggle').parent().find('input');
+        const isText = $input.attr('type') === 'text';
+        $input.attr('type', isText ? 'password' : 'text');
+        if (typeof feather !== 'undefined') {
+            $(this).find('svg, i').replaceWith(
+                feather.icons[isText ? 'eye' : 'eye-off'].toSvg({ class: 'font-small-4' })
+            );
+        }
+    });
 
     function loadUsersData() {
+        $('#accounts-tbody').html(`<tr class="ac-empty-row"><td colspan="3">${t.loading}</td></tr>`);
         $.ajax({
             url: '/api/accounts/users',
             type: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token
-            },
+            headers: { 'Authorization': 'Bearer ' + token },
             success: function(response) {
-                console.log(response);
                 if (response.status === 'success') {
-                    const users = response.users;
-                    const table = $('#accounts-table').DataTable();
-
-                    table.clear();
-
-                    for (let i = 0; i < users.length; i++) {
-                        const id = i + 1;
-                        const name = users[i].name;
-                        const email = users[i].email;
-                        const role = users[i].role || 'user';
-                        let profile_picture = users[i].profile_picture;
-                        let profile_picture_path = '/uploads/profile_pictures/' + profile_picture;
-                        
-                        if (profile_picture === null) {
-                            profile_picture_path = '/assets/avatar-default.jpg';
-                            profile_picture = `<img src="/assets/avatar-default.jpg" alt="Profile Picture" class="img-fluid" style="width: 50px; height: 50px;">`;
-                        } else {
-                            profile_picture_path = '/uploads/profile_pictures/' + profile_picture;
-                            profile_picture = `<img src="/uploads/profile_pictures/${profile_picture}" alt="Profile Picture" class="img-fluid" style="width: 50px; height: 50px;">`;
-                        }
-                        
-                        let roleBadge;
-                        if (role === 'superadmin') {
-                            roleBadge = `<span class="badge badge-role-superadmin">${t.superadmin}</span>`;
-                        } else if (role === 'admin') {
-                            roleBadge = `<span class="badge badge-role-admin">${t.admin}</span>`;
-                        } else {
-                            roleBadge = `<span class="badge badge-light-secondary">${t.user}</span>`;
-                        }
-                        
-                        const userId = users[i].id;
-                        const canDelete = user.role === 'superadmin';
-                        const deleteBtn = canDelete
-                            ? `<button class="btn btn-sm btn-danger delete-user-btn" data-user-id="${userId}" data-user-name="${name}" data-user-role="${role}">
-                                  <i data-feather="trash-2"></i> ${t.delete}
-                               </button>`
-                            : '';
-                        const actions = `<button class="btn btn-sm btn-primary edit-user-btn" data-user-id="${userId}" data-name="${name}" data-email="${email}" data-role="${role}" data-profile-picture="${profile_picture_path}">
-                                          <i data-feather="edit-2"></i> ${t.edit}
-                                       </button> ${deleteBtn}`;
-                        
-                        table.row.add([id, name, email, roleBadge, profile_picture, actions]).draw();
-                    }
-
-                    $('#total-accounts').text(response.total);
-                    feather.replace();
+                    renderRows(response.users, user);
                 } else {
-                    alert(t.failedFetchUsers);
+                    toastr.error(t.failedFetchUsers);
                 }
             },
-            error: function(xhr, status, error) {
-                console.log(xhr.responseText);
-            }
+            error: function() { toastr.error(t.failedFetchUsers); }
         });
     }
 
     loadUsersData();
 
-    $('#new-account-upload').on('change', function() {
-        const file = $(this).prop('files')[0];
-        if (file) {
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-            if (!validTypes.includes(file.type)) {
-                toastr.error(t.invalidFileType, 'Invalid File');
-                return;
-            }
-            
-            if (file.size > 2 * 1024 * 1024) {
-                toastr.error(t.fileTooLarge, 'File Too Large');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                $('#new-account-upload-img').attr('src', e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
+    // Search filter
+    $('#search-accounts').on('input', function() {
+        const q = $(this).val().trim().toLowerCase();
+        $('#accounts-tbody tr[data-search]').each(function() {
+            $(this).toggle(!q || $(this).data('search').indexOf(q) !== -1);
+        });
     });
 
-    // Password method toggle: show/hide manual password fields
+    // Row click → open edit (skip if clicking inside the kebab area)
+    $(document).on('click', '#accounts-tbody tr[data-search]', function(e) {
+        if ($(e.target).closest('.ac-kebab-wrap').length) return;
+        const $editBtn = $(this).find('.ac-menu-item[data-action="edit"]');
+        if ($editBtn.length) openEditModal($editBtn);
+    });
+
+    // Kebab toggle
+    $(document).on('click', '.ac-kebab-toggle', function() {
+        const $menu = $('#ac-menu-' + $(this).data('user-id'));
+        const wasOpen = $menu.hasClass('open');
+        closeAllAcMenus();
+        if (!wasOpen) $menu.addClass('open');
+    });
+
+    // Close menus on outside click (but not when clicking the kebab itself)
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.ac-kebab-wrap').length) closeAllAcMenus();
+    });
+
+    // Profile picture previews
+    $('#new-account-upload').on('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+            toastr.error(t.invalidFileType); return;
+        }
+        if (file.size > 2 * 1024 * 1024) { toastr.error(t.fileTooLarge); return; }
+        const reader = new FileReader();
+        reader.onload = e => $('#new-account-upload-img').attr('src', e.target.result);
+        reader.readAsDataURL(file);
+    });
+
+    $('#edit-user-upload').on('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+            toastr.error(t.invalidFileType); return;
+        }
+        if (file.size > 2 * 1024 * 1024) { toastr.error(t.fileTooLarge); return; }
+        const reader = new FileReader();
+        reader.onload = e => $('#edit-user-upload-img').attr('src', e.target.result);
+        reader.readAsDataURL(file);
+    });
+
+    // Password method toggle
     $(document).on('change', 'input[name="password-method"]', function() {
-        const method = $(this).val();
-        if (method === 'email') {
+        if ($(this).val() === 'email') {
             $('#manual-password-fields').hide();
             $('#new-account-password, #new-account-confirm-password').removeAttr('required');
         } else {
@@ -247,329 +251,197 @@ $(document).ready(function() {
         }
     });
 
-    // Reset modal state when closed
     $('#add-new-account').on('hidden.bs.modal', function() {
         $('input[name="password-method"][value="manual"]').prop('checked', true)
-            .closest('label').addClass('active')
-            .siblings('label').removeClass('active');
+            .closest('label').addClass('active').siblings('label').removeClass('active');
         $('#manual-password-fields').show();
         $('#new-account-password, #new-account-confirm-password').attr('required', true);
         $('#new-password-error-message').addClass('hidden');
     });
 
+    // Create account
     $('#add-account-form').on('submit', function(e) {
         e.preventDefault();
-
         const name = $('#new-account-name').val().trim();
         const email = $('#new-account-email').val().trim();
         const sendVerification = $('input[name="password-method"]:checked').val() === 'email';
 
-        if (!name || !email) {
-            toastr.error(t.validationError, 'Validation Error');
-            return;
-        }
+        if (!name || !email) { toastr.error(t.validationError); return; }
 
         let userData = { name, email, send_verification: sendVerification };
-
         if (!sendVerification) {
             const password = $('#new-account-password').val();
-            const confirmPassword = $('#new-account-confirm-password').val();
-
-            if (!password || !confirmPassword) {
-                toastr.error(t.validationError, 'Validation Error');
-                return;
-            }
-
-            if (password !== confirmPassword) {
+            const confirm = $('#new-account-confirm-password').val();
+            if (!password || !confirm) { toastr.error(t.validationError); return; }
+            if (password !== confirm) {
                 $('#new-password-error-message').removeClass('hidden');
-                setTimeout(function() { $('#new-password-error-message').addClass('hidden'); }, 3000);
+                setTimeout(() => $('#new-password-error-message').addClass('hidden'), 3000);
                 return;
             }
             $('#new-password-error-message').addClass('hidden');
-
             userData.password = password;
-            userData.password_confirmation = confirmPassword;
+            userData.password_confirmation = confirm;
         }
 
-        const $button = $('#create-account-btn');
-        const originalText = $button.html();
-        $button.html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${t.creating}`).prop('disabled', true);
+        const $btn = $('#create-account-btn');
+        const orig = $btn.html();
+        $btn.html(`<span class="spinner-border spinner-border-sm"></span> ${t.creating}`).prop('disabled', true);
 
         $.ajax({
-            url: '/api/accounts/users',
-            type: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
+            url: '/api/accounts/users', type: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
             data: JSON.stringify(userData),
             success: function(response) {
                 const profileFile = $('#new-account-upload').prop('files')[0];
                 if (profileFile && response.user) {
-                    const formData = new FormData();
-                    formData.append('file', profileFile);
-                    formData.append('user_id', response.user.id);
-
-                    $.ajax({
-                        url: '/api/auth/upload-profile-picture',
-                        type: 'POST',
-                        data: formData,
-                        headers: { 'Authorization': 'Bearer ' + token },
-                        processData: false,
-                        contentType: false,
-                        error: function(xhr, status, error) {
-                            console.error('Error uploading profile picture:', error);
-                        }
-                    });
+                    const fd = new FormData();
+                    fd.append('file', profileFile);
+                    fd.append('user_id', response.user.id);
+                    $.ajax({ url: '/api/auth/upload-profile-picture', type: 'POST',
+                        data: fd, headers: { 'Authorization': 'Bearer ' + token },
+                        processData: false, contentType: false });
                 }
-
                 $('#add-account-form')[0].reset();
                 $('#new-account-upload-img').attr('src', '/assets/avatar-default.jpg');
                 $('#add-new-account').modal('hide');
-
-                const successMsg = sendVerification ? t.accountCreatedVerificationSent : t.accountCreatedSuccess;
-                toastr.success(successMsg, 'Success');
+                toastr.success(sendVerification ? t.accountCreatedVerificationSent : t.accountCreatedSuccess);
                 loadUsersData();
             },
             error: function(xhr) {
-                let errorMessage = t.failedCreateAccount;
-                if (xhr.responseJSON) {
-                    if (xhr.responseJSON.email && xhr.responseJSON.email[0]) {
-                        errorMessage = xhr.responseJSON.email[0];
-                    } else if (xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                }
-                toastr.error(errorMessage, 'Error');
+                const msg = xhr.responseJSON?.email?.[0] || xhr.responseJSON?.message || t.failedCreateAccount;
+                toastr.error(msg);
             },
-            complete: function() {
-                $button.html(originalText).prop('disabled', false);
-            }
+            complete: () => $btn.html(orig).prop('disabled', false)
         });
     });
 
-    $(document).on('click', '.edit-user-btn', function() {
-        const userId = $(this).data('user-id');
-        const userName = $(this).data('name');
-        const userEmail = $(this).data('email');
-        const userRole = $(this).data('role');
-        const userProfilePicture = $(this).data('profile-picture');
-        
-        // Check if current user can edit this account
-        const currentUser = UserManager.getUser();
-        if (userRole === 'superadmin' && currentUser.role !== 'superadmin') {
-            toastr.error('Only Super Admin can edit Super Admin accounts', 'Permission Denied');
-            return;
+    function openEditModal($btn) {
+        const userId   = $btn.data('user-id');
+        const userName = $btn.data('name');
+        const userEmail= $btn.data('email');
+        const userRole = $btn.data('role');
+        const userPic  = $btn.data('profile-picture');
+
+        if (userRole === 'superadmin' && user.role !== 'superadmin') {
+            toastr.error('Only Super Admin can edit Super Admin accounts'); return;
         }
-        
-        $('#edit-user-modal').data('user-id', userId);
-        $('#edit-user-modal').data('original-role', userRole);
-        
+
+        $('#edit-user-modal').data('user-id', userId).data('original-role', userRole);
         $('#edit-user-name').val(userName);
         $('#edit-user-email').val(userEmail);
         $('#edit-user-role').val(userRole);
-        $('#edit-user-password').val('');
-        $('#edit-user-confirm-password').val('');
-        
-        // Show Role field only for superadmin; show/hide superadmin option accordingly
-        if (currentUser.role === 'superadmin') {
+        $('#edit-user-password, #edit-user-confirm-password').val('');
+
+        if (user.role === 'superadmin') {
             $('#edit-user-role').closest('.form-group').show();
             $('#edit-user-role option.superadmin-only').show();
         } else {
             $('#edit-user-role').closest('.form-group').hide();
-            $('#edit-user-role option.superadmin-only').hide();
         }
-        
-        if (userProfilePicture && userProfilePicture !== 'null' && userProfilePicture !== '') {
-            $('#edit-user-upload-img').attr('src', userProfilePicture);
-        } else {
-            $('#edit-user-upload-img').attr('src', '/assets/avatar-default.jpg');
-        }
-        
+
+        $('#edit-user-upload-img').attr('src',
+            (userPic && userPic !== 'null' && userPic !== '') ? userPic : '/assets/avatar-default.jpg'
+        );
         $('#edit-user-modal').modal('show');
-    });
+    }
 
-    $('#edit-user-upload').on('change', function() {
-        const file = $(this).prop('files')[0];
-        if (file) {
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-            if (!validTypes.includes(file.type)) {
-                toastr.error(t.invalidFileType, 'Invalid File');
-                return;
-            }
-            
-            if (file.size > 2 * 1024 * 1024) {
-                toastr.error(t.fileTooLarge, 'File Too Large');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                $('#edit-user-upload-img').attr('src', e.target.result);
-            };
-            reader.readAsDataURL(file);
+    // Menu actions
+    $(document).on('click', '.ac-menu-item[data-action="delete"]', async function(e) {
+        e.stopPropagation();
+        closeAllAcMenus();
+        if (user.role !== 'superadmin') {
+            toastr.error('Only Super Admin can delete accounts'); return;
         }
-    });
+        const userId   = $(this).data('user-id');
+        const userName = $(this).data('user-name');
+        const userRole = $(this).data('user-role');
+        const ok = await MwConfirm.open({
+            title: t.confirmDeleteTitle || 'Delete account?',
+            message: `${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`,
+            confirmText: t.deleteBtn || 'Delete',
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+            destructive: true,
+        });
+        if (!ok) return;
 
-    $('#edit-user-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        const userId = $('#edit-user-modal').data('user-id');
-        const originalRole = $('#edit-user-modal').data('original-role');
-        const name = $('#edit-user-name').val();
-        const email = $('#edit-user-email').val();
-        const role = $('#edit-user-role').val();
-        const password = $('#edit-user-password').val();
-        const confirmPassword = $('#edit-user-confirm-password').val();
-        
-        // Check if current user can perform this action
-        const currentUser = UserManager.getUser();
-        if (originalRole === 'superadmin' && currentUser.role !== 'superadmin') {
-            toastr.error('Only Super Admin can edit Super Admin accounts', 'Permission Denied');
-            return;
-        }
-        
-        if (role === 'superadmin' && currentUser.role !== 'superadmin') {
-            toastr.error('Only Super Admin can assign Super Admin role', 'Permission Denied');
-            return;
-        }
-        
-        if (!name || !email || !role) {
-            toastr.error(t.validationError, 'Validation Error');
-            return;
-        }
-        
-        if (password && password !== confirmPassword) {
-            $('#edit-password-error-message').removeClass('hidden');
-            setTimeout(function() {
-                $('#edit-password-error-message').addClass('hidden');
-            }, 3000);
-            return;
-        } else {
-            $('#edit-password-error-message').addClass('hidden');
-        }
-        
-        const $button = $('#update-user-btn');
-        const originalText = $button.html();
-        $button.html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${t.updating}`).prop('disabled', true);
-        
-        const userData = {
-            name: name,
-            email: email,
-        };
-
-        // Only superadmin may change roles
-        if (currentUser.role === 'superadmin') {
-            userData.role = role;
-        }
-        
-        if (password && password.trim() !== '') {
-            userData.password = password;
-            userData.confirm_password = confirmPassword;
-        }
-        
+        const $btn = $(this);
+        $btn.prop('disabled', true);
         $.ajax({
-            url: `/api/accounts/users/${userId}`,
-            type: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(userData),
-            success: function(response) {
-                console.log('User updated successfully:', response);
-                
-                const profileFile = $('#edit-user-upload').prop('files')[0];
-                if (profileFile) {
-                    const formData = new FormData();
-                    formData.append('file', profileFile);
-                    formData.append('user_id', userId);
-                    
-                    $.ajax({
-                        url: '/api/auth/upload-profile-picture',
-                        type: 'POST',
-                        data: formData,
-                        headers: {
-                            'Authorization': 'Bearer ' + token
-                        },
-                        processData: false,
-                        contentType: false,
-                        success: function() {
-                            console.log('Profile picture uploaded successfully');
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error uploading profile picture:', error);
-                            toastr.warning(t.partialSuccess, 'Partial Success');
-                        }
-                    });
-                }
-                
-                $('#edit-user-form')[0].reset();
-                $('#edit-user-modal').modal('hide');
-                
-                toastr.success(t.accountUpdatedSuccess, 'Success');
+            url: `/api/accounts/users/${userId}`, type: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function() {
+                toastr.success(`${userName} ${t.accountDeletedSuccess}`);
                 loadUsersData();
             },
-            error: function(xhr, status, error) {
-                console.error('Error updating user:', error);
-                let errorMessage = t.failedUpdateAccount;
-                
-                if (xhr.responseJSON) {
-                    if (xhr.responseJSON.email && xhr.responseJSON.email[0]) {
-                        errorMessage = xhr.responseJSON.email[0];
-                    } else if (xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                }
-                
-                toastr.error(errorMessage, 'Error');
-            },
-            complete: function() {
-                $button.html(originalText).prop('disabled', false);
+            error: function(xhr) {
+                toastr.error(xhr.responseJSON?.message || t.failedDeleteAccount);
+                $btn.prop('disabled', false);
             }
         });
     });
 
-    $(document).on('click', '.delete-user-btn', function() {
-        const userId = $(this).data('user-id');
-        const userName = $(this).data('user-name');
-        const userRole = $(this).data('user-role');
-        
-        // Only superadmin can delete accounts
-        const currentUser = UserManager.getUser();
-        if (currentUser.role !== 'superadmin') {
-            toastr.error('Only Super Admin can delete accounts', 'Permission Denied');
+    // Edit menu item
+    $(document).on('click', '.ac-menu-item[data-action="edit"]', function() {
+        closeAllAcMenus();
+        openEditModal($(this));
+    });
+
+    // Update account
+    $('#edit-user-form').on('submit', function(e) {
+        e.preventDefault();
+        const userId   = $('#edit-user-modal').data('user-id');
+        const origRole = $('#edit-user-modal').data('original-role');
+        const name     = $('#edit-user-name').val();
+        const email    = $('#edit-user-email').val();
+        const role     = $('#edit-user-role').val();
+        const password = $('#edit-user-password').val();
+        const confirm  = $('#edit-user-confirm-password').val();
+
+        if (origRole === 'superadmin' && user.role !== 'superadmin') {
+            toastr.error('Only Super Admin can edit Super Admin accounts'); return;
+        }
+        if (!name || !email || !role) { toastr.error(t.validationError); return; }
+        if (password && password !== confirm) {
+            $('#edit-password-error-message').removeClass('hidden');
+            setTimeout(() => $('#edit-password-error-message').addClass('hidden'), 3000);
             return;
         }
-        
-        if (confirm(`${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`)) {
-            const $button = $(this);
-            const originalHtml = $button.html();
-            $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
-            
-            $.ajax({
-                url: `/api/accounts/users/${userId}`,
-                type: 'DELETE',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log('User deleted successfully:', response);
-                    toastr.success(`${userName} ${t.accountDeletedSuccess}`, 'User Deleted');
-                    loadUsersData();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error deleting user:', error);
-                    let errorMessage = t.failedDeleteAccount;
-                    
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                    
-                    toastr.error(errorMessage, 'Error');
-                    $button.html(originalHtml).prop('disabled', false);
+        $('#edit-password-error-message').addClass('hidden');
+
+        const userData = { name, email };
+        if (user.role === 'superadmin') userData.role = role;
+        if (password) { userData.password = password; userData.confirm_password = confirm; }
+
+        const $btn = $('#update-user-btn');
+        const orig = $btn.html();
+        $btn.html(`<span class="spinner-border spinner-border-sm"></span> ${t.updating}`).prop('disabled', true);
+
+        $.ajax({
+            url: `/api/accounts/users/${userId}`, type: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            data: JSON.stringify(userData),
+            success: function() {
+                const profileFile = $('#edit-user-upload').prop('files')[0];
+                if (profileFile) {
+                    const fd = new FormData();
+                    fd.append('file', profileFile);
+                    fd.append('user_id', userId);
+                    $.ajax({ url: '/api/auth/upload-profile-picture', type: 'POST',
+                        data: fd, headers: { 'Authorization': 'Bearer ' + token },
+                        processData: false, contentType: false,
+                        error: () => toastr.warning(t.partialSuccess) });
                 }
-            });
-        }
+                $('#edit-user-form')[0].reset();
+                $('#edit-user-modal').modal('hide');
+                toastr.success(t.accountUpdatedSuccess);
+                loadUsersData();
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.email?.[0] || xhr.responseJSON?.message || t.failedUpdateAccount;
+                toastr.error(msg);
+            },
+            complete: () => $btn.html(orig).prop('disabled', false)
+        });
     });
+
 });
