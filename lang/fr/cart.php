@@ -21,6 +21,8 @@ return [
     'js_each' => 'chacun',
     'js_toast_update_failed' => 'Échec de la mise à jour de la quantité',
     'js_confirm_remove' => 'Êtes-vous sûr de vouloir retirer cet article?',
+    'js_confirm_remove_title' => 'Retirer l\'article ?',
+    'js_remove_btn' => 'Retirer',
     'js_toast_item_removed' => 'Article retiré du panier',
     'js_toast_remove_failed' => 'Échec du retrait de l\'article',
 ];

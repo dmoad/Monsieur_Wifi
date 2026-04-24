@@ -10,6 +10,8 @@
         'each' => __('cart.js_each'),
         'toast_update_failed' => __('cart.js_toast_update_failed'),
         'confirm_remove' => __('cart.js_confirm_remove'),
+        'confirm_remove_title' => __('cart.js_confirm_remove_title'),
+        'remove_btn' => __('cart.js_remove_btn'),
         'toast_item_removed' => __('cart.js_toast_item_removed'),
         'toast_remove_failed' => __('cart.js_toast_remove_failed'),
     ];

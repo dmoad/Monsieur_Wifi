@@ -425,11 +425,17 @@ async function handlePaymentSubmit(clientSecret) {
     }
 }
 
-function closePaymentModal() {
-    if (confirm(t.confirm_cancel_payment)) {
-        document.getElementById('payment-modal').style.display = 'none';
-        if (currentOrderNumber) {
-            window.location.href = `${t.orders_base}/${currentOrderNumber}`;
-        }
+async function closePaymentModal() {
+    const ok = await MwConfirm.open({
+        title: t.confirm_cancel_payment_title || 'Cancel payment?',
+        message: t.confirm_cancel_payment,
+        confirmText: t.cancel_payment_btn || 'Cancel Payment',
+        cancelText: t.keep_paying_btn || 'Keep Paying',
+        destructive: true,
+    });
+    if (!ok) return;
+    document.getElementById('payment-modal').style.display = 'none';
+    if (currentOrderNumber) {
+        window.location.href = `${t.orders_base}/${currentOrderNumber}`;
     }
 }

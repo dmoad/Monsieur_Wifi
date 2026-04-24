@@ -112,11 +112,17 @@ async function updateQuantity(itemId, quantity) {
 
 async function removeItem(itemId) {
     const token = UserManager.getToken();
-    
-    if (!confirm(t.confirm_remove)) {
-        return;
-    }
-    
+
+    const ok = await MwConfirm.open({
+        title: t.confirm_remove_title || 'Remove item?',
+        message: t.confirm_remove,
+        confirmText: t.remove_btn || 'Remove',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        destructive: true,
+    });
+    if (!ok) return;
+
+
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/cart/items/${itemId}`, {
             method: 'DELETE',

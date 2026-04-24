@@ -61,4 +61,7 @@ return [
     'js_toast_payment_processing' => 'Le paiement est en cours de traitement. Veuillez vérifier le statut de votre commande.',
     'js_toast_payment_failed' => 'Le paiement a échoué. Veuillez réessayer.',
     'js_confirm_cancel_payment' => 'Êtes-vous sûr de vouloir annuler le paiement? Votre commande restera en attente.',
+    'js_confirm_cancel_payment_title' => 'Annuler le paiement ?',
+    'js_cancel_payment_btn' => 'Annuler le paiement',
+    'js_keep_paying_btn' => 'Continuer',
 ];

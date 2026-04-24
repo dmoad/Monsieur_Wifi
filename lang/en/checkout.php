@@ -61,4 +61,7 @@ return [
     'js_toast_payment_processing' => 'Payment is being processed. Please check your order status.',
     'js_toast_payment_failed' => 'Payment failed. Please try again.',
     'js_confirm_cancel_payment' => 'Are you sure you want to cancel the payment? Your order will remain pending.',
+    'js_confirm_cancel_payment_title' => 'Cancel payment?',
+    'js_cancel_payment_btn' => 'Cancel Payment',
+    'js_keep_paying_btn' => 'Keep Paying',
 ];

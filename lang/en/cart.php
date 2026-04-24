@@ -21,6 +21,8 @@ return [
     'js_each' => 'each',
     'js_toast_update_failed' => 'Failed to update quantity',
     'js_confirm_remove' => 'Are you sure you want to remove this item?',
+    'js_confirm_remove_title' => 'Remove item?',
+    'js_remove_btn' => 'Remove',
     'js_toast_item_removed' => 'Item removed from cart',
     'js_toast_remove_failed' => 'Failed to remove item',
 ];

@@ -29,6 +29,9 @@
         'toast_payment_processing' => __('checkout.js_toast_payment_processing'),
         'toast_payment_failed' => __('checkout.js_toast_payment_failed'),
         'confirm_cancel_payment' => __('checkout.js_confirm_cancel_payment'),
+        'confirm_cancel_payment_title' => __('checkout.js_confirm_cancel_payment_title'),
+        'cancel_payment_btn' => __('checkout.js_cancel_payment_btn'),
+        'keep_paying_btn' => __('checkout.js_keep_paying_btn'),
     ];
 @endphp
 
