@@ -25,7 +25,11 @@ const TRANSLATIONS = {
         removeLocation: 'Remove from Zone',
         addLocation: 'Add to Zone',
         confirmRemove: 'Are you sure you want to remove this location from the zone?',
+        confirmRemoveTitle: 'Remove location from zone?',
+        removeBtn: 'Remove',
         confirmSetPrimary: 'Set this location as the primary for the zone? Settings from this location will be used by all other locations in the zone.',
+        confirmSetPrimaryTitle: 'Set as primary location?',
+        setPrimaryBtn: 'Set Primary',
         selectNewPrimary: 'Select New Primary Location',
         selectNewPrimaryDesc: 'The location you are removing is currently set as primary. Please select a new primary location from the remaining locations:',
         confirmSelection: 'Confirm Selection',
@@ -51,6 +55,8 @@ const TRANSLATIONS = {
         editZone: 'Edit',
         deleteZone: 'Delete',
         confirmDeleteZone: 'Are you sure you want to delete this zone? Locations will be un-grouped.',
+        confirmDeleteZoneTitle: 'Delete zone?',
+        deleteBtn: 'Delete',
         zoneDeleted: 'Zone deleted',
         errorDeletingZone: 'Error deleting zone',
         actions: 'Actions',
@@ -76,7 +82,11 @@ const TRANSLATIONS = {
         removeLocation: 'Retirer de la Zone',
         addLocation: 'Ajouter à la Zone',
         confirmRemove: 'Êtes-vous sûr de vouloir retirer cet emplacement de la zone?',
+        confirmRemoveTitle: 'Retirer l\'emplacement de la zone ?',
+        removeBtn: 'Retirer',
         confirmSetPrimary: 'Définir cet emplacement comme principal pour la zone? Les paramètres de cet emplacement seront utilisés par tous les autres emplacements de la zone.',
+        confirmSetPrimaryTitle: 'Définir comme emplacement principal ?',
+        setPrimaryBtn: 'Définir principal',
         selectNewPrimary: 'Sélectionner un Nouvel Emplacement Principal',
         selectNewPrimaryDesc: 'L\'emplacement que vous supprimez est actuellement défini comme principal. Veuillez sélectionner un nouvel emplacement principal parmi les emplacements restants:',
         confirmSelection: 'Confirmer la Sélection',
@@ -102,6 +112,8 @@ const TRANSLATIONS = {
         editZone: 'Modifier',
         deleteZone: 'Supprimer',
         confirmDeleteZone: 'Êtes-vous sûr de vouloir supprimer cette zone ? Les emplacements seront dissociés.',
+        confirmDeleteZoneTitle: 'Supprimer la zone ?',
+        deleteBtn: 'Supprimer',
         zoneDeleted: 'Zone supprimée',
         errorDeletingZone: 'Erreur lors de la suppression de la zone',
         actions: 'Actions',
@@ -284,7 +296,14 @@ function toggleZoneHeaderMenu(e) {
 }
 
 async function deleteZone() {
-    if (!confirm(T.confirmDeleteZone)) return;
+    const ok = await MwConfirm.open({
+        title: T.confirmDeleteZoneTitle || 'Delete zone?',
+        message: T.confirmDeleteZone,
+        confirmText: T.deleteBtn || 'Delete',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        destructive: true,
+    });
+    if (!ok) return;
     const token = UserManager.getToken();
     try {
         const response = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/zones/${ZONE_ID}`, {
@@ -534,7 +553,14 @@ async function addLocationToZone(locationId) {
 }
 
 async function removeLocation(locationId) {
-    if (!confirm(T.confirmRemove)) return;
+    const ok = await MwConfirm.open({
+        title: T.confirmRemoveTitle || 'Remove location?',
+        message: T.confirmRemove,
+        confirmText: T.removeBtn || 'Remove',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        destructive: true,
+    });
+    if (!ok) return;
     
     const token = UserManager.getToken();
     const isPrimary = currentZone.primary_location_id === locationId;
@@ -641,7 +667,13 @@ async function performRemoveLocation(locationId, newPrimaryId) {
 }
 
 async function setPrimary(locationId) {
-    if (!confirm(T.confirmSetPrimary)) return;
+    const ok = await MwConfirm.open({
+        title: T.confirmSetPrimaryTitle || 'Set as primary?',
+        message: T.confirmSetPrimary,
+        confirmText: T.setPrimaryBtn || 'Set Primary',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+    });
+    if (!ok) return;
     
     const token = UserManager.getToken();
     try {

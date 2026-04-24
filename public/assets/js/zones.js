@@ -28,6 +28,8 @@ const TRANSLATIONS = {
         delete: 'Delete',
         adminAlert: 'Note: Each zone can only contain locations from the same owner. When managing zones, ensure all locations belong to the zone\'s owner.',
         confirmDelete: 'Are you sure you want to delete this zone? All locations will be decoupled.',
+        confirmDeleteTitle: 'Delete zone?',
+        deleteBtn: 'Delete',
         zoneDeleted: 'Zone deleted successfully',
         zoneSaved: 'Zone saved successfully',
         errorLoading: 'Error loading zones',
@@ -50,6 +52,8 @@ const TRANSLATIONS = {
         delete: 'Supprimer',
         adminAlert: 'Note: Chaque zone ne peut contenir que des emplacements du même propriétaire. Lors de la gestion des zones, assurez-vous que tous les emplacements appartiennent au propriétaire de la zone.',
         confirmDelete: 'Êtes-vous sûr de vouloir supprimer cette zone? Tous les emplacements seront découplés.',
+        confirmDeleteTitle: 'Supprimer la zone ?',
+        deleteBtn: 'Supprimer',
         zoneDeleted: 'Zone supprimée avec succès',
         zoneSaved: 'Zone enregistrée avec succès',
         errorLoading: 'Erreur lors du chargement des zones',
@@ -549,10 +553,16 @@ async function saveZone() {
 }
 
 async function deleteZone(zoneId) {
-    if (!confirm(T.confirmDelete)) {
-        return;
-    }
-    
+    const ok = await MwConfirm.open({
+        title: T.confirmDeleteTitle || 'Delete zone?',
+        message: T.confirmDelete,
+        confirmText: T.deleteBtn || 'Delete',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        destructive: true,
+    });
+    if (!ok) return;
+
+
     const token = UserManager.getToken();
     
     try {

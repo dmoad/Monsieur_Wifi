@@ -42,6 +42,8 @@ return [
     'empty_desc' => 'Ajoutez votre premier emplacement pour commencer.',
     'error_loading' => 'Erreur lors du chargement des emplacements',
     'confirm_delete' => 'Supprimer l\'emplacement « {name} » ? Cette action est irréversible.',
+    'confirm_delete_title' => 'Supprimer l\'emplacement ?',
+    'delete_btn' => 'Supprimer',
     'location_deleted' => 'Emplacement supprimé avec succès',
     'error_deleting' => 'Erreur lors de la suppression de l\'emplacement',
     'location_cloned' => 'Emplacement cloné',

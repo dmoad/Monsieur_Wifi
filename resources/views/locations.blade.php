@@ -477,6 +477,8 @@
         'empty_desc' => __('locations.empty_desc'),
         'error_loading' => __('locations.error_loading'),
         'confirm_delete' => __('locations.confirm_delete'),
+        'confirm_delete_title' => __('locations.confirm_delete_title'),
+        'delete_btn' => __('locations.delete_btn'),
         'location_deleted' => __('locations.location_deleted'),
         'error_deleting' => __('locations.error_deleting'),
         'unit_tb' => __('locations.unit_tb'),

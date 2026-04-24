@@ -390,7 +390,14 @@ async function confirmCloneLocation() {
 async function deleteLocation(locationId, locationName) {
     const confirmMsg = (T.confirm_delete || 'Delete location "{name}"? This cannot be undone.')
         .replace('{name}', locationName || '');
-    if (!window.confirm(confirmMsg)) return;
+    const ok = await MwConfirm.open({
+        title: T.confirm_delete_title || 'Delete location?',
+        message: confirmMsg,
+        confirmText: T.delete_btn || 'Delete',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        destructive: true,
+    });
+    if (!ok) return;
 
     const token = UserManager.getToken();
     try {

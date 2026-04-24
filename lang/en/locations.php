@@ -42,6 +42,8 @@ return [
     'empty_desc' => 'Add your first location to get started.',
     'error_loading' => 'Error loading locations',
     'confirm_delete' => 'Delete location "{name}"? This cannot be undone.',
+    'confirm_delete_title' => 'Delete location?',
+    'delete_btn' => 'Delete',
     'location_deleted' => 'Location deleted successfully',
     'error_deleting' => 'Error deleting location',
     'location_cloned' => 'Location cloned',
