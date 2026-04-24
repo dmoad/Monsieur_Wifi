@@ -257,7 +257,7 @@ function loadSubscriptionStatus() {
             $('#subscription-section').html(`
                 <div class="d-flex align-items-center justify-content-between">
                     <p class="mb-0 text-muted">${t.subscriptionNone}</p>
-                    <a href="/pricing" class="btn btn-primary">
+                    <a href="/${PAGE_LOCALE}/pricing" class="btn btn-primary">
                         <i data-feather="shopping-bag"></i> ${t.subscriptionSubscribe}
                     </a>
                 </div>
@@ -274,7 +274,7 @@ function renderSubscription(data) {
         section.html(`
             <div class="d-flex align-items-center justify-content-between">
                 <p class="mb-0 text-muted">${t.subscriptionNone}</p>
-                <a href="/pricing" class="btn btn-primary d-flex align-items-center" style="gap: 0.4rem;">
+                <a href="/${PAGE_LOCALE}/pricing" class="btn btn-primary d-flex align-items-center" style="gap: 0.4rem;">
                     <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.subscriptionSubscribe}
                 </a>
             </div>

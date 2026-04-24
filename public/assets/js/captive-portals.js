@@ -298,7 +298,7 @@ function checkUserSubscription() {
                     <p class="mb-0 text-muted">${t.ctaText}</p>
                 </div>
             </div>
-            <a href="/pricing" class="btn btn-primary ml-2 d-flex align-items-center" style="white-space: nowrap; padding: 0.6rem 1.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; gap: 0.4rem;">
+            <a href="/${PAGE_LOCALE}/pricing" class="btn btn-primary ml-2 d-flex align-items-center" style="white-space: nowrap; padding: 0.6rem 1.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; gap: 0.4rem;">
                 <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.ctaButton}
             </a>
         </div>

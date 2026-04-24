@@ -8,19 +8,19 @@
     <meta name="keywords" content="wifi, pricing, subscription, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
     <title id="page-title">Tarifs - Monsieur WiFi</title>
-    <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/MrWifi.png">
+    <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/vendors.min.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/bootstrap-extended.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/colors.css">
-    <link rel="stylesheet" type="text/css" href="app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
     <!-- END: Theme CSS-->
 
     <style>
@@ -521,7 +521,7 @@
     </style>
 </head>
 
-<body>
+<body style="visibility: hidden;">
     <!-- Background Animation -->
     <div class="animated-bg">
         <!-- WiFi Waves -->
@@ -550,7 +550,7 @@
     <!-- Header -->
     <div class="pricing-header">
         <a href="/" class="brand-logo">
-            <img src="assets/images/Mr-Wifi.PNG" alt="Monsieur WiFi">
+            <img src="/assets/images/Mr-Wifi.PNG" alt="Monsieur WiFi">
             <h2>monsieur-wifi</h2>
         </a>
 
@@ -672,7 +672,7 @@
     </div>
 
     <!-- Vendor JS-->
-    <script src="app-assets/vendors/js/vendors.min.js"></script>
+    <script src="/app-assets/vendors/js/vendors.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="/assets/js/config.js"></script>
 
@@ -768,6 +768,9 @@
         };
 
         function detectLanguage() {
+            @isset($locale)
+                return '{{ $locale }}';
+            @endisset
             const savedLang = localStorage.getItem('preferred_language');
             if (savedLang && (savedLang === 'en' || savedLang === 'fr')) return savedLang;
             const browserLang = (navigator.language || navigator.userLanguage).substring(0, 2).toLowerCase();
@@ -804,6 +807,9 @@
             const el = document.getElementById('feature-' + key);
             if (el) el.textContent = t.features[key];
         });
+
+        // Reveal body now that translations are applied
+        document.body.style.visibility = 'visible';
 
         // Update back link based on auth status
         const token = localStorage.getItem('mrwifi_auth_token');

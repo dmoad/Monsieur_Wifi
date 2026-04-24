@@ -64,6 +64,10 @@ Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api')
 // each locale; per-locale branches carry the few asymmetries.
 foreach (['en', 'fr'] as $loc) {
     Route::prefix($loc)->name($loc . '.')->group(function () use ($loc) {
+        Route::get('/pricing', function () use ($loc) {
+            return view('pricing', ['locale' => $loc]);
+        })->name('pricing');
+
         Route::get('/dashboard', function () {
             return view('dashboard');
         })->name('dashboard');
