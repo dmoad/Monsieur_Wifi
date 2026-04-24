@@ -365,19 +365,21 @@
             // Form validation and submission
             $('#login-form').on('submit', function(e) {
                 e.preventDefault();
-                // Show spinner, hide text
+                const $inputs = $('#login-email, #login-password, #remember-me');
+                // Show spinner, hide text, lock the form
                 $('#login-spinner').removeClass('d-none');
                 $('#login-text').text(window.currentTranslations.signingIn);
                 $('#login-btn').attr('disabled', true);
+                $inputs.attr('disabled', true);
                 $('#login-alert').hide();
-                
+
                 // Get form data
                 var formData = {
                     email: $('#login-email').val(),
                     password: $('#login-password').val(),
                     remember: $('#remember-me').is(':checked')
                 };
-                
+
                 // Make AJAX request to login endpoint
                 $.ajax({
                     url: '/api/auth/login',
@@ -396,11 +398,12 @@
                         window.location.href = langPrefix + '/dashboard?status=login';
                     },
                     error: function(xhr) {
-                        // Reset button
+                        // Reset button + unlock the form
                         $('#login-spinner').addClass('d-none');
                         $('#login-text').text(window.currentTranslations.signIn);
                         $('#login-btn').attr('disabled', false);
-                        
+                        $inputs.attr('disabled', false);
+
                         // Show error message
                         var errorMessage = window.currentTranslations.loginError;
                         if (xhr.responseJSON) {
