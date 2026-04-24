@@ -71,7 +71,6 @@ function handleApiError(err, context = '') {
     console.error('API Error' + (context ? ` [${context}]` : ''), err);
     const msg = err?.body?.message || err?.message || 'An unexpected error occurred.';
     if (typeof toastr !== 'undefined') toastr.error(msg, 'Error');
-    else alert('Error: ' + msg);
     if (err?.status === 401) window.location.href = '/login';
 }
 

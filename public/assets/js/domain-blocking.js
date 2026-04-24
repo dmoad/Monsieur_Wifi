@@ -12,6 +12,8 @@ const TRANSLATIONS = {
         delete: 'Delete',
         confirmDelete: 'Are you sure you want to delete',
         confirmDeleteSuffix: 'from the block list?',
+        confirmDeleteTitle: 'Delete blocked domain?',
+        deleteBtn: 'Delete',
         failedLoadDomainData: 'Failed to load domain data',
         failedAddDomain: 'Failed to add domain',
         failedUpdateDomain: 'Failed to update domain',
@@ -38,6 +40,8 @@ const TRANSLATIONS = {
         delete: 'Supprimer',
         confirmDelete: 'Êtes-vous sûr de vouloir supprimer',
         confirmDeleteSuffix: 'de la liste de blocage ?',
+        confirmDeleteTitle: 'Supprimer le domaine bloqué ?',
+        deleteBtn: 'Supprimer',
         failedLoadDomainData: 'Échec du chargement des données du domaine',
         failedAddDomain: 'Échec de l\'ajout du domaine',
         failedUpdateDomain: 'Échec de la mise à jour du domaine',
@@ -416,7 +420,7 @@ $(window).on('load', function() {
                     $('#edit-domain').data('domain-id', domainId).modal('show');
                 }
             },
-            error: function() { alert(t.failedLoadDomainData); }
+            error: function() { toastr.error(t.failedLoadDomainData); }
         });
     });
 
@@ -450,35 +454,42 @@ $(window).on('load', function() {
             error: function(xhr) {
                 let msg = t.failedUpdateDomain;
                 if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                alert('Error: ' + msg);
+                toastr.error(msg);
             }
         });
     });
 
-    $(document).on('click', '.delete-domain-btn', function() {
+    $(document).on('click', '.delete-domain-btn', async function() {
         const domainId = $(this).data('id');
         const domainName = $(this).data('domain');
         closeAllDbMenus();
 
-        if (confirm(`${t.confirmDelete} "${domainName}" ${t.confirmDeleteSuffix}`)) {
-            $.ajax({
-                url: `/api/blocked-domains/${domainId}`,
-                type: 'DELETE',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                    'Authorization': 'Bearer ' + UserManager.getToken(),
-                },
-                success: function(response) {
-                    if (response.success) {
-                        loadDomains();
-                        loadCategoriesData();
-                        if (typeof toastr !== 'undefined') toastr.success(response.message);
-                    }
-                },
-                error: function() { alert(t.failedDeleteDomain); }
-            });
-        }
+        const ok = await MwConfirm.open({
+            title: t.confirmDeleteTitle || 'Delete domain?',
+            message: `${t.confirmDelete} "${domainName}" ${t.confirmDeleteSuffix}`,
+            confirmText: t.deleteBtn || 'Delete',
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+            destructive: true,
+        });
+        if (!ok) return;
+
+        $.ajax({
+            url: `/api/blocked-domains/${domainId}`,
+            type: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'Authorization': 'Bearer ' + UserManager.getToken(),
+            },
+            success: function(response) {
+                if (response.success) {
+                    loadDomains();
+                    loadCategoriesData();
+                    if (typeof toastr !== 'undefined') toastr.success(response.message);
+                }
+            },
+            error: function() { toastr.error(t.failedDeleteDomain); }
+        });
     });
 
     $('.card.cursor-pointer').addClass('category-card');
