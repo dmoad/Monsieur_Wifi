@@ -444,40 +444,4 @@ $(document).ready(function() {
         });
     });
 
-    // Delete account
-    $(document).on('click', '.delete-user-btn', async function() {
-        if (user.role !== 'superadmin') {
-            toastr.error('Only Super Admin can delete accounts'); return;
-        }
-        const userId   = $(this).data('user-id');
-        const userName = $(this).data('user-name');
-        const userRole = $(this).data('user-role');
-
-        const ok = await MwConfirm.open({
-            title: t.confirmDeleteTitle || 'Delete account?',
-            message: `${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`,
-            confirmText: t.deleteBtn || 'Delete',
-            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
-            destructive: true,
-        });
-        if (!ok) return;
-
-        const $btn = $(this);
-        const orig = $btn.html();
-        $btn.html('<span class="spinner-border spinner-border-sm"></span>').prop('disabled', true);
-
-        $.ajax({
-            url: `/api/accounts/users/${userId}`, type: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token },
-            success: function() {
-                toastr.success(`${userName} ${t.accountDeletedSuccess}`);
-                loadUsersData();
-            },
-            error: function(xhr) {
-                const msg = xhr.responseJSON?.message || t.failedDeleteAccount;
-                toastr.error(msg);
-                $btn.html(orig).prop('disabled', false);
-            }
-        });
-    });
 });
