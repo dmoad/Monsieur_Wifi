@@ -24,6 +24,8 @@ const TRANSLATIONS = {
         failedDeleteAccount: 'Failed to delete user account. Please try again.',
         confirmDelete: 'Are you sure you want to delete the user account for',
         confirmDeleteSuffix: '? This action cannot be undone.',
+        confirmDeleteTitle: 'Delete account?',
+        deleteBtn: 'Delete',
         loading: 'Loading accounts...',
         noAccounts: 'No accounts found',
     },
@@ -50,6 +52,8 @@ const TRANSLATIONS = {
         failedDeleteAccount: 'Échec de la suppression du compte utilisateur. Veuillez réessayer.',
         confirmDelete: 'Êtes-vous sûr de vouloir supprimer le compte utilisateur pour',
         confirmDeleteSuffix: ' ? Cette action ne peut pas être annulée.',
+        confirmDeleteTitle: 'Supprimer le compte ?',
+        deleteBtn: 'Supprimer',
         loading: 'Chargement des comptes...',
         noAccounts: 'Aucun compte trouvé',
     }
@@ -342,7 +346,7 @@ $(document).ready(function() {
     }
 
     // Menu actions
-    $(document).on('click', '.ac-menu-item[data-action="delete"]', function(e) {
+    $(document).on('click', '.ac-menu-item[data-action="delete"]', async function(e) {
         e.stopPropagation();
         closeAllAcMenus();
         if (user.role !== 'superadmin') {
@@ -351,7 +355,14 @@ $(document).ready(function() {
         const userId   = $(this).data('user-id');
         const userName = $(this).data('user-name');
         const userRole = $(this).data('user-role');
-        if (!confirm(`${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`)) return;
+        const ok = await MwConfirm.open({
+            title: t.confirmDeleteTitle || 'Delete account?',
+            message: `${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`,
+            confirmText: t.deleteBtn || 'Delete',
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+            destructive: true,
+        });
+        if (!ok) return;
 
         const $btn = $(this);
         $btn.prop('disabled', true);
@@ -434,7 +445,7 @@ $(document).ready(function() {
     });
 
     // Delete account
-    $(document).on('click', '.delete-user-btn', function() {
+    $(document).on('click', '.delete-user-btn', async function() {
         if (user.role !== 'superadmin') {
             toastr.error('Only Super Admin can delete accounts'); return;
         }
@@ -442,7 +453,14 @@ $(document).ready(function() {
         const userName = $(this).data('user-name');
         const userRole = $(this).data('user-role');
 
-        if (!confirm(`${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`)) return;
+        const ok = await MwConfirm.open({
+            title: t.confirmDeleteTitle || 'Delete account?',
+            message: `${t.confirmDelete} "${userName}"${t.confirmDeleteSuffix}`,
+            confirmText: t.deleteBtn || 'Delete',
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+            destructive: true,
+        });
+        if (!ok) return;
 
         const $btn = $(this);
         const orig = $btn.html();
