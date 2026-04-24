@@ -596,9 +596,14 @@ async function updateDevice(productId, itemId) {
 }
 
 async function deleteDevice(productId, itemId) {
-    if (!confirm(t.confirm_delete_device)) {
-        return;
-    }
+    const ok = await MwConfirm.open({
+        title: t.confirm_delete_device_title || 'Delete device?',
+        message: t.confirm_delete_device,
+        confirmText: t.delete_btn || 'Delete',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        destructive: true,
+    });
+    if (!ok) return;
 
     const token = UserManager.getToken();
 

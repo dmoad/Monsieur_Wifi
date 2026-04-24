@@ -54,7 +54,11 @@ return [
     'js_btn_cancel_order' => 'Cancel',
 
     'js_confirm_payment_received' => 'Confirm payment has been received?',
+    'js_confirm_payment_received_title' => 'Confirm payment?',
+    'js_confirm_btn' => 'Confirm',
     'js_confirm_cancel' => 'Are you sure you want to cancel this order?',
+    'js_confirm_cancel_title' => 'Cancel order?',
+    'js_cancel_order_btn' => 'Cancel Order',
 
     'js_status_info_cancelled' => 'Order cancelled',
     'js_status_info_completed' => 'Order completed',

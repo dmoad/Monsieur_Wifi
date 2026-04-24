@@ -60,6 +60,8 @@ return [
     'js_error_save' => 'Error saving model',
 
     'js_confirm_delete_model' => 'Are you sure you want to delete this model? This action cannot be undone.',
+    'js_confirm_delete_model_title' => 'Delete model?',
+    'js_delete_btn' => 'Delete',
     'js_deleted' => 'Model deleted',
     'js_error_delete_model' => 'Error deleting model',
 
@@ -72,6 +74,7 @@ return [
     'js_error_upload_image' => 'Error uploading image',
 
     'js_confirm_delete_image' => 'Delete this image?',
+    'js_confirm_delete_image_title' => 'Delete image?',
     'js_image_deleted' => 'Image deleted',
     'js_error_delete_image' => 'Error deleting image',
 

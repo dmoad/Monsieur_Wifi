@@ -418,6 +418,27 @@ async function updateTracking(orderNumber, provider, trackingId) {
     }
 }
 
+async function confirmMarkAsPaid(orderNumber, isStripe) {
+    const ok = await MwConfirm.open({
+        title: t.confirm_payment_received_title || 'Confirm payment?',
+        message: t.confirm_payment_received,
+        confirmText: t.confirm_btn || 'Confirm',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+    });
+    if (ok) markAsPaid(orderNumber, isStripe);
+}
+
+async function confirmCancelOrder(orderNumber) {
+    const ok = await MwConfirm.open({
+        title: t.confirm_cancel_title || 'Cancel order?',
+        message: t.confirm_cancel,
+        confirmText: t.cancel_order_btn || 'Cancel Order',
+        cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Keep',
+        destructive: true,
+    });
+    if (ok) updateStatus(orderNumber, 'cancelled');
+}
+
 async function updateStatus(orderNumber, status) {
     const token = UserManager.getToken();
 
@@ -515,7 +536,7 @@ function getOrderActionButtons(order) {
     if (!isPaid && !isCancelled) {
         const isStripe = order.payment_method === 'stripe';
         buttons.push(`
-            <button class="btn btn-warning btn-sm" onclick="if(confirm('${t.confirm_payment_received}')) markAsPaid('${order.order_number}', ${isStripe})">
+            <button class="btn btn-warning btn-sm" onclick="confirmMarkAsPaid('${order.order_number}', ${isStripe})">
                 <i data-feather="check-circle"></i> ${t.btn_confirm_payment}${isStripe ? ' (Stripe)' : ''}
             </button>
         `);
@@ -539,7 +560,7 @@ function getOrderActionButtons(order) {
 
     if (!isCancelled && !isDelivered) {
         buttons.push(`
-            <button class="btn btn-outline-danger btn-sm" onclick="if(confirm('${t.confirm_cancel}')) updateStatus('${order.order_number}', 'cancelled')">
+            <button class="btn btn-outline-danger btn-sm" onclick="confirmCancelOrder('${order.order_number}')">
                 <i data-feather="x"></i> ${t.btn_cancel_order}
             </button>
         `);

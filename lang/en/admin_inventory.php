@@ -102,6 +102,8 @@ return [
     'js_update_device_failed' => 'Failed to update device',
     'js_update_device_failed_prefix' => 'Failed to update device: {message}',
     'js_confirm_delete_device' => 'Are you sure you want to delete this device?',
+    'js_confirm_delete_device_title' => 'Delete device?',
+    'js_delete_btn' => 'Delete',
     'js_device_deleted' => 'Device deleted successfully',
     'js_delete_device_failed' => 'Failed to delete device',
     'js_delete_device_failed_prefix' => 'Failed to delete device: {message}',

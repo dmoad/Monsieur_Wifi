@@ -60,6 +60,8 @@ return [
     'js_error_save' => 'Erreur d\'enregistrement',
 
     'js_confirm_delete_model' => 'Êtes-vous sûr de vouloir supprimer ce modèle ? Cette action ne peut pas être annulée.',
+    'js_confirm_delete_model_title' => 'Supprimer le modèle ?',
+    'js_delete_btn' => 'Supprimer',
     'js_deleted' => 'Modèle supprimé',
     'js_error_delete_model' => 'Erreur de suppression',
 
@@ -72,6 +74,7 @@ return [
     'js_error_upload_image' => 'Erreur de téléchargement',
 
     'js_confirm_delete_image' => 'Supprimer cette image ?',
+    'js_confirm_delete_image_title' => 'Supprimer l\'image ?',
     'js_image_deleted' => 'Image supprimée',
     'js_error_delete_image' => 'Erreur de suppression',
 

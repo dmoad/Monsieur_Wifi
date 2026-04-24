@@ -102,6 +102,8 @@ return [
     'js_update_device_failed' => 'Échec de la mise à jour de l\'appareil',
     'js_update_device_failed_prefix' => 'Échec de la mise à jour de l\'appareil : {message}',
     'js_confirm_delete_device' => 'Êtes-vous sûr de vouloir supprimer cet appareil ?',
+    'js_confirm_delete_device_title' => 'Supprimer l\'appareil ?',
+    'js_delete_btn' => 'Supprimer',
     'js_device_deleted' => 'Appareil supprimé avec succès',
     'js_delete_device_failed' => 'Échec de la suppression de l\'appareil',
     'js_delete_device_failed_prefix' => 'Échec de la suppression de l\'appareil : {message}',
