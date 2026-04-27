@@ -70,10 +70,10 @@ class LocationSettingsV2QosBwTest extends TestCase
     }
 
     #[Test]
-    public function nonzero_class_sum_with_zero_wan_fails(): void
+    public function nonzero_class_sum_with_zero_wan_succeeds_pending_wan_setup(): void
     {
-        $this->expectException(ValidationException::class);
-
+        // WAN not yet declared — half-of-WAN can't be enforced; accept the values
+        // and let the assertion re-run once WAN capacity is filled in.
         LocationSettingsV2::assertQosClassSumWithinHalfWan([
             'wan_down_kbps' => 0,
             'wan_up_kbps'   => 0,
@@ -82,5 +82,6 @@ class LocationSettingsV2QosBwTest extends TestCase
             'be_bw'         => 0,
             'bulk_bw'       => 0,
         ]);
+        $this->assertTrue(true);
     }
 }

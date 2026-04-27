@@ -173,6 +173,11 @@ class LocationSettingsV2 extends Model
     public static function assertQosClassSumWithinHalfWan(array $bw): void
     {
         $bw = self::normalizeQosBw($bw);
+        // No declared WAN capacity yet — can't enforce a half-of-WAN ceiling.
+        // Let the user save class minimums; the assertion re-applies once WAN is set.
+        if ($bw['wan_down_kbps'] === 0 || $bw['wan_up_kbps'] === 0) {
+            return;
+        }
         $sum = $bw['voip_bw'] + $bw['streaming_bw'] + $bw['be_bw'] + $bw['bulk_bw'];
         if (2 * $sum <= $bw['wan_down_kbps'] && 2 * $sum <= $bw['wan_up_kbps']) {
             return;
