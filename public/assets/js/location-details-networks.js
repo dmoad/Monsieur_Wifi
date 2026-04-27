@@ -542,6 +542,7 @@ const ldNetworks = (function () {
         }
 
         if (typeof feather !== 'undefined') feather.replace({ width: 18, height: 18 });
+        $(listEl).find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
     }
 
     async function load() {
@@ -1052,25 +1053,13 @@ const ldNetworks = (function () {
             removeRange(dayRow.dataset.day, parseInt(rangeEl.dataset.idx, 10));
             return;
         }
-        const kebabBtn = e.target.closest('.ld-net-kebab-btn');
-        if (kebabBtn) {
+        const actionBtn = e.target.closest('.ld-net-action-btn');
+        if (actionBtn) {
             e.preventDefault();
             e.stopPropagation();
-            const menu = kebabBtn.nextElementSibling;
-            const wasOpen = menu && menu.classList.contains('open');
-            document.querySelectorAll('.ld-net-menu.open').forEach(m => m.classList.remove('open'));
-            if (!wasOpen && menu) menu.classList.add('open');
-            return;
-        }
-
-        const menuItem = e.target.closest('.ld-net-menu-item');
-        if (menuItem) {
-            e.preventDefault();
-            e.stopPropagation();
-            document.querySelectorAll('.ld-net-menu.open').forEach(m => m.classList.remove('open'));
-            const action = menuItem.dataset.action;
-            const menuRow = menuItem.closest('.ld-network-row');
-            const netId = menuRow && menuRow.dataset.networkId;
+            const action = actionBtn.dataset.action;
+            const actionRow = actionBtn.closest('.ld-network-row');
+            const netId = actionRow && actionRow.dataset.networkId;
             if (!netId) return;
             if (action === 'qr') {
                 const net = data.find(n => String(n.id) === String(netId));
@@ -1081,13 +1070,8 @@ const ldNetworks = (function () {
             return;
         }
 
-        // Close any open kebab menu on outside click
-        if (!e.target.closest('.ld-net-kebab-wrap')) {
-            document.querySelectorAll('.ld-net-menu.open').forEach(m => m.classList.remove('open'));
-        }
-
         const row = e.target.closest('.ld-network-row');
-        if (row && row.dataset.networkId && !e.target.closest('.ld-net-kebab-wrap')) {
+        if (row && row.dataset.networkId && !e.target.closest('.ld-net-row-actions')) {
             openForNetwork(row.dataset.networkId);
         }
     });

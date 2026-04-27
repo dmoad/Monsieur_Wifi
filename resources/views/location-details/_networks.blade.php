@@ -37,19 +37,13 @@
                     <span class="ld-net-vlan" style="display:none;"></span>
                 </div>
             </div>
-            <div class="ld-net-kebab-wrap">
-                <button type="button" class="ld-net-kebab-btn" aria-label="{{ __('common.actions') ?? 'Actions' }}" aria-haspopup="true" aria-expanded="false">
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            <div class="ld-net-row-actions">
+                <button type="button" class="ld-net-action-btn" data-action="qr" data-toggle="tooltip" title="{{ __('location_details.networks_show_qr') }}" aria-label="{{ __('location_details.networks_show_qr') }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="17" y2="14"/><line x1="20" y1="14" x2="21" y2="14"/><line x1="14" y1="17" x2="14" y2="21"/><line x1="17" y1="17" x2="21" y2="17"/><line x1="17" y1="20" x2="17" y2="21"/><line x1="20" y1="20" x2="21" y2="20"/></svg>
                 </button>
-                <div class="ld-net-menu">
-                    <button type="button" class="ld-net-menu-item" data-action="qr">
-                        <i data-feather="smartphone"></i>{{ __('location_details.networks_show_qr') }}
-                    </button>
-                    <div class="ld-net-menu-divider"></div>
-                    <button type="button" class="ld-net-menu-item ld-net-menu-danger" data-action="delete">
-                        <i data-feather="trash-2"></i>{{ __('location_details.networks_drawer_delete') }}
-                    </button>
-                </div>
+                <button type="button" class="ld-net-action-btn ld-net-action-danger" data-action="delete" data-toggle="tooltip" title="{{ __('location_details.networks_drawer_delete') }}" aria-label="{{ __('location_details.networks_drawer_delete') }}">
+                    <i data-feather="trash-2"></i>
+                </button>
             </div>
         </li>
     </template>
