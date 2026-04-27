@@ -136,6 +136,12 @@ class LocationNetworkController extends Controller
             $validated['password'] = 'abcd1234';
         }
 
+        // The DB column is NOT NULL with a default; null from the client means
+        // "not applicable for this auth method" — let the DB default apply.
+        if (array_key_exists('email_require_otp', $validated) && $validated['email_require_otp'] === null) {
+            unset($validated['email_require_otp']);
+        }
+
         // Bypass is only meaningful for captive portal — coerce any bypass entries to block
         // for password and open networks so the DB stays consistent.
         if (in_array($validated['type'], ['password', 'open'], true) && ! empty($validated['mac_filter_list'])) {
@@ -306,6 +312,12 @@ class LocationNetworkController extends Controller
                     ],
                 ], 422);
             }
+        }
+
+        // The DB column is NOT NULL with a default; null from the client means
+        // "not applicable for this auth method" — preserve the existing row value.
+        if (array_key_exists('email_require_otp', $validated) && $validated['email_require_otp'] === null) {
+            unset($validated['email_require_otp']);
         }
 
         // Bypass is only meaningful for captive portal — coerce any bypass entries to block
