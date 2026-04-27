@@ -29,7 +29,7 @@
         cursor: pointer;
     }
     .ac-table tbody tr:last-child { border-bottom: none; }
-    .ac-table tbody tr:hover { background: var(--mw-bg-page); }
+    .ac-table tbody tr:hover { background: var(--mw-bg-page); box-shadow: inset 3px 0 0 var(--mw-primary); }
     .ac-table td { padding: 10px var(--mw-space-lg); vertical-align: middle; }
     .ac-table td.ac-col-actions { text-align: right; width: 1%; white-space: nowrap; }
 

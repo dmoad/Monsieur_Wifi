@@ -99,11 +99,12 @@
         padding: var(--mw-space-md) var(--mw-space-lg);
         margin-bottom: var(--mw-space-sm);
         background: var(--mw-bg-surface);
-        transition: box-shadow 0.15s, border-color 0.15s;
+        transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
     }
     .location-card:hover {
         border-color: var(--mw-primary);
         box-shadow: var(--mw-shadow-elevated);
+        transform: translateY(-1px);
     }
     .location-card.primary {
         border: 2px solid var(--mw-primary);

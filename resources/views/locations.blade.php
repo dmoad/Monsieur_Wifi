@@ -33,7 +33,7 @@
     transition: background 0.12s;
 }
 .lc-table tbody tr:last-child { border-bottom: none; }
-.lc-table tbody tr:hover { background: var(--mw-bg-hover); }
+.lc-table tbody tr:hover { background: var(--mw-bg-hover); box-shadow: inset 3px 0 0 var(--mw-primary); }
 .lc-table td {
     padding: var(--mw-space-md) var(--mw-space-lg);
     vertical-align: middle;

@@ -65,7 +65,7 @@
         transition: background 0.12s;
     }
     .datatables-firmware tbody tr:last-child { border-bottom: none; }
-    .datatables-firmware tbody tr:hover { background: var(--mw-bg-hover); }
+    .datatables-firmware tbody tr:hover { background: var(--mw-bg-hover); box-shadow: inset 3px 0 0 var(--mw-primary); }
     .datatables-firmware td {
         padding: var(--mw-space-md) var(--mw-space-lg) !important;
         vertical-align: middle;

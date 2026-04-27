@@ -88,7 +88,7 @@
         transition: background 0.12s;
     }
     .db-table tbody tr:last-child { border-bottom: none; }
-    .db-table tbody tr:hover { background: var(--mw-bg-hover); }
+    .db-table tbody tr:hover { background: var(--mw-bg-hover); box-shadow: inset 3px 0 0 var(--mw-primary); }
     .db-table td { padding: var(--mw-space-md) var(--mw-space-lg); vertical-align: middle; color: var(--mw-text-secondary); }
     .db-table td.db-col-actions { text-align: right; width: 1%; white-space: nowrap; }
 

@@ -41,7 +41,7 @@
         transition: background 0.1s;
     }
     .dc-table tbody tr:last-child { border-bottom: none; }
-    .dc-table tbody tr:hover { background: var(--mw-bg-hover); }
+    .dc-table tbody tr:hover { background: var(--mw-bg-hover); box-shadow: inset 3px 0 0 var(--mw-primary); }
     .dc-table td { padding: 11px 16px; vertical-align: middle; }
     .dc-serial { font-weight: 700; color: var(--mw-text-primary); }
     .dc-mac { font-family: 'SF Mono','Fira Code',monospace; font-size: 12px; color: var(--mw-text-muted); }
