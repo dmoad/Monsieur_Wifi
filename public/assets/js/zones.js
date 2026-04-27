@@ -279,23 +279,13 @@ function displayZones() {
                         <div class="zc-name">${zone.name}</div>
                         <div class="zc-meta">${addressItem}${managers}</div>
                     </div>
-                    <div class="zc-kebab-wrap" onclick="event.stopPropagation()">
-                        <button class="zc-kebab-btn" onclick="toggleZoneMenu(event, ${zone.id})" title="${T.edit}">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-                            </svg>
+                    <div class="zc-row-actions" onclick="event.stopPropagation()">
+                        <button type="button" class="zc-action-btn" onclick="showZoneModal(${zone.id})" data-toggle="tooltip" title="${T.edit}" aria-label="${T.edit}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         </button>
-                        <div class="zc-menu" id="zc-menu-${zone.id}">
-                            <button class="zc-menu-item" onclick="showZoneModal(${zone.id}); closeAllZoneMenus()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                ${T.edit}
-                            </button>
-                            <div class="zc-menu-divider"></div>
-                            <button class="zc-menu-item zc-menu-danger" onclick="deleteZone(${zone.id}); closeAllZoneMenus()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                                ${T.delete}
-                            </button>
-                        </div>
+                        <button type="button" class="zc-action-btn zc-action-danger" onclick="deleteZone(${zone.id})" data-toggle="tooltip" title="${T.delete}" aria-label="${T.delete}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        </button>
                     </div>
                 </div>
                 <div class="zc-stats">
@@ -379,8 +369,9 @@ function displayZones() {
     } else {
         paginationEl.innerHTML = '';
     }
-    
+
     feather.replace();
+    $(listEl).find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
 function goToPage(page) {
@@ -588,16 +579,3 @@ async function deleteZone(zoneId) {
     }
 }
 
-function toggleZoneMenu(e, zoneId) {
-    e.stopPropagation();
-    const target = document.getElementById('zc-menu-' + zoneId);
-    const isOpen = target.classList.contains('open');
-    closeAllZoneMenus();
-    if (!isOpen) target.classList.add('open');
-}
-
-function closeAllZoneMenus() {
-    document.querySelectorAll('.zc-menu.open').forEach(m => m.classList.remove('open'));
-}
-
-document.addEventListener('click', closeAllZoneMenus);

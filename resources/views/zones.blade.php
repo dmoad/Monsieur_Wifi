@@ -45,19 +45,20 @@
     }
     .zc-meta-item [data-feather] { width: 13px !important; height: 13px !important; }
 
-    /* Kebab menu */
-    .zc-kebab-wrap {
-        position: relative;
+    /* Inline row actions */
+    .zc-row-actions {
+        display: inline-flex;
+        gap: 4px;
         flex-shrink: 0;
         align-self: center;
     }
-    .zc-kebab-btn {
+    .zc-action-btn {
         width: 32px;
         height: 32px;
         border: 1px solid var(--mw-border);
         background: var(--mw-bg-surface);
         border-radius: var(--mw-radius-sm);
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         color: var(--mw-text-secondary);
@@ -65,45 +66,12 @@
         transition: background 0.12s, color 0.12s, border-color 0.12s;
         padding: 0;
     }
-    .zc-kebab-btn:hover {
+    .zc-action-btn:hover {
         background: var(--mw-primary-tint);
         border-color: var(--mw-primary);
         color: var(--mw-primary);
     }
-    .zc-menu {
-        display: none;
-        position: absolute;
-        top: calc(100% + 4px);
-        right: 0;
-        background: var(--mw-bg-surface);
-        border: 1px solid var(--mw-border);
-        border-radius: var(--mw-radius-md);
-        box-shadow: var(--mw-shadow-elevated);
-        min-width: 140px;
-        z-index: 100;
-        padding: 4px 0;
-        animation: mw-fade-in 0.1s ease;
-    }
-    .zc-menu.open { display: block; }
-    .zc-menu-item {
-        display: flex;
-        align-items: center;
-        gap: var(--mw-space-sm);
-        width: 100%;
-        padding: 7px 14px;
-        border: none;
-        background: transparent;
-        font-size: 13px;
-        color: var(--mw-text-secondary);
-        cursor: pointer;
-        text-align: left;
-        transition: background 0.1s, color 0.1s;
-        font-family: var(--mw-font);
-    }
-    .zc-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
-    .zc-menu-danger { color: var(--mw-danger) !important; }
-    .zc-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
-    .zc-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
+    .zc-action-danger:hover { background: rgba(220,38,38,0.06); border-color: var(--mw-danger); color: var(--mw-danger); }
 
     /* Stat row */
     .zc-stats {
