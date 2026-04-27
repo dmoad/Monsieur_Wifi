@@ -65,11 +65,6 @@ let currentPage = 1;
 let totalPages = 1;
 let allUsers = [];
 
-const _dcDotsSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>`;
-
-function closeAllDcMenus() {
-    document.querySelectorAll('.dc-menu.open').forEach(m => m.classList.remove('open'));
-}
 
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof UserManager === 'undefined') {
@@ -94,29 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.addEventListener('click', function(e) {
-        const toggleBtn = e.target.closest('.dc-kebab-toggle');
-        if (toggleBtn) {
-            const deviceId = toggleBtn.dataset.deviceId;
-            const menu = document.getElementById(`dc-menu-${deviceId}`);
-            const wasOpen = menu && menu.classList.contains('open');
-            closeAllDcMenus();
-            if (!wasOpen && menu) menu.classList.add('open');
-            return;
-        }
-        const menuItem = e.target.closest('.dc-menu-item[data-action]');
-        if (menuItem) {
-            const action = menuItem.dataset.action;
+        const actionBtn = e.target.closest('.dc-action-btn[data-action]');
+        if (actionBtn) {
+            const action = actionBtn.dataset.action;
             if (action === 'change-owner') {
                 e.preventDefault();
-                closeAllDcMenus();
-                showChangeOwnerModal(parseInt(menuItem.dataset.deviceId));
-                return;
+                showChangeOwnerModal(parseInt(actionBtn.dataset.deviceId));
             }
-            // view-location and other anchor-based items: let the href navigate
-            closeAllDcMenus();
-            return;
+            // view-location: anchor's href navigates naturally
         }
-        if (!e.target.closest('.dc-kebab-wrap')) closeAllDcMenus();
     });
 });
 
@@ -221,19 +202,16 @@ function displayDevices(devices) {
             ? `<span class="dc-badge dc-badge-assigned">${device.location.name}</span>`
             : `<span class="dc-badge dc-badge-unassigned">${T.unassigned}</span>`;
 
-        const menuItems = [];
+        const actionBtns = [];
         if (hasLocation) {
-            menuItems.push(`<a class="dc-menu-item" href="${locationUrl}" data-action="view-location"><i data-feather="map-pin"></i>${T.viewLocation}</a>`);
+            actionBtns.push(`<a class="dc-action-btn" href="${locationUrl}" data-action="view-location" data-toggle="tooltip" title="${T.viewLocation}" aria-label="${T.viewLocation}"><i data-feather="map-pin"></i></a>`);
         }
         if (canChangeOwner) {
-            menuItems.push(`<button class="dc-menu-item" data-action="change-owner" data-device-id="${device.id}"><i data-feather="user"></i>${T.changeOwner}</button>`);
+            actionBtns.push(`<button type="button" class="dc-action-btn" data-action="change-owner" data-device-id="${device.id}" data-toggle="tooltip" title="${T.changeOwner}" aria-label="${T.changeOwner}"><i data-feather="user"></i></button>`);
         }
 
-        const actionsCell = menuItems.length > 0
-            ? `<div class="dc-kebab-wrap">
-                <button type="button" class="dc-kebab-btn dc-kebab-toggle" data-device-id="${device.id}">${_dcDotsSvg}</button>
-                <div class="dc-menu" id="dc-menu-${device.id}">${menuItems.join('')}</div>
-               </div>`
+        const actionsCell = actionBtns.length > 0
+            ? `<div class="dc-row-actions">${actionBtns.join('')}</div>`
             : '';
 
         return `
@@ -264,6 +242,7 @@ function displayDevices(devices) {
         </div>
     `;
     feather.replace();
+    $(container).find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
 function renderPagination(paginationData) {

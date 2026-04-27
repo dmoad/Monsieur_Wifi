@@ -56,35 +56,22 @@
     .dc-badge-no-owner   { background: var(--mw-bg-muted);    color: var(--mw-text-muted); }
     .dc-table td.dc-col-actions { text-align: right; width: 1%; white-space: nowrap; }
 
-    .dc-kebab-wrap { position: relative; display: inline-block; }
-    .dc-kebab-btn {
+    .dc-row-actions { display: inline-flex; gap: 4px; }
+    .dc-action-btn {
         width: 32px; height: 32px;
         border: 1px solid var(--mw-border);
         background: var(--mw-bg-surface);
         border-radius: var(--mw-radius-sm);
-        display: flex; align-items: center; justify-content: center;
+        display: inline-flex; align-items: center; justify-content: center;
         color: var(--mw-text-secondary);
         cursor: pointer;
         transition: background 0.12s, color 0.12s, border-color 0.12s;
         padding: 0;
+        text-decoration: none !important;
     }
-    .dc-kebab-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
-    .dc-menu {
-        display: none; position: absolute; top: calc(100% + 4px); right: 0;
-        background: var(--mw-bg-surface); border: 1px solid var(--mw-border);
-        border-radius: var(--mw-radius-md); box-shadow: var(--mw-shadow-elevated);
-        min-width: 160px; z-index: 100; padding: 4px 0;
-    }
-    .dc-menu.open { display: block; }
-    .dc-menu-item {
-        display: flex; align-items: center; gap: var(--mw-space-sm);
-        width: 100%; padding: 7px 14px; border: none; background: transparent;
-        font-size: 13px; color: var(--mw-text-secondary); cursor: pointer;
-        text-align: left; transition: background 0.1s, color 0.1s;
-        font-family: inherit; text-decoration: none !important;
-    }
-    .dc-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
-    .dc-menu-item [data-feather] { width: 14px !important; height: 14px !important; flex-shrink: 0; }
+    .dc-action-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
+    .dc-action-btn svg,
+    .dc-action-btn [data-feather] { width: 14px !important; height: 14px !important; }
 
     .empty-state { text-align: center; padding: 3rem 2rem; }
 </style>
