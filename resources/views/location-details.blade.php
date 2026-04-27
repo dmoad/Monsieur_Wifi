@@ -204,9 +204,9 @@
                 <div class="form-group">
                     <label>{{ __('location_details.connection_type') }}</label>
                     <select class="form-control" id="wan-connection-type">
-                        <option value="DHCP">DHCP</option>
-                        <option value="STATIC">{{ __('location_details.modal_wan_static_ip') }}</option>
-                        <option value="PPPOE">PPPoE</option>
+                        <option value="dhcp">DHCP</option>
+                        <option value="static">{{ __('location_details.modal_wan_static_ip') }}</option>
+                        <option value="pppoe">PPPoE</option>
                     </select>
                 </div>
                 <div id="wan-static-fields" style="display:none;">
