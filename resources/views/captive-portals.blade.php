@@ -752,9 +752,9 @@
     }
     .cp-empty-row [data-feather] { width: 48px !important; height: 48px !important; opacity: 0.5; margin-bottom: 12px; }
 
-    /* Kebab (mirror .lc-kebab-*) */
-    .cp-kebab-wrap { position: relative; display: inline-block; }
-    .cp-kebab-btn {
+    /* Inline row actions */
+    .cp-row-actions { display: inline-flex; gap: 4px; }
+    .cp-action-btn {
         width: 32px;
         height: 32px;
         border: 1px solid var(--mw-border);
@@ -768,44 +768,12 @@
         transition: background 0.12s, color 0.12s, border-color 0.12s;
         padding: 0;
     }
-    .cp-kebab-btn:hover {
+    .cp-action-btn:hover {
         background: var(--mw-primary-tint);
         border-color: var(--mw-primary);
         color: var(--mw-primary);
     }
-    .cp-kebab-btn [data-feather] { width: 16px !important; height: 16px !important; }
-    .cp-menu {
-        display: none;
-        position: absolute;
-        top: calc(100% + 4px);
-        right: 0;
-        background: var(--mw-bg-surface);
-        border: 1px solid var(--mw-border);
-        border-radius: var(--mw-radius-md);
-        box-shadow: var(--mw-shadow-elevated);
-        min-width: 160px;
-        z-index: 100;
-        padding: 4px 0;
-    }
-    .cp-menu.open { display: block; }
-    .cp-menu-item {
-        display: flex;
-        align-items: center;
-        gap: var(--mw-space-sm);
-        width: 100%;
-        padding: 7px 14px;
-        border: none;
-        background: transparent;
-        font-size: 13px;
-        color: var(--mw-text-secondary);
-        cursor: pointer;
-        text-align: left;
-        font-family: inherit;
-    }
-    .cp-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
-    .cp-menu-item-danger { color: var(--mw-danger); }
-    .cp-menu-item-danger:hover { background: rgba(220, 38, 38, 0.08); color: var(--mw-danger); }
-    .cp-menu-item [data-feather] { width: 14px !important; height: 14px !important; }
+    .cp-action-danger:hover { background: rgba(220, 38, 38, 0.08); border-color: var(--mw-danger); color: var(--mw-danger); }
 
     /* ============================================================
        Designer layout — back link, page header, 2-col with sticky

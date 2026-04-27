@@ -2,7 +2,6 @@
 let token;
 let currentDesignId = null;
 
-const _cpKebabSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
 const _cpEditSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
 const _cpTrashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
 const _cpUserSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>`;
@@ -333,21 +332,21 @@ function fetchDesigns(openFirstDesign = false) {
 
                     const searchKey = (design.name + ' ' + (design.owner_name || '') + ' ' + (design.creator_name || '')).toLowerCase();
 
-                    let menuItems = `
-                        <button type="button" class="cp-menu-item" data-action="edit" data-id="${design.id}">
-                            ${_cpEditSvg}${t.edit}
+                    let actionBtns = `
+                        <button type="button" class="cp-action-btn" data-action="edit" data-id="${design.id}" data-toggle="tooltip" title="${t.edit}" aria-label="${t.edit}">
+                            ${_cpEditSvg}
                         </button>`;
                     if (isAdmin) {
                         const ownerArg = (design.owner_name || design.creator_name || '').replace(/'/g, "\\'");
                         const ownerId = design.current_owner_id || design.user_id;
-                        menuItems += `
-                        <button type="button" class="cp-menu-item" data-action="change-owner" data-id="${design.id}" data-owner-name="${escapeHtml(ownerArg)}" data-owner-id="${ownerId}">
-                            ${_cpUserSvg}${t.change_owner}
+                        actionBtns += `
+                        <button type="button" class="cp-action-btn" data-action="change-owner" data-id="${design.id}" data-owner-name="${escapeHtml(ownerArg)}" data-owner-id="${ownerId}" data-toggle="tooltip" title="${t.change_owner}" aria-label="${t.change_owner}">
+                            ${_cpUserSvg}
                         </button>`;
                     }
-                    menuItems += `
-                        <button type="button" class="cp-menu-item cp-menu-item-danger" data-action="delete" data-id="${design.id}">
-                            ${_cpTrashSvg}${t.delete_button_title}
+                    actionBtns += `
+                        <button type="button" class="cp-action-btn cp-action-danger" data-action="delete" data-id="${design.id}" data-toggle="tooltip" title="${t.delete_button_title}" aria-label="${t.delete_button_title}">
+                            ${_cpTrashSvg}
                         </button>`;
 
                     const row = `
@@ -361,13 +360,8 @@ function fetchDesigns(openFirstDesign = false) {
                             </td>
                             <td class="cp-col-modified">${formattedDate}</td>
                             <td class="cp-col-actions">
-                                <div class="cp-kebab-wrap">
-                                    <button type="button" class="cp-kebab-btn" data-kebab="${design.id}" aria-haspopup="true" aria-expanded="false">
-                                        ${_cpKebabSvg}
-                                    </button>
-                                    <div class="cp-menu" data-menu="${design.id}">
-                                        ${menuItems}
-                                    </div>
+                                <div class="cp-row-actions">
+                                    ${actionBtns}
                                 </div>
                             </td>
                         </tr>
@@ -390,6 +384,7 @@ function fetchDesigns(openFirstDesign = false) {
             if (typeof feather !== 'undefined') {
                 feather.replace();
             }
+            $('#portal-designs-container [data-toggle="tooltip"]').tooltip({ container: 'body' });
         },
         error: function(xhr) {
             console.error('Error fetching designs:', xhr.responseText);
@@ -694,9 +689,9 @@ $(document).ready(function() {
     $('#location-logo-file').on('change', function() { readURL(this, 'location-logo-preview'); });
     $('#background-file').on('change', function() { readURL(this, 'background-preview'); });
 
-    // Row click → open editor (excluding kebab/menu clicks)
+    // Row click → open editor (excluding action button clicks)
     $(document).on('click', 'tr.cp-row', function(e) {
-        if ($(e.target).closest('.cp-kebab-wrap').length) return;
+        if ($(e.target).closest('.cp-row-actions').length) return;
         fetchDesignDetails($(this).data('id'));
     });
 
@@ -709,31 +704,12 @@ $(document).ready(function() {
         $('#' + key).addClass('active');
     });
 
-    // Kebab toggle
-    $(document).on('click', '.cp-kebab-btn', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const id = $(this).data('kebab');
-        const menu = $(`.cp-menu[data-menu="${id}"]`);
-        const isOpen = menu.hasClass('open');
-        $('.cp-menu.open').removeClass('open');
-        if (!isOpen) menu.addClass('open');
-    });
-
-    // Close any open kebab menu on outside click
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('.cp-menu, .cp-kebab-btn').length) {
-            $('.cp-menu.open').removeClass('open');
-        }
-    });
-
-    // Kebab menu actions
-    $(document).on('click', '.cp-menu-item', function(e) {
+    // Action buttons
+    $(document).on('click', '.cp-action-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
         const action = $(this).data('action');
         const id = $(this).data('id');
-        $('.cp-menu.open').removeClass('open');
         if (action === 'edit') {
             fetchDesignDetails(id);
         } else if (action === 'change-owner') {
