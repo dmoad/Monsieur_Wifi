@@ -12,6 +12,7 @@ const TRANSLATIONS = {
         owner: 'Owner',
         location: 'Location',
         status: 'Status',
+        actions: 'Actions',
         unassigned: 'Unassigned',
         assigned: 'Assigned',
         changeOwner: 'Change Owner',
@@ -40,6 +41,7 @@ const TRANSLATIONS = {
         owner: 'Propriétaire',
         location: 'Emplacement',
         status: 'Statut',
+        actions: 'Actions',
         unassigned: 'Non Assigné',
         assigned: 'Assigné',
         changeOwner: 'Changer le Propriétaire',
@@ -234,7 +236,7 @@ function displayDevices(devices) {
                         <th>${T.mac}</th>
                         <th>${T.owner}</th>
                         <th>${T.location}</th>
-                        <th>${T.status}</th>
+                        <th>${T.actions}</th>
                     </tr>
                 </thead>
                 <tbody>${rows}</tbody>
