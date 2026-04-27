@@ -197,85 +197,37 @@
                     <p class="card-text">{{ __('domain_blocking.categories_help') }}</p>
                 </div>
                 <div class="card-body">
+                    @php
+                        $catIconMap  = ['danger' => 'octagon', 'warning' => 'dollar-sign', 'primary' => 'shield-off', 'info' => 'users', 'success' => 'film', 'secondary' => 'tag'];
+                        $catColorMap = ['danger' => 'danger',  'warning' => 'warning',      'primary' => 'primary',    'info' => 'info',   'success' => 'success', 'secondary' => 'muted'];
+                    @endphp
                     <div class="row">
+                        @foreach ($categories as $category)
+                        @php
+                            $iconColor  = $catColorMap[$category->color] ?? 'muted';
+                            $iconName   = $catIconMap[$category->color]  ?? 'tag';
+                            $inputId    = 'category-' . $category->slug;
+                            $activeCount = $category->active_blocked_domains_count ?? 0;
+                        @endphp
                         <div class="col-lg-4 col-md-6 col-12">
-                            <div class="db-catcard">
-                                <span class="mw-stat-icon mw-stat-icon-danger"><i data-feather="octagon"></i></span>
+                            <div class="db-catcard{{ $category->is_enabled ? ' border-primary' : '' }}">
+                                <span class="mw-stat-icon mw-stat-icon-{{ $iconColor }}"><i data-feather="{{ $iconName }}"></i></span>
                                 <div class="db-catcard-text">
-                                    <div class="db-catcard-title">{{ __('domain_blocking.cat_adult') }}</div>
-                                    <div class="db-catcard-count">1,024 {{ __('domain_blocking.domains_suffix') }}</div>
+                                    <div class="db-catcard-title">{{ $category->name }}</div>
+                                    <div class="db-catcard-count" id="count-{{ $category->slug }}">{{ $activeCount }} {{ __('domain_blocking.domains_suffix') }}</div>
                                 </div>
                                 <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="category-adult" checked>
-                                    <label class="custom-control-label" for="category-adult"></label>
+                                    <input type="checkbox"
+                                           class="custom-control-input category-toggle"
+                                           id="{{ $inputId }}"
+                                           data-category-id="{{ $category->id }}"
+                                           data-category-slug="{{ $category->slug }}"
+                                           {{ $category->is_enabled ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="{{ $inputId }}"></label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="db-catcard">
-                                <span class="mw-stat-icon mw-stat-icon-warning"><i data-feather="dollar-sign"></i></span>
-                                <div class="db-catcard-text">
-                                    <div class="db-catcard-title">{{ __('domain_blocking.cat_gambling') }}</div>
-                                    <div class="db-catcard-count">856 {{ __('domain_blocking.domains_suffix') }}</div>
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="category-gambling" checked>
-                                    <label class="custom-control-label" for="category-gambling"></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="db-catcard">
-                                <span class="mw-stat-icon mw-stat-icon-primary"><i data-feather="shield-off"></i></span>
-                                <div class="db-catcard-text">
-                                    <div class="db-catcard-title">{{ __('domain_blocking.cat_malware') }}</div>
-                                    <div class="db-catcard-count">2,345 {{ __('domain_blocking.domains_suffix') }}</div>
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="category-malware" checked>
-                                    <label class="custom-control-label" for="category-malware"></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="db-catcard">
-                                <span class="mw-stat-icon mw-stat-icon-info"><i data-feather="users"></i></span>
-                                <div class="db-catcard-text">
-                                    <div class="db-catcard-title">{{ __('domain_blocking.cat_social') }}</div>
-                                    <div class="db-catcard-count">342 {{ __('domain_blocking.domains_suffix') }}</div>
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="category-social">
-                                    <label class="custom-control-label" for="category-social"></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="db-catcard">
-                                <span class="mw-stat-icon mw-stat-icon-success"><i data-feather="film"></i></span>
-                                <div class="db-catcard-text">
-                                    <div class="db-catcard-title">{{ __('domain_blocking.cat_streaming') }}</div>
-                                    <div class="db-catcard-count">128 {{ __('domain_blocking.domains_suffix') }}</div>
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="category-streaming">
-                                    <label class="custom-control-label" for="category-streaming"></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="db-catcard">
-                                <span class="mw-stat-icon mw-stat-icon-muted"><i data-feather="tag"></i></span>
-                                <div class="db-catcard-text">
-                                    <div class="db-catcard-title">{{ __('domain_blocking.cat_custom') }}</div>
-                                    <div class="db-catcard-count">43 {{ __('domain_blocking.domains_suffix') }}</div>
-                                </div>
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="category-custom" checked>
-                                    <label class="custom-control-label" for="category-custom"></label>
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

@@ -14,6 +14,7 @@
         'domain_added' => __('qos_settings.domain_added'),
         'domain_removed' => __('qos_settings.domain_removed'),
         'confirm_remove' => __('qos_settings.confirm_remove'),
+        'per_network_hint' => __('qos_settings.per_network_hint'),
         'class_labels' => [
             'EF' => __('qos_settings.class_label_EF'),
             'AF41' => __('qos_settings.class_label_AF41'),
@@ -156,7 +157,6 @@ window.QOS_T = {!! json_encode($qosT) !!};
 const T = window.QOS_T;
 
 const API      = '/api';
-const IS_SUPER = (typeof UserManager !== 'undefined' && UserManager.getUser()?.role === 'superadmin');
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function reRenderFeather() {
@@ -199,34 +199,16 @@ function renderClasses(classes) {
     $container.empty();
 
     const $row = $('<div class="row"></div>');
-    const isSuperAdmin = typeof UserManager !== 'undefined' && UserManager.getUser()?.role === 'superadmin';
 
     classes.forEach(cls => {
         const meta       = CLASS_META[cls.id] || {};
         const isBE       = cls.id === 'BE';
-        const canEdit    = isSuperAdmin && !isBE;
         const label      = T.class_labels[cls.id] || cls.label;
         const priorityDesc = T.priority_desc[cls.id] || '';
 
         const domainItems = isBE
             ? `<p class="be-placeholder">${escHtml(T.be_placeholder)}</p>`
-            : (cls.domains.length
-                ? cls.domains.map(d => `
-                    <li data-domain="${escHtml(d)}">
-                        <span>${escHtml(d)}</span>
-                        ${canEdit ? `<button class="btn-remove" data-class="${cls.id}" data-domain="${escHtml(d)}" title="${escHtml(T.remove_title)}">×</button>` : ''}
-                    </li>`).join('')
-                : `<p class="text-muted" style="font-size:0.85rem;font-style:italic;padding:0.25rem 0;">${escHtml(T.no_domains)}</p>`
-            );
-
-        const addForm = canEdit ? `
-            <div class="add-domain-form mt-2">
-                <input type="text" class="form-control form-control-sm add-domain-input"
-                       placeholder="${escHtml(T.add_domain_placeholder)}" data-class="${cls.id}">
-                <button class="btn btn-primary btn-sm add-domain-btn" data-class="${cls.id}">
-                    <i data-feather="plus" style="width:14px;height:14px;"></i> ${escHtml(T.add_btn)}
-                </button>
-            </div>` : '';
+            : `<p class="text-muted" style="font-size:0.85rem;padding:0.25rem 0;">${escHtml(T.per_network_hint)}</p>`;
 
         const card = `
             <div class="col-md-6 col-xl-3">
@@ -240,8 +222,7 @@ function renderClasses(classes) {
                         </div>
                     </div>
                     <div class="qos-class-body">
-                        <ul class="domain-list" id="domain-list-${cls.id}">${domainItems}</ul>
-                        ${addForm}
+                        <div class="domain-list-readonly">${domainItems}</div>
                     </div>
                 </div>
             </div>`;
@@ -268,58 +249,6 @@ async function loadClasses() {
         $('#qos-loading').html(`<p class="text-danger">${escHtml(T.load_failed)}</p>`);
     }
 }
-
-// ── Add domain ────────────────────────────────────────────────────────────────
-async function addDomain(classId, domain) {
-    if (!domain.trim()) { toastr.warning(T.domain_empty); return; }
-    try {
-        await apiFetch(`${API}/qos/classes/${classId}/domains`, {
-            method: 'POST',
-            body: JSON.stringify({ domain: domain.trim() }),
-        });
-        toastr.success(T.domain_added.replace('{class}', classId));
-        loadClasses();
-    } catch (err) {
-        handleApiError(err, 'addDomain');
-    }
-}
-
-// ── Remove domain ─────────────────────────────────────────────────────────────
-async function removeDomain(classId, domain) {
-    try {
-        await apiFetch(`${API}/qos/classes/${classId}/domains/${encodeURIComponent(domain)}`, {
-            method: 'DELETE',
-        });
-        toastr.success(T.domain_removed.replace('{class}', classId));
-        loadClasses();
-    } catch (err) {
-        handleApiError(err, 'removeDomain');
-    }
-}
-
-// ── Event delegation ──────────────────────────────────────────────────────────
-$(document).on('click', '.add-domain-btn', function () {
-    const classId = $(this).data('class');
-    const $input  = $(`.add-domain-input[data-class="${classId}"]`);
-    addDomain(classId, $input.val());
-});
-
-$(document).on('keydown', '.add-domain-input', function (e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const classId = $(this).data('class');
-        addDomain(classId, $(this).val());
-    }
-});
-
-$(document).on('click', '.btn-remove', function () {
-    const classId = $(this).data('class');
-    const domain  = $(this).data('domain');
-    const msg = T.confirm_remove.replace('{domain}', domain).replace('{class}', classId);
-    if (confirm(msg)) {
-        removeDomain(classId, domain);
-    }
-});
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 $(document).ready(function () {

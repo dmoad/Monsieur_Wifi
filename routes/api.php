@@ -1,24 +1,23 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SystemSettingController;
-use App\Http\Controllers\GuestNetworkUserController;
 use App\Http\Controllers\CaptivePortalDesignController;
-use App\Http\Controllers\FirmwareController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CaptivePortalWorkingHourController;
 use App\Http\Controllers\CaptivePortalHourlyScheduleController;
+use App\Http\Controllers\CaptivePortalWorkingHourController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DomainBlockingController;
+use App\Http\Controllers\FirmwareController;
+use App\Http\Controllers\GuestNetworkUserController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\LocationNetworkController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\QosController;
+use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
 use App\Http\Controllers\ZoneController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\LocationNetworkController;
-use App\Http\Controllers\QosController;
+use Illuminate\Support\Facades\Route;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -36,14 +35,14 @@ Route::post('payment-notifications', [PaymentController::class, 'handleWebhook']
 Route::post('stripe/webhook', [SubscriptionController::class, 'handleWebhook']);
 
 // Webhook test endpoint (for debugging)
-Route::get('webhook-test', function() {
+Route::get('webhook-test', function () {
     return response()->json([
         'success' => true,
         'message' => 'Webhook endpoint is reachable',
-        'webhook_url' => config('app.url') . '/api/payment-notifications',
-        'webhook_secret_configured' => !empty(config('services.stripe.webhook.secret')),
-        'stripe_key_configured' => !empty(config('services.stripe.key')),
-        'stripe_secret_configured' => !empty(config('services.stripe.secret')),
+        'webhook_url' => config('app.url').'/api/payment-notifications',
+        'webhook_secret_configured' => ! empty(config('services.stripe.webhook.secret')),
+        'stripe_key_configured' => ! empty(config('services.stripe.key')),
+        'stripe_secret_configured' => ! empty(config('services.stripe.secret')),
     ]);
 });
 
@@ -90,7 +89,7 @@ Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/failed', [Devi
 
 // Route::get('/devices/{mac_address}/{verification_code}/info', [DeviceController::class, 'info']);
 
-Route::get('/devices/{mac_address}/{verification_code}/verify', [DeviceController::class, 'verify']);   
+Route::get('/devices/{mac_address}/{verification_code}/verify', [DeviceController::class, 'verify']);
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () {
     Route::get('/', [LocationController::class, 'index']);
@@ -138,6 +137,11 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
 
     // Location QoS toggle
     Route::put('/{id}/settings/qos', [LocationController::class, 'updateQosSettings']);
+
+    // Per-location QoS domain lists (EF, AF41, CS1)
+    Route::get('/{location_id}/qos-domains', [LocationController::class, 'qosDomainsIndex']);
+    Route::post('/{location_id}/qos-domains', [LocationController::class, 'qosDomainsStore']);
+    Route::delete('/{location_id}/qos-domains/{classId}', [LocationController::class, 'qosDomainsDestroy']);
 
     // Location networks (flexible multi-network support)
     Route::get('/{location_id}/networks', [LocationNetworkController::class, 'index']);
@@ -264,14 +268,13 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'subscription'], function 
 });
 
 // E-commerce routes
-use App\Http\Controllers\ShopController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\Admin\AdminOrderController;
-use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\Admin\AdminInventoryController;
 use App\Http\Controllers\Admin\AdminProductModelController;
+use App\Http\Controllers\Admin\AdminShippingController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ShopController;
 
 // Public shop endpoints
 Route::prefix('v1/shop')->group(function () {
@@ -288,7 +291,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
     Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
     Route::delete('/cart', [CartController::class, 'clear']);
-    
+
     // Orders
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show']);
@@ -296,17 +299,17 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{orderNumber}/payment-intent', [PaymentController::class, 'createPaymentIntent']);
     Route::post('/orders/{orderNumber}/verify-payment', [PaymentController::class, 'verifyAndConfirmPayment']);
-    
+
     // Addresses
     Route::get('/addresses', [AddressController::class, 'index']);
     Route::post('/addresses', [AddressController::class, 'store']);
     Route::put('/addresses/{id}', [AddressController::class, 'update']);
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy']);
     Route::post('/addresses/{id}/set-default', [AddressController::class, 'setDefault']);
-    
+
     // Payment success endpoint (accessible by authenticated users)
     Route::get('/orders/{orderNumber}/success', [OrderController::class, 'success']);
-    
+
     // Zones management
     Route::prefix('zones')->group(function () {
         Route::get('/', [ZoneController::class, 'index']);
@@ -319,7 +322,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
         Route::delete('/{zone}/locations/{location}', [ZoneController::class, 'removeLocation']);
         Route::put('/{zone}/primary/{location}', [ZoneController::class, 'setPrimaryLocation']);
     });
-    
+
     // Device management
     Route::prefix('devices')->group(function () {
         Route::get('/', [DeviceController::class, 'apiIndex']);
@@ -341,12 +344,12 @@ Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     Route::post('/orders/{orderNumber}/assign-inventory', [\App\Http\Controllers\Admin\AdminOrderController::class, 'assignInventory']);
     Route::post('/orders/{orderNumber}/confirm-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmPayment']);
     Route::post('/orders/{orderNumber}/confirm-stripe-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmStripePayment']);
-    
+
     // Shipping rates
     Route::get('/shipping-rates', [AdminShippingController::class, 'index']);
     Route::put('/shipping-rates/{id}', [AdminShippingController::class, 'update']);
     Route::post('/shipping-rates/{id}/toggle', [AdminShippingController::class, 'toggle']);
-    
+
     // Inventory management
     Route::get('/inventory', [AdminInventoryController::class, 'index']);
     Route::get('/inventory/summary', [AdminInventoryController::class, 'summary']);
@@ -354,14 +357,14 @@ Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     Route::put('/inventory/{id}/quantity', [AdminInventoryController::class, 'updateQuantity']);
     Route::post('/inventory/{id}/adjust', [AdminInventoryController::class, 'adjustQuantity']);
     Route::put('/inventory/{id}/threshold', [AdminInventoryController::class, 'updateThreshold']);
-    
+
     // Individual inventory items (devices)
     Route::get('/inventory/{id}/items', [AdminInventoryController::class, 'getItems']);
     Route::post('/inventory/{id}/items', [AdminInventoryController::class, 'addItem']);
     Route::post('/inventory/{id}/items/import-csv', [AdminInventoryController::class, 'importCsv']);
     Route::put('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'updateItem']);
     Route::delete('/inventory/{productId}/items/{itemId}', [AdminInventoryController::class, 'deleteItem']);
-    
+
     // Product Models Management
     Route::get('/models', [AdminProductModelController::class, 'index']);
     Route::get('/models/{id}', [AdminProductModelController::class, 'show']);

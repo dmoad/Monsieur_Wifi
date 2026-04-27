@@ -31,6 +31,12 @@ const ldNetworks = (function () {
     let drawerSchedule = {};
     const SCHEDULE_DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 
+    function netLocationId() {
+        return (typeof networkSourceLocationId !== 'undefined' && networkSourceLocationId != null)
+            ? String(networkSourceLocationId)
+            : String(location_id);
+    }
+
     async function ensureCaptiveDesigns() {
         if (captiveDesigns !== null) return captiveDesigns;
         try {
@@ -553,7 +559,7 @@ const ldNetworks = (function () {
 
         try {
             const [netsRes, settingsRes] = await Promise.all([
-                apiFetch(`${API}/locations/${location_id}/networks`),
+                apiFetch(`${API}/locations/${netLocationId()}/networks`),
                 apiFetch(`${API}/locations/${location_id}/settings`).catch(() => null),
             ]);
             data = (netsRes && netsRes.data && netsRes.data.networks) || [];
@@ -587,7 +593,7 @@ const ldNetworks = (function () {
         const btn = document.getElementById('ld-network-drawer-delete');
         if (btn) btn.disabled = true;
         try {
-            await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, { method: 'DELETE' });
+            await apiFetch(`${API}/locations/${netLocationId()}/networks/${netId}`, { method: 'DELETE' });
             data.splice(idx, 1);
             render();
             if (typeof toastr !== 'undefined') toastr.success(i18n.networks_delete_success || 'Network deleted.');
@@ -635,7 +641,7 @@ const ldNetworks = (function () {
         try {
             const next = data.length;
             const octet = 10 + next;
-            const res = await apiFetch(`${API}/locations/${location_id}/networks`, {
+            const res = await apiFetch(`${API}/locations/${netLocationId()}/networks`, {
                 method: 'POST',
                 body: JSON.stringify({
                     type: 'password',
@@ -759,6 +765,7 @@ const ldNetworks = (function () {
             await ensureCaptiveDesigns();
             populateCaptiveDesignSelect(net.portal_design_id);
         }
+
     }
 
     async function save() {
@@ -863,7 +870,7 @@ const ldNetworks = (function () {
         const btn = document.getElementById('ld-network-drawer-save');
         btn.disabled = true;
         try {
-            const res = await apiFetch(`${API}/locations/${location_id}/networks/${netId}`, {
+            const res = await apiFetch(`${API}/locations/${netLocationId()}/networks/${netId}`, {
                 method: 'PUT',
                 body: JSON.stringify(payload),
             });

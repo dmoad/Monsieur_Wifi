@@ -32,7 +32,7 @@ class LocationNetworkController extends Controller
             ? Location::find($locationId)
             : Location::where('id', $locationId)->where(function ($q) use ($user) {
                 $q->where('owner_id', $user->id)
-                  ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                    ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
             })->first();
 
         return $location;
@@ -46,7 +46,7 @@ class LocationNetworkController extends Controller
     {
         $location = $this->authorizeLocation($locationId);
 
-        if (!$location) {
+        if (! $location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
@@ -57,9 +57,9 @@ class LocationNetworkController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'networks'    => $networks,
+                'networks' => $networks,
                 'max_networks' => $this->maxNetworks,
-                'can_add'     => $networks->count() < $this->maxNetworks,
+                'can_add' => $networks->count() < $this->maxNetworks,
             ],
         ]);
     }
@@ -72,7 +72,7 @@ class LocationNetworkController extends Controller
     {
         $location = $this->authorizeLocation($locationId);
 
-        if (!$location) {
+        if (! $location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
@@ -85,50 +85,50 @@ class LocationNetworkController extends Controller
         }
 
         $validated = $request->validate([
-            'type'              => ['required', Rule::in(LocationNetwork::TYPES)],
-            'ssid'              => 'required|string|max:32',
-            'enabled'           => 'boolean',
-            'visible'           => 'boolean',
-            'vlan_id'           => 'nullable|integer|min:1|max:4094',
-            'vlan_tagging'      => 'string',
-            'password'          => 'nullable|string|min:8|max:63',
-            'security'          => 'nullable|string',
-            'cipher_suites'     => 'nullable|string',
-            'auth_method'       => 'nullable|string',
-            'auth_methods'      => 'nullable|array',
-            'auth_methods.*'    => 'string|in:click-through,password,sms,email,social',
+            'type' => ['required', Rule::in(LocationNetwork::TYPES)],
+            'ssid' => 'required|string|max:32',
+            'enabled' => 'boolean',
+            'visible' => 'boolean',
+            'vlan_id' => 'nullable|integer|min:1|max:4094',
+            'vlan_tagging' => 'string',
+            'password' => 'nullable|string|min:8|max:63',
+            'security' => 'nullable|string',
+            'cipher_suites' => 'nullable|string',
+            'auth_method' => 'nullable|string',
+            'auth_methods' => 'nullable|array',
+            'auth_methods.*' => 'string|in:click-through,password,sms,email,social',
             'email_require_otp' => 'nullable|boolean',
-            'portal_password'   => 'nullable|string',
-            'social_auth_method'=> 'nullable|string',
-            'session_timeout'   => 'nullable|integer|min:1',
-            'idle_timeout'      => 'nullable|integer|min:1',
-            'redirect_url'      => 'nullable|url',
-            'portal_design_id'  => 'nullable|integer|exists:captive_portal_designs,id',
-            'download_limit'    => 'nullable|integer|min:0',
-            'upload_limit'      => 'nullable|integer|min:0',
-            'working_hours'     => 'nullable|array',
-            'working_hours.*.day'       => 'required_with:working_hours|string',
+            'portal_password' => 'nullable|string',
+            'social_auth_method' => 'nullable|string',
+            'session_timeout' => 'nullable|integer|min:1',
+            'idle_timeout' => 'nullable|integer|min:1',
+            'redirect_url' => 'nullable|url',
+            'portal_design_id' => 'nullable|integer|exists:captive_portal_designs,id',
+            'download_limit' => 'nullable|integer|min:0',
+            'upload_limit' => 'nullable|integer|min:0',
+            'working_hours' => 'nullable|array',
+            'working_hours.*.day' => 'required_with:working_hours|string',
             'working_hours.*.startHour' => 'required_with:working_hours|integer|min:0|max:23',
-            'working_hours.*.endHour'   => 'required_with:working_hours|integer|min:1|max:24',
-            'ip_mode'               => 'nullable|string',
-            'bridge_lan_dhcp_mode'  => 'nullable|string|in:dhcp_client,dhcp_server',
-            'ip_address'            => 'nullable|ip',
-            'netmask'               => 'nullable|string',
-            'gateway'               => 'nullable|ip',
-            'dns1'                  => 'nullable|ip',
-            'dns2'                  => 'nullable|ip',
-            'dhcp_enabled'          => 'boolean',
-            'dhcp_start'            => 'nullable|ipv4',
-            'dhcp_end'              => 'nullable|integer|min:1|max:16777216',
-            'mac_filter_mode'             => 'nullable|string|in:none,allow-listed,block-listed,mixed',
-            'mac_filter_list'             => 'nullable|array',
-            'mac_filter_list.*.mac'       => 'required_with:mac_filter_list|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
-            'mac_filter_list.*.type'      => 'required_with:mac_filter_list|string|in:bypass,block',
-            'dhcp_reservations'           => 'nullable|array',
-            'dhcp_reservations.*.mac'     => 'required_with:dhcp_reservations|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
-            'dhcp_reservations.*.ip'      => 'required_with:dhcp_reservations|ipv4',
-            'qos_policy'                  => 'nullable|string|in:full,scavenger',
-            'radio'                       => 'nullable|string|in:all,2.4,5',
+            'working_hours.*.endHour' => 'required_with:working_hours|integer|min:1|max:24',
+            'ip_mode' => 'nullable|string',
+            'bridge_lan_dhcp_mode' => 'nullable|string|in:dhcp_client,dhcp_server',
+            'ip_address' => 'nullable|ip',
+            'netmask' => 'nullable|string',
+            'gateway' => 'nullable|ip',
+            'dns1' => 'nullable|ip',
+            'dns2' => 'nullable|ip',
+            'dhcp_enabled' => 'boolean',
+            'dhcp_start' => 'nullable|ipv4',
+            'dhcp_end' => 'nullable|integer|min:1|max:16777216',
+            'mac_filter_mode' => 'nullable|string|in:none,allow-listed,block-listed,mixed',
+            'mac_filter_list' => 'nullable|array',
+            'mac_filter_list.*.mac' => 'required_with:mac_filter_list|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
+            'mac_filter_list.*.type' => 'required_with:mac_filter_list|string|in:bypass,block',
+            'dhcp_reservations' => 'nullable|array',
+            'dhcp_reservations.*.mac' => 'required_with:dhcp_reservations|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
+            'dhcp_reservations.*.ip' => 'required_with:dhcp_reservations|ipv4',
+            'qos_policy' => 'nullable|string|in:full,scavenger',
+            'radio' => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Set default password for password-type networks
@@ -138,19 +138,20 @@ class LocationNetworkController extends Controller
 
         // Bypass is only meaningful for captive portal — coerce any bypass entries to block
         // for password and open networks so the DB stays consistent.
-        if (in_array($validated['type'], ['password', 'open'], true) && !empty($validated['mac_filter_list'])) {
+        if (in_array($validated['type'], ['password', 'open'], true) && ! empty($validated['mac_filter_list'])) {
             $validated['mac_filter_list'] = array_map(function ($entry) {
                 if (($entry['type'] ?? null) === 'bypass') {
                     $entry['type'] = 'block';
                 }
+
                 return $entry;
             }, $validated['mac_filter_list']);
         }
 
         // Clear LAN/DHCP fields for bridge (WAN) and bridge_lan in dhcp_client sub-mode
-        $resolvedIpMode        = $validated['ip_mode'] ?? null;
-        $bridgeLanDhcpMode     = $validated['bridge_lan_dhcp_mode'] ?? 'dhcp_client';
-        $clearLanFields        = $resolvedIpMode === 'bridge'
+        $resolvedIpMode = $validated['ip_mode'] ?? null;
+        $bridgeLanDhcpMode = $validated['bridge_lan_dhcp_mode'] ?? 'dhcp_client';
+        $clearLanFields = $resolvedIpMode === 'bridge'
             || ($resolvedIpMode === 'bridge_lan' && $bridgeLanDhcpMode === 'dhcp_client');
 
         if ($clearLanFields) {
@@ -166,7 +167,7 @@ class LocationNetworkController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $bridgeErr,
-                'errors'  => ['ip_mode' => [$bridgeErr]],
+                'errors' => ['ip_mode' => [$bridgeErr]],
             ], 422);
         }
 
@@ -175,7 +176,7 @@ class LocationNetworkController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $dhcpErr['message'],
-                'errors'  => ['dhcp' => [$dhcpErr['message']]],
+                'errors' => ['dhcp' => [$dhcpErr['message']]],
             ], 422);
         }
 
@@ -183,7 +184,7 @@ class LocationNetworkController extends Controller
 
         $network = LocationNetwork::create(array_merge($validated, [
             'location_id' => $locationId,
-            'sort_order'  => $sortOrder,
+            'sort_order' => $sortOrder,
         ]));
 
         $this->incrementConfigVersion($location);
@@ -191,7 +192,7 @@ class LocationNetworkController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Network created successfully.',
-            'data'    => ['network' => $network],
+            'data' => ['network' => $network],
         ], 201);
     }
 
@@ -203,13 +204,13 @@ class LocationNetworkController extends Controller
     {
         $location = $this->authorizeLocation($locationId);
 
-        if (!$location) {
+        if (! $location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
         $network = LocationNetwork::where('location_id', $locationId)->find($networkId);
 
-        if (!$network) {
+        if (! $network) {
             return response()->json(['success' => false, 'message' => 'Network not found'], 404);
         }
 
@@ -223,63 +224,63 @@ class LocationNetworkController extends Controller
     public function update(Request $request, int $locationId, int $networkId)
     {
         $location = $this->authorizeLocation($locationId);
-        # Throw and error for test purpose
+        // Throw and error for test purpose
         // return response()->json(['success' => false, 'message' => 'Network settings not updated'], 400);
-        if (!$location) {
+        if (! $location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
         $network = LocationNetwork::where('location_id', $locationId)->find($networkId);
 
-        if (!$network) {
+        if (! $network) {
             return response()->json(['success' => false, 'message' => 'Network not found'], 404);
         }
 
         $validated = $request->validate([
-            'type'              => ['sometimes', Rule::in(LocationNetwork::TYPES)],
-            'ssid'              => 'sometimes|string|max:32',
-            'enabled'           => 'sometimes|boolean',
-            'visible'           => 'sometimes|boolean',
-            'vlan_id'           => 'nullable|integer|min:1|max:4094',
-            'vlan_tagging'      => 'sometimes|string',
-            'password'          => 'nullable|string|min:8|max:63',
-            'security'          => 'nullable|string',
-            'cipher_suites'     => 'nullable|string',
-            'auth_method'       => 'nullable|string',
-            'auth_methods'      => 'nullable|array',
-            'auth_methods.*'    => 'string|in:click-through,password,sms,email,social',
+            'type' => ['sometimes', Rule::in(LocationNetwork::TYPES)],
+            'ssid' => 'sometimes|string|max:32',
+            'enabled' => 'sometimes|boolean',
+            'visible' => 'sometimes|boolean',
+            'vlan_id' => 'nullable|integer|min:1|max:4094',
+            'vlan_tagging' => 'sometimes|string',
+            'password' => 'nullable|string|min:8|max:63',
+            'security' => 'nullable|string',
+            'cipher_suites' => 'nullable|string',
+            'auth_method' => 'nullable|string',
+            'auth_methods' => 'nullable|array',
+            'auth_methods.*' => 'string|in:click-through,password,sms,email,social',
             'email_require_otp' => 'nullable|boolean',
-            'portal_password'   => 'nullable|string',
-            'social_auth_method'=> 'nullable|string',
-            'session_timeout'   => 'nullable|integer|min:1',
-            'idle_timeout'      => 'nullable|integer|min:1',
-            'redirect_url'      => 'nullable|url',
-            'portal_design_id'  => 'nullable|integer|exists:captive_portal_designs,id',
-            'download_limit'    => 'nullable|integer|min:0',
-            'upload_limit'      => 'nullable|integer|min:0',
-            'working_hours'     => 'nullable|array',
-            'working_hours.*.day'       => 'required_with:working_hours|string',
+            'portal_password' => 'nullable|string',
+            'social_auth_method' => 'nullable|string',
+            'session_timeout' => 'nullable|integer|min:1',
+            'idle_timeout' => 'nullable|integer|min:1',
+            'redirect_url' => 'nullable|url',
+            'portal_design_id' => 'nullable|integer|exists:captive_portal_designs,id',
+            'download_limit' => 'nullable|integer|min:0',
+            'upload_limit' => 'nullable|integer|min:0',
+            'working_hours' => 'nullable|array',
+            'working_hours.*.day' => 'required_with:working_hours|string',
             'working_hours.*.startHour' => 'required_with:working_hours|integer|min:0|max:23',
-            'working_hours.*.endHour'   => 'required_with:working_hours|integer|min:1|max:24',
-            'ip_mode'               => 'nullable|string',
-            'bridge_lan_dhcp_mode'  => 'nullable|string|in:dhcp_client,dhcp_server',
-            'ip_address'            => 'nullable|ip',
-            'netmask'               => 'nullable|string',
-            'gateway'               => 'nullable|ip',
-            'dns1'                  => 'nullable|ip',
-            'dns2'                  => 'nullable|ip',
-            'dhcp_enabled'                => 'sometimes|boolean',
-            'dhcp_start'                  => 'nullable|ipv4',
-            'dhcp_end'                    => 'nullable|integer|min:1|max:16777216',
-            'mac_filter_mode'             => 'nullable|string|in:none,allow-listed,block-listed,mixed',
-            'mac_filter_list'             => 'nullable|array',
-            'mac_filter_list.*.mac'       => 'required_with:mac_filter_list|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
-            'mac_filter_list.*.type'      => 'required_with:mac_filter_list|string|in:bypass,block',
-            'dhcp_reservations'           => 'nullable|array',
-            'dhcp_reservations.*.mac'     => 'required_with:dhcp_reservations|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
-            'dhcp_reservations.*.ip'      => 'required_with:dhcp_reservations|ipv4',
-            'qos_policy'                  => 'nullable|string|in:full,scavenger',
-            'radio'                       => 'nullable|string|in:all,2.4,5',
+            'working_hours.*.endHour' => 'required_with:working_hours|integer|min:1|max:24',
+            'ip_mode' => 'nullable|string',
+            'bridge_lan_dhcp_mode' => 'nullable|string|in:dhcp_client,dhcp_server',
+            'ip_address' => 'nullable|ip',
+            'netmask' => 'nullable|string',
+            'gateway' => 'nullable|ip',
+            'dns1' => 'nullable|ip',
+            'dns2' => 'nullable|ip',
+            'dhcp_enabled' => 'sometimes|boolean',
+            'dhcp_start' => 'nullable|ipv4',
+            'dhcp_end' => 'nullable|integer|min:1|max:16777216',
+            'mac_filter_mode' => 'nullable|string|in:none,allow-listed,block-listed,mixed',
+            'mac_filter_list' => 'nullable|array',
+            'mac_filter_list.*.mac' => 'required_with:mac_filter_list|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
+            'mac_filter_list.*.type' => 'required_with:mac_filter_list|string|in:bypass,block',
+            'dhcp_reservations' => 'nullable|array',
+            'dhcp_reservations.*.mac' => 'required_with:dhcp_reservations|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
+            'dhcp_reservations.*.ip' => 'required_with:dhcp_reservations|ipv4',
+            'qos_policy' => 'nullable|string|in:full,scavenger',
+            'radio' => 'nullable|string|in:all,2.4,5',
         ]);
 
         // Check if updating to password type or if already password type
@@ -296,32 +297,33 @@ class LocationNetworkController extends Controller
             }
 
             // After stripping, if there is still no password anywhere, reject
-            if (!array_key_exists('password', $validated) && empty($network->password)) {
+            if (! array_key_exists('password', $validated) && empty($network->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Password is required for password-type networks.',
                     'errors' => [
-                        'password' => ['Password is required for password-type networks.']
-                    ]
+                        'password' => ['Password is required for password-type networks.'],
+                    ],
                 ], 422);
             }
         }
 
         // Bypass is only meaningful for captive portal — coerce any bypass entries to block
         // for password and open networks so the DB stays consistent.
-        if (in_array($newType, ['password', 'open'], true) && !empty($validated['mac_filter_list'])) {
+        if (in_array($newType, ['password', 'open'], true) && ! empty($validated['mac_filter_list'])) {
             $validated['mac_filter_list'] = array_map(function ($entry) {
                 if (($entry['type'] ?? null) === 'bypass') {
                     $entry['type'] = 'block';
                 }
+
                 return $entry;
             }, $validated['mac_filter_list']);
         }
 
         // Clear LAN/DHCP fields for bridge (WAN) and bridge_lan in dhcp_client sub-mode
-        $resolvedIpMode    = $validated['ip_mode'] ?? $network->ip_mode;
+        $resolvedIpMode = $validated['ip_mode'] ?? $network->ip_mode;
         $bridgeLanDhcpMode = $validated['bridge_lan_dhcp_mode'] ?? $network->bridge_lan_dhcp_mode ?? 'dhcp_client';
-        $clearLanFields    = $resolvedIpMode === 'bridge'
+        $clearLanFields = $resolvedIpMode === 'bridge'
             || ($resolvedIpMode === 'bridge_lan' && $bridgeLanDhcpMode === 'dhcp_client');
 
         if ($clearLanFields) {
@@ -337,7 +339,7 @@ class LocationNetworkController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $bridgeErr,
-                'errors'  => ['ip_mode' => [$bridgeErr]],
+                'errors' => ['ip_mode' => [$bridgeErr]],
             ], 422);
         }
 
@@ -346,7 +348,7 @@ class LocationNetworkController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $dhcpErr['message'],
-                'errors'  => ['dhcp' => [$dhcpErr['message']]],
+                'errors' => ['dhcp' => [$dhcpErr['message']]],
             ], 422);
         }
 
@@ -375,8 +377,8 @@ class LocationNetworkController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Network updated successfully.',
-            'data'    => [
-                'network'                  => $network->fresh(),
+            'data' => [
+                'network' => $network->fresh(),
                 'config_version_incremented' => $shouldIncrement,
             ],
         ]);
@@ -390,13 +392,13 @@ class LocationNetworkController extends Controller
     {
         $location = $this->authorizeLocation($locationId);
 
-        if (!$location) {
+        if (! $location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
         $network = LocationNetwork::where('location_id', $locationId)->find($networkId);
 
-        if (!$network) {
+        if (! $network) {
             return response()->json(['success' => false, 'message' => 'Network not found'], 404);
         }
 
@@ -425,12 +427,12 @@ class LocationNetworkController extends Controller
     {
         $location = $this->authorizeLocation($locationId);
 
-        if (!$location) {
+        if (! $location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
         $request->validate([
-            'order'   => 'required|array',
+            'order' => 'required|array',
             'order.*' => 'integer',
         ]);
 
@@ -454,7 +456,7 @@ class LocationNetworkController extends Controller
      */
     private function assertDhcpPoolValid(array $validated, ?LocationNetwork $existing): ?array
     {
-        $ipMode            = $validated['ip_mode'] ?? $existing?->ip_mode ?? 'static';
+        $ipMode = $validated['ip_mode'] ?? $existing?->ip_mode ?? 'static';
         $bridgeLanDhcpMode = $validated['bridge_lan_dhcp_mode'] ?? $existing?->bridge_lan_dhcp_mode ?? 'dhcp_client';
 
         // DHCP pool validation applies to static IP and bridge_lan in server mode
@@ -493,9 +495,8 @@ class LocationNetworkController extends Controller
      * Returns an error message string if another network at the same location
      * already uses the given bridge ip_mode, otherwise null.
      *
-     * @param int      $locationId
-     * @param string|null $ipMode        The ip_mode being set on the current row.
-     * @param int|null $excludeNetworkId The network being updated (excluded from the check).
+     * @param  string|null  $ipMode  The ip_mode being set on the current row.
+     * @param  int|null  $excludeNetworkId  The network being updated (excluded from the check).
      */
     private function assertBridgeModeUnique(int $locationId, ?string $ipMode, ?int $excludeNetworkId = null): ?string
     {

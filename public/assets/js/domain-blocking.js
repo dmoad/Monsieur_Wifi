@@ -94,22 +94,6 @@ function getCategoryAvatarClass(slug) {
     }
 }
 
-function getCategoryIdByName(categoryName) {
-    const categoryMapping = {
-        'Adult Content': '1',
-        'Gambling': '2',
-        'Malware': '3',
-        'Social Media': '4',
-        'Streaming': '5',
-        'Custom List': '6',
-        'Contenu adulte': '1',
-        'Jeux d\'argent': '2',
-        'Logiciels malveillants': '3',
-        'Réseaux sociaux': '4',
-        'Liste personnalisée': '6'
-    };
-    return categoryMapping[categoryName] || null;
-}
 
 function closeAllDbMenus() {
     document.querySelectorAll('.db-menu.open').forEach(m => m.classList.remove('open'));
@@ -117,7 +101,7 @@ function closeAllDbMenus() {
 
 function loadDomains() {
     $.ajax({
-        url: '/api/blocked-domains',
+        url: '/api/blocked-domains?per_page=500',
         type: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -138,7 +122,7 @@ function renderDomains() {
     const $tbody = $('#db-domains-tbody');
     const $pg = $('#db-pagination');
     const query  = ($('#db-search').val() || '').trim().toLowerCase();
-    const cat    = window.selectedCategory || null;
+    const catId  = window.selectedCategoryId || null;
 
     let filtered = domainsData;
     if (query) {
@@ -147,8 +131,8 @@ function renderDomains() {
             ((d.category && d.category.name) || '').toLowerCase().includes(query)
         );
     }
-    if (cat) {
-        filtered = filtered.filter(d => d.category && d.category.name === cat);
+    if (catId) {
+        filtered = filtered.filter(d => d.category && String(d.category.id) === String(catId));
     }
 
     if (!filtered.length) {
@@ -284,27 +268,16 @@ $(window).on('load', function() {
         let categoryArray = categories.categories || categories;
         if (!Array.isArray(categoryArray)) return;
 
-        const categoryCheckboxMap = {
-            1: '#category-adult',
-            2: '#category-gambling',
-            3: '#category-malware',
-            4: '#category-social',
-            5: '#category-streaming',
-            6: '#category-custom'
-        };
-
         categoryArray.forEach(function(category) {
-            const checkboxId = categoryCheckboxMap[category.id];
-            if (!checkboxId) return;
-            const checkbox = $(checkboxId);
+            if (!category.slug) return;
+            const checkbox = $('#category-' + category.slug);
             if (!checkbox.length) return;
-            const categoryCard = checkbox.closest('.card');
-            if (!categoryCard.length) return;
+            const $catcard = checkbox.closest('.db-catcard');
+            if (!$catcard.length) return;
 
-            const countSpan = categoryCard.find('h4').next('span');
-            countSpan.text(`${category.active_blocked_domains_count || 0} ${t.domainCount}`);
+            $catcard.find('.db-catcard-count').text(`${category.active_blocked_domains_count || 0} ${t.domainCount}`);
             checkbox.prop('checked', category.is_enabled);
-            category.is_enabled ? categoryCard.addClass('border-primary') : categoryCard.removeClass('border-primary');
+            category.is_enabled ? $catcard.addClass('border-primary') : $catcard.removeClass('border-primary');
         });
     }
 
@@ -313,13 +286,13 @@ $(window).on('load', function() {
         $(this).next('.custom-file-label').html(fileName || 'Choose file');
     });
 
-    $('.custom-switch input[type="checkbox"]').on('change', function() {
-        const categoryCard = $(this).closest('.card');
-        const categoryName = categoryCard.find('h4').text().trim();
-        const isEnabled = $(this).is(':checked');
-        const checkbox = $(this);
+    $(document).on('change', '.category-toggle', function() {
+        const checkbox   = $(this);
+        const $catcard   = checkbox.closest('.db-catcard');
+        const categoryId = checkbox.data('category-id');
+        const catName    = $catcard.find('.db-catcard-title').text().trim();
+        const isEnabled  = checkbox.is(':checked');
 
-        let categoryId = getCategoryIdByName(categoryName);
         if (!categoryId) {
             checkbox.prop('checked', !isEnabled);
             return;
@@ -338,9 +311,9 @@ $(window).on('load', function() {
             },
             success: function(response) {
                 if (response.success) {
-                    isEnabled ? categoryCard.addClass('border-primary') : categoryCard.removeClass('border-primary');
+                    isEnabled ? $catcard.addClass('border-primary') : $catcard.removeClass('border-primary');
                     if (typeof toastr !== 'undefined') {
-                        toastr.success(`${categoryName} ${isEnabled ? t.enabled : t.disabled} ${t.successfully}`);
+                        toastr.success(`${catName} ${isEnabled ? t.enabled : t.disabled} ${t.successfully}`);
                     }
                     setTimeout(function() {
                         loadCategoriesData();
@@ -495,7 +468,7 @@ $(window).on('load', function() {
     $('.card.cursor-pointer').addClass('category-card');
 
     $(document).on('click', '#view-all-domains', function() {
-        window.selectedCategory = null;
+        window.selectedCategoryId = null;
         dbCurrentPage = 1;
         renderDomains();
     });
@@ -506,9 +479,8 @@ $(window).on('load', function() {
         button.prop('disabled', true).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right:4px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.28"/></svg>Exporting...');
 
         let exportUrl = '/api/blocked-domains/export?format=txt&active_only=true';
-        if (window.selectedCategory) {
-            const categoryId = getCategoryIdByName(window.selectedCategory);
-            if (categoryId) exportUrl += `&category_id=${categoryId}`;
+        if (window.selectedCategoryId) {
+            exportUrl += `&category_id=${window.selectedCategoryId}`;
         }
 
         const link = document.createElement('a');

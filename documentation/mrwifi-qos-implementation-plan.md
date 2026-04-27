@@ -3,6 +3,8 @@
 
 > **Scope:** SNI-based traffic prioritization using DSCP marking across multi-tenant cloud controller and OpenWRT devices. No bandwidth limiting. CAKE not available on current hardware — using nftables + mqprio.
 
+**Per-network domain lists (2026):** SNI → DSCP class domain lists are stored per **location WiFi network** (`location_network_qos_domains`), not as a single global list. The device JSON carries **`rules` inside each bridge** (`qos.networks[br-*].rules`). Top-level `qos.rules` is always `[]` (deprecated). `config_version` is an `md5` of all per-network domain rows for the location’s networks so any domain change forces re-apply.
+
 ---
 
 ## Architecture Overview
@@ -11,8 +13,8 @@
 ┌─────────────────────────────────────────────────────┐
 │              Cloud Controller (Multi-Tenant)         │
 │                                                      │
-│  SuperAdmin → Manage global DSCP classes & domains   │
-│  Admin      → Enable/disable QoS per location        │
+│  SuperAdmin → Class metadata (DSCP, nft mark)        │
+│  Admin      → Per-network domain lists, QoS on/off   │
 │  User       → View only                              │
 │                                                      │
 │  QoS config stored in location settings              │
@@ -40,17 +42,17 @@
 
 | Role       | Can Do                                                                        |
 |------------|-------------------------------------------------------------------------------|
-| SuperAdmin | Add/edit/delete domains within pre-defined DSCP classes. Classes are fixed.   |
-| Admin      | Enable/disable QoS per location. Read-only view of global classes & domains.  |
-| User       | Enable/disable QoS per location. Read-only view of global classes & domains.  |
+| SuperAdmin | View fixed DSCP class metadata (read-only in UI; global domain POST/DELETE return **410**). |
+| Admin      | Enable/disable QoS per location; **add/remove domains per WiFi network** in the location Networks drawer. |
+| User       | Enable/disable QoS per location. Read-only; domain lists as enforced per network.  |
 
 ---
 
 ## 1.2 Data Models
 
-### Global DSCP Classes (Pre-defined, fixed — SuperAdmin adds domains only)
+### Global DSCP Classes (Pre-defined, fixed; domains are per network)
 
-Classes are pre-defined and cannot be created or deleted. SuperAdmin can only manage the domain list within each class.
+Classes are pre-defined and cannot be created or deleted. **Domain lists** are **not** global: each `location_networks` row has its own rows in `location_network_qos_domains` (EF, AF41, CS1; BE has no list). The JSON below is illustrative; the controller may return **`domains: []`** on `GET /api/qos/classes` because lists are edited per network.
 
 ```json
 {
@@ -126,31 +128,33 @@ QoS enable/disable is stored as part of the location settings object. Both **Adm
   "captive_portal": { "...": "..." },
   "qos": {
     "enabled": true,
-    "config_version": "v1.4",
+    "config_version": "a1b2c3d4e5f6789012345678abcdef12",
     "networks": {
-      "br-home":  { "policy": "full",      "trust_client_dscp": true  },
-      "br-guest": { "policy": "scavenger", "trust_client_dscp": false },
-      "br-iot":   { "policy": "scavenger", "trust_client_dscp": false }
-    },
-    "rules": [
-      {
-        "class": "EF",
-        "domains": ["meet.google.com", "*.zoom.us", "*.teams.microsoft.com", "*.webex.com"]
+      "br-home": {
+        "policy": "full",
+        "trust_client_dscp": true,
+        "rules": [
+          { "id": "rule_ef", "dscp_class": "EF", "nft_mark": 46, "domains": ["meet.google.com"] },
+          { "id": "rule_af41", "dscp_class": "AF41", "nft_mark": 34, "domains": ["*.youtube.com"] },
+          { "id": "rule_cs1", "dscp_class": "CS1", "nft_mark": 8, "domains": [] }
+        ]
       },
-      {
-        "class": "AF41",
-        "domains": ["*.netflix.com", "*.nflxvideo.net", "*.youtube.com", "*.googlevideo.com", "*.hotstar.com"]
-      },
-      {
-        "class": "CS1",
-        "domains": ["*.dropbox.com", "*.onedrive.com", "*.drive.google.com", "*.amazonaws.com"]
+      "br-guest": {
+        "policy": "scavenger",
+        "trust_client_dscp": false,
+        "rules": [
+          { "id": "rule_ef", "dscp_class": "EF", "nft_mark": 46, "domains": [] },
+          { "id": "rule_af41", "dscp_class": "AF41", "nft_mark": 34, "domains": [] },
+          { "id": "rule_cs1", "dscp_class": "CS1", "nft_mark": 8, "domains": ["*.dropbox.com"] }
+        ]
       }
-    ]
+    },
+    "rules": []
   }
 }
 ```
 
-> The `rules` block is compiled from the global DSCP class domain lists managed by SuperAdmin. Admin and User both control `qos.enabled` via location settings. Neither can edit rules or domains.
+> **`rules` at the top level is always an empty array.** Per-bridge `rules` are compiled from `location_network_qos_domains` for each WiFi network. `config_version` is an MD5 of the sorted snapshot of all domain rows for networks at the location. Admin and User control `qos.enabled` via location settings; **domain lists** are edited per network in the Networks UI (for authorized roles).
 
 ---
 
@@ -172,49 +176,71 @@ The device calls this on demand, controlled by existing device logic. The respon
   "captive_portal": { "...": "..." },
   "qos": {
     "enabled": true,
-    "config_version": "v1.4",
+    "config_version": "a1b2c3d4e5f6789012345678abcdef12",
     "networks": {
-      "br-home":  { "policy": "full",      "trust_client_dscp": true  },
-      "br-guest": { "policy": "scavenger", "trust_client_dscp": false },
-      "br-iot":   { "policy": "scavenger", "trust_client_dscp": false }
-    },
-    "rules": [
-      {
-        "id": "rule_001",
-        "dscp_class": "EF",
-        "domains": ["meet.google.com", "*.zoom.us", "*.teams.microsoft.com", "*.webex.com"]
+      "br-home": {
+        "policy": "full",
+        "trust_client_dscp": true,
+        "rules": [
+          {
+            "id": "rule_ef",
+            "dscp_class": "EF",
+            "nft_mark": 46,
+            "domains": ["meet.google.com", "*.zoom.us"]
+          },
+          {
+            "id": "rule_af41",
+            "dscp_class": "AF41",
+            "nft_mark": 34,
+            "domains": ["*.youtube.com"]
+          },
+          {
+            "id": "rule_cs1",
+            "dscp_class": "CS1",
+            "nft_mark": 8,
+            "domains": ["*.dropbox.com"]
+          }
+        ]
       },
-      {
-        "id": "rule_002",
-        "dscp_class": "AF41",
-        "domains": ["*.netflix.com", "*.nflxvideo.net", "*.youtube.com", "*.googlevideo.com", "*.hotstar.com"]
-      },
-      {
-        "id": "rule_003",
-        "dscp_class": "CS1",
-        "domains": ["*.dropbox.com", "*.onedrive.com", "*.drive.google.com", "*.amazonaws.com"]
+      "br-guest": {
+        "policy": "scavenger",
+        "trust_client_dscp": false,
+        "rules": [
+          { "id": "rule_ef", "dscp_class": "EF", "nft_mark": 46, "domains": [] },
+          { "id": "rule_af41", "dscp_class": "AF41", "nft_mark": 34, "domains": [] },
+          { "id": "rule_cs1", "dscp_class": "CS1", "nft_mark": 8, "domains": [] }
+        ]
       }
-    ]
+    },
+    "rules": []
   }
 }
 ```
 
-When `qos.enabled` is `false`, the `rules` and `networks` blocks may be omitted. The device is responsible for flushing any existing QoS rules on receiving `enabled: false`.
+Firmware should use **per-bridge** `rules` only (ignore or treat top-level `rules` as deprecated). When `qos.enabled` is `false`, the `rules` and `networks` blocks may be omitted. The device is responsible for flushing any existing QoS rules on receiving `enabled: false`.
 
 ---
 
 ## 1.4 API Endpoints
 
-### SuperAdmin — Global QoS Class Management
+### SuperAdmin — Global QoS Class (metadata only; domains per network)
 
 ```
-GET    /api/v1/qos/classes                         List all DSCP classes with their domains
-GET    /api/v1/qos/classes/:id                     Get single class with full domain list
-POST   /api/v1/qos/classes/:id/domains             Add a domain to a class
-DELETE /api/v1/qos/classes/:id/domains/:domain     Remove a domain from a class
+GET    /api/qos/classes                            List all DSCP classes (domain arrays may be empty; use per-network API)
+GET    /api/qos/classes/:id                        Get single class
+POST   /api/qos/classes/:id/domains                **410 Gone** — use per-network endpoints
+DELETE /api/qos/classes/:id/domains/:domain        **410 Gone** — use per-network endpoints
 ```
 
-> Classes themselves (EF, AF41, BE, CS1) are pre-defined and cannot be created or deleted via the API. Only the domain lists are editable. Saving any domain change bumps `config_version` globally.
+> Classes (EF, AF41, BE, CS1) are pre-defined. **Domain mutation** is via location network routes (same auth as other network operations):
+
+```
+GET    /api/locations/:locationId/networks/:networkId/qos-domains
+POST   /api/locations/:locationId/networks/:networkId/qos-domains
+DELETE /api/locations/:locationId/networks/:networkId/qos-domains/:classId?domain=...
+```
+
+> Successful domain add/delete increments the device **configuration version** (same as other network field updates).
 
 ### Admin & User — Location Level
 
@@ -230,11 +256,11 @@ PUT    /api/v1/locations/:id/settings/qos      Enable/disable QoS for location {
 ## 1.5 Config Delivery Flow
 
 ```
-SuperAdmin edits / adds SNI rule
+Admin edits per-network SNI domain (or new network gets defaults copied from old global table at migration)
         ↓
-Controller bumps config_version
+location_network_qos_domains updated; configuration_version on device/location bumps
         ↓
-Rules compiled into qos.rules block in location settings
+Per-bridge rules compiled into qos.networks[br-*].rules; qos.rules = []
         ↓
 Device calls /settings (existing on-demand logic)
         ↓
@@ -242,11 +268,11 @@ Device receives full settings payload including qos block
         ↓
 Device compares qos.config_version with stored version
         ↓
-If changed (or first apply): regenerate nftables + tc rules
+If changed (or first apply): regenerate nftables + tc rules per bridge
 If unchanged: skip, no-op
 ```
 
-> **Versioning:** `config_version` is a string (e.g. `v1.4`) that increments whenever SuperAdmin saves a rule change or an Admin/User toggles QoS. The device stores the last applied version and skips re-applying if unchanged.
+> **Versioning:** `config_version` is a **32-char hex string** (MD5 of the serialized per-network domain rows for that device’s networks). It changes when any of those domain rows change. Toggle QoS enable/disable and other location settings use the existing `configuration_version` / apply logic.
 
 ---
 
@@ -257,17 +283,16 @@ If unchanged: skip, no-op
 Accessible under a global "QoS Settings" section, not per-location.
 
 - Four pre-defined class cards: Real-time (EF), Streaming (AF41), Default (BE), Background (CS1)
-- Each card shows the class label, DSCP value, priority level, and its domain list
-- SuperAdmin can add or remove domains within each class
-- BE card has no domain list (informational only — unmatched traffic)
+- **Read-only** class metadata: label, DSCP value, `nft_mark`, priority description
+- **No** add/remove domain UI; copy explains that domain lists are managed **per WiFi network** on each Location
 - No option to create, delete, or reorder classes
-- Save button bumps `config_version`
 
-### Admin & User — Location QoS
+### Admin & User — Location QoS and Networks
 
-- Per-location toggle: Enable / Disable QoS
-- Read-only list of active classes and their domains (what will be enforced if enabled)
-- No editing of any rule or domain
+- Per-location toggle: Enable / Disable QoS (and bandwidth fields as before)
+- **Per WiFi network** (Networks drawer, Advanced / QoS section): add/remove SNI domains for EF, AF41, and CS1 for that SSID/bridge; BE remains catch-all
+- Users with view-only access: no domain editing
+- Router tab may show class **definitions** from `GET /api/qos/classes` with copy that **domain lists are per network**
 
 ---
 
@@ -339,7 +364,7 @@ The agent generates this file dynamically from the JSON payload:
 ```nft
 #!/usr/sbin/nft -f
 # Auto-generated by mrwifi-qos-agent
-# Config version: v1.4
+# Config version: <md5 from qos.config_version>
 # Generated: 2025-03-10T08:01:00Z
 
 table inet mrwifi_qos {

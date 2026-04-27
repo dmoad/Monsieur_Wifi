@@ -10,15 +10,27 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
-            $table->renameColumn('location_id', 'network_id');
-        });
+        $schema = Schema::connection('radius');
+        if (! $schema->hasTable('radcheck')) {
+            return;
+        }
+        if ($schema->hasColumn('radcheck', 'location_id') && ! $schema->hasColumn('radcheck', 'network_id')) {
+            Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
+                $table->renameColumn('location_id', 'network_id');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
-            $table->renameColumn('network_id', 'location_id');
-        });
+        $schema = Schema::connection('radius');
+        if (! $schema->hasTable('radcheck')) {
+            return;
+        }
+        if ($schema->hasColumn('radcheck', 'network_id') && ! $schema->hasColumn('radcheck', 'location_id')) {
+            Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
+                $table->renameColumn('network_id', 'location_id');
+            });
+        }
     }
 };

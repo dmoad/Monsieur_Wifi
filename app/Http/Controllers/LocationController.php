@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Device;
 use App\Models\Firmware;
 use App\Models\Location;
+use App\Models\LocationQosDomain;
 use App\Models\LocationSettingsV2;
 use App\Models\OnlineNetworkUser;
 use App\Models\Radacct;
@@ -2952,5 +2953,131 @@ class LocationController extends Controller
         });
 
         return $categories;
+    }
+
+    // -------------------------------------------------------------------------
+    // GET/POST/DELETE .../locations/{location_id}/qos-domains — per-location QoS domain lists
+    // -------------------------------------------------------------------------
+
+    public function qosDomainsIndex(int $locationId)
+    {
+        $location = $this->authorizeLocationAccess($locationId);
+        if (! $location) {
+            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+        }
+
+        $rows = LocationQosDomain::where('location_id', $locationId)
+            ->orderBy('class_id')->orderBy('domain')->get();
+
+        $byClass = ['EF' => [], 'AF41' => [], 'CS1' => []];
+        foreach ($rows as $row) {
+            if (isset($byClass[$row->class_id])) {
+                $byClass[$row->class_id][] = $row->domain;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => ['domains_by_class' => $byClass],
+        ]);
+    }
+
+    public function qosDomainsStore(Request $request, int $locationId)
+    {
+        $location = $this->authorizeLocationAccess($locationId);
+        if (! $location) {
+            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'class_id' => 'required|string|in:EF,AF41,CS1',
+            'domain' => 'required|string|max:253',
+        ]);
+
+        $domain = trim(strtolower($validated['domain']));
+        $classId = strtoupper($validated['class_id']);
+
+        $exists = LocationQosDomain::where('location_id', $locationId)
+            ->where('class_id', $classId)
+            ->where('domain', $domain)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['success' => false, 'message' => 'Domain already exists in this class for this location'], 422);
+        }
+
+        LocationQosDomain::create([
+            'location_id' => $locationId,
+            'class_id' => $classId,
+            'domain' => $domain,
+        ]);
+
+        $this->bumpConfigVersion($location);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Domain added.',
+            'data' => ['domain' => $domain, 'class_id' => $classId],
+        ], 201);
+    }
+
+    public function qosDomainsDestroy(Request $request, int $locationId, string $classId)
+    {
+        $location = $this->authorizeLocationAccess($locationId);
+        if (! $location) {
+            return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+        }
+
+        $domain = $request->query('domain');
+        if ($domain === null || $domain === '') {
+            return response()->json(['success' => false, 'message' => 'Query parameter domain is required'], 422);
+        }
+
+        $domain = trim(strtolower($domain));
+        $classId = strtoupper($classId);
+
+        $deleted = LocationQosDomain::where('location_id', $locationId)
+            ->where('class_id', $classId)
+            ->where('domain', $domain)
+            ->delete();
+
+        if (! $deleted) {
+            return response()->json(['success' => false, 'message' => 'Domain not found for this location'], 404);
+        }
+
+        $this->bumpConfigVersion($location);
+
+        return response()->json(['success' => true, 'message' => 'Domain removed.']);
+    }
+
+    private function authorizeLocationAccess(int $locationId): ?Location
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return null;
+        }
+
+        $location = Location::find($locationId);
+        if (! $location) {
+            return null;
+        }
+
+        if (in_array($user->role, ['admin', 'superadmin'])) {
+            return $location;
+        }
+
+        if (! $location->isAccessibleBy($user)) {
+            return null;
+        }
+
+        return $location;
+    }
+
+    private function bumpConfigVersion(Location $location): void
+    {
+        $device = Device::find($location->device_id);
+        if ($device) {
+            $device->increment('configuration_version');
+        }
     }
 }

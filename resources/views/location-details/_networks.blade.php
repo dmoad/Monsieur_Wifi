@@ -441,6 +441,7 @@
                         </div>
                         <small class="form-text text-muted">{{ __('location_details.networks_field_qos_hint') }}</small>
                     </div>
+
                 </div>
 
                 <div class="ld-drawer-section ld-net-mac-section">

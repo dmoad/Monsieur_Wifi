@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Device;
-use App\Models\Location;
-use App\Models\SystemSetting;
-use App\Models\LocationSettingsV2;
-use App\Models\ScanResult;
-use App\Models\OnlineNetworkUser;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Models\Firmware;
-use App\Models\Category;
 use App\Models\BlockedDomain;
+use App\Models\Category;
+use App\Models\Device;
+use App\Models\Firmware;
+use App\Models\Location;
+use App\Models\LocationNetwork;
+use App\Models\LocationQosDomain;
+use App\Models\LocationSettingsV2;
+use App\Models\OnlineNetworkUser;
+use App\Models\QosClass;
+use App\Models\ScanResult;
+use App\Models\SystemSetting;
+use App\Models\Zone;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Models\CaptivePortalWorkingHour;
-use App\Models\LocationNetwork;
-use App\Models\QosClass;
-use App\Models\Zone;
+use Illuminate\Support\Str;
 
 class DeviceController extends Controller
 {
@@ -41,6 +42,7 @@ class DeviceController extends Controller
     public function index()
     {
         $devices = Device::all();
+
         return view('devices.index', compact('devices'));
     }
 
@@ -57,7 +59,6 @@ class DeviceController extends Controller
     /**
      * Store a newly created device in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -95,7 +96,6 @@ class DeviceController extends Controller
     /**
      * Display the specified device.
      *
-     * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
     public function show(Device $device)
@@ -106,7 +106,6 @@ class DeviceController extends Controller
     /**
      * Show the form for editing the specified device.
      *
-     * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
     public function edit(Device $device)
@@ -117,8 +116,6 @@ class DeviceController extends Controller
     /**
      * Update the specified device in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Device $device)
@@ -126,8 +123,8 @@ class DeviceController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'product_model_id' => 'nullable|exists:product_models,id',
-            'serial_number' => 'required|string|max:255|unique:devices,serial_number,' . $device->id,
-            'mac_address' => 'required|string|max:255|unique:devices,mac_address,' . $device->id,
+            'serial_number' => 'required|string|max:255|unique:devices,serial_number,'.$device->id,
+            'mac_address' => 'required|string|max:255|unique:devices,mac_address,'.$device->id,
             'firmware_version' => 'nullable|string|max:255',
         ]);
 
@@ -140,7 +137,6 @@ class DeviceController extends Controller
     /**
      * Remove the specified device from storage.
      *
-     * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
     public function destroy(Device $device)
@@ -154,25 +150,25 @@ class DeviceController extends Controller
     public function getSettings($device_key, $device_secret)
     {
         $device = Device::where('device_key', $device_key)->where('device_secret', $device_secret)->first();
-        if (!$device) {
+        if (! $device) {
             return response()->json(['error' => 'Invalid device credentials'], 401);
         }
 
         $location = Location::where('device_id', $device->id)->first();
-        if (!$location) {
+        if (! $location) {
             return response()->json(['error' => 'Location not found'], 404);
         }
 
         $settings = LocationSettingsV2::where('location_id', $location->id)->first();
-        if (!$settings) {
+        if (! $settings) {
             return response()->json(['error' => 'Settings not found'], 404);
         }
 
         $settings->wifi_name = $settings->password_wifi_ssid;
         $settings->wifi_password = $settings->password_wifi_password;
-        
+
         // Check if web filtering is enabled
-        if (!$settings->web_filter_enabled || empty($settings->web_filter_categories)) {
+        if (! $settings->web_filter_enabled || empty($settings->web_filter_categories)) {
             // Web filtering is disabled or no categories selected, return empty array
             $domain_blocked = collect();
         } else {
@@ -185,8 +181,8 @@ class DeviceController extends Controller
         // Remove duplicate domains
         $domain_blocked = $domain_blocked->unique('domain');
         // Remove domains that are empty
-        $domain_blocked = $domain_blocked->filter(function($domain) {
-            return !empty($domain->domain);
+        $domain_blocked = $domain_blocked->filter(function ($domain) {
+            return ! empty($domain->domain);
         });
         // Clean up the settings object - remove internal fields
         unset($settings->web_filter_categories);
@@ -204,18 +200,18 @@ class DeviceController extends Controller
         $whitelist_servers = env('GUEST_WHITELIST_SERVERS');
         // if settings.captive_auth_method is set to social and captive_social_auth_method is set to twitter then return whitelist_domains as ['twitter.com']
         if ($settings->captive_auth_method == 'social' && $settings->captive_social_auth_method == 'google') {
-            $whitelist_domains = $whitelist_domains . ',' . env('GOOGLE_WHITELIST_DOMAINS');
-            $whitelist_servers = $whitelist_servers . ',' . env('GOOGLE_WHITELIST_SERVERS');
+            $whitelist_domains = $whitelist_domains.','.env('GOOGLE_WHITELIST_DOMAINS');
+            $whitelist_servers = $whitelist_servers.','.env('GOOGLE_WHITELIST_SERVERS');
         }
 
         if ($settings->captive_auth_method == 'social' && $settings->captive_social_auth_method == 'facebook') {
-            $whitelist_domains = $whitelist_domains . ',' . env('FACEBOOK_WHITELIST_DOMAINS');
-            $whitelist_servers = $whitelist_servers . ',' . env('FACEBOOK_WHITELIST_SERVERS');
+            $whitelist_domains = $whitelist_domains.','.env('FACEBOOK_WHITELIST_DOMAINS');
+            $whitelist_servers = $whitelist_servers.','.env('FACEBOOK_WHITELIST_SERVERS');
         }
 
         $whitelist_domains = rtrim($whitelist_domains, ',');
         $whitelist_servers = rtrim($whitelist_servers, ',');
-        
+
         $guest_settings = [
             'login_url' => env('GUEST_LOGIN_URL'),
             'whitelist_servers' => $whitelist_servers,
@@ -223,10 +219,10 @@ class DeviceController extends Controller
         ];
 
         $firmware_version = $device->firmware_id;
-        Log::info('Firmware version: ' . $firmware_version);
+        Log::info('Firmware version: '.$firmware_version);
         Log::info('Device: ');
         Log::info($device);
-        
+
         // Only try to get firmware info if firmware_id is not 0
         $firmware_info = null;
         if ($firmware_version && $firmware_version > 0) {
@@ -236,7 +232,7 @@ class DeviceController extends Controller
         Log::info('Firmware info: ');
         Log::info($firmware_info);
 
-        if (!$firmware_info) {
+        if (! $firmware_info) {
             $firmware_version = 0;
         }
 
@@ -249,7 +245,7 @@ class DeviceController extends Controller
             $file_name = $firmware_info->file_path;
             // remove the first part of the file_path after the last /
             $file_name = substr($file_name, strrpos($file_name, '/') + 1);
-            
+
             // Generate full URL for firmware file
             $firmware_url = Storage::disk('public')->url($firmware_info->file_path);
             $firmware_hash = $firmware_info->md5sum;
@@ -262,32 +258,44 @@ class DeviceController extends Controller
             'hash' => $firmware_hash,
         ];
 
+        // Zone members inherit networks and QoS domains from the primary, same as getSettingsV2.
+        $settingsSource = $settings;
+        $networksSource = $location;
+        if ($location->zone_id && ! $location->isPrimaryInZone()) {
+            $zone = $location->zone()->with('primaryLocation.settings')->first();
+            if ($zone && $zone->primaryLocation && $zone->primaryLocation->settings) {
+                $settingsSource = $zone->primaryLocation->settings;
+                $networksSource = $zone->primaryLocation;
+            }
+        }
+
         // Load flexible networks from location_networks table.
         // Legacy flat fields in $settings remain for backward-compatible firmware.
-        $networks = LocationNetwork::where('location_id', $location->id)
+        $networkRows = LocationNetwork::where('location_id', $networksSource->id)
             ->orderBy('sort_order')
             ->get();
+        $networks = $networkRows;
 
         // Keep legacy wifi_name / wifi_password aliases pointing to the first
         // password-type network so older firmware still works.
         $firstPasswordNetwork = $networks->firstWhere('type', 'password');
         if ($firstPasswordNetwork) {
-            $settings->wifi_name     = $firstPasswordNetwork->ssid;
+            $settings->wifi_name = $firstPasswordNetwork->ssid;
             $settings->wifi_password = $firstPasswordNetwork->password;
         }
 
         // Update captive whitelist based on new networks table if flat settings
         // are not set (new locations will use networks table only).
-        if ($networks->isNotEmpty()) {
-            $captiveNetwork = $networks->firstWhere('type', 'captive_portal');
+        if ($networkRows->isNotEmpty()) {
+            $captiveNetwork = $networkRows->firstWhere('type', 'captive_portal');
             if ($captiveNetwork && $captiveNetwork->auth_method === 'social') {
                 $socialMethod = $captiveNetwork->social_auth_method;
                 if ($socialMethod === 'google') {
-                    $whitelist_domains .= ',' . env('GOOGLE_WHITELIST_DOMAINS', '');
-                    $whitelist_servers  .= ',' . env('GOOGLE_WHITELIST_SERVERS', '');
+                    $whitelist_domains .= ','.env('GOOGLE_WHITELIST_DOMAINS', '');
+                    $whitelist_servers .= ','.env('GOOGLE_WHITELIST_SERVERS', '');
                 } elseif ($socialMethod === 'facebook') {
-                    $whitelist_domains .= ',' . env('FACEBOOK_WHITELIST_DOMAINS', '');
-                    $whitelist_servers  .= ',' . env('FACEBOOK_WHITELIST_SERVERS', '');
+                    $whitelist_domains .= ','.env('FACEBOOK_WHITELIST_DOMAINS', '');
+                    $whitelist_servers .= ','.env('FACEBOOK_WHITELIST_SERVERS', '');
                 }
                 $whitelist_domains = rtrim($whitelist_domains, ',');
                 $whitelist_servers = rtrim($whitelist_servers, ',');
@@ -295,6 +303,10 @@ class DeviceController extends Controller
                 $guest_settings['whitelist_servers'] = $whitelist_servers;
             }
         }
+
+        $locationDomains = LocationQosDomain::where('location_id', $networksSource->id)
+            ->orderBy('class_id')->orderBy('domain')->get();
+        $qosBlock = $this->buildQosBlockForDevice((bool) $settingsSource->qos_enabled, $networkRows, $locationDomains);
 
         return response()->json(
             [
@@ -304,7 +316,8 @@ class DeviceController extends Controller
                 'networks' => $networks,
                 'radius_settings' => $radius_settings,
                 'guest_settings' => $guest_settings,
-                'firmware' => $firmware
+                'firmware' => $firmware,
+                'qos' => $qosBlock,
             ]
         );
     }
@@ -322,7 +335,7 @@ class DeviceController extends Controller
         }
 
         $device = Device::with('productModel')->where('device_key', $device_key)->where('device_secret', $device_secret)->first();
-        if (!$device) {
+        if (! $device) {
             return response()->json(['error' => 'Invalid device credentials'], 401);
         }
         Log::info('Device: ');
@@ -331,7 +344,7 @@ class DeviceController extends Controller
         // Update the last_seen field
         $device->last_seen = now();
         // if uptime in request is not set or is null or not integer, set it to 0
-        if (!$request->input('uptime') || !is_numeric($request->input('uptime'))) {
+        if (! $request->input('uptime') || ! is_numeric($request->input('uptime'))) {
             Log::info('Uptime is not set or is not an integer, setting to 0');
             $uptime = 0;
         } else {
@@ -343,7 +356,7 @@ class DeviceController extends Controller
 
         // If device firmware_id is null return the defaukt firmware, else return firmware_id
 
-        if($device->firmware_id == null) {
+        if ($device->firmware_id == null) {
 
             $deviceType = $device->productModel?->device_type;
             $firmware = null;
@@ -359,7 +372,7 @@ class DeviceController extends Controller
         }
 
         $location = Location::where('device_id', $device->id)->first();
-        if (!$location) {
+        if (! $location) {
             return response()->json(['error' => 'Location not found'], 404);
         }
 
@@ -369,7 +382,7 @@ class DeviceController extends Controller
         // For zone members, use the primary location's schedule so all APs in
         // the zone switch on/off together.
         $scheduleLocationId = $location->id;
-        if ($location->zone_id && !$location->isPrimaryInZone()) {
+        if ($location->zone_id && ! $location->isPrimaryInZone()) {
             $zone = $location->zone()->with('primaryLocation')->first();
             if ($zone?->primaryLocation) {
                 $scheduleLocationId = $zone->primaryLocation->id;
@@ -400,7 +413,7 @@ class DeviceController extends Controller
             ->where('device_secret', $device_secret)
             ->first();
 
-        if (!$device) {
+        if (! $device) {
             return response()->json(['error' => 'Invalid device credentials'], 401);
         }
 
@@ -408,13 +421,13 @@ class DeviceController extends Controller
         Log::info($device);
 
         $location = Location::where('device_id', $device->id)->first();
-        if (!$location) {
+        if (! $location) {
             return response()->json(['error' => 'Location not found'], 404);
         }
 
         // ── Router-level settings (v2) ───────────────────────────────────────
         $settings = LocationSettingsV2::where('location_id', $location->id)->first();
-        if (!$settings) {
+        if (! $settings) {
             return response()->json(['error' => 'Settings not found'], 404);
         }
 
@@ -426,7 +439,7 @@ class DeviceController extends Controller
         $settingsSource = $settings;    // web_filter + qos — own unless overridden by primary
         $networksSource = $location;    // location whose LocationNetwork rows to query
 
-        if ($location->zone_id && !$location->isPrimaryInZone()) {
+        if ($location->zone_id && ! $location->isPrimaryInZone()) {
             $zone = $location->zone()->with('primaryLocation.settings')->first();
             if ($zone && $zone->primaryLocation && $zone->primaryLocation->settings) {
                 $settingsSource = $zone->primaryLocation->settings;
@@ -437,7 +450,7 @@ class DeviceController extends Controller
 
         // ── Web content filtering (router-wide) ─────────────────────────────
         $blockedDomains = collect();
-        if ($settingsSource->web_filter_enabled && !empty($settingsSource->web_filter_categories)) {
+        if ($settingsSource->web_filter_enabled && ! empty($settingsSource->web_filter_categories)) {
             $enabledCategoryIds = Category::whereIn('id', $settingsSource->web_filter_categories)
                 ->where('is_enabled', true)
                 ->pluck('id');
@@ -446,24 +459,26 @@ class DeviceController extends Controller
                 ->whereIn('category_id', $enabledCategoryIds)
                 ->get()
                 ->unique('domain')
-                ->filter(fn($d) => !empty($d->domain))
+                ->filter(fn ($d) => ! empty($d->domain))
                 ->values();
         }
 
         // ── System-level radius (shared fallback) ────────────────────────────
-        $systemSettings  = SystemSetting::first();
+        $systemSettings = SystemSetting::first();
         $systemRadius = [
-            'radius_ip'       => $systemSettings->radius_ip,
-            'radius_port'     => $systemSettings->radius_port,
-            'radius_secret'   => $systemSettings->radius_secret,
+            'radius_ip' => $systemSettings->radius_ip,
+            'radius_port' => $systemSettings->radius_port,
+            'radius_secret' => $systemSettings->radius_secret,
             'accounting_port' => $systemSettings->accounting_port,
         ];
 
         // ── Networks — each captive portal carries its own radius +
         //    guest_settings so future networks can differ independently. ──────
-        $networks = LocationNetwork::where('location_id', $networksSource->id)
+        $networkRows = LocationNetwork::where('location_id', $networksSource->id)
             ->orderBy('sort_order')
-            ->get()
+            ->get();
+
+        $networks = $networkRows
             ->map(function (LocationNetwork $network) use ($systemRadius) {
                 $networkData = $network->toArray();
 
@@ -474,20 +489,20 @@ class DeviceController extends Controller
 
                     if ($network->auth_method === 'social') {
                         match ($network->social_auth_method) {
-                            'google'   => [
-                                $whitelistDomains .= ',' . env('GOOGLE_WHITELIST_DOMAINS', ''),
-                                $whitelistServers  .= ',' . env('GOOGLE_WHITELIST_SERVERS', ''),
+                            'google' => [
+                                $whitelistDomains .= ','.env('GOOGLE_WHITELIST_DOMAINS', ''),
+                                $whitelistServers .= ','.env('GOOGLE_WHITELIST_SERVERS', ''),
                             ],
                             'facebook' => [
-                                $whitelistDomains .= ',' . env('FACEBOOK_WHITELIST_DOMAINS', ''),
-                                $whitelistServers  .= ',' . env('FACEBOOK_WHITELIST_SERVERS', ''),
+                                $whitelistDomains .= ','.env('FACEBOOK_WHITELIST_DOMAINS', ''),
+                                $whitelistServers .= ','.env('FACEBOOK_WHITELIST_SERVERS', ''),
                             ],
                             default => null,
                         };
                     }
 
                     $networkData['guest_settings'] = [
-                        'login_url'         => env('GUEST_LOGIN_URL'),
+                        'login_url' => env('GUEST_LOGIN_URL'),
                         'whitelist_domains' => rtrim($whitelistDomains, ','),
                         'whitelist_servers' => rtrim($whitelistServers, ','),
                     ];
@@ -520,74 +535,83 @@ class DeviceController extends Controller
         }
 
         $firmware = [
-            'version'   => $firmwareInfo ? $firmwareInfo->id : 0,
+            'version' => $firmwareInfo ? $firmwareInfo->id : 0,
             'file_name' => $firmwareInfo ? basename($firmwareInfo->file_path) : null,
             'file_path' => $firmwareInfo ? Storage::disk('public')->url($firmwareInfo->file_path) : null,
-            'hash'      => $firmwareInfo ? $firmwareInfo->md5sum : null,
+            'hash' => $firmwareInfo ? $firmwareInfo->md5sum : null,
         ];
 
         // ── QoS block ────────────────────────────────────────────────────────
-        // When disabled the router receives { enabled: false } and flushes rules.
-        // When enabled, the compiled rules + per-network policies are included
-        // so the router can generate nftables + mqprio config locally.
-        if ($settingsSource->qos_enabled) {
-            $qosClasses = QosClass::with('domains')->orderBy('priority')->get();
-
-            $rules = $qosClasses
-                ->filter(fn (QosClass $c) => $c->id !== QosClass::BE) // BE = catch-all, no rules needed
-                ->values()
-                ->map(fn (QosClass $c) => [
-                    'id'         => 'rule_' . strtolower($c->id),
-                    'dscp_class' => $c->id,
-                    'nft_mark'   => $c->nft_mark,
-                    'domains'    => $c->domains->pluck('domain')->values(),
-                ]);
-
-            // Build per-network policy map keyed by bridge name (derived from SSID slug)
-            $networkPolicies = [];
-            foreach ($networks as $net) {
-                $bridgeName = 'br-' . \Illuminate\Support\Str::slug($net['ssid'] ?? 'net', '-');
-                $policy     = $net['qos_policy'] ?? 'scavenger';
-                $networkPolicies[$bridgeName] = [
-                    'policy'            => $policy,
-                    'trust_client_dscp' => $policy === 'full',
-                ];
-            }
-
-            // config_version: md5 of serialized domain lists — router skips re-apply when unchanged
-            $domainSnapshot  = $qosClasses->map(fn ($c) => [$c->id => $c->domains->pluck('domain')->sort()->values()])->toJson();
-            $configVersion   = md5($domainSnapshot);
-
-            $qosBlock = [
-                'enabled'        => true,
-                'config_version' => $configVersion,
-                'networks'       => $networkPolicies,
-                'rules'          => $rules,
-            ];
-        } else {
-            $qosBlock = ['enabled' => false];
-        }
+        // Per-bridge `rules` (domain lists) + policy; all bridges share one location-level domain list.
+        $locationDomains = LocationQosDomain::where('location_id', $networksSource->id)
+            ->orderBy('class_id')->orderBy('domain')->get();
+        $qosBlock = $this->buildQosBlockForDevice((bool) $settingsSource->qos_enabled, $networkRows, $locationDomains);
 
         // Zone primary is source for qos_bw class mins + default WAN; non-primary may override WAN only.
         $settingsForDevice = $settings->toArray();
         $qosBwEffective = LocationSettingsV2::normalizeQosBw($settingsSource->qos_bw);
         if ($location->zone_id && ! $location->isPrimaryInZone() && $settings->qos_bw_wan_use_local) {
             $localBw = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
-            $qosBwEffective['wan_up_kbps']   = $localBw['wan_up_kbps'];
+            $qosBwEffective['wan_up_kbps'] = $localBw['wan_up_kbps'];
             $qosBwEffective['wan_down_kbps'] = $localBw['wan_down_kbps'];
         }
         $settingsForDevice['qos_bw'] = $qosBwEffective;
 
         return response()->json([
-            'status'          => 'success',
-            'location'        => $location,
-            'settings'        => $settingsForDevice,
-            'networks'        => $networks,
+            'status' => 'success',
+            'location' => $location,
+            'settings' => $settingsForDevice,
+            'networks' => $networks,
             'blocked_domains' => $blockedDomains,
-            'firmware'        => $firmware,
-            'qos'             => $qosBlock,
-            'zone_roaming'    => $this->zoneRoamingPayload($location),
+            'firmware' => $firmware,
+            'qos' => $qosBlock,
+            'zone_roaming' => $this->zoneRoamingPayload($location),
         ]);
+    }
+
+    /**
+     * Build the device QoS JSON: per-bridge policies + per-bridge `rules` (domain lists).
+     * All bridges for a location share the same domain list sourced from `location_qos_domains`.
+     */
+    private function buildQosBlockForDevice(bool $qosEnabled, Collection $networkRows, Collection $locationDomains): array
+    {
+        if (! $qosEnabled) {
+            return ['enabled' => false];
+        }
+
+        $qosClasses = QosClass::orderBy('priority')->get();
+
+        $networkPolicies = [];
+        foreach ($networkRows as $net) {
+            $bridgeName = 'br-'.Str::slug($net->ssid ?? 'net', '-');
+            $policy = $net->qos_policy ?? 'scavenger';
+            $rules = $qosClasses
+                ->filter(fn (QosClass $c) => $c->id !== QosClass::BE)
+                ->values()
+                ->map(function (QosClass $c) use ($locationDomains) {
+                    return [
+                        'id' => 'rule_'.strtolower($c->id),
+                        'dscp_class' => $c->id,
+                        'nft_mark' => $c->nft_mark,
+                        'domains' => $locationDomains->where('class_id', $c->id)->pluck('domain')->values(),
+                    ];
+                });
+
+            $networkPolicies[$bridgeName] = [
+                'policy' => $policy,
+                'trust_client_dscp' => $policy === 'full',
+                'rules' => $rules,
+            ];
+        }
+
+        $configVersion = md5($locationDomains->map(fn ($r) => "{$r->class_id}:{$r->domain}")->implode(','));
+
+        return [
+            'enabled' => true,
+            'config_version' => $configVersion,
+            'networks' => $networkPolicies,
+            'rules' => [],
+        ];
     }
 
     /**
@@ -595,7 +619,7 @@ class DeviceController extends Controller
      */
     private function zoneRoamingPayload(Location $location): array
     {
-        if (!$location->zone_id) {
+        if (! $location->zone_id) {
             return [
                 'in_zone' => false,
                 'zone_id' => null,
@@ -604,7 +628,7 @@ class DeviceController extends Controller
         }
 
         $zone = Zone::query()->whereKey($location->zone_id)->first(['id', 'roaming_enabled']);
-        if (!$zone) {
+        if (! $zone) {
             // Orphan zone_id on location — expose it so firmware can log / reconcile.
             return [
                 'in_zone' => false,
@@ -629,23 +653,25 @@ class DeviceController extends Controller
         $currentDayOfWeek = strtolower(now()->format('l')); // monday, tuesday, etc.
         $currentHour = (int) now()->format('H'); // 0-23
         $currentTime = now()->format('H:i');
-        
+
         Log::info("Checking captive portal hourly schedule for location {$locationId}: {$currentDayOfWeek} hour {$currentHour} ({$currentTime})");
-        
+
         // Get hourly schedule for the current hour
         $hourlySchedule = \App\Models\CaptivePortalHourlySchedule::where('location_id', $locationId)
             ->where('day_of_week', $currentDayOfWeek)
             ->where('hour', $currentHour)
             ->first();
-        
+
         if ($hourlySchedule) {
             // If hourly schedule exists, use its enabled status
-            Log::info("Hourly schedule found for {$currentDayOfWeek} hour {$currentHour}: " . ($hourlySchedule->enabled ? 'enabled' : 'disabled'));
+            Log::info("Hourly schedule found for {$currentDayOfWeek} hour {$currentHour}: ".($hourlySchedule->enabled ? 'enabled' : 'disabled'));
+
             return $hourlySchedule->enabled;
         }
-        
+
         // No hourly schedule found - return false (disabled)
         Log::info("No hourly schedule found for {$currentDayOfWeek} hour {$currentHour} - captive portal disabled");
+
         return false;
     }
 
@@ -654,24 +680,24 @@ class DeviceController extends Controller
         if ($verification_code !== env('VERIFICATION_CODE')) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized verification code'
+                'message' => 'Unauthorized verification code',
             ], 401);
         }
         $mac_address = strtoupper($mac_address);
         // Replace : with -
         $mac_address = str_replace(':', '-', $mac_address);
         $device = Device::select('id', 'mac_address', 'device_key', 'device_secret', 'configuration_version')->where('mac_address', $mac_address)->first();
-        if (!$device) {
+        if (! $device) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized device',
             ], 401);
         }
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Device verified successfully',
-            'device' => $device
+            'device' => $device,
         ]);
     }
 
@@ -680,9 +706,9 @@ class DeviceController extends Controller
         Log::info('Update client list request: ');
         Log::info($device_key.' '.$device_secret);
         Log::info($request->all());
-        
+
         $device = Device::where('device_key', $device_key)->where('device_secret', $device_secret)->first();
-        if (!$device) {
+        if (! $device) {
             return response()->json(['error' => 'Invalid device credentials'], 401);
         }
 
@@ -697,20 +723,20 @@ class DeviceController extends Controller
             'clients.*.hostname' => 'nullable|string',
             'clients.*.network' => 'required|string',
             'summary' => 'required|array',
-            'synced' => 'required|boolean'
+            'synced' => 'required|boolean',
         ]);
 
         $location = Location::where('device_id', $device->id)->first();
-        if (!$location) {
+        if (! $location) {
             return response()->json(['error' => 'Location not found'], 404);
         }
 
         $location_id = $location->id;
         Log::info('Location ID: '.$location_id);
-        
+
         // Delete all existing online network users for this location
         OnlineNetworkUser::where('location_id', $location_id)->delete();
-        
+
         // Create new records for all clients in the payload
         $clients = $request->input('clients');
         foreach ($clients as $client) {
@@ -729,7 +755,7 @@ class DeviceController extends Controller
             'device_key' => $device_key,
             'location_id' => $location_id,
             'clients_count' => count($clients),
-            'timestamp' => $request->input('timestamp')
+            'timestamp' => $request->input('timestamp'),
         ]);
 
         return response()->json([
@@ -737,14 +763,13 @@ class DeviceController extends Controller
             'message' => 'Client list updated successfully',
             'clients_processed' => count($clients),
             'location_id' => $location_id,
-            'timestamp' => $request->input('timestamp')
+            'timestamp' => $request->input('timestamp'),
         ]);
     }
 
     /**
      * Reboot a device and increment the reboot count.
      *
-     * @param  \App\Models\Device  $device
      * @return \Illuminate\Http\Response
      */
     public function reboot(Device $device)
@@ -752,20 +777,20 @@ class DeviceController extends Controller
         try {
             // Increment the reboot count
             $device->increment('reboot_count');
-            
+
             // Update last_seen to current timestamp
             $device->last_seen = now();
             $device->save();
-            
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Device restart initiated successfully',
-                'reboot_count' => $device->reboot_count
+                'reboot_count' => $device->reboot_count,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to restart device: ' . $e->getMessage()
+                'message' => 'Failed to restart device: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -779,10 +804,10 @@ class DeviceController extends Controller
             // Find the location and its associated device
             $location = Location::findOrFail($locationId);
             $device = $location->device;
-            
-            if (!$device) {
+
+            if (! $device) {
                 return response()->json([
-                    'message' => 'No device found for this location'
+                    'message' => 'No device found for this location',
                 ], 404);
             }
 
@@ -798,7 +823,7 @@ class DeviceController extends Controller
 
             // Here you would typically send a command to the device to start scanning
             // For now, we'll just return the scan result
-            
+
             return response()->json([
                 'message' => 'Channel scan initiated successfully',
                 'data' => [
@@ -806,12 +831,12 @@ class DeviceController extends Controller
                     'scan_result_id' => $scanResult->id,
                     'status' => $scanResult->status,
                     'device_id' => $device->id,
-                ]
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to initiate scan: ' . $e->getMessage()
+                'message' => 'Failed to initiate scan: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -821,14 +846,14 @@ class DeviceController extends Controller
      */
     public function getScanStatus($locationId, $scanId)
     {
-        Log::info('getScanStatus called with locationId: ' . $locationId . ', scanId: ' . $scanId); 
+        Log::info('getScanStatus called with locationId: '.$locationId.', scanId: '.$scanId);
         try {
             $location = Location::findOrFail($locationId);
             $device = $location->device;
-            
-            if (!$device) {
+
+            if (! $device) {
                 return response()->json([
-                    'message' => 'No device found for this location'
+                    'message' => 'No device found for this location',
                 ], 404);
             }
 
@@ -836,9 +861,9 @@ class DeviceController extends Controller
                 ->where('scan_id', $scanId)
                 ->first();
 
-            if (!$scanResult) {
+            if (! $scanResult) {
                 return response()->json([
-                    'message' => 'Scan not found'
+                    'message' => 'Scan not found',
                 ], 404);
             }
 
@@ -861,12 +886,12 @@ class DeviceController extends Controller
                     'is_completed' => $scanResult->isCompleted(),
                     'is_failed' => $scanResult->isFailed(),
                     'is_in_progress' => $scanResult->isInProgress(),
-                ]
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to get scan status: ' . $e->getMessage()
+                'message' => 'Failed to get scan status: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -881,7 +906,7 @@ class DeviceController extends Controller
                 ->where('device_secret', $device_secret)
                 ->first();
 
-            if (!$device) {
+            if (! $device) {
                 return response()->json(['error' => 'Invalid device credentials'], 401);
             }
 
@@ -889,7 +914,7 @@ class DeviceController extends Controller
                 ->where('scan_id', $scan_id)
                 ->first();
 
-            if (!$scanResult) {
+            if (! $scanResult) {
                 return response()->json(['error' => 'Scan not found'], 404);
             }
 
@@ -897,12 +922,12 @@ class DeviceController extends Controller
 
             return response()->json([
                 'message' => 'Scan status updated to started',
-                'status' => $scanResult->status
+                'status' => $scanResult->status,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to update scan status: ' . $e->getMessage()
+                'message' => 'Failed to update scan status: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -912,15 +937,15 @@ class DeviceController extends Controller
      */
     public function update2GScanResults(Request $request, $device_key, $device_secret, $scan_id)
     {
-        Log::info('update2GScanResults called with device_key: ' . $device_key . ', device_secret: ' . $device_secret . ', scan_id: ' . $scan_id);
-        Log::info('update2GScanResults called with request: ' );
+        Log::info('update2GScanResults called with device_key: '.$device_key.', device_secret: '.$device_secret.', scan_id: '.$scan_id);
+        Log::info('update2GScanResults called with request: ');
         Log::info($request->all());
         try {
             $device = Device::where('device_key', $device_key)
                 ->where('device_secret', $device_secret)
                 ->first();
 
-            if (!$device) {
+            if (! $device) {
                 return response()->json(['error' => 'Invalid device credentials'], 401);
             }
 
@@ -928,7 +953,7 @@ class DeviceController extends Controller
                 ->where('scan_id', $scan_id)
                 ->first();
 
-            if (!$scanResult) {
+            if (! $scanResult) {
                 return response()->json(['error' => 'Scan not found'], 404);
             }
 
@@ -939,7 +964,7 @@ class DeviceController extends Controller
                 'scan_results.*.bssid' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
                 'scan_results.*.ssid' => 'present|string',
                 'nearby_networks' => 'required|integer|min:0',
-                'interference_level' => 'required|in:low,medium,high'
+                'interference_level' => 'required|in:low,medium,high',
             ]);
 
             $scanResult->update2GScanResults($request->all());
@@ -955,7 +980,7 @@ class DeviceController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to update 2.4G scan results: ' . $e->getMessage()
+                'message' => 'Failed to update 2.4G scan results: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -970,7 +995,7 @@ class DeviceController extends Controller
                 ->where('device_secret', $device_secret)
                 ->first();
 
-            if (!$device) {
+            if (! $device) {
                 return response()->json(['error' => 'Invalid device credentials'], 401);
             }
 
@@ -978,7 +1003,7 @@ class DeviceController extends Controller
                 ->where('scan_id', $scan_id)
                 ->first();
 
-            if (!$scanResult) {
+            if (! $scanResult) {
                 return response()->json(['error' => 'Scan not found'], 404);
             }
 
@@ -989,7 +1014,7 @@ class DeviceController extends Controller
                 'scan_results.*.bssid' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
                 'scan_results.*.ssid' => 'present|string',
                 'nearby_networks' => 'required|integer|min:0',
-                'interference_level' => 'required|in:low,medium,high'
+                'interference_level' => 'required|in:low,medium,high',
             ]);
 
             $scanResult->update5GScanResults($request->all());
@@ -1005,7 +1030,7 @@ class DeviceController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to update 5G scan results: ' . $e->getMessage()
+                'message' => 'Failed to update 5G scan results: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -1020,7 +1045,7 @@ class DeviceController extends Controller
                 ->where('device_secret', $device_secret)
                 ->first();
 
-            if (!$device) {
+            if (! $device) {
                 return response()->json(['error' => 'Invalid device credentials'], 401);
             }
 
@@ -1028,7 +1053,7 @@ class DeviceController extends Controller
                 ->where('scan_id', $scan_id)
                 ->first();
 
-            if (!$scanResult) {
+            if (! $scanResult) {
                 return response()->json(['error' => 'Scan not found'], 404);
             }
 
@@ -1037,12 +1062,12 @@ class DeviceController extends Controller
 
             return response()->json([
                 'message' => 'Scan marked as failed',
-                'status' => $scanResult->status
+                'status' => $scanResult->status,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to mark scan as failed: ' . $e->getMessage()
+                'message' => 'Failed to mark scan as failed: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -1052,20 +1077,20 @@ class DeviceController extends Controller
         try {
             $location = Location::findOrFail($locationId);
             $device = $location->device;
-            
-            if (!$device) {
+
+            if (! $device) {
                 return response()->json([
-                    'message' => 'No device found for this location'
+                    'message' => 'No device found for this location',
                 ], 404);
             }
-            
+
             // Get the latest completed scan result
             $scanResult = ScanResult::where('device_id', $device->id)
                 ->where('status', ScanResult::STATUS_COMPLETED)
                 ->orderBy('completed_at', 'desc')
                 ->first();
-                
-            if (!$scanResult) {
+
+            if (! $scanResult) {
                 return response()->json(['error' => 'No scan results found'], 404);
             }
 
@@ -1087,11 +1112,11 @@ class DeviceController extends Controller
                     'is_completed' => $scanResult->isCompleted(),
                     'is_failed' => $scanResult->isFailed(),
                     'is_in_progress' => $scanResult->isInProgress(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to get latest scan results: ' . $e->getMessage()
+                'message' => 'Failed to get latest scan results: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -1104,13 +1129,13 @@ class DeviceController extends Controller
         try {
             $location = Location::findOrFail($locationId);
             $device = $location->device;
-            
-            if (!$device) {
+
+            if (! $device) {
                 return response()->json([
-                    'message' => 'No device found for this location'
+                    'message' => 'No device found for this location',
                 ], 404);
             }
-            
+
             // Get all scan results for this device, ordered by most recent first
             $scanResults = ScanResult::where('device_id', $device->id)
                 ->orderBy('created_at', 'desc')
@@ -1139,11 +1164,11 @@ class DeviceController extends Controller
 
             return response()->json([
                 'message' => 'Scan history retrieved successfully',
-                'data' => $scanResults
+                'data' => $scanResults,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to get scan history: ' . $e->getMessage()
+                'message' => 'Failed to get scan history: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -1177,19 +1202,19 @@ class DeviceController extends Controller
     public function apiIndex(Request $request)
     {
         $user = auth()->user();
-        
+
         $query = Device::with(['owner', 'location', 'inventoryItem']);
-        
+
         // Admin/superadmin sees all devices, regular users see only their own
-        if (!$user->isAdminOrAbove()) {
+        if (! $user->isAdminOrAbove()) {
             $query->where('owner_id', $user->id);
         }
-        
+
         // Filter by owner
         if ($request->has('owner_id')) {
             $query->where('owner_id', $request->owner_id);
         }
-        
+
         // Filter by location status
         if ($request->has('location_status')) {
             if ($request->location_status === 'assigned') {
@@ -1198,22 +1223,22 @@ class DeviceController extends Controller
                 $query->whereNull('location_id');
             }
         }
-        
+
         // Search by serial, MAC, or model
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('serial_number', 'like', "%{$search}%")
-                  ->orWhere('mac_address', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhereHas('productModel', function ($pm) use ($search) {
-                      $pm->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('mac_address', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhereHas('productModel', function ($pm) use ($search) {
+                        $pm->where('name', 'like', "%{$search}%");
+                    });
             });
         }
-        
+
         $devices = $query->orderBy('created_at', 'desc')->paginate(20);
-        
+
         return response()->json([
             'success' => true,
             'devices' => $devices,
@@ -1226,24 +1251,24 @@ class DeviceController extends Controller
     public function apiShow($id)
     {
         $user = auth()->user();
-        
+
         $device = Device::with(['owner', 'location', 'inventoryItem'])->find($id);
-        
-        if (!$device) {
+
+        if (! $device) {
             return response()->json([
                 'success' => false,
-                'message' => 'Device not found'
+                'message' => 'Device not found',
             ], 404);
         }
-        
+
         // Check permission: owner can see their device, admin/superadmin can see all
-        if ($device->owner_id !== $user->id && !$user->isAdminOrAbove()) {
+        if ($device->owner_id !== $user->id && ! $user->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
-        
+
         return response()->json([
             'success' => true,
             'device' => $device,
@@ -1256,30 +1281,30 @@ class DeviceController extends Controller
     public function updateOwner(Request $request, $id)
     {
         $user = auth()->user();
-        
-        if (!$user->isAdminOrAbove()) {
+
+        if (! $user->isAdminOrAbove()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
-        
+
         $request->validate([
             'owner_id' => 'required|exists:users,id',
         ]);
-        
+
         $device = Device::find($id);
-        
-        if (!$device) {
+
+        if (! $device) {
             return response()->json([
                 'success' => false,
-                'message' => 'Device not found'
+                'message' => 'Device not found',
             ], 404);
         }
-        
+
         $device->owner_id = $request->owner_id;
         $device->save();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Device owner updated successfully',

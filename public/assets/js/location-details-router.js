@@ -170,6 +170,7 @@ async function loadLocationSettings() {
             $('#qos-bulk-bw').val(kbpsToMbpsDisplay(bw.bulk_bw));
         }
         loadQosClassesPreview();
+        loadQosDomainsForLocation();
         applyQosZoneLock();
 
         reRenderFeather();
@@ -450,9 +451,8 @@ async function loadQosClassesPreview() {
         classes.forEach(cls => {
             const bg   = CLASS_BADGE_COLORS[cls.id] || 'rgba(100,100,100,0.1)';
             const text = CLASS_TEXT_COLORS[cls.id]  || '#555';
-            const count = cls.domains ? cls.domains.length : 0;
             const pill = `<span class="badge mr-1 mb-1" style="background:${bg};color:${text};font-size:0.75rem;padding:4px 8px;border-radius:12px;">
-                ${cls.id} — ${cls.label}${cls.id !== 'BE' ? ` (${count} domain${count !== 1 ? 's' : ''})` : ''}
+                ${cls.id} — ${cls.label}
             </span>`;
             $preview.append(pill);
         });
@@ -460,6 +460,109 @@ async function loadQosClassesPreview() {
         $preview.html('<span class="text-muted" style="font-size:0.85rem;">Unable to load classes.</span>');
     }
 }
+
+// ============================================================================
+// PER-LOCATION QoS DOMAIN LISTS
+// ============================================================================
+
+let routerQosByClass = { EF: [], AF41: [], CS1: [] };
+
+function renderRouterQosDomainLists() {
+    ['EF', 'AF41', 'CS1'].forEach((qclass) => {
+        const ul = document.getElementById('ld-router-qos-list-' + qclass);
+        if (!ul) return;
+        ul.innerHTML = '';
+        (routerQosByClass[qclass] || []).forEach((domain) => {
+            const li = document.createElement('li');
+            li.className = 'd-flex align-items-center justify-content-between border rounded px-2 py-1 mb-1';
+            const span = document.createElement('span');
+            span.className = 'text-monospace small text-break pr-1';
+            span.textContent = domain;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-link btn-sm text-danger p-0 flex-shrink-0 ld-router-qos-remove';
+            btn.setAttribute('data-qos-class', qclass);
+            btn.setAttribute('data-domain-enc', encodeURIComponent(domain));
+            btn.setAttribute('aria-label', 'Remove');
+            btn.textContent = '×';
+            li.appendChild(span);
+            li.appendChild(btn);
+            ul.appendChild(li);
+        });
+    });
+    if (typeof reRenderFeather === 'function') reRenderFeather();
+}
+
+async function loadQosDomainsForLocation() {
+    routerQosByClass = { EF: [], AF41: [], CS1: [] };
+    renderRouterQosDomainLists();
+    try {
+        const res = await apiFetch(`${API}/locations/${location_id}/qos-domains`);
+        const d = (res && res.data && res.data.domains_by_class) || {};
+        routerQosByClass = { EF: d.EF || [], AF41: d.AF41 || [], CS1: d.CS1 || [] };
+        renderRouterQosDomainLists();
+    } catch (err) {
+        console.error('loadQosDomainsForLocation', err);
+    }
+}
+
+async function addQosDomainRouter(classId) {
+    const input = document.getElementById('ld-router-qos-input-' + classId);
+    if (!input) return;
+    const domain = String(input.value || '').trim();
+    if (!domain) {
+        toastr.warning(i18n.networks_qos_domain_empty || 'Domain cannot be empty.');
+        return;
+    }
+    try {
+        await apiFetch(`${API}/locations/${location_id}/qos-domains`, {
+            method: 'POST',
+            body: JSON.stringify({ class_id: classId, domain }),
+        });
+        input.value = '';
+        await loadQosDomainsForLocation();
+        toastr.success(i18n.networks_qos_domain_add || 'Domain added.');
+    } catch (err) {
+        handleApiError(err, 'addQosDomainRouter');
+    }
+}
+
+async function removeQosDomainRouter(classId, encodedDomain) {
+    const domain = decodeURIComponent(encodedDomain);
+    try {
+        await apiFetch(`${API}/locations/${location_id}/qos-domains/${classId}?domain=${encodedDomain}`, {
+            method: 'DELETE',
+        });
+        await loadQosDomainsForLocation();
+    } catch (err) {
+        handleApiError(err, 'removeQosDomainRouter');
+    }
+}
+
+// Show Save button only on the Bandwidth tab; SNI domains save immediately per add/remove.
+$(document).on('shown.bs.tab', '#qos-tab-bw-link, #qos-tab-sni-link', function (e) {
+    const isBw = e.target.id === 'qos-tab-bw-link';
+    $('#save-qos-settings').toggle(isBw);
+    reRenderFeather();
+});
+
+$(document).on('click', '.ld-router-qos-add-btn', function () {
+    const classId = $(this).data('qos-class');
+    addQosDomainRouter(classId);
+});
+
+$(document).on('keydown', '[id^="ld-router-qos-input-"]', function (e) {
+    if (e.key === 'Enter') {
+        const classId = $(this).data('qos-class');
+        addQosDomainRouter(classId);
+    }
+});
+
+$(document).on('click', '.ld-router-qos-remove', function () {
+    const classId = $(this).data('qos-class');
+    const encodedDomain = $(this).data('domain-enc');
+    removeQosDomainRouter(classId, encodedDomain);
+});
 
 // ============================================================================
 // MAC ADDRESS EDIT

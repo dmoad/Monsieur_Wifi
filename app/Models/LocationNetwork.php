@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Support\IPv4Subnet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LocationNetwork extends Model
 {
@@ -62,21 +63,21 @@ class LocationNetwork extends Model
     ];
 
     protected $casts = [
-        'enabled'       => 'boolean',
-        'visible'       => 'boolean',
-        'dhcp_enabled'  => 'boolean',
-        'dhcp_end'      => 'integer',
-        'mac_filter_list'    => 'array',
-        'dhcp_reservations'  => 'array',
-        'working_hours'      => 'array',
-        'auth_methods'       => 'array',
-        'email_require_otp'  => 'boolean',
-        'vlan_id'       => 'integer',
+        'enabled' => 'boolean',
+        'visible' => 'boolean',
+        'dhcp_enabled' => 'boolean',
+        'dhcp_end' => 'integer',
+        'mac_filter_list' => 'array',
+        'dhcp_reservations' => 'array',
+        'working_hours' => 'array',
+        'auth_methods' => 'array',
+        'email_require_otp' => 'boolean',
+        'vlan_id' => 'integer',
         'session_timeout' => 'integer',
-        'idle_timeout'  => 'integer',
+        'idle_timeout' => 'integer',
         'download_limit' => 'integer',
-        'upload_limit'  => 'integer',
-        'sort_order'    => 'integer',
+        'upload_limit' => 'integer',
+        'sort_order' => 'integer',
     ];
 
     protected $appends = ['dhcp_end_ip'];
@@ -112,14 +113,19 @@ class LocationNetwork extends Model
      * full      — SNI inspect + honour client DSCP (trusted/home networks)
      * scavenger — blanket CS1 deprioritization (guest/IoT networks)
      */
-    const QOS_POLICY_FULL      = 'full';
-    const QOS_POLICY_SCAVENGER = 'scavenger';
-    const QOS_POLICIES         = ['full', 'scavenger'];
+    const QOS_POLICY_FULL = 'full';
 
-    const RADIO_ALL   = 'all';
-    const RADIO_2GHZ  = '2.4';
-    const RADIO_5GHZ  = '5';
-    const RADIOS      = ['all', '2.4', '5'];
+    const QOS_POLICY_SCAVENGER = 'scavenger';
+
+    const QOS_POLICIES = ['full', 'scavenger'];
+
+    const RADIO_ALL = 'all';
+
+    const RADIO_2GHZ = '2.4';
+
+    const RADIO_5GHZ = '5';
+
+    const RADIOS = ['all', '2.4', '5'];
 
     public function location(): BelongsTo
     {
@@ -129,5 +135,13 @@ class LocationNetwork extends Model
     public function portalDesign(): BelongsTo
     {
         return $this->belongsTo(CaptivePortalDesign::class, 'portal_design_id');
+    }
+
+    /**
+     * Per-network QoS SNI / hostname patterns per DSCP class (EF, AF41, CS1 — not BE).
+     */
+    public function qosDomains(): HasMany
+    {
+        return $this->hasMany(LocationNetworkQosDomain::class, 'location_network_id')->orderBy('domain');
     }
 }

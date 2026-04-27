@@ -4,10 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\LocationSettingsV2;
-use App\Models\LocationNetwork;
-use App\Models\Radacct;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Location extends Model
 {
     use HasFactory;
@@ -68,6 +66,11 @@ class Location extends Model
         return $this->hasMany(LocationNetwork::class)->orderBy('sort_order');
     }
 
+    public function qosDomains(): HasMany
+    {
+        return $this->hasMany(LocationQosDomain::class, 'location_id')->orderBy('class_id')->orderBy('domain');
+    }
+
     /**
      * Get the accounting records for this location.
      */
@@ -109,13 +112,13 @@ class Location extends Model
      */
     public function getEffectiveSettings()
     {
-        if ($this->zone_id && !$this->isPrimaryInZone()) {
+        if ($this->zone_id && ! $this->isPrimaryInZone()) {
             $zone = $this->zone()->with('primaryLocation.settings')->first();
             if ($zone && $zone->primaryLocation && $zone->primaryLocation->settings) {
                 return $zone->primaryLocation->settings;
             }
         }
-        
+
         return $this->settings;
     }
 
@@ -124,11 +127,12 @@ class Location extends Model
      */
     public function isPrimaryInZone()
     {
-        if (!$this->zone_id) {
+        if (! $this->zone_id) {
             return false;
         }
 
         $zone = $this->zone;
+
         return $zone && $zone->primary_location_id === $this->id;
     }
 
@@ -138,7 +142,7 @@ class Location extends Model
      */
     public function canEditSettings()
     {
-        if (!$this->zone_id) {
+        if (! $this->zone_id) {
             return true;
         }
 

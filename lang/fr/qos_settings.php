@@ -7,7 +7,8 @@ return [
 
     // Info banner
     'info_title' => 'Comment fonctionne la QoS :',
-    'info_body_html' => 'Le trafic est classifié par SNI (nom d\'hôte) sur le routeur et marqué avec une priorité DSCP. Les quatre classes ci-dessous sont fixes — seules leurs listes de domaines peuvent être modifiées ici. L\'activation/désactivation par emplacement se configure dans la page Paramètres de l\'emplacement. Le trafic non classifié tombe automatiquement dans la classe <strong>Par défaut (BE)</strong>.',
+    'info_body_html' => 'Le trafic est classifié par SNI (nom d\'hôte) sur le routeur et marqué avec une priorité DSCP. Les quatre classes DSCP sont fixes. <strong>Les listes de domaines se configurent par réseau WiFi</strong> sur chaque emplacement (onglet Réseaux). Cette page est une référence en lecture seule. Le trafic non classifié tombe dans la classe <strong>Par défaut (BE)</strong>.',
+    'per_network_hint' => 'Les règles de domaines ne sont pas globales — modifiez-les sous chaque réseau WiFi dans Détails de l’emplacement (Réseaux, Avancé).',
 
     // Loading / empty states
     'loading_classes' => 'Chargement des classes QoS…',

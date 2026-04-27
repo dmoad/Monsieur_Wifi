@@ -7,7 +7,8 @@ return [
 
     // Info banner
     'info_title' => 'How QoS works:',
-    'info_body_html' => 'Traffic is classified by SNI (hostname) on the router and tagged with a DSCP priority. The four classes below are fixed — only their domain lists can be edited here. Per-location enable/disable is configured in the Location Settings page. Unmatched traffic automatically falls into the <strong>Default (BE)</strong> class.',
+    'info_body_html' => 'Traffic is classified by SNI (hostname) on the router and tagged with a DSCP priority. The four DSCP classes are fixed. <strong>Domain lists are configured per WiFi network</strong> on each Location (Networks tab). This page is a read-only reference. Unmatched traffic falls into the <strong>Default (BE)</strong> class.',
+    'per_network_hint' => 'Domain rules are not global — edit them under each WiFi network in Location details (Networks, Advanced).',
 
     // Loading / empty states
     'loading_classes' => 'Loading QoS classes…',

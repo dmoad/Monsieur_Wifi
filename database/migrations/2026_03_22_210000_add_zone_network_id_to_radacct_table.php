@@ -8,14 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::connection('radius')->table('radacct', function (Blueprint $table) {
-            if (!Schema::connection('radius')->hasColumn('radacct', 'zone_id')) {
+        $schema = Schema::connection('radius');
+        if (! $schema->hasTable('radacct')) {
+            return;
+        }
+
+        $indexNames = array_column($schema->getIndexes('radacct'), 'name');
+
+        Schema::connection('radius')->table('radacct', function (Blueprint $table) use ($schema, $indexNames) {
+            if (! $schema->hasColumn('radacct', 'zone_id')) {
                 $table->unsignedBigInteger('zone_id')->default(0)->after('location_id');
             }
-            if (!Schema::connection('radius')->hasColumn('radacct', 'network_id')) {
+            if (! $schema->hasColumn('radacct', 'network_id')) {
                 $table->unsignedBigInteger('network_id')->default(0)->after('zone_id');
             }
-            $table->index(['network_id', 'zone_id'], 'idx_radacct_network_zone');
+            if (! in_array('idx_radacct_network_zone', $indexNames, true)) {
+                $table->index(['network_id', 'zone_id'], 'idx_radacct_network_zone');
+            }
         });
     }
 

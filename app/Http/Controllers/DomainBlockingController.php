@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\BlockedDomain;
 use App\Models\Category;
+use App\Models\Device;
+use App\Models\Location;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use App\Models\Location;
-use App\Models\Device;
 use Log;
 
 class DomainBlockingController extends Controller
@@ -37,8 +36,9 @@ class DomainBlockingController extends Controller
                 }
             });
 
-        $domains = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+        $perPage = min((int) $request->input('per_page', 15), 1000);
+        $domains = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
         return response()->json([
             'success' => true,
             'data' => $domains->items(),
@@ -47,7 +47,7 @@ class DomainBlockingController extends Controller
                 'last_page' => $domains->lastPage(),
                 'per_page' => $domains->perPage(),
                 'total' => $domains->total(),
-            ]
+            ],
         ]);
     }
 
@@ -56,7 +56,7 @@ class DomainBlockingController extends Controller
      */
     public function show_page(Request $request, $locale)
     {
-        $categories = Category::withCount('blockedDomains')->ordered()->get();
+        $categories = Category::withCount(['blockedDomains', 'activeBlockedDomains'])->ordered()->get();
 
         $query = BlockedDomain::with('category')
             ->when($request->filled('category'), function ($q) use ($request) {
@@ -74,7 +74,7 @@ class DomainBlockingController extends Controller
             });
 
         $domains = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+
         return view('domain-blocking', compact('categories', 'domains', 'locale'));
     }
 
@@ -102,7 +102,7 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -119,18 +119,18 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Domain added successfully',
-                'domain' => $domain->load('category')
+                'domain' => $domain->load('category'),
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Domain validation failed',
-                'errors' => $e->validator->errors()
+                'errors' => $e->validator->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add domain: ' . $e->getMessage()
+                'message' => 'Failed to add domain: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -141,10 +141,10 @@ class DomainBlockingController extends Controller
     public function show(BlockedDomain $blockedDomain)
     {
         $blockedDomain->load('category');
-        
+
         return response()->json([
             'success' => true,
-            'domain' => $blockedDomain
+            'domain' => $blockedDomain,
         ]);
     }
 
@@ -172,24 +172,24 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $blockedDomain->update($request->only([
-                'category_id', 'notes', 'block_subdomains', 'is_active'
+                'category_id', 'notes', 'block_subdomains', 'is_active',
             ]));
 
             return response()->json([
                 'success' => true,
                 'message' => 'Domain updated successfully',
-                'domain' => $blockedDomain->load('category')
+                'domain' => $blockedDomain->load('category'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update domain: ' . $e->getMessage()
+                'message' => 'Failed to update domain: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -205,12 +205,12 @@ class DomainBlockingController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Domain '{$domain}' has been deleted successfully"
+                'message' => "Domain '{$domain}' has been deleted successfully",
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete domain: ' . $e->getMessage()
+                'message' => 'Failed to delete domain: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -229,7 +229,7 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -238,12 +238,12 @@ class DomainBlockingController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "{$count} domains deleted successfully"
+                'message' => "{$count} domains deleted successfully",
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete domains: ' . $e->getMessage()
+                'message' => 'Failed to delete domains: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -266,7 +266,7 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -283,7 +283,7 @@ class DomainBlockingController extends Controller
             if (empty($domains)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No valid domains found in the input'
+                    'message' => 'No valid domains found in the input',
                 ], 422);
             }
 
@@ -300,12 +300,12 @@ class DomainBlockingController extends Controller
                 'success' => true,
                 'message' => "Import completed. {$result['imported']} domains imported.",
                 'imported' => $result['imported'],
-                'errors' => $result['errors']
+                'errors' => $result['errors'],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Import failed: ' . $e->getMessage()
+                'message' => 'Import failed: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -325,7 +325,7 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -379,7 +379,7 @@ class DomainBlockingController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Export failed: ' . $e->getMessage()
+                'message' => 'Export failed: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -392,12 +392,12 @@ class DomainBlockingController extends Controller
         Log::info('toggleCategory');
         Log::info($category);
         try {
-            $category->update(['is_enabled' => !$category->is_enabled]);
+            $category->update(['is_enabled' => ! $category->is_enabled]);
 
-            // Find all locations which have that category enabled and increment 
+            // Find all locations which have that category enabled and increment
             // config_version of their devices.
             $locationSettings = \App\Models\LocationSettingsV2::where('web_filter_enabled', true)
-                ->whereJsonContains('web_filter_categories', (string)$category->id)
+                ->whereJsonContains('web_filter_categories', (string) $category->id)
                 ->with(['location.device'])
                 ->get();
 
@@ -408,17 +408,17 @@ class DomainBlockingController extends Controller
                     if ($device_id) {
                         $device = Device::where('id', $device_id)->first();
                         if ($device) {
-                            $device->increment('config_version');
+                            $device->increment('configuration_version');
                         }
                         $devicesUpdated++;
                     }
                 }
             }
 
-            $message = $category->is_enabled 
-                ? "Category '{$category->name}' enabled" 
+            $message = $category->is_enabled
+                ? "Category '{$category->name}' enabled"
                 : "Category '{$category->name}' disabled";
-            
+
             if ($devicesUpdated > 0) {
                 $message .= " and {$devicesUpdated} device(s) configuration updated";
             }
@@ -427,12 +427,12 @@ class DomainBlockingController extends Controller
                 'success' => true,
                 'message' => $message,
                 'category' => $category,
-                'devices_updated' => $devicesUpdated
+                'devices_updated' => $devicesUpdated,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to toggle category: ' . $e->getMessage()
+                'message' => 'Failed to toggle category: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -461,12 +461,12 @@ class DomainBlockingController extends Controller
 
             return response()->json([
                 'success' => true,
-                'stats' => $stats
+                'stats' => $stats,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get statistics: ' . $e->getMessage()
+                'message' => 'Failed to get statistics: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -484,13 +484,13 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $domain = BlockedDomain::normalizeDomain($request->domain);
-            
+
             $blockedDomains = BlockedDomain::with('category')
                 ->whereHas('category', function ($q) {
                     $q->where('is_enabled', true);
@@ -508,13 +508,13 @@ class DomainBlockingController extends Controller
             return response()->json([
                 'success' => true,
                 'domain' => $domain,
-                'is_blocked' => !empty($matches),
-                'matches' => $matches
+                'is_blocked' => ! empty($matches),
+                'matches' => $matches,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Check failed: ' . $e->getMessage()
+                'message' => 'Check failed: '.$e->getMessage(),
             ], 500);
         }
     }

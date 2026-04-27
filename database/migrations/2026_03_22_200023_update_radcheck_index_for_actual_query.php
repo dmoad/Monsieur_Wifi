@@ -10,9 +10,20 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::connection('radius')->table('radcheck', function (Blueprint $table) {
-            // Drop the previous index that included zone_id.
-            $table->dropIndex('idx_radcheck_user_network_zone_expiry');
+        $schema = Schema::connection('radius');
+        if (! $schema->hasTable('radcheck')) {
+            return;
+        }
+
+        $indexNames = array_column($schema->getIndexes('radcheck'), 'name');
+        if (in_array('idx_radcheck_user_network_expiry', $indexNames, true)) {
+            return;
+        }
+
+        $schema->table('radcheck', function (Blueprint $table) use ($indexNames) {
+            if (in_array('idx_radcheck_user_network_zone_expiry', $indexNames, true)) {
+                $table->dropIndex('idx_radcheck_user_network_zone_expiry');
+            }
 
             // Composite index optimised for:
             // SELECT * FROM radcheck WHERE username=? AND network_id=? AND expiration_time > NOW()+30s
