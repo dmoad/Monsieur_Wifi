@@ -2989,6 +2989,10 @@ class LocationController extends Controller
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
+        if ($location->zone_id && ! $location->isPrimaryInZone()) {
+            return response()->json(['success' => false, 'message' => "QoS domain rules are managed by the zone's primary location."], 403);
+        }
+
         $validated = $request->validate([
             'class_id' => 'required|string|in:EF,AF41,CS1',
             'domain' => 'required|string|max:253',
@@ -3026,6 +3030,10 @@ class LocationController extends Controller
         $location = $this->authorizeLocationAccess($locationId);
         if (! $location) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+        }
+
+        if ($location->zone_id && ! $location->isPrimaryInZone()) {
+            return response()->json(['success' => false, 'message' => "QoS domain rules are managed by the zone's primary location."], 403);
         }
 
         $domain = $request->query('domain');
