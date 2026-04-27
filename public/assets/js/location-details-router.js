@@ -483,7 +483,7 @@ function renderRouterQosDomainLists() {
             btn.className = 'btn btn-link btn-sm text-danger p-0 flex-shrink-0 ld-router-qos-remove';
             btn.setAttribute('data-qos-class', qclass);
             btn.setAttribute('data-domain-enc', encodeURIComponent(domain));
-            btn.setAttribute('aria-label', 'Remove');
+            btn.setAttribute('aria-label', i18n.networks_qos_domain_remove || 'Remove');
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
@@ -502,7 +502,7 @@ async function loadQosDomainsForLocation() {
         routerQosByClass = { EF: d.EF || [], AF41: d.AF41 || [], CS1: d.CS1 || [] };
         renderRouterQosDomainLists();
     } catch (err) {
-        console.error('loadQosDomainsForLocation', err);
+        handleApiError(err, 'loadQosDomainsForLocation');
     }
 }
 
@@ -521,7 +521,7 @@ async function addQosDomainRouter(classId) {
         });
         input.value = '';
         await loadQosDomainsForLocation();
-        toastr.success(i18n.networks_qos_domain_add || 'Domain added.');
+        toastr.success(i18n.networks_qos_domain_added || 'Domain added.');
     } catch (err) {
         handleApiError(err, 'addQosDomainRouter');
     }

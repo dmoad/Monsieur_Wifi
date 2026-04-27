@@ -111,6 +111,8 @@ return [
     'networks_qos_domain_class_af41' => 'AF41 — Streaming',
     'networks_qos_domain_class_cs1' => 'CS1 — Arrière-plan / masse',
     'networks_qos_domain_add' => 'Ajouter',
+    'networks_qos_domain_added' => 'Domaine ajouté.',
+    'networks_qos_domain_remove' => 'Supprimer',
     'networks_qos_domain_placeholder' => 'ex. *.zoom.us',
     'networks_qos_domain_empty' => 'Le domaine ne peut pas être vide.',
     'networks_qos_domain_load_failed' => 'Impossible de charger la liste des domaines.',
