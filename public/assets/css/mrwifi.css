@@ -449,24 +449,28 @@ body.mw-sb-expanded .app-content.content {
 /* --- Logo / toggle header --- */
 .mw-sb-head {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 40px;
     width: 36px;
     cursor: pointer;
-    margin-bottom: var(--mw-space-lg);
+    margin-bottom: var(--mw-space-md);
     flex-shrink: 0;
-    gap: 0;
+    gap: 6px;
     border-radius: var(--mw-radius-md);
     transition: background 0.12s;
+    padding: 4px 0;
 }
 
 .mw-sb-head:hover { background: var(--mw-bg-hover); }
 
 .mw-sb.expanded .mw-sb-head {
+    flex-direction: row;
     width: 100%;
+    height: 40px;
     justify-content: space-between;
     padding: 0 var(--mw-space-sm);
+    gap: 0;
     border-radius: var(--mw-radius-md);
 }
 
@@ -500,16 +504,18 @@ body.mw-sb-expanded .app-content.content {
 .mw-sb-w { color: #6abf40; }
 
 .mw-sb-chevron {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     color: var(--mw-text-muted);
     flex-shrink: 0;
     transition: transform 0.2s;
-    display: none;
+    transform: rotate(180deg);
 }
 
 .mw-sb.expanded .mw-sb-chevron {
-    display: block;
+    width: 18px;
+    height: 18px;
+    transform: rotate(0deg);
 }
 
 /* --- Nav list --- */

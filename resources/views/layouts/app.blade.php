@@ -87,6 +87,17 @@
 <body class="vertical-layout vertical-menu-modern footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
     <!-- BEGIN: Sidebar-->
     @include('layouts.partials.sidebar')
+    <script>
+        // Apply persisted sidebar state synchronously so the first paint matches the
+        // final layout — avoids the collapsed→expanded "pop" on every page load.
+        (function(){
+            if (window.innerWidth <= 640) return;
+            if (localStorage.getItem('mwSbExpanded') !== '0') {
+                document.getElementById('mwSidebar').classList.add('expanded');
+                document.body.classList.add('mw-sb-expanded');
+            }
+        })();
+    </script>
     <!-- END: Sidebar-->
 
     <!-- BEGIN: Content-->
@@ -147,8 +158,8 @@
                 if (backdrop) backdrop.classList.toggle('open', expanded && isMobile());
             }
 
-            // Restore desktop expanded state on page load; force-close on mobile
-            if (!isMobile() && localStorage.getItem('mwSbExpanded') === '1') {
+            // Default desktop state is expanded; only collapse if user explicitly set it.
+            if (!isMobile() && localStorage.getItem('mwSbExpanded') !== '0') {
                 setSidebar(true);
             }
 
@@ -162,7 +173,7 @@
                     sb.classList.remove('expanded');
                     document.body.classList.remove('mw-sb-expanded');
                     if (backdrop) backdrop.classList.remove('open');
-                    if (localStorage.getItem('mwSbExpanded') === '1') {
+                    if (localStorage.getItem('mwSbExpanded') !== '0') {
                         setSidebar(true);
                     }
                 }
