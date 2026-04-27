@@ -73,13 +73,8 @@ function roleBadge(role) {
     return `<span class="ac-role-badge badge-role-${role}">${escapeHtml(label)}</span>`;
 }
 
-const _kebabSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
 const _editSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
 const _trashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
-
-function closeAllAcMenus() {
-    $('.ac-menu.open').removeClass('open');
-}
 
 function renderRows(users, currentUser) {
     const $tbody = $('#accounts-tbody');
@@ -95,11 +90,11 @@ function renderRows(users, currentUser) {
             ? `/uploads/profile_pictures/${escapeHtml(u.profile_picture)}`
             : '/assets/avatar-default.jpg';
         const role = u.role || 'user';
-        const deleteItem = canDelete
-            ? `<div class="ac-menu-divider"></div>
-               <button class="ac-menu-item ac-menu-danger" data-action="delete"
-                   data-user-id="${u.id}" data-user-name="${escapeHtml(u.name)}" data-user-role="${role}">
-                   ${_trashSvg} ${t.delete}
+        const deleteBtn = canDelete
+            ? `<button class="ac-action-btn ac-action-danger" data-action="delete"
+                   data-user-id="${u.id}" data-user-name="${escapeHtml(u.name)}" data-user-role="${role}"
+                   data-toggle="tooltip" title="${t.delete}" aria-label="${t.delete}">
+                   ${_trashSvg}
                </button>`
             : '';
         return `
@@ -115,28 +110,22 @@ function renderRows(users, currentUser) {
                 </td>
                 <td>${roleBadge(role)}</td>
                 <td class="ac-col-actions">
-                    <div class="ac-kebab-wrap">
-                        <button class="ac-kebab-btn ac-kebab-toggle"
+                    <div class="ac-row-actions">
+                        <button class="ac-action-btn" data-action="edit"
                             data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
                             data-email="${escapeHtml(u.email)}" data-role="${role}"
-                            data-profile-picture="${avatarSrc}">
-                            ${_kebabSvg}
+                            data-profile-picture="${avatarSrc}"
+                            data-toggle="tooltip" title="${t.edit}" aria-label="${t.edit}">
+                            ${_editSvg}
                         </button>
-                        <div class="ac-menu" id="ac-menu-${u.id}">
-                            <button class="ac-menu-item" data-action="edit"
-                                data-user-id="${u.id}" data-name="${escapeHtml(u.name)}"
-                                data-email="${escapeHtml(u.email)}" data-role="${role}"
-                                data-profile-picture="${avatarSrc}">
-                                ${_editSvg} ${t.edit}
-                            </button>
-                            ${deleteItem}
-                        </div>
+                        ${deleteBtn}
                     </div>
                 </td>
             </tr>`;
     }).join('');
 
     $tbody.html(html);
+    $tbody.find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
 $(window).on('load', function() {
@@ -195,24 +184,11 @@ $(document).ready(function() {
         });
     });
 
-    // Row click → open edit (skip if clicking inside the kebab area)
+    // Row click → open edit (skip if clicking inside the action buttons)
     $(document).on('click', '#accounts-tbody tr[data-search]', function(e) {
-        if ($(e.target).closest('.ac-kebab-wrap').length) return;
-        const $editBtn = $(this).find('.ac-menu-item[data-action="edit"]');
+        if ($(e.target).closest('.ac-row-actions').length) return;
+        const $editBtn = $(this).find('.ac-action-btn[data-action="edit"]');
         if ($editBtn.length) openEditModal($editBtn);
-    });
-
-    // Kebab toggle
-    $(document).on('click', '.ac-kebab-toggle', function() {
-        const $menu = $('#ac-menu-' + $(this).data('user-id'));
-        const wasOpen = $menu.hasClass('open');
-        closeAllAcMenus();
-        if (!wasOpen) $menu.addClass('open');
-    });
-
-    // Close menus on outside click (but not when clicking the kebab itself)
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('.ac-kebab-wrap').length) closeAllAcMenus();
     });
 
     // Profile picture previews
@@ -345,10 +321,9 @@ $(document).ready(function() {
         $('#edit-user-modal').modal('show');
     }
 
-    // Menu actions
-    $(document).on('click', '.ac-menu-item[data-action="delete"]', async function(e) {
+    // Action buttons
+    $(document).on('click', '.ac-action-btn[data-action="delete"]', async function(e) {
         e.stopPropagation();
-        closeAllAcMenus();
         if (user.role !== 'superadmin') {
             toastr.error('Only Super Admin can delete accounts'); return;
         }
@@ -380,9 +355,9 @@ $(document).ready(function() {
         });
     });
 
-    // Edit menu item
-    $(document).on('click', '.ac-menu-item[data-action="edit"]', function() {
-        closeAllAcMenus();
+    // Edit action button
+    $(document).on('click', '.ac-action-btn[data-action="edit"]', function(e) {
+        e.stopPropagation();
         openEditModal($(this));
     });
 
