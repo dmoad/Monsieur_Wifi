@@ -140,8 +140,8 @@
     .fw-search:focus { outline: none; border-color: var(--mw-primary); }
 
     .datatables-firmware td.fw-col-actions { text-align: right; width: 1%; white-space: nowrap; }
-    .fw-kebab-wrap { position: relative; display: inline-block; }
-    .fw-kebab-btn {
+    .fw-row-actions { display: inline-flex; gap: 4px; }
+    .fw-action-btn {
         width: 32px; height: 32px;
         border: 1px solid var(--mw-border);
         background: var(--mw-bg-surface);
@@ -152,25 +152,8 @@
         transition: background 0.12s, color 0.12s, border-color 0.12s;
         padding: 0;
     }
-    .fw-kebab-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
-    .fw-menu {
-        display: none; position: absolute; top: calc(100% + 4px); right: 0;
-        background: var(--mw-bg-surface); border: 1px solid var(--mw-border);
-        border-radius: var(--mw-radius-md); box-shadow: var(--mw-shadow-elevated);
-        min-width: 160px; z-index: 100; padding: 4px 0;
-    }
-    .fw-menu.open { display: block; }
-    .fw-menu-item {
-        display: flex; align-items: center; gap: var(--mw-space-sm);
-        width: 100%; padding: 7px 14px; border: none; background: transparent;
-        font-size: 13px; color: var(--mw-text-secondary); cursor: pointer;
-        text-align: left; transition: background 0.1s, color 0.1s; font-family: var(--mw-font);
-        text-decoration: none !important;
-    }
-    .fw-menu-item:hover { background: var(--mw-bg-hover); color: var(--mw-text-primary); }
-    .fw-menu-danger { color: var(--mw-danger) !important; }
-    .fw-menu-danger:hover { background: rgba(220,38,38,0.06) !important; }
-    .fw-menu-divider { height: 1px; background: var(--mw-border-light); margin: 3px 0; }
+    .fw-action-btn:hover { background: var(--mw-primary-tint); border-color: var(--mw-primary); color: var(--mw-primary); }
+    .fw-action-danger:hover { background: rgba(220,38,38,0.06); border-color: var(--mw-danger); color: var(--mw-danger); }
 </style>
 @endpush
 
@@ -392,16 +375,11 @@
     let fwCurrentPage = 1;
     let fwItemsPerPage = 25;
 
-    const _fwDotsSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
     const _fwEditSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
     const _fwDlSvg    = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
     const _fwStarSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
     const _fwTrashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
     const _fwHddSvg   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg>`;
-
-    function closeAllFwMenus() {
-        document.querySelectorAll('.fw-menu.open').forEach(m => m.classList.remove('open'));
-    }
 
     $(document).ready(function() {
         if (feather) feather.replace({ width: 14, height: 14 });
@@ -429,26 +407,13 @@
         $('#fw-search').on('input', function() { fwCurrentPage = 1; renderFirmwareTable(); });
         $('#fw-items-per-page').on('change', function() { fwItemsPerPage = parseInt($(this).val(), 10) || 25; fwCurrentPage = 1; renderFirmwareTable(); });
 
-        $(document).on('click', function(e) {
-            const toggleBtn = $(e.target).closest('.fw-kebab-toggle');
-            if (toggleBtn.length) {
-                const id = toggleBtn.data('fw-id');
-                const $menu = $(`#fw-menu-${id}`);
-                const wasOpen = $menu.hasClass('open');
-                closeAllFwMenus();
-                if (!wasOpen) $menu.addClass('open');
-                return;
-            }
-            if (!$(e.target).closest('.fw-kebab-wrap').length) closeAllFwMenus();
-        });
-
-        $(document).on('click', '.firmware-edit',        function(e) { e.preventDefault(); closeAllFwMenus(); editFirmware(parseInt($(this).data('firmware-id'))); });
-        $(document).on('click', '.firmware-download',    function(e) { e.preventDefault(); closeAllFwMenus(); downloadFirmware(parseInt($(this).data('firmware-id'))); });
-        $(document).on('click', '.firmware-set-default', function(e) { e.preventDefault(); closeAllFwMenus(); setAsDefault(parseInt($(this).data('firmware-id'))); });
-        $(document).on('click', '.firmware-delete',      function(e) { e.preventDefault(); closeAllFwMenus(); deleteFirmware(parseInt($(this).data('firmware-id'))); });
+        $(document).on('click', '.firmware-edit',        function(e) { e.preventDefault(); e.stopPropagation(); editFirmware(parseInt($(this).data('firmware-id'))); });
+        $(document).on('click', '.firmware-download',    function(e) { e.preventDefault(); e.stopPropagation(); downloadFirmware(parseInt($(this).data('firmware-id'))); });
+        $(document).on('click', '.firmware-set-default', function(e) { e.preventDefault(); e.stopPropagation(); setAsDefault(parseInt($(this).data('firmware-id'))); });
+        $(document).on('click', '.firmware-delete',      function(e) { e.preventDefault(); e.stopPropagation(); deleteFirmware(parseInt($(this).data('firmware-id'))); });
 
         $(document).on('click', '.datatables-firmware tbody tr', function(e) {
-            if ($(e.target).closest('.fw-kebab-wrap').length) return;
+            if ($(e.target).closest('.fw-row-actions').length) return;
             const id = parseInt(this.dataset.firmwareId, 10);
             if (!isNaN(id)) editFirmware(id);
         });
@@ -514,18 +479,14 @@
                 ? `<span class="fw-pill fw-pill-default">${T.badge_default}</span>`
                 : '<span class="fw-pill fw-pill-muted">—</span>';
             const nameCell = `<div class="fw-name-cell"><span class="fw-icon-chip">${_fwHddSvg}</span><div><div class="fw-name-main">${fw.name}</div><div class="fw-name-sub">${fw.description || ''}</div></div></div>`;
-            const setDefaultItem = !fw.default_model_firmware
-                ? `<button type="button" class="fw-menu-item firmware-set-default" data-firmware-id="${fw.id}">${_fwStarSvg} ${T.action_set_default}</button>`
+            const setDefaultBtn = !fw.default_model_firmware
+                ? `<button type="button" class="fw-action-btn firmware-set-default" data-firmware-id="${fw.id}" data-toggle="tooltip" title="${T.action_set_default}" aria-label="${T.action_set_default}">${_fwStarSvg}</button>`
                 : '';
-            const actions = `<div class="fw-kebab-wrap">
-                <button type="button" class="fw-kebab-btn fw-kebab-toggle" data-fw-id="${fw.id}">${_fwDotsSvg}</button>
-                <div class="fw-menu" id="fw-menu-${fw.id}">
-                    <button type="button" class="fw-menu-item firmware-edit" data-firmware-id="${fw.id}">${_fwEditSvg} ${T.action_edit}</button>
-                    <button type="button" class="fw-menu-item firmware-download" data-firmware-id="${fw.id}">${_fwDlSvg} ${T.action_download}</button>
-                    ${setDefaultItem}
-                    <div class="fw-menu-divider"></div>
-                    <button type="button" class="fw-menu-item fw-menu-danger firmware-delete" data-firmware-id="${fw.id}">${_fwTrashSvg} ${T.action_delete}</button>
-                </div>
+            const actions = `<div class="fw-row-actions">
+                <button type="button" class="fw-action-btn firmware-edit" data-firmware-id="${fw.id}" data-toggle="tooltip" title="${T.action_edit}" aria-label="${T.action_edit}">${_fwEditSvg}</button>
+                <button type="button" class="fw-action-btn firmware-download" data-firmware-id="${fw.id}" data-toggle="tooltip" title="${T.action_download}" aria-label="${T.action_download}">${_fwDlSvg}</button>
+                ${setDefaultBtn}
+                <button type="button" class="fw-action-btn fw-action-danger firmware-delete" data-firmware-id="${fw.id}" data-toggle="tooltip" title="${T.action_delete}" aria-label="${T.action_delete}">${_fwTrashSvg}</button>
             </div>`;
             return `<tr data-firmware-id="${fw.id}">
                 <td>${nameCell}</td>
@@ -537,6 +498,7 @@
             </tr>`;
         }).join('');
         $tbody.html(rows);
+        $tbody.find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
         renderFwPagination(totalItems, totalPages, startIdx, endIdx);
     }
 
