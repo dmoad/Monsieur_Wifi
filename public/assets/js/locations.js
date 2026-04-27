@@ -54,12 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
         $('#clone-owner-select').empty();
     });
 
-    // Close kebab menus on outside click
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.lc-kebab-wrap')) {
-            closeAllLocationMenus();
-        }
-    });
 });
 
 async function loadLocations() {
@@ -227,6 +221,7 @@ function displayLocations() {
     }
 
     if (typeof feather !== 'undefined') feather.replace();
+    $(listEl).find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
 function renderLocationRow(location) {
@@ -260,23 +255,13 @@ function renderLocationRow(location) {
             <td>${escapeHtml(location.data_usage || '—')}</td>
             <td><span class="lc-status ${statusClass}">${statusLabel}</span></td>
             <td class="lc-col-actions" onclick="event.stopPropagation()">
-                <div class="lc-kebab-wrap">
-                    <button class="lc-kebab-btn" onclick="toggleLocationMenu(event, ${location.id})" title="${T.actions || 'Actions'}">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-                        </svg>
+                <div class="lc-row-actions">
+                    <button type="button" class="lc-action-btn" onclick="openCloneModal(${location.id}, ${deleteName})" data-toggle="tooltip" title="${T.action_clone || 'Clone'}" aria-label="${T.action_clone || 'Clone'}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                     </button>
-                    <div class="lc-menu" id="lc-menu-${location.id}">
-                        <button class="lc-menu-item" onclick="openCloneModal(${location.id}, ${deleteName}); closeAllLocationMenus()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                            ${T.action_clone || 'Clone'}
-                        </button>
-                        <div class="lc-menu-divider"></div>
-                        <button class="lc-menu-item lc-menu-danger" onclick="deleteLocation(${location.id}, ${deleteName}); closeAllLocationMenus()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                            ${T.action_delete || 'Delete'}
-                        </button>
-                    </div>
+                    <button type="button" class="lc-action-btn lc-action-danger" onclick="deleteLocation(${location.id}, ${deleteName})" data-toggle="tooltip" title="${T.action_delete || 'Delete'}" aria-label="${T.action_delete || 'Delete'}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                    </button>
                 </div>
             </td>
         </tr>
@@ -290,18 +275,6 @@ function escapeHtml(value) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
-}
-
-function toggleLocationMenu(event, locationId) {
-    event.stopPropagation();
-    const menu = document.getElementById(`lc-menu-${locationId}`);
-    const isOpen = menu.classList.contains('open');
-    closeAllLocationMenus();
-    if (!isOpen) menu.classList.add('open');
-}
-
-function closeAllLocationMenus() {
-    document.querySelectorAll('.lc-menu.open').forEach(m => m.classList.remove('open'));
 }
 
 function goToPage(page) {
