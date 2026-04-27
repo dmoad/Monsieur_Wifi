@@ -22,10 +22,14 @@
         'upload_error' => __('firmware.upload_error'),
         'update_success' => __('firmware.update_success'),
         'update_error' => __('firmware.update_error'),
+        'delete_title' => __('firmware.delete_title'),
         'delete_confirm' => __('firmware.delete_confirm'),
+        'delete_btn' => __('firmware.delete_btn'),
         'delete_success' => __('firmware.delete_success'),
         'delete_error' => __('firmware.delete_error'),
+        'set_default_title' => __('firmware.set_default_title'),
         'set_default_confirm' => __('firmware.set_default_confirm'),
+        'set_default_btn' => __('firmware.set_default_btn'),
         'set_default_success' => __('firmware.set_default_success'),
         'set_default_error' => __('firmware.set_default_error'),
         'load_error' => __('firmware.load_error'),
@@ -628,8 +632,15 @@
         });
     }
 
-    function deleteFirmware(id) {
-        if (!confirm(T.delete_confirm)) return;
+    async function deleteFirmware(id) {
+        const ok = await MwConfirm.open({
+            title: T.delete_title,
+            message: T.delete_confirm,
+            confirmText: T.delete_btn,
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+            destructive: true,
+        });
+        if (!ok) return;
         $.ajax({
             url: `/api/firmware/${id}`, method: 'DELETE', headers: getAuthHeaders(),
             success: function(response) { if (response.status === 'success') { showToast(T.delete_success, 'success'); loadFirmwareData(); } },
@@ -646,13 +657,19 @@
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
-    function setAsDefault(id) {
+    async function setAsDefault(id) {
         const fw = firmwareData.find(f => f.id === id);
         if (!fw) return;
         const confirmMsg = T.set_default_confirm
             .replace('{name}', fw.name)
             .replace('{model}', getModelName(fw.model));
-        if (!confirm(confirmMsg)) return;
+        const ok = await MwConfirm.open({
+            title: T.set_default_title,
+            message: confirmMsg,
+            confirmText: T.set_default_btn,
+            cancelText: (window.APP_I18N && window.APP_I18N.common && window.APP_I18N.common.cancel) || 'Cancel',
+        });
+        if (!ok) return;
         $.ajax({
             url: `/api/firmware/${id}/set-default`, method: 'POST', headers: getAuthHeaders(),
             success: function(response) { if (response.status === 'success') { showToast(T.set_default_success, 'success'); loadFirmwareData(); } },
