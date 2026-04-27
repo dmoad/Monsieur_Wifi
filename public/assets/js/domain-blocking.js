@@ -66,7 +66,6 @@ let domainsData = [];
 let dbCurrentPage = 1;
 let dbItemsPerPage = 25;
 
-const _dbDotsSvg  = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
 const _dbEditSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
 const _dbTrashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
 
@@ -94,10 +93,6 @@ function getCategoryAvatarClass(slug) {
     }
 }
 
-
-function closeAllDbMenus() {
-    document.querySelectorAll('.db-menu.open').forEach(m => m.classList.remove('open'));
-}
 
 function loadDomains() {
     $.ajax({
@@ -172,18 +167,15 @@ function renderDomains() {
             <td>${addedDate}</td>
             <td>${updatedDate}</td>
             <td class="db-col-actions">
-                <div class="db-kebab-wrap">
-                    <button type="button" class="db-kebab-btn db-kebab-toggle" data-domain-id="${domain.id}">${_dbDotsSvg}</button>
-                    <div class="db-menu" id="db-menu-${domain.id}">
-                        <button type="button" class="db-menu-item edit-domain-btn" data-id="${domain.id}">${_dbEditSvg} ${t.edit}</button>
-                        <div class="db-menu-divider"></div>
-                        <button type="button" class="db-menu-item db-menu-danger delete-domain-btn" data-id="${domain.id}" data-domain="${domain.domain}">${_dbTrashSvg} ${t.delete}</button>
-                    </div>
+                <div class="db-row-actions">
+                    <button type="button" class="db-action-btn edit-domain-btn" data-id="${domain.id}" data-toggle="tooltip" title="${t.edit}" aria-label="${t.edit}">${_dbEditSvg}</button>
+                    <button type="button" class="db-action-btn db-action-danger delete-domain-btn" data-id="${domain.id}" data-domain="${domain.domain}" data-toggle="tooltip" title="${t.delete}" aria-label="${t.delete}">${_dbTrashSvg}</button>
                 </div>
             </td>
         </tr>`;
     }).join('');
     $tbody.html(rows);
+    $tbody.find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
     renderDbPagination(totalItems, totalPages, startIdx, endIdx);
 }
 
@@ -231,20 +223,6 @@ $(window).on('load', function() {
 
     loadCategoriesData();
     loadDomains();
-
-    // Kebab toggle
-    $(document).on('click', function(e) {
-        const toggleBtn = $(e.target).closest('.db-kebab-toggle');
-        if (toggleBtn.length) {
-            const id = toggleBtn.data('domain-id');
-            const $menu = $(`#db-menu-${id}`);
-            const wasOpen = $menu.hasClass('open');
-            closeAllDbMenus();
-            if (!wasOpen) $menu.addClass('open');
-            return;
-        }
-        if (!$(e.target).closest('.db-kebab-wrap').length) closeAllDbMenus();
-    });
 
     // Search
     $('#db-search').on('input', function() { dbCurrentPage = 1; renderDomains(); });
@@ -371,9 +349,9 @@ $(window).on('load', function() {
         });
     });
 
-    $(document).on('click', '.edit-domain-btn', function() {
+    $(document).on('click', '.edit-domain-btn', function(e) {
+        e.stopPropagation();
         const domainId = $(this).data('id');
-        closeAllDbMenus();
 
         $.ajax({
             url: `/api/blocked-domains/${domainId}`,
@@ -432,10 +410,10 @@ $(window).on('load', function() {
         });
     });
 
-    $(document).on('click', '.delete-domain-btn', async function() {
+    $(document).on('click', '.delete-domain-btn', async function(e) {
+        e.stopPropagation();
         const domainId = $(this).data('id');
         const domainName = $(this).data('domain');
-        closeAllDbMenus();
 
         const ok = await MwConfirm.open({
             title: t.confirmDeleteTitle || 'Delete domain?',
