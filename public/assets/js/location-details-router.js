@@ -407,6 +407,12 @@ async function saveQosSettings() {
         if (!locationIsPrimaryOrStandalone) {
             payload.qos_bw_wan_use_local = $('#qos-wan-use-local').is(':checked');
         }
+        const b = payload.qos_bw;
+        const classSum = b.voip_bw + b.streaming_bw + b.be_bw + b.bulk_bw;
+        if (2 * classSum > b.wan_down_kbps || 2 * classSum > b.wan_up_kbps) {
+            toastr.error(i18n.qos_error_class_exceeds_half_wan || 'Invalid QoS bandwidth.');
+            return;
+        }
         await apiFetch(`${API}/locations/${location_id}/settings/qos`, {
             method: 'PUT',
             body: JSON.stringify(payload),

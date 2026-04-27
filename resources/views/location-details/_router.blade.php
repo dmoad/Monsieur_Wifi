@@ -247,6 +247,7 @@
                                             </div>
                                             <div class="col-12 col-md-6 qos-bw-min-col">
                                                 <div class="panel-sub-label">{{ __('location_details.qos_min_per_class') }}</div>
+                                                <small class="text-muted d-block mb-2" style="font-size:0.8rem;">{{ __('location_details.qos_min_per_class_help') }}</small>
                                                 <div class="mb-2">
                                                     <label class="small d-block mb-1" for="qos-voip-bw">{{ __('location_details.qos_voip') }} <span class="text-muted">(EF)</span></label>
                                                     <div class="input-group input-group-sm">

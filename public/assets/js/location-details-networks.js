@@ -2,7 +2,7 @@
  * location-details-networks.js
  *
  * WiFi Networks tab (Tab 4 of the Location Details page):
- *  - SSID list rendering + Add Network + kebab (QR / Delete)
+ *  - SSID list rendering + Add Network (SSID prompt modal) + kebab (QR / Delete)
  *  - Right-side drawer editor: General / Network / Security / Advanced panels
  *  - Scratch buffers for MAC filter entries + DHCP reservations (revert on Cancel)
  *  - Working-hours picker (mode radio + per-day range editor)
@@ -599,10 +599,39 @@ const ldNetworks = (function () {
         }
     }
 
+    function openAddNetworkModal() {
+        const input = document.getElementById('ld-network-add-ssid');
+        if (input) input.value = '';
+        const $m = typeof $ !== 'undefined' ? $('#ld-network-add-modal') : null;
+        if ($m && $m.length) {
+            $m.one('shown.bs.modal', function () {
+                if (input) input.focus();
+                if (typeof reRenderFeather === 'function') reRenderFeather();
+            });
+            $m.modal('show');
+        }
+    }
+
     async function add() {
+        const input = document.getElementById('ld-network-add-ssid');
+        const confirmBtn = document.getElementById('ld-network-add-confirm');
         const btn = document.getElementById('ld-networks-add-btn');
-        if (!btn || btn.disabled) return;
-        btn.disabled = true;
+        if (!input) return;
+
+        const ssid = input.value.trim();
+        if (!ssid) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_ssid_required || 'SSID is required');
+            input.focus();
+            return;
+        }
+        if (ssid.length > 32) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_ssid_too_long || 'SSID must be 32 characters or fewer');
+            input.focus();
+            return;
+        }
+
+        if (btn) btn.disabled = true;
+        if (confirmBtn) confirmBtn.disabled = true;
         try {
             const next = data.length;
             const octet = 10 + next;
@@ -610,7 +639,7 @@ const ldNetworks = (function () {
                 method: 'POST',
                 body: JSON.stringify({
                     type: 'password',
-                    ssid: 'New Network',
+                    ssid,
                     enabled: true,
                     ip_address: `192.168.${octet}.1`,
                     dhcp_start: `192.168.${octet}.100`,
@@ -618,13 +647,23 @@ const ldNetworks = (function () {
                 }),
             });
             if (res && res.data && res.data.network) {
-                data.push(res.data.network);
+                const newNet = res.data.network;
+                data.push(newNet);
                 render();
+                if (typeof $ !== 'undefined' && $('#ld-network-add-modal').length) {
+                    $('#ld-network-add-modal').one('hidden.bs.modal', function () {
+                        openForNetwork(newNet.id);
+                    });
+                    $('#ld-network-add-modal').modal('hide');
+                } else {
+                    openForNetwork(newNet.id);
+                }
             }
         } catch (err) {
             handleApiError(err, 'ldNetworks.add');
         } finally {
-            btn.disabled = false;
+            if (btn) btn.disabled = false;
+            if (confirmBtn) confirmBtn.disabled = false;
         }
     }
 
@@ -922,12 +961,18 @@ const ldNetworks = (function () {
         if (e.target && e.target.id === 'ld-network-drawer-form') {
             e.preventDefault();
         }
+        if (e.target && e.target.id === 'ld-network-add-form') {
+            e.preventDefault();
+            add();
+        }
     });
 
     document.addEventListener('click', function (e) {
         if (e.target.closest('#ld-networks-add-btn')) {
             e.preventDefault();
-            add();
+            const headerBtn = document.getElementById('ld-networks-add-btn');
+            if (!headerBtn || headerBtn.disabled) return;
+            openAddNetworkModal();
             return;
         }
         if (e.target.closest('#ld-network-drawer-save')) {

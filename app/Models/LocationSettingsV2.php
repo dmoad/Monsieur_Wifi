@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Validation\ValidationException;
 
 class LocationSettingsV2 extends Model
 {
@@ -56,33 +57,35 @@ class LocationSettingsV2 extends Model
 
     protected $casts = [
         // Booleans
-        'wan_enabled'        => 'boolean',
-        'wan_nat_enabled'    => 'boolean',
-        'vlan_enabled'       => 'boolean',
+        'wan_enabled' => 'boolean',
+        'wan_nat_enabled' => 'boolean',
+        'vlan_enabled' => 'boolean',
         'web_filter_enabled' => 'boolean',
-        'qos_enabled'            => 'boolean',
-        'qos_bw_wan_use_local'   => 'boolean',
+        'qos_enabled' => 'boolean',
+        'qos_bw_wan_use_local' => 'boolean',
 
         // Integers
-        'transmit_power_2g'  => 'integer',
-        'transmit_power_5g'  => 'integer',
-        'channel_2g'         => 'integer',
-        'channel_5g'         => 'integer',
-        'channel_width_2g'   => 'integer',
-        'channel_width_5g'   => 'integer',
-        'wan_mtu'            => 'integer',
+        'transmit_power_2g' => 'integer',
+        'transmit_power_5g' => 'integer',
+        'channel_2g' => 'integer',
+        'channel_5g' => 'integer',
+        'channel_width_2g' => 'integer',
+        'channel_width_5g' => 'integer',
+        'wan_mtu' => 'integer',
 
         // JSON
-        'web_filter_domains'    => 'array',
+        'web_filter_domains' => 'array',
         'web_filter_categories' => 'array',
-        'qos_bw'                => 'array',
+        'qos_bw' => 'array',
     ];
 
     // ── WAN connection type constants ────────────────────────────────────────
 
-    const WAN_DHCP   = 'dhcp';
+    const WAN_DHCP = 'dhcp';
+
     const WAN_STATIC = 'static';
-    const WAN_PPPOE  = 'pppoe';
+
+    const WAN_PPPOE = 'pppoe';
 
     // ── Relationships ────────────────────────────────────────────────────────
 
@@ -120,19 +123,19 @@ class LocationSettingsV2 extends Model
     public function isWebFilteringActive(): bool
     {
         return $this->web_filter_enabled &&
-               (!empty($this->web_filter_categories) || !empty($this->web_filter_domains));
+               (! empty($this->web_filter_categories) || ! empty($this->web_filter_domains));
     }
 
     /** @return array<string, int> */
     public static function defaultQosBw(): array
     {
         return [
-            'wan_up_kbps'    => 0,
-            'wan_down_kbps'  => 0,
-            'voip_bw'        => 0,
-            'streaming_bw'   => 0,
-            'be_bw'          => 0,
-            'bulk_bw'        => 0,
+            'wan_up_kbps' => 0,
+            'wan_down_kbps' => 0,
+            'voip_bw' => 0,
+            'streaming_bw' => 0,
+            'be_bw' => 0,
+            'bulk_bw' => 0,
         ];
     }
 
@@ -157,5 +160,25 @@ class LocationSettingsV2 extends Model
         }
 
         return $out;
+    }
+
+    /**
+     * Reserved class minimums (shared across upload and download) must not exceed half of each WAN leg:
+     * 2 * (voip + streaming + be + bulk) <= wan_down_kbps and <= wan_up_kbps.
+     *
+     * @param  array<string, int>|array<string, mixed>  $bw
+     *
+     * @throws ValidationException
+     */
+    public static function assertQosClassSumWithinHalfWan(array $bw): void
+    {
+        $bw = self::normalizeQosBw($bw);
+        $sum = $bw['voip_bw'] + $bw['streaming_bw'] + $bw['be_bw'] + $bw['bulk_bw'];
+        if (2 * $sum <= $bw['wan_down_kbps'] && 2 * $sum <= $bw['wan_up_kbps']) {
+            return;
+        }
+        throw ValidationException::withMessages([
+            'qos_bw' => [__('location_details.qos_error_class_exceeds_half_wan')],
+        ]);
     }
 }

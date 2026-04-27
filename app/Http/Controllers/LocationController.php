@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Location;
+use App\Models\CaptivePortalWorkingHour;
+use App\Models\Category;
 use App\Models\Device;
+use App\Models\Firmware;
+use App\Models\Location;
 use App\Models\LocationSettingsV2;
-use App\Models\SystemSetting;
+use App\Models\OnlineNetworkUser;
 use App\Models\Radacct;
 use App\Models\Radcheck;
-use App\Models\Firmware;
-use App\Models\CaptivePortalWorkingHour;
-use App\Models\OnlineNetworkUser;
-use App\Models\Category;
 use App\Services\GeocodingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
+
 class LocationController extends Controller
 {
     /**
@@ -36,7 +36,6 @@ class LocationController extends Controller
         }
     }
 
-   
     /**
      * Display a listing of the locations.
      *
@@ -51,29 +50,29 @@ class LocationController extends Controller
         } else {
             $locations = Location::with(['device', 'zone'])->where(function ($q) use ($user) {
                 $q->where('owner_id', $user->id)
-                  ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                    ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
             })->get();
         }
-        
+
         // Determine online status for each location's device
         $locationsWithStatus = $locations->map(function ($location) {
             // Create a new array with location data
             $locationData = $location->toArray();
-            
+
             // Default status is offline
             $locationData['online_status'] = 'offline';
-            
+
             // Check if device exists and has last_seen timestamp
             if ($location->device && $location->device->last_seen) {
                 $lastSeen = new \DateTime($location->device->last_seen);
-                $now = new \DateTime();
+                $now = new \DateTime;
                 $interval = $now->getTimestamp() - $lastSeen->getTimestamp();
-                
+
                 // If last_seen is within 90 seconds, device is online
                 if ($interval <= 90) {
                     $locationData['online_status'] = 'online';
                 }
-                
+
                 // Add last_seen timestamp to the response
                 $locationData['last_seen'] = $location->device->last_seen;
             }
@@ -82,7 +81,7 @@ class LocationController extends Controller
             $dataUsage = Radacct::getLocationDataUsage($location->id, $today);
 
             $activeSessions = Radacct::getActiveSessions($location->id);
-            
+
             $locationData['users'] = $activeSessions->count();
             $locationData['unique_users_today'] = $dataUsage['unique_users'];
             $locationData['data_usage'] = $dataUsage['total_mb']; // In MB
@@ -90,6 +89,7 @@ class LocationController extends Controller
             $locationData['total_sessions'] = $dataUsage['total_sessions'];
             $locationData['active_sessions'] = $activeSessions->count();
             $locationData['settings'] = LocationSettingsV2::where('location_id', $location->id)->first();
+
             return $locationData;
         });
 
@@ -98,9 +98,9 @@ class LocationController extends Controller
             'total_input_bytes' => 0,
             'total_output_bytes' => 0,
             'total_users' => 0,
-            'total_data_gb' => 0
+            'total_data_gb' => 0,
         ];
-        
+
         // Sum up actual data usage across all locations using Radacct model methods
         foreach ($locations as $location) {
             // Get all-time data usage for each location
@@ -116,7 +116,7 @@ class LocationController extends Controller
             'success' => true,
             'message' => 'Locations fetched successfully',
             'locations' => $locationsWithStatus,
-            'network_totals' => $networkTotals
+            'network_totals' => $networkTotals,
         ]);
     }
 
@@ -133,7 +133,6 @@ class LocationController extends Controller
     /**
      * Store a newly created location in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -158,11 +157,11 @@ class LocationController extends Controller
         ]);
 
         // Geocode address if provided and lat/lng not already set
-        if (!$request->latitude && !$request->longitude && 
+        if (! $request->latitude && ! $request->longitude &&
             ($request->address || $request->city || $request->state || $request->country || $request->postal_code)) {
-            
+
             Log::info('Attempting to geocode address for new location');
-            $geocodingService = new GeocodingService();
+            $geocodingService = new GeocodingService;
             $geocodeResult = $geocodingService->geocodeAddress(
                 $request->address,
                 $request->city,
@@ -170,16 +169,16 @@ class LocationController extends Controller
                 $request->country,
                 $request->postal_code
             );
-            
+
             if ($geocodeResult) {
                 $request->merge([
                     'latitude' => $geocodeResult['lat'],
-                    'longitude' => $geocodeResult['lng']
+                    'longitude' => $geocodeResult['lng'],
                 ]);
                 Log::info('Successfully geocoded address', [
                     'latitude' => $geocodeResult['lat'],
                     'longitude' => $geocodeResult['lng'],
-                    'formatted_address' => $geocodeResult['formatted_address']
+                    'formatted_address' => $geocodeResult['formatted_address'],
                 ]);
             } else {
                 Log::warning('Failed to geocode address for new location');
@@ -188,7 +187,7 @@ class LocationController extends Controller
 
         // Get existing device with firmware relationship
         $device = Device::with('firmware')->find($request->device_id);
-        
+
         // Check if device is already assigned to another location
         $existingLocation = Location::where('device_id', $device->id)->first();
         if ($existingLocation) {
@@ -197,30 +196,30 @@ class LocationController extends Controller
                 'device_id' => $device->id,
                 'old_location' => $existingLocation->name,
                 'old_location_id' => $existingLocation->id,
-                'new_location_request' => $request->name
+                'new_location_request' => $request->name,
             ]);
-            
+
             // Remove device from old location
             $existingLocation->device_id = null;
             $existingLocation->save();
-            
+
             Log::info('Device removed from old location', [
                 'old_location_id' => $existingLocation->id,
-                'old_location_name' => $existingLocation->name
+                'old_location_name' => $existingLocation->name,
             ]);
         }
-        
+
         // Get the firmware from the device
         $firmware = $device->firmware;
 
         // Determine the owner_id
         $user = Auth::user();
         $ownerId = $request->owner_id;
-        
+
         // If not admin, force owner_id to be the current user
-        if (!$user->isAdminOrAbove()) {
+        if (! $user->isAdminOrAbove()) {
             $ownerId = $user->id;
-        } else if (!$ownerId) {
+        } elseif (! $ownerId) {
             // If admin doesn't specify owner_id, use current user
             $ownerId = $user->id;
         }
@@ -233,11 +232,11 @@ class LocationController extends Controller
         $location->save();
 
         // Create the location settings (v2 — router-level only)
-        $locationSettings = new LocationSettingsV2();
+        $locationSettings = new LocationSettingsV2;
         $locationSettings->location_id = $location->id;
         $locationSettings->save();
 
-        // create the working hours for whole week with all day active 
+        // create the working hours for whole week with all day active
 
         $working_hours = $this->createBusinessWorkingHours($location->id);
 
@@ -251,8 +250,8 @@ class LocationController extends Controller
                 'id' => $firmware->id,
                 'name' => $firmware->name,
                 'version' => $firmware->version,
-                'is_default' => $firmware->default_model_firmware
-            ] : null
+                'is_default' => $firmware->default_model_firmware,
+            ] : null,
         ]);
     }
 
@@ -263,19 +262,19 @@ class LocationController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
         }
 
         // Load source location with settings and networks
         $source = Location::with(['settings', 'networks'])->find($id);
 
-        if (!$source) {
+        if (! $source) {
             return response()->json(['success' => false, 'message' => 'Location not found'], 404);
         }
 
         // Only allow cloning own location (or any location for admins)
-        if (!$user->isAdminOrAbove() && $source->owner_id !== $user->id) {
+        if (! $user->isAdminOrAbove() && $source->owner_id !== $user->id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -292,9 +291,9 @@ class LocationController extends Controller
             'latitude', 'longitude', 'description',
             'manager_name', 'contact_email', 'contact_phone', 'status',
         ]));
-        $cloned->name      = $source->name . ' (Copy)';
-        $cloned->user_id   = $ownerId;
-        $cloned->owner_id  = $ownerId;
+        $cloned->name = $source->name.' (Copy)';
+        $cloned->user_id = $ownerId;
+        $cloned->owner_id = $ownerId;
         $cloned->device_id = null;
         $cloned->save();
 
@@ -320,8 +319,8 @@ class LocationController extends Controller
         }
 
         return response()->json([
-            'success'  => true,
-            'message'  => 'Location cloned successfully.',
+            'success' => true,
+            'message' => 'Location cloned successfully.',
             'location' => $cloned->load('settings'),
         ]);
     }
@@ -335,10 +334,10 @@ class LocationController extends Controller
     public function show($id)
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'User not authenticated'
+                'message' => 'User not authenticated',
             ], 401);
         }
         if ($user->isAdminOrAbove()) {
@@ -346,30 +345,30 @@ class LocationController extends Controller
         } else {
             $location = Location::with(['device', 'zone', 'settings'])->where(function ($q) use ($user) {
                 $q->where('owner_id', $user->id)
-                  ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                    ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
             })->find($id);
         }
-        
-        if (!$location) {
+
+        if (! $location) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized access'
+                'message' => 'Unauthorized access',
             ], 200);
         }
-        
+
         $device = Device::with('productModel')->find($location->device_id);
         $locationSettings = LocationSettingsV2::where('location_id', $id)->first();
 
         $locationData = $location->toArray();
         $locationData['settings'] = $locationSettings;
         $locationData['device'] = $device;
-        
+
         // Add zone-related information
         $locationData['is_primary_in_zone'] = $location->isPrimaryInZone();
         $locationData['can_edit_settings'] = $location->canEditSettings();
 
         // For non-primary zone members, expose the primary location id and access flag
-        if ($location->zone_id && !$location->isPrimaryInZone()) {
+        if ($location->zone_id && ! $location->isPrimaryInZone()) {
             $zone = $location->zone()->with('primaryLocation')->first();
             $primaryLocation = $zone ? $zone->primaryLocation : null;
             $locationData['primary_location_id'] = $primaryLocation ? $primaryLocation->id : null;
@@ -380,12 +379,12 @@ class LocationController extends Controller
             $locationData['primary_location_id'] = null;
             $locationData['can_access_primary'] = true;
         }
-        
+
         if ($device) {
             $device->is_online = false;
             // If device last_seen is older than 90 seconds, set device online to false
             if ($device->last_seen) {
-                $now = new \DateTime();
+                $now = new \DateTime;
                 $lastSeen = new \DateTime($device->last_seen);
                 $interval = $now->getTimestamp() - $lastSeen->getTimestamp();
                 if ($interval <= 90) {
@@ -397,7 +396,7 @@ class LocationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Location fetched successfully',
-            'data' => $locationData
+            'data' => $locationData,
         ]);
     }
 
@@ -408,22 +407,22 @@ class LocationController extends Controller
     {
         try {
             $location = Location::find($id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             // Get date range from request, default to last 30 days
-            $startDate = $request->has('start_date') 
-                ? \Carbon\Carbon::parse($request->start_date) 
+            $startDate = $request->has('start_date')
+                ? \Carbon\Carbon::parse($request->start_date)
                 : \Carbon\Carbon::now()->subDays(30);
-            $endDate = $request->has('end_date') 
-                ? \Carbon\Carbon::parse($request->end_date) 
+            $endDate = $request->has('end_date')
+                ? \Carbon\Carbon::parse($request->end_date)
                 : \Carbon\Carbon::now();
-            
+
             // Get comprehensive statistics
             $dataUsage = Radacct::getLocationDataUsage($id, $startDate, $endDate);
             Log::info('Data usage: ');
@@ -431,28 +430,28 @@ class LocationController extends Controller
             $activeSessions = Radacct::getActiveSessions($id);
             $recentSessions = Radacct::getRecentSessions($id, 20);
             $dailyStats = Radacct::getSessionStats($id, $startDate, $endDate);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'location' => $location,
                     'date_range' => [
                         'start' => $startDate->format('Y-m-d'),
-                        'end' => $endDate->format('Y-m-d')
+                        'end' => $endDate->format('Y-m-d'),
                     ],
                     'summary' => $dataUsage,
                     'active_sessions' => $activeSessions,
                     'recent_sessions' => $recentSessions,
-                    'daily_statistics' => $dailyStats
-                ]
+                    'daily_statistics' => $dailyStats,
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error getting location accounting data: ' . $e->getMessage());
-            
+            Log::error('Error getting location accounting data: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error retrieving accounting data: ' . $e->getMessage()
+                'message' => 'Error retrieving accounting data: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -464,42 +463,42 @@ class LocationController extends Controller
     {
         try {
             $location = Location::find($id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             $username = $request->input('username');
-            if (!$username) {
+            if (! $username) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Username is required'
+                    'message' => 'Username is required',
                 ], 400);
             }
-            
+
             // Get user sessions for this location
             $sessions = Radacct::getByUsernameAndLocation($username, $id);
             $userDataUsage = Radacct::getUserDataUsage($username, $id);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'location' => $location,
                     'username' => $username,
                     'sessions' => $sessions,
-                    'usage_summary' => $userDataUsage
-                ]
+                    'usage_summary' => $userDataUsage,
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error getting user sessions: ' . $e->getMessage());
-            
+            Log::error('Error getting user sessions: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error retrieving user sessions: ' . $e->getMessage()
+                'message' => 'Error retrieving user sessions: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -514,19 +513,19 @@ class LocationController extends Controller
     {
         try {
             $location = Location::find($id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             // Get all online users for this location
             $onlineUsers = OnlineNetworkUser::where('location_id', $id)
                 ->orderBy('updated_at', 'desc')
                 ->get();
-            
+
             // Transform the data to include additional information
             $transformedUsers = $onlineUsers->map(function ($user) {
                 return [
@@ -540,10 +539,10 @@ class LocationController extends Controller
                     'connected_time' => $user->updated_at->diffForHumans(),
                     'last_seen' => $user->updated_at->format('Y-m-d H:i:s'),
                     'network_badge' => $user->network === 'captive' ? 'badge-light-info' : 'badge-light-success',
-                    'network_label' => $user->network === 'captive' ? 'Captive Portal' : 'Password WiFi'
+                    'network_label' => $user->network === 'captive' ? 'Captive Portal' : 'Password WiFi',
                 ];
             });
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -551,16 +550,16 @@ class LocationController extends Controller
                     'online_users' => $transformedUsers,
                     'total_count' => $onlineUsers->count(),
                     'captive_count' => $onlineUsers->where('network', 'captive')->count(),
-                    'password_count' => $onlineUsers->where('network', 'lan')->count()
-                ]
+                    'password_count' => $onlineUsers->where('network', 'lan')->count(),
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error getting online users: ' . $e->getMessage());
-            
+            Log::error('Error getting online users: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error retrieving online users: ' . $e->getMessage()
+                'message' => 'Error retrieving online users: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -569,7 +568,6 @@ class LocationController extends Controller
      * Get captive portal daily usage statistics from Radacct
      *
      * @param  int  $id
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function getCaptivePortalDailyUsage($id, Request $request)
@@ -577,10 +575,10 @@ class LocationController extends Controller
         try {
             $location = Location::find($id);
 
-            if (!$location) {
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
 
@@ -595,16 +593,16 @@ class LocationController extends Controller
             Log::info("Date range calculation - Period: {$period} days");
             Log::info("Start date: {$startDate->format('Y-m-d H:i:s')}");
             Log::info("End date: {$endDate->format('Y-m-d H:i:s')}");
-            Log::info("Today: " . Carbon::today()->format('Y-m-d'));
+            Log::info('Today: '.Carbon::today()->format('Y-m-d'));
 
             // Get daily statistics from Radacct
             Log::info("Getting captive portal daily usage for location {$id}: {$startDate->format('Y-m-d H:i:s')} to {$endDate->format('Y-m-d H:i:s')}");
             $dailyStats = Radacct::getSessionStats($id, $startDate, $endDate);
-            Log::info("Retrieved daily stats count: " . count($dailyStats));
+            Log::info('Retrieved daily stats count: '.count($dailyStats));
 
             // Transform the data for the chart
             $chartData = [];
-            Log::info("Processing daily stats for chart data:");
+            Log::info('Processing daily stats for chart data:');
             foreach ($dailyStats as $date => $stats) {
                 Log::info("Date: {$date}, Users: {$stats['unique_users']}, Sessions: {$stats['sessions']}");
                 $chartData[] = [
@@ -612,16 +610,16 @@ class LocationController extends Controller
                     'users' => $stats['unique_users'],
                     'sessions' => $stats['sessions'],
                     'data_usage' => $stats['total_bytes'],
-                    'session_time' => $stats['total_session_time']
+                    'session_time' => $stats['total_session_time'],
                 ];
             }
-            
+
             // Calculate summary statistics
             $totalUsers = collect($dailyStats)->sum('unique_users');
             $totalSessions = collect($dailyStats)->sum('sessions');
             $totalDataUsage = collect($dailyStats)->sum('total_bytes');
             $averageUsersPerDay = $totalUsers > 0 ? round($totalUsers / $period, 1) : 0;
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $chartData,
@@ -632,16 +630,16 @@ class LocationController extends Controller
                     'average_users_per_day' => $averageUsersPerDay,
                     'period_days' => $period,
                     'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d')
-                ]
+                    'end_date' => $endDate->format('Y-m-d'),
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error getting captive portal daily usage: ' . $e->getMessage());
-            
+            Log::error('Error getting captive portal daily usage: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error retrieving captive portal usage data: ' . $e->getMessage()
+                'message' => 'Error retrieving captive portal usage data: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -649,7 +647,6 @@ class LocationController extends Controller
     /**
      * Show the form for editing the specified location.
      *
-     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
     public function edit(Location $location)
@@ -660,7 +657,6 @@ class LocationController extends Controller
     /**
      * Update the specified location in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
@@ -668,7 +664,6 @@ class LocationController extends Controller
     {
         Log::info('Update location request received');
         Log::info($request->all());
-        
 
         // Check if it's a settings update
         if ($request->has('settings') && $request->has('settings_type')) {
@@ -679,31 +674,31 @@ class LocationController extends Controller
             $device = Device::find($location->device_id);
             Log::info('settings: ');
             Log::info($settings);
-            Log::info('settingsType: ' . $settingsType);
-            
+            Log::info('settingsType: '.$settingsType);
+
             try {
                 // Find the location settings
                 $locationSettings = LocationSettingsV2::where('location_id', $location_id)->first();
-                
+
                 // If settings don't exist, create them
-                if (!$locationSettings) {
-                    $locationSettings = new LocationSettingsV2();
+                if (! $locationSettings) {
+                    $locationSettings = new LocationSettingsV2;
                     $locationSettings->location_id = $location_id;
                 }
 
-                Log::info("settingsType :: ");
+                Log::info('settingsType :: ');
                 Log::info($settingsType);
 
                 // Handle different types of settings
                 if ($settingsType === 'captive' || $settingsType === 'captive_portal') {
                     Log::info('=== CAPTIVE PORTAL SETTINGS UPDATE ===');
-                    Log::info('Settings type: ' . $settingsType);
-                    Log::info('Location ID: ' . $location_id);
-                    Log::info('Settings data captive: ' . json_encode($settings));
-                    
+                    Log::info('Settings type: '.$settingsType);
+                    Log::info('Location ID: '.$location_id);
+                    Log::info('Settings data captive: '.json_encode($settings));
+
                     // Ensure working hours exist for this location when updating captive portal settings
                     $this->createBusinessWorkingHours($location_id);
-                    
+
                     // Update captive portal settings
                     if (isset($settings['captive_portal_ssid'])) {
                         if ($settings['captive_portal_ssid'] !== $locationSettings->captive_portal_ssid) {
@@ -712,22 +707,22 @@ class LocationController extends Controller
                         }
                         $locationSettings->captive_portal_ssid = $settings['captive_portal_ssid'];
                     }
-                    
+
                     if (isset($settings['captive_portal_visible'])) {
                         // Convert both values to boolean for proper comparison
-                        $newValue = (bool)$settings['captive_portal_visible'];
-                        $oldValue = (bool)$locationSettings->captive_portal_visible;
-                        
+                        $newValue = (bool) $settings['captive_portal_visible'];
+                        $oldValue = (bool) $locationSettings->captive_portal_visible;
+
                         if ($newValue !== $oldValue) {
                             $increment_version = 1;
                             Log::info('Captive portal visible updated');
-                            Log::info('New value: ' . ($newValue ? 1 : 0));
-                            Log::info('Old value: ' . ($oldValue ? 1 : 0));
+                            Log::info('New value: '.($newValue ? 1 : 0));
+                            Log::info('Old value: '.($oldValue ? 1 : 0));
                         }
                         $locationSettings->captive_portal_visible = $newValue;
-                        Log::info('Captive portal visible updated to: ' . ($newValue ? 1 : 0));
+                        Log::info('Captive portal visible updated to: '.($newValue ? 1 : 0));
                     }
-                    
+
                     if (isset($settings['captive_portal_enabled'])) {
                         if ($settings['captive_portal_enabled'] !== $locationSettings->captive_portal_enabled) {
                             $increment_version = 1;
@@ -769,7 +764,7 @@ class LocationController extends Controller
                         if ($settings['captive_auth_method'] === 'password') {
                             $locationSettings->captive_portal_password = $settings['captive_portal_password'];
                         }
-                    
+
                         if (isset($settings['captive_social_auth_method'])) {
                             if ($settings['captive_social_auth_method'] !== $locationSettings->captive_social_auth_method) {
                                 $increment_version = 1;
@@ -793,22 +788,22 @@ class LocationController extends Controller
                         }
                         $locationSettings->captive_portal_dns2 = $settings['captive_portal_dns2'];
                     }
-                
+
                     // Session settings
                     if (isset($settings['session_timeout'])) {
                         $locationSettings->session_timeout = $settings['session_timeout'];
                     }
-                    
+
                     if (isset($settings['idle_timeout'])) {
                         $locationSettings->idle_timeout = $settings['idle_timeout'];
                     }
-                    
+
                     // Access control
                     if (isset($settings['access_control_enabled'])) {
                         // Convert both values to boolean for proper comparison
-                        $newValue = (bool)$settings['access_control_enabled'];
-                        $oldValue = (bool)$locationSettings->web_filter_enabled;
-                        
+                        $newValue = (bool) $settings['access_control_enabled'];
+                        $oldValue = (bool) $locationSettings->web_filter_enabled;
+
                         if ($newValue !== $oldValue) {
                             $increment_version = 1;
                             Log::info('Access control enabled updated');
@@ -817,7 +812,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->web_filter_enabled = $newValue;
                     }
-                    
+
                     if (isset($settings['allowed_domains'])) {
                         if ($settings['allowed_domains'] !== $locationSettings->web_filter_domains) {
                             $increment_version = 1;
@@ -825,46 +820,46 @@ class LocationController extends Controller
                         }
                         $locationSettings->web_filter_domains = $settings['allowed_domains'];
                     }
-                    
+
                     // Bandwidth settings with debugging
                     Log::info('=== BANDWIDTH LIMITS DEBUG ===');
-                    Log::info('captive_download_limit in settings: ' . (isset($settings['captive_download_limit']) ? $settings['captive_download_limit'] : 'NOT SET'));
-                    Log::info('captive_upload_limit in settings: ' . (isset($settings['captive_upload_limit']) ? $settings['captive_upload_limit'] : 'NOT SET'));
-                    Log::info('download_limit in settings: ' . (isset($settings['download_limit']) ? $settings['download_limit'] : 'NOT SET'));
-                    Log::info('upload_limit in settings: ' . (isset($settings['upload_limit']) ? $settings['upload_limit'] : 'NOT SET'));
-                    Log::info('Current DB download_limit: ' . $locationSettings->download_limit);
-                    Log::info('Current DB upload_limit: ' . $locationSettings->upload_limit);
-                    
+                    Log::info('captive_download_limit in settings: '.(isset($settings['captive_download_limit']) ? $settings['captive_download_limit'] : 'NOT SET'));
+                    Log::info('captive_upload_limit in settings: '.(isset($settings['captive_upload_limit']) ? $settings['captive_upload_limit'] : 'NOT SET'));
+                    Log::info('download_limit in settings: '.(isset($settings['download_limit']) ? $settings['download_limit'] : 'NOT SET'));
+                    Log::info('upload_limit in settings: '.(isset($settings['upload_limit']) ? $settings['upload_limit'] : 'NOT SET'));
+                    Log::info('Current DB download_limit: '.$locationSettings->download_limit);
+                    Log::info('Current DB upload_limit: '.$locationSettings->upload_limit);
+
                     if (isset($settings['captive_download_limit'])) {
                         $newValue = $settings['captive_download_limit'];
                         // Convert empty string to null or 0 for proper comparison
                         if ($newValue === '' || $newValue === null) {
                             $newValue = null;
                         } else {
-                            $newValue = (int)$newValue;
+                            $newValue = (int) $newValue;
                         }
-                        
+
                         if ($newValue !== $locationSettings->download_limit) {
-                            Log::info('Captive download limit updated from ' . $locationSettings->download_limit . ' to ' . $newValue);
+                            Log::info('Captive download limit updated from '.$locationSettings->download_limit.' to '.$newValue);
                         }
                         $locationSettings->download_limit = $newValue;
                     }
-                    
+
                     if (isset($settings['captive_upload_limit'])) {
                         $newValue = $settings['captive_upload_limit'];
-                        // Convert empty string or "0" to null for proper comparison  
+                        // Convert empty string or "0" to null for proper comparison
                         if ($newValue === '' || $newValue === null || $newValue === '0') {
                             $newValue = null;
                         } else {
-                            $newValue = (int)$newValue;
+                            $newValue = (int) $newValue;
                         }
-                        
+
                         if ($newValue !== $locationSettings->upload_limit) {
-                            Log::info('Captive upload limit updated from ' . $locationSettings->upload_limit . ' to ' . $newValue);
+                            Log::info('Captive upload limit updated from '.$locationSettings->upload_limit.' to '.$newValue);
                         }
                         $locationSettings->upload_limit = $newValue;
                     }
-                    
+
                     // Also handle the generic download_limit and upload_limit fields
                     if (isset($settings['download_limit'])) {
                         $newValue = $settings['download_limit'];
@@ -872,44 +867,44 @@ class LocationController extends Controller
                         if ($newValue === '' || $newValue === null) {
                             $newValue = null;
                         } else {
-                            $newValue = (int)$newValue;
+                            $newValue = (int) $newValue;
                         }
-                        
+
                         if ($newValue !== $locationSettings->download_limit) {
-                            Log::info('Download limit updated from ' . $locationSettings->download_limit . ' to ' . $newValue);
+                            Log::info('Download limit updated from '.$locationSettings->download_limit.' to '.$newValue);
                         }
                         $locationSettings->download_limit = $newValue;
                     }
-                    
+
                     if (isset($settings['upload_limit'])) {
                         $newValue = $settings['upload_limit'];
                         // Convert empty string or "0" to null for proper comparison
                         if ($newValue === '' || $newValue === null || $newValue === '0') {
                             $newValue = null;
                         } else {
-                            $newValue = (int)$newValue;
+                            $newValue = (int) $newValue;
                         }
-                        
+
                         if ($newValue !== $locationSettings->upload_limit) {
-                            Log::info('Upload limit updated from ' . $locationSettings->upload_limit . ' to ' . $newValue);
+                            Log::info('Upload limit updated from '.$locationSettings->upload_limit.' to '.$newValue);
                         }
                         $locationSettings->upload_limit = $newValue;
                     }
-                    
-                    Log::info('Final DB download_limit: ' . $locationSettings->download_limit);
-                    Log::info('Final DB upload_limit: ' . $locationSettings->upload_limit);
+
+                    Log::info('Final DB download_limit: '.$locationSettings->download_limit);
+                    Log::info('Final DB upload_limit: '.$locationSettings->upload_limit);
                     Log::info('=== END BANDWIDTH LIMITS DEBUG ===');
-                    
+
                     // Captive Portal Design ID
                     if (isset($settings['captive_portal_design'])) {
                         if ($settings['captive_portal_design'] !== $locationSettings->captive_portal_design) {
-                            Log::info('Captive portal design updated from ' . 
-                                $locationSettings->captive_portal_design . ' to ' . 
+                            Log::info('Captive portal design updated from '.
+                                $locationSettings->captive_portal_design.' to '.
                                 $settings['captive_portal_design']);
                         }
                         $locationSettings->captive_portal_design = $settings['captive_portal_design'];
                     }
-                    
+
                     // Captive Portal VLAN
                     if (isset($settings['captive_portal_vlan'])) {
                         if ($settings['captive_portal_vlan'] !== $locationSettings->captive_portal_vlan) {
@@ -918,7 +913,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->captive_portal_vlan = $settings['captive_portal_vlan'];
                     }
-                    
+
                     // Captive Portal Redirect URL
                     if (isset($settings['captive_portal_redirect'])) {
                         if ($settings['captive_portal_redirect'] !== $locationSettings->captive_portal_redirect) {
@@ -926,10 +921,9 @@ class LocationController extends Controller
                         }
                         $locationSettings->captive_portal_redirect = $settings['captive_portal_redirect'];
                     }
-                    
-                    Log::info('Updating captive portal settings for location: ' . $location->id);
-                } 
-                elseif ($settingsType === 'wifi') {
+
+                    Log::info('Updating captive portal settings for location: '.$location->id);
+                } elseif ($settingsType === 'wifi') {
                     // Update secured WiFi settings
                     if (isset($settings['wifi_name'])) {
                         if ($settings['wifi_name'] !== $locationSettings->wifi_name) {
@@ -938,7 +932,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->wifi_name = $settings['wifi_name'];
                     }
-                    
+
                     if (isset($settings['wifi_password'])) {
                         if ($settings['wifi_password'] !== $locationSettings->wifi_password) {
                             $increment_version = 1;
@@ -946,7 +940,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->wifi_password = $settings['wifi_password'];
                     }
-                    
+
                     if (isset($settings['encryption_type'])) {
                         if ($settings['encryption_type'] !== $locationSettings->wifi_security_type) {
                             $increment_version = 1;
@@ -954,23 +948,23 @@ class LocationController extends Controller
                         }
                         $locationSettings->wifi_security_type = $settings['encryption_type'];
                     }
-                    
+
                     // Handle wifi_visible
                     if (isset($settings['wifi_visible'])) {
                         // Convert both values to boolean for proper comparison
-                        $newValue = (bool)$settings['wifi_visible'];
-                        $oldValue = (bool)$locationSettings->wifi_visible;
-                        
+                        $newValue = (bool) $settings['wifi_visible'];
+                        $oldValue = (bool) $locationSettings->wifi_visible;
+
                         if ($newValue !== $oldValue) {
                             $increment_version = 1;
                             Log::info('Wifi visible updated');
-                            Log::info('New value: ' . ($newValue ? 1 : 0));
-                            Log::info('Old value: ' . ($oldValue ? 1 : 0));
+                            Log::info('New value: '.($newValue ? 1 : 0));
+                            Log::info('Old value: '.($oldValue ? 1 : 0));
                         }
                         $locationSettings->wifi_visible = $newValue;
-                        Log::info('Wifi visible updated to: ' . ($newValue ? 1 : 0));
+                        Log::info('Wifi visible updated to: '.($newValue ? 1 : 0));
                     }
-                    
+
                     // Access control for secured WiFi
                     if (isset($settings['access_control_enabled'])) {
                         if ($settings['access_control_enabled'] !== $locationSettings->web_filter_enabled) {
@@ -979,7 +973,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->web_filter_enabled = $settings['access_control_enabled'];
                     }
-                    
+
                     if (isset($settings['blocked_domains'])) {
                         if ($settings['blocked_domains'] !== $locationSettings->web_filter_domains) {
                             $increment_version = 1;
@@ -987,10 +981,9 @@ class LocationController extends Controller
                         }
                         $locationSettings->web_filter_domains = $settings['blocked_domains'];
                     }
-                    
-                    Log::info('Updating secured WiFi settings for location: ' . $location->id);
-                }
-                elseif ($settingsType === 'router') {
+
+                    Log::info('Updating secured WiFi settings for location: '.$location->id);
+                } elseif ($settingsType === 'router') {
                     // Update router settings
                     if (isset($settings['wifi_country'])) {
                         if ($settings['wifi_country'] !== $locationSettings->country_code) {
@@ -999,7 +992,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->country_code = $settings['wifi_country'];
                     }
-                    
+
                     if (isset($settings['power_level_2g'])) {
                         if ($settings['power_level_2g'] !== $locationSettings->transmit_power_2g) {
                             $increment_version = 1;
@@ -1007,7 +1000,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->transmit_power_2g = $settings['power_level_2g'];
                     }
-                    
+
                     if (isset($settings['power_level_5g'])) {
                         if ($settings['power_level_5g'] !== $locationSettings->transmit_power_5g) {
                             $increment_version = 1;
@@ -1015,7 +1008,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->transmit_power_5g = $settings['power_level_5g'];
                     }
-                    
+
                     if (isset($settings['channel_width_2g'])) {
                         if ($settings['channel_width_2g'] !== $locationSettings->channel_width_2g) {
                             $increment_version = 1;
@@ -1023,7 +1016,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->channel_width_2g = $settings['channel_width_2g'];
                     }
-                    
+
                     if (isset($settings['channel_width_5g'])) {
                         if ($settings['channel_width_5g'] !== $locationSettings->channel_width_5g) {
                             $increment_version = 1;
@@ -1031,7 +1024,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->channel_width_5g = $settings['channel_width_5g'];
                     }
-                    
+
                     if (isset($settings['channel_2g'])) {
                         if ($settings['channel_2g'] !== $locationSettings->channel_2g) {
                             $increment_version = 1;
@@ -1039,7 +1032,7 @@ class LocationController extends Controller
                         }
                         $locationSettings->channel_2g = $settings['channel_2g'];
                     }
-                    
+
                     if (isset($settings['channel_5g'])) {
                         if ($settings['channel_5g'] !== $locationSettings->channel_5g) {
                             $increment_version = 1;
@@ -1047,11 +1040,10 @@ class LocationController extends Controller
                         }
                         $locationSettings->channel_5g = $settings['channel_5g'];
                     }
-                    
-                    Log::info('Updating router settings for location: ' . $location->id);
-                }
-                elseif ($settingsType === 'wan') {
-                    Log::info('Updating WAN settings for location: ' . $location->id);
+
+                    Log::info('Updating router settings for location: '.$location->id);
+                } elseif ($settingsType === 'wan') {
+                    Log::info('Updating WAN settings for location: '.$location->id);
                     Log::info('WAN settings: ');
                     Log::info($settings);
                     // Update WAN settings
@@ -1181,9 +1173,9 @@ class LocationController extends Controller
                         }
                     }
 
-                    Log::info('Updating WAN settings for location: ' . $location->id);
+                    Log::info('Updating WAN settings for location: '.$location->id);
                 } elseif ($settingsType === 'password' || $settingsType === 'password_network') {
-                    Log::info('Updating password network settings for location: ' . $location->id);
+                    Log::info('Updating password network settings for location: '.$location->id);
                     // Update password network settings
                     if (isset($settings['password_wifi_enabled'])) {
                         if ($settings['password_wifi_enabled'] !== $locationSettings->password_wifi_enabled) {
@@ -1289,26 +1281,26 @@ class LocationController extends Controller
                         $locationSettings->password_wifi_vlan = $settings['password_wifi_vlan'];
                     }
 
-                    // handke password_wifi_visible 
+                    // handke password_wifi_visible
                     if (isset($settings['password_wifi_visible'])) {
                         // Convert both values to boolean for proper comparison
-                        $newValue = (bool)$settings['password_wifi_visible'];
-                        $oldValue = (bool)$locationSettings->wifi_visible;
-                        
+                        $newValue = (bool) $settings['password_wifi_visible'];
+                        $oldValue = (bool) $locationSettings->wifi_visible;
+
                         if ($newValue !== $oldValue) {
                             $increment_version = 1;
                             Log::info('Wifi visible updated');
-                            Log::info('New value: ' . ($newValue ? 1 : 0));
-                            Log::info('Old value: ' . ($oldValue ? 1 : 0));
+                            Log::info('New value: '.($newValue ? 1 : 0));
+                            Log::info('Old value: '.($oldValue ? 1 : 0));
                         }
                         $locationSettings->wifi_visible = $newValue;
-                        Log::info('Wifi visible updated to: ' . ($newValue ? 1 : 0));
+                        Log::info('Wifi visible updated to: '.($newValue ? 1 : 0));
                     }
 
-                    Log::info('Updating password network settings for location: ' . $location->id);
+                    Log::info('Updating password network settings for location: '.$location->id);
                 } elseif ($settingsType === 'location_info') {
-                    Log::info('Updating location info settings for location: ' . $location->id);
-                    
+                    Log::info('Updating location info settings for location: '.$location->id);
+
                     // Check for address changes BEFORE updating the location fields
                     $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
                     $hasAddressChange = false;
@@ -1319,7 +1311,7 @@ class LocationController extends Controller
                             break;
                         }
                     }
-                    
+
                     if (isset($settings['name'])) {
                         if ($settings['name'] !== $location->name) {
                             // $increment_version = 1;
@@ -1403,24 +1395,25 @@ class LocationController extends Controller
                     if (isset($settings['owner_id'])) {
                         // Check if user has admin role before allowing owner_id changes
                         $currentUser = Auth::guard('api')->user();
-                        if (!$currentUser || $currentUser->role !== 'admin') {
+                        if (! $currentUser || $currentUser->role !== 'admin') {
                             Log::warning('Non-admin user attempted to change location owner', [
                                 'user_id' => $currentUser ? $currentUser->id : null,
                                 'user_role' => $currentUser ? $currentUser->role : null,
-                                'location_id' => $location->id
+                                'location_id' => $location->id,
                             ]);
+
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Only administrators can change location ownership'
+                                'message' => 'Only administrators can change location ownership',
                             ], 403);
                         }
-                        
+
                         if ($settings['owner_id'] !== $location->owner_id) {
                             Log::info('Location owner updated by admin', [
                                 'admin_id' => $currentUser->id,
                                 'location_id' => $location->id,
                                 'old_owner_id' => $location->owner_id,
-                                'new_owner_id' => $settings['owner_id']
+                                'new_owner_id' => $settings['owner_id'],
                             ]);
                         }
                         $location->owner_id = $settings['owner_id'];
@@ -1443,11 +1436,11 @@ class LocationController extends Controller
                     }
 
                     // Geocode address if address fields have actually changed and lat/lng not explicitly provided
-                    Log::info('Geocoding evaluation: hasAddressChange=' . ($hasAddressChange ? 'true' : 'false') . ', hasLatitude=' . (isset($settings['latitude']) ? 'true' : 'false') . ', hasLongitude=' . (isset($settings['longitude']) ? 'true' : 'false'));
-                    
-                    if ($hasAddressChange && !isset($settings['latitude']) && !isset($settings['longitude'])) {
+                    Log::info('Geocoding evaluation: hasAddressChange='.($hasAddressChange ? 'true' : 'false').', hasLatitude='.(isset($settings['latitude']) ? 'true' : 'false').', hasLongitude='.(isset($settings['longitude']) ? 'true' : 'false'));
+
+                    if ($hasAddressChange && ! isset($settings['latitude']) && ! isset($settings['longitude'])) {
                         Log::info('Address fields updated in location_info, attempting to geocode');
-                        $geocodingService = new GeocodingService();
+                        $geocodingService = new GeocodingService;
                         $geocodeResult = $geocodingService->geocodeAddress(
                             $settings['address'] ?? $location->address,
                             $settings['city'] ?? $location->city,
@@ -1455,14 +1448,14 @@ class LocationController extends Controller
                             $settings['country'] ?? $location->country,
                             $settings['postal_code'] ?? $location->postal_code
                         );
-                        
+
                         if ($geocodeResult) {
                             $location->latitude = $geocodeResult['lat'];
                             $location->longitude = $geocodeResult['lng'];
                             Log::info('Successfully geocoded updated address in location_info', [
                                 'latitude' => $geocodeResult['lat'],
                                 'longitude' => $geocodeResult['lng'],
-                                'formatted_address' => $geocodeResult['formatted_address']
+                                'formatted_address' => $geocodeResult['formatted_address'],
                             ]);
                         } else {
                             Log::warning('Failed to geocode updated address in location_info');
@@ -1476,54 +1469,54 @@ class LocationController extends Controller
                     // $locationSettings->configuration_version = $locationSettings->configuration_version + 1;
                     $device->configuration_version = $device->configuration_version + 1;
                     $device->save();
-                    Log::info('Device configuration version incremented to: ' . $device->configuration_version);
+                    Log::info('Device configuration version incremented to: '.$device->configuration_version);
                 }
-                
+
                 // Save the settings
                 // Log::info('=== SAVING LOCATION SETTINGS ===');
                 // Log::info('Location settings before save: ' . json_encode($locationSettings->toArray()));
                 $locationSettings->save();
                 // Log::info('Location settings saved successfully');
                 // Log::info('Location settings after save: ' . json_encode($locationSettings->fresh()->toArray()));
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Settings updated successfully',
                     'location' => $location,
-                    'settings' => $locationSettings
+                    'settings' => $locationSettings,
 
                 ]);
             } catch (\Exception $e) {
-                Log::error('Error updating location settings: ' . $e->getMessage());
-                
+                Log::error('Error updating location settings: '.$e->getMessage());
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error updating settings: ' . $e->getMessage()
+                    'message' => 'Error updating settings: '.$e->getMessage(),
                 ], 500);
             }
         }
-        
+
         // Check if it's a device update
         if ($request->has('device')) {
             $deviceData = $request->input('device');
             $location = Location::find($location_id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             $device = Device::find($location->device_id);
-            
-            if (!$device) {
+
+            if (! $device) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Device not found for this location'
+                    'message' => 'Device not found for this location',
                 ], 404);
             }
-            
+
             try {
                 // Handle device model update
                 if (isset($deviceData['product_model_id'])) {
@@ -1531,21 +1524,21 @@ class LocationController extends Controller
                     $oldProductModelId = $device->product_model_id;
 
                     // Validate product_model_id exists
-                    if ($newProductModelId && !\App\Models\ProductModel::find($newProductModelId)) {
+                    if ($newProductModelId && ! \App\Models\ProductModel::find($newProductModelId)) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'Invalid device model selected.'
+                            'message' => 'Invalid device model selected.',
                         ], 400);
                     }
 
-                    Log::info("Updating device product_model_id from '{$oldProductModelId}' to '{$newProductModelId}' for device: " . $device->id);
+                    Log::info("Updating device product_model_id from '{$oldProductModelId}' to '{$newProductModelId}' for device: ".$device->id);
 
                     $device->product_model_id = $newProductModelId;
 
                     // If model changed, increment configuration version
                     if ($oldProductModelId !== $newProductModelId) {
                         $device->configuration_version = $device->configuration_version + 1;
-                        Log::info('Device configuration version incremented to: ' . $device->configuration_version);
+                        Log::info('Device configuration version incremented to: '.$device->configuration_version);
                     }
 
                     $device->save();
@@ -1559,30 +1552,30 @@ class LocationController extends Controller
                         'data' => [
                             'device' => $device,
                             'old_model' => $oldProductModelId,
-                            'new_model' => $newProductModelId
-                        ]
+                            'new_model' => $newProductModelId,
+                        ],
                     ]);
                 }
-                
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'No device updates specified'
+                    'message' => 'No device updates specified',
                 ], 400);
-                
+
             } catch (\Exception $e) {
-                Log::error('Error updating device: ' . $e->getMessage());
-                
+                Log::error('Error updating device: '.$e->getMessage());
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error updating device: ' . $e->getMessage()
+                    'message' => 'Error updating device: '.$e->getMessage(),
                 ], 500);
             }
         }
-        
+
         // Handle reboot schedule update
         if ($request->input('settings_type') === 'reboot_schedule') {
             $location = Location::find($location_id);
-            if (!$location) {
+            if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
             $validated = $request->validate([
@@ -1591,20 +1584,22 @@ class LocationController extends Controller
             $location->update([
                 'scheduled_reboot_time' => $validated['scheduled_reboot_time'] ?? null,
             ]);
+
             return response()->json(['success' => true, 'message' => 'Reboot schedule saved']);
         }
 
         // Handle immediate restart (increments reboot_count on the device)
         if ($request->input('settings_type') === 'restart') {
             $location = Location::find($location_id);
-            if (!$location) {
+            if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
             $device = Device::find($location->device_id);
-            if (!$device) {
+            if (! $device) {
                 return response()->json(['success' => false, 'message' => 'No device assigned to this location'], 404);
             }
             $device->increment('reboot_count');
+
             return response()->json(['success' => true, 'message' => 'Device restart initiated successfully']);
         }
 
@@ -1612,14 +1607,13 @@ class LocationController extends Controller
         // (This part could be implemented later for updating location details)
         return response()->json([
             'success' => false,
-            'message' => 'No valid update data detected. Expected settings, device, or location data.'
+            'message' => 'No valid update data detected. Expected settings, device, or location data.',
         ]);
     }
 
     /**
      * Remove the specified location from storage.
      *
-     * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
     public function destroy(Location $location)
@@ -1628,7 +1622,7 @@ class LocationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Location deleted successfully'
+            'message' => 'Location deleted successfully',
         ]);
     }
 
@@ -1636,21 +1630,21 @@ class LocationController extends Controller
     {
         // Log::info('Update general location information received');
         // Log::info($request->all());
-        
+
         try {
             $location = Location::find($location_id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             // Check if owner_id or shared_users are being updated — admin/superadmin only
             if ($request->hasAny(['owner_id', 'shared_users'])) {
                 $currentUser = Auth::guard('api')->user();
-                if (!$currentUser || !$currentUser->isAdminOrAbove()) {
+                if (! $currentUser || ! $currentUser->isAdminOrAbove()) {
                     // Log::warning('Non-admin user attempted to change location owner via updateGeneral', [
                     //     'user_id' => $currentUser ? $currentUser->id : null,
                     //     'user_role' => $currentUser ? $currentUser->role : null,
@@ -1658,11 +1652,11 @@ class LocationController extends Controller
                     // ]);
                     return response()->json([
                         'success' => false,
-                        'message' => 'Only administrators can change location ownership or shared access'
+                        'message' => 'Only administrators can change location ownership or shared access',
                     ], 403);
                 }
             }
-            
+
             // Validate the request data
             $validated = $request->validate([
                 'name' => 'sometimes|required|string|max:255',
@@ -1685,7 +1679,7 @@ class LocationController extends Controller
             ]);
             // Log::info('Validated data: ');
             // Log::info($validated);
-            
+
             // Geocode address if address fields have actually changed and lat/lng not provided
             $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
             $hasAddressChange = false;
@@ -1696,10 +1690,10 @@ class LocationController extends Controller
                     break;
                 }
             }
-            
-            if ($hasAddressChange && !isset($validated['latitude']) && !isset($validated['longitude'])) {
+
+            if ($hasAddressChange && ! isset($validated['latitude']) && ! isset($validated['longitude'])) {
                 Log::info('Address fields updated, attempting to geocode');
-                $geocodingService = new GeocodingService();
+                $geocodingService = new GeocodingService;
                 $geocodeResult = $geocodingService->geocodeAddress(
                     $validated['address'] ?? $location->address,
                     $validated['city'] ?? $location->city,
@@ -1707,20 +1701,20 @@ class LocationController extends Controller
                     $validated['country'] ?? $location->country,
                     $validated['postal_code'] ?? $location->postal_code
                 );
-                
+
                 if ($geocodeResult) {
                     $validated['latitude'] = $geocodeResult['lat'];
                     $validated['longitude'] = $geocodeResult['lng'];
                     Log::info('Successfully geocoded updated address', [
                         'latitude' => $geocodeResult['lat'],
                         'longitude' => $geocodeResult['lng'],
-                        'formatted_address' => $geocodeResult['formatted_address']
+                        'formatted_address' => $geocodeResult['formatted_address'],
                     ]);
                 } else {
                     Log::warning('Failed to geocode updated address');
                 }
             }
-            
+
             // Log owner_id changes if any
             if (isset($validated['owner_id']) && $validated['owner_id'] !== $location->owner_id) {
                 $currentUser = Auth::guard('api')->user();
@@ -1728,10 +1722,10 @@ class LocationController extends Controller
                     'admin_id' => $currentUser->id,
                     'location_id' => $location_id,
                     'old_owner_id' => $location->owner_id,
-                    'new_owner_id' => $validated['owner_id']
+                    'new_owner_id' => $validated['owner_id'],
                 ]);
             }
-            
+
             // Persist shared_users separately (JSON cast handles encoding)
             if (array_key_exists('shared_users', $validated)) {
                 $location->shared_users = $validated['shared_users'] ?? [];
@@ -1740,27 +1734,27 @@ class LocationController extends Controller
 
             // Update the location with validated data
             $location->update($validated);
-            
+
             // Get associated data
             $device = Device::find($location->device_id);
             $locationSettings = LocationSettingsV2::where('location_id', $location_id)->first();
-            
+
             // Prepare response data
             $locationData = $location->toArray();
             $locationData['settings'] = $locationSettings;
             $locationData['device'] = $device;
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Location information updated successfully',
-                'location' => $locationData
+                'location' => $locationData,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error updating general location information: ' . $e->getMessage());
-            
+            Log::error('Error updating general location information: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error updating location information: ' . $e->getMessage()
+                'message' => 'Error updating location information: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -1772,89 +1766,89 @@ class LocationController extends Controller
     {
         // Log::info('Update firmware request received for location: ' . $id);
         // Log::info($request->all());
-        
+
         try {
             $request->validate([
                 'firmware_id' => 'required|exists:firmware,id',
-                'firmware_version' => 'nullable|string'
+                'firmware_version' => 'nullable|string',
             ]);
-            
+
             $location = Location::find($id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             $device = Device::find($location->device_id);
-            
-            if (!$device) {
+
+            if (! $device) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Device not found for this location'
+                    'message' => 'Device not found for this location',
                 ], 404);
             }
-            
+
             // Get the firmware information
             $firmware = \App\Models\Firmware::find($request->firmware_id);
-            
-            if (!$firmware) {
+
+            if (! $firmware) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Firmware not found'
+                    'message' => 'Firmware not found',
                 ], 404);
             }
-            
-            if (!$firmware->is_enabled) {
+
+            if (! $firmware->is_enabled) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Selected firmware is not enabled'
+                    'message' => 'Selected firmware is not enabled',
                 ], 400);
             }
-            
+
             // Check if firmware is compatible with device model
             $deviceType = $device->productModel?->device_type;
             if ($deviceType && $firmware->model && $firmware->model !== $deviceType) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Firmware is not compatible with device model'
+                    'message' => 'Firmware is not compatible with device model',
                 ], 400);
             }
-            
+
             // Update device firmware version
             $device->firmware_version = $request->firmware_version ?: $firmware->name;
             $device->firmware_id = $firmware->id;
-            
+
             // Increment configuration version to trigger device update
             // $device->configuration_version = $device->configuration_version + 1;
-            
+
             $device->save();
-            
-            Log::info('Device firmware updated successfully for device: ' . $device->id);
-            
+
+            Log::info('Device firmware updated successfully for device: '.$device->id);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Firmware update initiated successfully',
                 'data' => [
                     'device' => $device,
-                    'firmware' => $firmware
-                ]
+                    'firmware' => $firmware,
+                ],
             ]);
-            
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Error updating device firmware: ' . $e->getMessage());
-            
+            Log::error('Error updating device firmware: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error updating device firmware: ' . $e->getMessage()
+                'message' => 'Error updating device firmware: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -1880,15 +1874,15 @@ class LocationController extends Controller
             }
 
             $validated = $request->validate([
-                'enabled'                 => 'required|boolean',
-                'qos_bw'                  => 'sometimes|array',
-                'qos_bw.wan_up_kbps'      => 'nullable|integer|min:0|max:10000000',
-                'qos_bw.wan_down_kbps'    => 'nullable|integer|min:0|max:10000000',
-                'qos_bw.voip_bw'          => 'nullable|integer|min:0|max:10000000',
-                'qos_bw.streaming_bw'     => 'nullable|integer|min:0|max:10000000',
-                'qos_bw.be_bw'            => 'nullable|integer|min:0|max:10000000',
-                'qos_bw.bulk_bw'          => 'nullable|integer|min:0|max:10000000',
-                'qos_bw_wan_use_local'    => 'sometimes|boolean',
+                'enabled' => 'required|boolean',
+                'qos_bw' => 'sometimes|array',
+                'qos_bw.wan_up_kbps' => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.wan_down_kbps' => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.voip_bw' => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.streaming_bw' => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.be_bw' => 'nullable|integer|min:0|max:10000000',
+                'qos_bw.bulk_bw' => 'nullable|integer|min:0|max:10000000',
+                'qos_bw_wan_use_local' => 'sometimes|boolean',
             ]);
 
             $settings = LocationSettingsV2::firstOrCreate(
@@ -1896,8 +1890,8 @@ class LocationController extends Controller
                 ['web_filter_enabled' => false, 'web_filter_categories' => [], 'qos_enabled' => false]
             );
 
-            $previousQos         = (bool) $settings->qos_enabled;
-            $previousBw          = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
+            $previousQos = (bool) $settings->qos_enabled;
+            $previousBw = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
             $previousWanUseLocal = (bool) $settings->qos_bw_wan_use_local;
 
             $primarySettings = null;
@@ -1944,17 +1938,18 @@ class LocationController extends Controller
                 } else {
                     $cur = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
                     $settings->qos_bw = LocationSettingsV2::normalizeQosBw(array_merge($pBw, [
-                        'wan_up_kbps'   => $cur['wan_up_kbps'],
+                        'wan_up_kbps' => $cur['wan_up_kbps'],
                         'wan_down_kbps' => $cur['wan_down_kbps'],
                     ]));
                 }
             }
 
             $newBw = LocationSettingsV2::normalizeQosBw($settings->qos_bw);
+            LocationSettingsV2::assertQosClassSumWithinHalfWan($newBw);
 
-            $qosEnabledChanged   = (bool) $validated['enabled'] !== $previousQos;
-            $qosBwChanged        = $previousBw != $newBw;
-            $wanUseLocalChanged  = $previousWanUseLocal !== (bool) $settings->qos_bw_wan_use_local;
+            $qosEnabledChanged = (bool) $validated['enabled'] !== $previousQos;
+            $qosBwChanged = $previousBw != $newBw;
+            $wanUseLocalChanged = $previousWanUseLocal !== (bool) $settings->qos_bw_wan_use_local;
 
             $settings->save();
 
@@ -1966,28 +1961,37 @@ class LocationController extends Controller
                     $device->save();
                     $configVersionIncremented = true;
                     Log::info(
-                        'Device config version incremented to ' . $device->configuration_version
-                        . ' after QoS update for location: ' . $id
-                        . ' (enabled_changed=' . ($qosEnabledChanged ? '1' : '0')
-                        . ', bw_changed=' . ($qosBwChanged ? '1' : '0')
-                        . ', wan_use_local_changed=' . ($wanUseLocalChanged ? '1' : '0') . ')'
+                        'Device config version incremented to '.$device->configuration_version
+                        .' after QoS update for location: '.$id
+                        .' (enabled_changed='.($qosEnabledChanged ? '1' : '0')
+                        .', bw_changed='.($qosBwChanged ? '1' : '0')
+                        .', wan_use_local_changed='.($wanUseLocalChanged ? '1' : '0').')'
                     );
                 }
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'QoS ' . ($validated['enabled'] ? 'enabled' : 'disabled') . '.',
-                'data'    => [
-                    'qos_enabled'                => $settings->qos_enabled,
-                    'qos_bw'                     => $newBw,
-                    'qos_bw_wan_use_local'       => (bool) $settings->qos_bw_wan_use_local,
+                'message' => 'QoS '.($validated['enabled'] ? 'enabled' : 'disabled').'.',
+                'data' => [
+                    'qos_enabled' => $settings->qos_enabled,
+                    'qos_bw' => $newBw,
+                    'qos_bw_wan_use_local' => (bool) $settings->qos_bw_wan_use_local,
                     'config_version_incremented' => $configVersionIncremented,
                 ],
             ]);
+        } catch (ValidationException $e) {
+            $message = (string) collect($e->errors())->flatten()->first() ?: $e->getMessage();
+
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
-            Log::error('Error updating QoS settings: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Error updating QoS settings: ' . $e->getMessage()], 500);
+            Log::error('Error updating QoS settings: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Error updating QoS settings: '.$e->getMessage()], 500);
         }
     }
 
@@ -1995,17 +1999,17 @@ class LocationController extends Controller
     {
         try {
             $location = Location::find($id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             $settings = LocationSettingsV2::where('location_id', $id)->first();
-            
-            if (!$settings) {
+
+            if (! $settings) {
                 // Create default settings if none exist
                 $settings = new LocationSettingsV2([
                     'location_id' => $id,
@@ -2023,18 +2027,18 @@ class LocationController extends Controller
                     $data['qos_bw_zone_primary'] = LocationSettingsV2::normalizeQosBw($primarySettings->qos_bw);
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $data,
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error getting location settings: ' . $e->getMessage());
-            
+            Log::error('Error getting location settings: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error getting location settings: ' . $e->getMessage()
+                'message' => 'Error getting location settings: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -2046,55 +2050,55 @@ class LocationController extends Controller
     {
         // Log::info('Update location settings request received for location: ' . $id);
         // Log::info($request->all());
-        
+
         try {
             $location = Location::find($id);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             $settings = LocationSettingsV2::where('location_id', $id)->first();
-            
-            if (!$settings) {
+
+            if (! $settings) {
                 // Create new settings if none exist
                 $settings = new LocationSettingsV2(['location_id' => $id]);
             }
-            
+
             // Get the device for config version increment
             $device = Device::find($location->device_id);
             $increment_version = 0;
-            
+
             // Store original values for comparison
             $originalSettings = [
-                'country_code'       => $settings->country_code,
-                'transmit_power_2g'  => $settings->transmit_power_2g,
-                'transmit_power_5g'  => $settings->transmit_power_5g,
-                'channel_2g'         => $settings->channel_2g,
-                'channel_5g'         => $settings->channel_5g,
-                'channel_width_2g'   => $settings->channel_width_2g,
-                'channel_width_5g'   => $settings->channel_width_5g,
-                'vlan_enabled'            => $settings->vlan_enabled,
-                'wan_connection_type'     => $settings->wan_connection_type,
-                'wan_ip_address'          => $settings->wan_ip_address,
-                'wan_netmask'             => $settings->wan_netmask,
-                'wan_gateway'             => $settings->wan_gateway,
-                'wan_primary_dns'         => $settings->wan_primary_dns,
-                'wan_secondary_dns'       => $settings->wan_secondary_dns,
-                'wan_pppoe_username'      => $settings->wan_pppoe_username,
-                'wan_pppoe_password'      => $settings->wan_pppoe_password,
-                'wan_pppoe_service_name'  => $settings->wan_pppoe_service_name,
-                'wan_enabled'             => $settings->wan_enabled,
-                'wan_mac_address'         => $settings->wan_mac_address,
-                'wan_mtu'                 => $settings->wan_mtu,
-                'wan_nat_enabled'         => $settings->wan_nat_enabled,
-                'web_filter_categories'   => $settings->web_filter_categories,
-                'web_filter_enabled'      => $settings->web_filter_enabled,
+                'country_code' => $settings->country_code,
+                'transmit_power_2g' => $settings->transmit_power_2g,
+                'transmit_power_5g' => $settings->transmit_power_5g,
+                'channel_2g' => $settings->channel_2g,
+                'channel_5g' => $settings->channel_5g,
+                'channel_width_2g' => $settings->channel_width_2g,
+                'channel_width_5g' => $settings->channel_width_5g,
+                'vlan_enabled' => $settings->vlan_enabled,
+                'wan_connection_type' => $settings->wan_connection_type,
+                'wan_ip_address' => $settings->wan_ip_address,
+                'wan_netmask' => $settings->wan_netmask,
+                'wan_gateway' => $settings->wan_gateway,
+                'wan_primary_dns' => $settings->wan_primary_dns,
+                'wan_secondary_dns' => $settings->wan_secondary_dns,
+                'wan_pppoe_username' => $settings->wan_pppoe_username,
+                'wan_pppoe_password' => $settings->wan_pppoe_password,
+                'wan_pppoe_service_name' => $settings->wan_pppoe_service_name,
+                'wan_enabled' => $settings->wan_enabled,
+                'wan_mac_address' => $settings->wan_mac_address,
+                'wan_mtu' => $settings->wan_mtu,
+                'wan_nat_enabled' => $settings->wan_nat_enabled,
+                'web_filter_categories' => $settings->web_filter_categories,
+                'web_filter_enabled' => $settings->web_filter_enabled,
             ];
-            
+
             // Only accept fields that exist in location_settings_v2
             $settingsData = $request->only([
                 'country_code',
@@ -2123,69 +2127,69 @@ class LocationController extends Controller
                 'web_filter_categories',
                 'qos_enabled',
             ]);
-            
+
             // Check for router setting changes that require config version increment
             $routerSettingsChanged = false;
-            
+
             // Country/Region changes
             if (isset($settingsData['country_code']) && $settingsData['country_code'] !== $originalSettings['country_code']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Country code updated from "' . $originalSettings['country_code'] . '" to "' . $settingsData['country_code'] . '"');
+                Log::info('Country code updated from "'.$originalSettings['country_code'].'" to "'.$settingsData['country_code'].'"');
             }
-            
+
             // Transmit Power changes
             if (isset($settingsData['transmit_power_2g']) && $settingsData['transmit_power_2g'] !== $originalSettings['transmit_power_2g']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Transmit power 2G updated from "' . $originalSettings['transmit_power_2g'] . '" to "' . $settingsData['transmit_power_2g'] . '"');
+                Log::info('Transmit power 2G updated from "'.$originalSettings['transmit_power_2g'].'" to "'.$settingsData['transmit_power_2g'].'"');
             }
-            
+
             if (isset($settingsData['transmit_power_5g']) && $settingsData['transmit_power_5g'] !== $originalSettings['transmit_power_5g']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Transmit power 5G updated from "' . $originalSettings['transmit_power_5g'] . '" to "' . $settingsData['transmit_power_5g'] . '"');
+                Log::info('Transmit power 5G updated from "'.$originalSettings['transmit_power_5g'].'" to "'.$settingsData['transmit_power_5g'].'"');
             }
-            
+
             // Channel changes
             if (isset($settingsData['channel_2g']) && $settingsData['channel_2g'] !== $originalSettings['channel_2g']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Channel 2G updated from "' . $originalSettings['channel_2g'] . '" to "' . $settingsData['channel_2g'] . '"');
+                Log::info('Channel 2G updated from "'.$originalSettings['channel_2g'].'" to "'.$settingsData['channel_2g'].'"');
             }
-            
+
             if (isset($settingsData['channel_5g']) && $settingsData['channel_5g'] !== $originalSettings['channel_5g']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Channel 5G updated from "' . $originalSettings['channel_5g'] . '" to "' . $settingsData['channel_5g'] . '"');
+                Log::info('Channel 5G updated from "'.$originalSettings['channel_5g'].'" to "'.$settingsData['channel_5g'].'"');
             }
-            
+
             // Channel Width changes
             if (isset($settingsData['channel_width_2g']) && $settingsData['channel_width_2g'] !== $originalSettings['channel_width_2g']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Channel width 2G updated from "' . $originalSettings['channel_width_2g'] . '" to "' . $settingsData['channel_width_2g'] . '"');
+                Log::info('Channel width 2G updated from "'.$originalSettings['channel_width_2g'].'" to "'.$settingsData['channel_width_2g'].'"');
             }
-            
+
             if (isset($settingsData['channel_width_5g']) && $settingsData['channel_width_5g'] !== $originalSettings['channel_width_5g']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Channel width 5G updated from "' . $originalSettings['channel_width_5g'] . '" to "' . $settingsData['channel_width_5g'] . '"');
+                Log::info('Channel width 5G updated from "'.$originalSettings['channel_width_5g'].'" to "'.$settingsData['channel_width_5g'].'"');
             }
-            
+
             // Global VLAN enable/disable changes
             if (isset($settingsData['vlan_enabled']) && $settingsData['vlan_enabled'] !== $originalSettings['vlan_enabled']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('VLAN enabled updated from "' . ($originalSettings['vlan_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['vlan_enabled'] ? 'true' : 'false') . '"');
+                Log::info('VLAN enabled updated from "'.($originalSettings['vlan_enabled'] ? 'true' : 'false').'" to "'.($settingsData['vlan_enabled'] ? 'true' : 'false').'"');
             }
 
             // Web filter enable/disable always bumps config version
             if (isset($settingsData['web_filter_enabled'])
-                && (bool)$settingsData['web_filter_enabled'] !== (bool)$originalSettings['web_filter_enabled']) {
+                && (bool) $settingsData['web_filter_enabled'] !== (bool) $originalSettings['web_filter_enabled']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('Web filter enabled updated from "' . ($originalSettings['web_filter_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['web_filter_enabled'] ? 'true' : 'false') . '"');
+                Log::info('Web filter enabled updated from "'.($originalSettings['web_filter_enabled'] ? 'true' : 'false').'" to "'.($settingsData['web_filter_enabled'] ? 'true' : 'false').'"');
             }
 
             // Handle web_filter_categories comparison
@@ -2193,7 +2197,7 @@ class LocationController extends Controller
                 // Ensure web_filter_categories is properly handled as JSON
                 if (is_string($settingsData['web_filter_categories'])) {
                     $settingsData['web_filter_categories'] = json_decode($settingsData['web_filter_categories'], true) ?: [];
-                } elseif (!is_array($settingsData['web_filter_categories'])) {
+                } elseif (! is_array($settingsData['web_filter_categories'])) {
                     $settingsData['web_filter_categories'] = [];
                 }
 
@@ -2203,15 +2207,15 @@ class LocationController extends Controller
 
                 // Resolve whether web filtering will be active after this save
                 $filteringEnabled = isset($settingsData['web_filter_enabled'])
-                    ? (bool)$settingsData['web_filter_enabled']
-                    : (bool)$originalSettings['web_filter_enabled'];
+                    ? (bool) $settingsData['web_filter_enabled']
+                    : (bool) $originalSettings['web_filter_enabled'];
 
                 if (json_encode($newCategories) !== json_encode($oldCategories) && $filteringEnabled) {
                     $increment_version = 1;
                     $routerSettingsChanged = true;
                     Log::info('Web filter categories updated', [
                         'old_categories' => $oldCategories,
-                        'new_categories' => $newCategories
+                        'new_categories' => $newCategories,
                     ]);
                 }
             }
@@ -2220,86 +2224,86 @@ class LocationController extends Controller
             if (isset($settingsData['wan_connection_type']) && $settingsData['wan_connection_type'] !== $originalSettings['wan_connection_type']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN connection type updated from "' . $originalSettings['wan_connection_type'] . '" to "' . $settingsData['wan_connection_type'] . '"');
+                Log::info('WAN connection type updated from "'.$originalSettings['wan_connection_type'].'" to "'.$settingsData['wan_connection_type'].'"');
             }
-            
+
             if (isset($settingsData['wan_enabled']) && $settingsData['wan_enabled'] !== $originalSettings['wan_enabled']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN enabled updated from "' . ($originalSettings['wan_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['wan_enabled'] ? 'true' : 'false') . '"');
+                Log::info('WAN enabled updated from "'.($originalSettings['wan_enabled'] ? 'true' : 'false').'" to "'.($settingsData['wan_enabled'] ? 'true' : 'false').'"');
             }
-            
+
             if (isset($settingsData['wan_nat_enabled']) && $settingsData['wan_nat_enabled'] !== $originalSettings['wan_nat_enabled']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN NAT enabled updated from "' . ($originalSettings['wan_nat_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['wan_nat_enabled'] ? 'true' : 'false') . '"');
+                Log::info('WAN NAT enabled updated from "'.($originalSettings['wan_nat_enabled'] ? 'true' : 'false').'" to "'.($settingsData['wan_nat_enabled'] ? 'true' : 'false').'"');
             }
 
             if (isset($settingsData['wan_ip_address']) && $settingsData['wan_ip_address'] !== $originalSettings['wan_ip_address']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN IP address updated from "' . $originalSettings['wan_ip_address'] . '" to "' . $settingsData['wan_ip_address'] . '"');
+                Log::info('WAN IP address updated from "'.$originalSettings['wan_ip_address'].'" to "'.$settingsData['wan_ip_address'].'"');
             }
 
             if (isset($settingsData['wan_netmask']) && $settingsData['wan_netmask'] !== $originalSettings['wan_netmask']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN netmask updated from "' . $originalSettings['wan_netmask'] . '" to "' . $settingsData['wan_netmask'] . '"');
+                Log::info('WAN netmask updated from "'.$originalSettings['wan_netmask'].'" to "'.$settingsData['wan_netmask'].'"');
             }
 
             if (isset($settingsData['wan_gateway']) && $settingsData['wan_gateway'] !== $originalSettings['wan_gateway']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN gateway updated from "' . $originalSettings['wan_gateway'] . '" to "' . $settingsData['wan_gateway'] . '"');
+                Log::info('WAN gateway updated from "'.$originalSettings['wan_gateway'].'" to "'.$settingsData['wan_gateway'].'"');
             }
 
             if (isset($settingsData['wan_primary_dns']) && $settingsData['wan_primary_dns'] !== $originalSettings['wan_primary_dns']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN primary DNS updated from "' . $originalSettings['wan_primary_dns'] . '" to "' . $settingsData['wan_primary_dns'] . '"');
+                Log::info('WAN primary DNS updated from "'.$originalSettings['wan_primary_dns'].'" to "'.$settingsData['wan_primary_dns'].'"');
             }
 
             if (isset($settingsData['wan_secondary_dns']) && $settingsData['wan_secondary_dns'] !== $originalSettings['wan_secondary_dns']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN secondary DNS updated from "' . $originalSettings['wan_secondary_dns'] . '" to "' . $settingsData['wan_secondary_dns'] . '"');
+                Log::info('WAN secondary DNS updated from "'.$originalSettings['wan_secondary_dns'].'" to "'.$settingsData['wan_secondary_dns'].'"');
             }
 
             if (isset($settingsData['wan_pppoe_username']) && $settingsData['wan_pppoe_username'] !== $originalSettings['wan_pppoe_username']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN PPPoE username updated from "' . $originalSettings['wan_pppoe_username'] . '" to "' . $settingsData['wan_pppoe_username'] . '"');
+                Log::info('WAN PPPoE username updated from "'.$originalSettings['wan_pppoe_username'].'" to "'.$settingsData['wan_pppoe_username'].'"');
             }
 
             if (isset($settingsData['wan_pppoe_password']) && $settingsData['wan_pppoe_password'] !== $originalSettings['wan_pppoe_password']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN PPPoE password updated from "' . $originalSettings['wan_pppoe_password'] . '" to "' . $settingsData['wan_pppoe_password'] . '"');
+                Log::info('WAN PPPoE password updated from "'.$originalSettings['wan_pppoe_password'].'" to "'.$settingsData['wan_pppoe_password'].'"');
             }
 
             if (isset($settingsData['wan_pppoe_service_name']) && $settingsData['wan_pppoe_service_name'] !== $originalSettings['wan_pppoe_service_name']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN PPPoE service name updated from "' . $originalSettings['wan_pppoe_service_name'] . '" to "' . $settingsData['wan_pppoe_service_name'] . '"');
+                Log::info('WAN PPPoE service name updated from "'.$originalSettings['wan_pppoe_service_name'].'" to "'.$settingsData['wan_pppoe_service_name'].'"');
             }
 
             if (isset($settingsData['wan_mac_address']) && $settingsData['wan_mac_address'] !== $originalSettings['wan_mac_address']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN MAC address updated from "' . $originalSettings['wan_mac_address'] . '" to "' . $settingsData['wan_mac_address'] . '"');
+                Log::info('WAN MAC address updated from "'.$originalSettings['wan_mac_address'].'" to "'.$settingsData['wan_mac_address'].'"');
             }
 
             if (isset($settingsData['wan_mtu']) && $settingsData['wan_mtu'] !== $originalSettings['wan_mtu']) {
                 $increment_version = 1;
                 $routerSettingsChanged = true;
-                Log::info('WAN MTU updated from "' . $originalSettings['wan_mtu'] . '" to "' . $settingsData['wan_mtu'] . '"');
+                Log::info('WAN MTU updated from "'.$originalSettings['wan_mtu'].'" to "'.$settingsData['wan_mtu'].'"');
             }
-            
+
             // Handle Captive Portal MAC filter list (adds to radcheck, no config version increment)
             // Handle Captive Portal MAC filter list (adds to radcheck, no config version increment)
             if (isset($settingsData['captive_mac_filter_list'])) {
                 $normalizedMacList = $this->normalizeMacFilterList($settingsData['captive_mac_filter_list']);
-                
+
                 // Check if MAC filter list changed
                 $currentMacList = $settings->captive_mac_filter_list ?: [];
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
@@ -2310,23 +2314,23 @@ class LocationController extends Controller
                     //     'new_list' => $normalizedMacList,
                     //     'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
                     // ]);
-                    
+
                     // Update the captive portal MAC filter list first
                     // This includes mac, type, and scope fields for each entry
                     $settings->captive_mac_filter_list = $normalizedMacList;
-                    
+
                     // Handle radcheck records for captive portal MAC address filtering
                     // Note: MAC filter scope is now stored per LocationNetwork, not in radcheck table
                     // $this->updateRadcheckForMacFiltering($settings, $currentMacList, $normalizedMacList);
                 }
-                
+
                 unset($settingsData['captive_mac_filter_list']);
             }
-            
+
             // Handle Secured WiFi MAC filter list (no radcheck, increments config version)
             if (isset($settingsData['secured_mac_filter_list'])) {
                 $normalizedMacList = $this->normalizeMacFilterList($settingsData['secured_mac_filter_list']);
-                
+
                 // Check if MAC filter list changed
                 $currentMacList = $settings->secured_mac_filter_list ?: [];
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
@@ -2336,20 +2340,20 @@ class LocationController extends Controller
                     //     'new_list' => $normalizedMacList,
                     //     'scope_info' => 'Each MAC address includes scope: block_24, block_5, or all'
                     // ]);
-                    
+
                     // Update the secured WiFi MAC filter list (no radcheck records for secured WiFi)
                     // This includes mac, type, and scope fields for each entry
                     $settings->secured_mac_filter_list = $normalizedMacList;
                 }
-                
+
                 unset($settingsData['secured_mac_filter_list']);
             }
-            
+
             // Handle legacy mac_filter_list field for backward compatibility
             // Default to captive portal behavior (radcheck, no config version increment)
             if (isset($settingsData['mac_filter_list'])) {
                 $normalizedMacList = $this->normalizeMacFilterList($settingsData['mac_filter_list']);
-                
+
                 // Check if MAC filter list changed
                 $currentMacList = $settings->mac_filter_list ?: [];
                 if (json_encode($normalizedMacList) !== json_encode($currentMacList)) {
@@ -2357,7 +2361,7 @@ class LocationController extends Controller
                     //     'old_list' => $currentMacList,
                     //     'new_list' => $normalizedMacList
                     // ]);
-                    
+
                     // Update the MAC filter list and handle radcheck records.
                     // Use the first captive portal network for this location as the network scope.
                     $settings->mac_filter_list = $normalizedMacList;
@@ -2368,29 +2372,29 @@ class LocationController extends Controller
                         $this->updateRadcheckForMacFiltering($captiveNet->id, $currentMacList, $normalizedMacList);
                     }
                 }
-                
+
                 unset($settingsData['mac_filter_list']);
             }
-            
+
             // Apply the settings changes
             $settings->fill($settingsData);
             $settings->save();
-            
+
             // Increment device configuration version if router settings changed
             if ($increment_version == 1 && $device) {
                 $oldVersion = $device->configuration_version;
                 $device->configuration_version = $device->configuration_version + 1;
                 $device->save();
-                Log::info('Device configuration version incremented from ' . $oldVersion . ' to ' . $device->configuration_version . ' for location: ' . $id);
+                Log::info('Device configuration version incremented from '.$oldVersion.' to '.$device->configuration_version.' for location: '.$id);
             }
-            
-            Log::info('Location settings updated successfully for location: ' . $id);
-            
+
+            Log::info('Location settings updated successfully for location: '.$id);
+
             // Prepare response data
             $responseData = [
-                'settings' => $settings
+                'settings' => $settings,
             ];
-            
+
             // Add config version information to response if it was incremented
             if ($increment_version == 1 && $device) {
                 $responseData['config_version_incremented'] = true;
@@ -2400,19 +2404,19 @@ class LocationController extends Controller
                 $responseData['config_version_incremented'] = false;
                 $responseData['current_config_version'] = $device ? $device->configuration_version : null;
             }
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Location settings updated successfully',
-                'data' => $responseData
+                'data' => $responseData,
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error updating location settings: ' . $e->getMessage());
-            
+            Log::error('Error updating location settings: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error updating location settings: ' . $e->getMessage()
+                'message' => 'Error updating location settings: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -2430,7 +2434,7 @@ class LocationController extends Controller
             'postal_code' => 'nullable|string',
         ]);
 
-        $geocodingService = new GeocodingService();
+        $geocodingService = new GeocodingService;
         $result = $geocodingService->geocodeAddress(
             $request->address,
             $request->city,
@@ -2443,12 +2447,12 @@ class LocationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Geocoding successful',
-                'data' => $result
+                'data' => $result,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Geocoding failed'
+                'message' => 'Geocoding failed',
             ], 400);
         }
     }
@@ -2456,22 +2460,21 @@ class LocationController extends Controller
     /**
      * Update MAC address for the device associated with this location
      *
-     * @param Request $request
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateMacAddress(Request $request, $id)
     {
         try {
-            Log::info('Updating device assignment / MAC address for location: ' . $id);
+            Log::info('Updating device assignment / MAC address for location: '.$id);
 
             $request->validate([
                 'mac_address' => 'nullable|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
-                'device_id'   => 'nullable|integer|exists:devices,id',
+                'device_id' => 'nullable|integer|exists:devices,id',
             ]);
 
             $location = Location::find($id);
-            if (!$location) {
+            if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
@@ -2495,7 +2498,7 @@ class LocationController extends Controller
                 $device = $newDevice;
             } else {
                 $device = $location->device;
-                if (!$device) {
+                if (! $device) {
                     return response()->json([
                         'success' => false,
                         'message' => 'No device associated with this location. Pass device_id to assign one.',
@@ -2527,23 +2530,24 @@ class LocationController extends Controller
                 'success' => true,
                 'message' => 'Device assigned successfully',
                 'data' => [
-                    'device'          => $device,
+                    'device' => $device,
                     'old_mac_address' => $oldMacAddress,
                     'new_mac_address' => $device->mac_address,
-                ]
+                ],
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
-                'errors'  => $e->errors(),
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Error updating device/MAC for location: ' . $e->getMessage());
+            Log::error('Error updating device/MAC for location: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
+                'message' => 'Error: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -2551,17 +2555,12 @@ class LocationController extends Controller
     /**
      * Update radcheck records for MAC address filtering
      *
-     * @param \App\Models\LocationSettingsV2 $settings
-     * @param array $oldMacList
-     * @param array $newMacList
-     * @return void
+     * @param  \App\Models\LocationSettingsV2  $settings
      */
     /**
      * Sync radcheck MAC filter records for a specific network.
      *
-     * @param int   $networkId   The LocationNetwork id to scope radcheck records
-     * @param array $oldMacList
-     * @param array $newMacList
+     * @param  int  $networkId  The LocationNetwork id to scope radcheck records
      */
     private function updateRadcheckForMacFiltering(int $networkId, array $oldMacList, array $newMacList): void
     {
@@ -2574,6 +2573,7 @@ class LocationController extends Controller
                     $map[$item['mac']] = ['type' => $item['type'], 'scope' => $item['scope'] ?? 'all'];
                 }
             }
+
             return $map;
         };
 
@@ -2594,17 +2594,18 @@ class LocationController extends Controller
         // Upsert added / changed MACs
         foreach ($newMacMap as $macAddress => $macData) {
             $normalizedMac = $this->normalizeMacAddress($macAddress);
-            if (!$normalizedMac) {
-                Log::warning('Invalid MAC address format: ' . $macAddress);
+            if (! $normalizedMac) {
+                Log::warning('Invalid MAC address format: '.$macAddress);
+
                 continue;
             }
 
             $accessControl = $macData['type'] === 'whitelist' ? 'whitelisted' : 'blacklisted';
-            $scope         = $macData['scope'] ?? 'all';
+            $scope = $macData['scope'] ?? 'all';
 
-            $isNew        = !isset($oldMacMap[$macAddress]);
-            $typeChanged  = !$isNew && $oldMacMap[$macAddress]['type'] !== $macData['type'];
-            $scopeChanged = !$isNew && ($oldMacMap[$macAddress]['scope'] ?? 'all') !== $scope;
+            $isNew = ! isset($oldMacMap[$macAddress]);
+            $typeChanged = ! $isNew && $oldMacMap[$macAddress]['type'] !== $macData['type'];
+            $scopeChanged = ! $isNew && ($oldMacMap[$macAddress]['scope'] ?? 'all') !== $scope;
 
             if ($isNew || $typeChanged || $scopeChanged) {
                 \App\Models\Radcheck::updateOrCreateRecord(
@@ -2621,80 +2622,80 @@ class LocationController extends Controller
     /**
      * Normalize MAC address to dash-delimited uppercase format
      *
-     * @param string $macAddress
+     * @param  string  $macAddress
      * @return string|null
      */
     private function normalizeMacAddress($macAddress)
     {
         // Remove any existing delimiters and convert to uppercase
         $macAddress = strtoupper(str_replace([':', '-', '.', ' '], '', $macAddress));
-        
+
         // Validate that we have exactly 12 hex characters
-        if (strlen($macAddress) !== 12 || !ctype_xdigit($macAddress)) {
+        if (strlen($macAddress) !== 12 || ! ctype_xdigit($macAddress)) {
             return null;
         }
-        
+
         // Add dash delimiters: XX-XX-XX-XX-XX-XX
-        return substr($macAddress, 0, 2) . '-' . 
-               substr($macAddress, 2, 2) . '-' . 
-               substr($macAddress, 4, 2) . '-' . 
-               substr($macAddress, 6, 2) . '-' . 
-               substr($macAddress, 8, 2) . '-' . 
+        return substr($macAddress, 0, 2).'-'.
+               substr($macAddress, 2, 2).'-'.
+               substr($macAddress, 4, 2).'-'.
+               substr($macAddress, 6, 2).'-'.
+               substr($macAddress, 8, 2).'-'.
                substr($macAddress, 10, 2);
     }
 
     /**
      * Normalize and validate MAC filter list
      *
-     * @param mixed $macFilterList
+     * @param  mixed  $macFilterList
      * @return array
      */
     private function normalizeMacFilterList($macFilterList)
     {
         if (is_string($macFilterList)) {
             $macFilterList = json_decode($macFilterList, true) ?: [];
-        } elseif (!is_array($macFilterList)) {
+        } elseif (! is_array($macFilterList)) {
             $macFilterList = [];
         }
-        
+
         // Handle both old format (array of strings) and new format (array of objects)
         $normalizedMacList = [];
         foreach ($macFilterList as $index => $macItem) {
             if (is_string($macItem)) {
                 // Old format - treat as blacklist for backward compatibility, default scope to 'all'
-                if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem)) {
-                    throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem);
+                if (! preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem)) {
+                    throw new \Exception('Invalid MAC address format at index '.$index.': '.$macItem);
                 }
                 $normalizedMacList[] = [
                     'mac' => strtoupper($macItem),
                     'type' => 'blacklist',
-                    'scope' => 'all'
+                    'scope' => 'all',
                 ];
             } elseif (is_array($macItem) && isset($macItem['mac']) && isset($macItem['type'])) {
                 // New format - validate MAC address and type
-                if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem['mac'])) {
-                    throw new \Exception('Invalid MAC address format at index ' . $index . ': ' . $macItem['mac']);
+                if (! preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $macItem['mac'])) {
+                    throw new \Exception('Invalid MAC address format at index '.$index.': '.$macItem['mac']);
                 }
-                if (!in_array($macItem['type'], ['whitelist', 'blacklist'])) {
-                    throw new \Exception('Invalid MAC address type at index ' . $index . ': ' . $macItem['type'] . '. Must be "whitelist" or "blacklist"');
+                if (! in_array($macItem['type'], ['whitelist', 'blacklist'])) {
+                    throw new \Exception('Invalid MAC address type at index '.$index.': '.$macItem['type'].'. Must be "whitelist" or "blacklist"');
                 }
-                
+
                 // Validate and set scope field
                 $scope = $macItem['scope'] ?? 'all';
-                if (!in_array($scope, ['block_24', 'block_5', 'all'])) {
-                    throw new \Exception('Invalid scope value at index ' . $index . ': ' . $scope . '. Must be "block_24", "block_5", or "all"');
+                if (! in_array($scope, ['block_24', 'block_5', 'all'])) {
+                    throw new \Exception('Invalid scope value at index '.$index.': '.$scope.'. Must be "block_24", "block_5", or "all"');
                 }
-                
+
                 $normalizedMacList[] = [
                     'mac' => strtoupper($macItem['mac']),
                     'type' => $macItem['type'],
-                    'scope' => $scope
+                    'scope' => $scope,
                 ];
             } else {
-                throw new \Exception('Invalid MAC filter item format at index ' . $index . '. Must be string or object with mac and type properties.');
+                throw new \Exception('Invalid MAC filter item format at index '.$index.'. Must be string or object with mac and type properties.');
             }
         }
-        
+
         return $normalizedMacList;
     }
 
@@ -2703,34 +2704,34 @@ class LocationController extends Controller
      * This is useful for locations that already have MAC addresses configured
      * but don't have corresponding radcheck records
      *
-     * @param int $locationId
+     * @param  int  $locationId
      * @return \Illuminate\Http\JsonResponse
      */
     public function syncMacAddressesToRadcheck($locationId)
     {
         try {
             $location = Location::find($locationId);
-            
-            if (!$location) {
+
+            if (! $location) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location not found'
+                    'message' => 'Location not found',
                 ], 404);
             }
-            
+
             $settings = LocationSettingsV2::where('location_id', $locationId)->first();
-            
-            if (!$settings) {
+
+            if (! $settings) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Location settings not found'
+                    'message' => 'Location settings not found',
                 ], 404);
             }
-            
+
             // MAC filter list is now managed per-network via LocationNetwork
             $macList = [];
             $synced = 0;
-            
+
             foreach ($macList as $macItem) {
                 if (is_string($macItem)) {
                     // Old format: just a string MAC address
@@ -2743,7 +2744,7 @@ class LocationController extends Controller
                 } else {
                     continue; // Skip invalid entries
                 }
-                
+
                 if ($macAddress) {
                     $accessControl = $type === 'whitelist' ? 'whitelisted' : 'blacklisted';
 
@@ -2764,26 +2765,26 @@ class LocationController extends Controller
                     }
                 }
             }
-            
+
             // Log::info('Synced MAC addresses to radcheck', [
             //     'location_id' => $locationId,
             //     'synced_count' => $synced
             // ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => "Successfully synced {$synced} MAC addresses to radcheck",
                 'data' => [
-                    'synced_count' => $synced
-                ]
+                    'synced_count' => $synced,
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error syncing MAC addresses to radcheck: ' . $e->getMessage());
-            
+            Log::error('Error syncing MAC addresses to radcheck: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error syncing MAC addresses: ' . $e->getMessage()
+                'message' => 'Error syncing MAC addresses: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -2791,24 +2792,24 @@ class LocationController extends Controller
     /**
      * Create working hours entries for the whole week for a location if they don't exist
      * By default, creates 24/7 access (no time restrictions)
-     * 
-     * @param int $locationId
+     *
+     * @param  int  $locationId
      * @return array
      */
     private function createWorkingHoursForWholeWeek($locationId)
     {
         $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
         $createdWorkingHours = [];
-        
+
         Log::info("Creating working hours for whole week for location ID: {$locationId}");
-        
+
         foreach ($days as $day) {
             // Check if working hours already exist for this day
             $existingWorkingHour = CaptivePortalWorkingHour::where('location_id', $locationId)
                 ->where('day_of_week', $day)
                 ->first();
-            
-            if (!$existingWorkingHour) {
+
+            if (! $existingWorkingHour) {
                 // Create new working hours entry with null times (24/7 access)
                 $workingHour = CaptivePortalWorkingHour::create([
                     'location_id' => $locationId,
@@ -2816,7 +2817,7 @@ class LocationController extends Controller
                     'start_time' => null, // null means 24/7 access
                     'end_time' => null,   // null means 24/7 access
                 ]);
-                
+
                 $createdWorkingHours[] = $workingHour;
                 Log::info("Created working hours for {$day} (24/7 access) for location {$locationId}");
             } else {
@@ -2824,23 +2825,23 @@ class LocationController extends Controller
                 Log::info("Working hours already exist for {$day} for location {$locationId}");
             }
         }
-        
-        Log::info("Working hours setup completed for location {$locationId}. Total entries: " . count($createdWorkingHours));
-        
+
+        Log::info("Working hours setup completed for location {$locationId}. Total entries: ".count($createdWorkingHours));
+
         return $createdWorkingHours;
     }
 
     /**
      * Create working hours entries for the whole week with business hours preset
      * Creates Monday-Friday 9AM-5PM, weekends disabled
-     * 
-     * @param int $locationId
+     *
+     * @param  int  $locationId
      * @return array
      */
     private function createBusinessWorkingHours($locationId)
     {
         Log::info("Creating business working hours for location ID: {$locationId}");
-        
+
         $workingHoursConfig = [
             'monday' => ['start_time' => '00:00', 'end_time' => '23:59'],
             'tuesday' => ['start_time' => '00:00', 'end_time' => '23:59'],
@@ -2887,16 +2888,16 @@ class LocationController extends Controller
 
     /**
      * Create hourly schedule records from working hours for a location
-     * 
-     * @param int $locationId
+     *
+     * @param  int  $locationId
      * @return void
      */
     private function createHourlyScheduleFromWorkingHours($locationId)
     {
         Log::info("Creating hourly schedule from working hours for location ID: {$locationId}");
-        
+
         $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        
+
         foreach ($days as $day) {
             for ($hour = 0; $hour < 24; $hour++) {
                 // Default to enabled (24/7 access for new locations)
@@ -2912,19 +2913,19 @@ class LocationController extends Controller
                 );
             }
         }
-        
+
         Log::info("Hourly schedule created for location {$locationId} - all hours enabled (24/7)");
     }
 
     /**
      * Sort categories for comparison by fetching category names and ordering by name, then ID
-     * 
-     * @param array $categoryIds Array of category IDs
+     *
+     * @param  array  $categoryIds  Array of category IDs
      * @return array Sorted array of category objects with id and name
      */
     private function sortCategoriesForComparison($categoryIds)
     {
-        if (empty($categoryIds) || !is_array($categoryIds)) {
+        if (empty($categoryIds) || ! is_array($categoryIds)) {
             return [];
         }
 
@@ -2934,8 +2935,8 @@ class LocationController extends Controller
             ->get()
             ->map(function ($category) {
                 return [
-                    'id' => (string)$category->id, // Ensure ID is string for consistent comparison
-                    'name' => $category->name
+                    'id' => (string) $category->id, // Ensure ID is string for consistent comparison
+                    'name' => $category->name,
                 ];
             })
             ->toArray();
@@ -2946,6 +2947,7 @@ class LocationController extends Controller
             if ($nameComparison === 0) {
                 return strcmp($a['id'], $b['id']);
             }
+
             return $nameComparison;
         });
 

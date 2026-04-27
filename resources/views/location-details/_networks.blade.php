@@ -588,4 +588,30 @@
         </div>
     </div>
 
+    <!-- New network: SSID name prompt -->
+    <div class="modal fade" id="ld-network-add-modal" tabindex="-1" role="dialog" aria-labelledby="ld-network-add-modal-title" aria-hidden="true" style="z-index: 1080;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ld-network-add-modal-title">{{ __('location_details.networks_add_modal_title') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.close') }}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="ld-network-add-form" novalidate>
+                <div class="modal-body">
+                    <div class="form-group mb-0">
+                        <label for="ld-network-add-ssid">{{ __('location_details.networks_field_ssid') }}</label>
+                        <input type="text" class="form-control" id="ld-network-add-ssid" maxlength="32" autocomplete="off" placeholder="{{ __('location_details.networks_field_ssid') }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" id="ld-network-add-cancel">{{ __('common.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary" id="ld-network-add-confirm">{{ __('location_details.networks_add_modal_submit') }}</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
