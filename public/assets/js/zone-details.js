@@ -190,21 +190,13 @@ function displayZoneInfo(zone) {
                     <div class="zone-info-title">${zone.name}</div>
                     <div class="zone-info-description">${zone.description || ''}</div>
                 </div>
-                <div class="lz-kebab-wrap">
-                    <button class="lz-kebab-btn" onclick="toggleZoneHeaderMenu(event)" title="${T.actions}">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-                        </svg>
+                <div class="lz-row-actions">
+                    <button type="button" class="lz-action-btn" onclick="editZone()" data-toggle="tooltip" title="${T.editZone}" aria-label="${T.editZone}">
+                        <i data-feather="edit"></i>
                     </button>
-                    <div class="lz-menu" id="zone-header-menu">
-                        <button class="lz-menu-item" onclick="editZone(); closeAllLocationMenus()">
-                            <i data-feather="edit"></i> ${T.editZone}
-                        </button>
-                        <div class="lz-menu-divider"></div>
-                        <button class="lz-menu-item lz-menu-danger" onclick="deleteZone(); closeAllLocationMenus()">
-                            <i data-feather="trash-2"></i> ${T.deleteZone}
-                        </button>
-                    </div>
+                    <button type="button" class="lz-action-btn lz-action-danger" onclick="deleteZone()" data-toggle="tooltip" title="${T.deleteZone}" aria-label="${T.deleteZone}">
+                        <i data-feather="trash-2"></i>
+                    </button>
                 </div>
             </div>
             <div class="zone-info-meta">
@@ -284,15 +276,7 @@ function displayZoneInfo(zone) {
     document.getElementById('zone-settings-container').innerHTML = settingsHtml;
 
     feather.replace();
-}
-
-function toggleZoneHeaderMenu(e) {
-    e.stopPropagation();
-    const target = document.getElementById('zone-header-menu');
-    if (!target) return;
-    const isOpen = target.classList.contains('open');
-    closeAllLocationMenus();
-    if (!isOpen) target.classList.add('open');
+    $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
 async function deleteZone() {
@@ -365,23 +349,15 @@ function displayLocations(locations) {
                     </div>
                     <div class="location-address">${location.address || 'N/A'}</div>
                 </div>
-                <div class="lz-kebab-wrap">
-                    <button class="lz-kebab-btn" onclick="toggleLocationMenu(event, ${location.id})" title="${T.actions || 'Actions'}">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-                        </svg>
-                    </button>
-                    <div class="lz-menu" id="lz-menu-${location.id}">
-                        ${!isPrimary ? `
-                            <button class="lz-menu-item" onclick="setPrimary(${location.id}); closeAllLocationMenus()">
-                                <i data-feather="home"></i> ${T.setPrimary}
-                            </button>
-                            <div class="lz-menu-divider"></div>
-                        ` : ''}
-                        <button class="lz-menu-item lz-menu-danger" onclick="removeLocation(${location.id}); closeAllLocationMenus()">
-                            <i data-feather="x"></i> ${T.removeLocation}
+                <div class="lz-row-actions">
+                    ${!isPrimary ? `
+                        <button type="button" class="lz-action-btn" onclick="setPrimary(${location.id})" data-toggle="tooltip" title="${T.setPrimary}" aria-label="${T.setPrimary}">
+                            <i data-feather="home"></i>
                         </button>
-                    </div>
+                    ` : ''}
+                    <button type="button" class="lz-action-btn lz-action-danger" onclick="removeLocation(${location.id})" data-toggle="tooltip" title="${T.removeLocation}" aria-label="${T.removeLocation}">
+                        <i data-feather="x"></i>
+                    </button>
                 </div>
             </div>
         `;
@@ -413,6 +389,7 @@ function displayLocations(locations) {
     
     container.innerHTML = html;
     feather.replace();
+    $(container).find('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
 function changeLocationsPage(delta) {
@@ -420,20 +397,6 @@ function changeLocationsPage(delta) {
     displayLocations(currentZone.locations || []);
 }
 
-function toggleLocationMenu(e, locationId) {
-    e.stopPropagation();
-    const target = document.getElementById('lz-menu-' + locationId);
-    if (!target) return;
-    const isOpen = target.classList.contains('open');
-    closeAllLocationMenus();
-    if (!isOpen) target.classList.add('open');
-}
-
-function closeAllLocationMenus() {
-    document.querySelectorAll('.lz-menu.open').forEach(m => m.classList.remove('open'));
-}
-
-document.addEventListener('click', closeAllLocationMenus);
 
 // Tab switching for the zone-details page
 document.addEventListener('click', function(e) {
