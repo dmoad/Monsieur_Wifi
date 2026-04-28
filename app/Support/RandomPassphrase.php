@@ -10,7 +10,12 @@ namespace App\Support;
  */
 class RandomPassphrase
 {
-    private const SPECIAL_CHARS = ['!', '@', '#', '$', '%', '^', '&', '*', '-', '+', '?', '=', '~'];
+    // Excluded from the special-char set:
+    //   $  — expands inside the AP's double-quoted shell strings (uci set "wireless.x.key=$wifi_key")
+    //   &  — gets HTML-encoded as &amp; in templates that render the password
+    //   ^  — non-trivial to type on FR/DE keyboard layouts (deadkey)
+    //   ~  — same keyboard-layout problem
+    private const SPECIAL_CHARS = ['!', '@', '#', '%', '*', '-', '+', '?', '='];
 
     public static function generate(int $numWords = 3, int $minLength = 20, bool $ucfirst = true, bool $spchar = true): string
     {
@@ -32,7 +37,11 @@ class RandomPassphrase
             $len   = strlen($block);
         } while ($len > $minLength || $len < $minLength - 3);
 
-        $out = $block . random_int(100, 999);
+        // Append 3 digits drawn from 2-9 (skip 0 and 1 to avoid 0/O and 1/l/I lookalike confusion)
+        $out = $block;
+        for ($i = 0; $i < 3; $i++) {
+            $out .= random_int(2, 9);
+        }
         if ($spchar) {
             $out .= self::SPECIAL_CHARS[random_int(0, count(self::SPECIAL_CHARS) - 1)];
         }
