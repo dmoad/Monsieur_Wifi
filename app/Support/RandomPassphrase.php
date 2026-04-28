@@ -22,7 +22,13 @@ class RandomPassphrase
         $numWords  = max(3, min(6, $numWords));
         $minLength = max($numWords * 5, min($numWords * 8, $minLength));
 
-        $words = require database_path('data/passphrase_words.php');
+        // Filter out words containing letters that look like digits or other letters in
+        // common fonts (i/I/l/L/o/O all confuse with 1/0). Leaves ~27% of the wordlist
+        // (~520 words), still plenty for 3-word combinations.
+        $words = array_values(array_filter(
+            require database_path('data/passphrase_words.php'),
+            fn ($w) => ! preg_match('/[ilo]/i', $w)
+        ));
         $count = count($words);
 
         do {
