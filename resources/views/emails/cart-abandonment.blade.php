@@ -1,38 +1,37 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: 'Montserrat', sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; line-height: 1.6; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
-        .header { background: linear-gradient(135deg, #ff9f43 0%, #ff6b6b 100%); padding: 40px 30px; text-align: center; color: #ffffff; }
-        .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
-        .content { padding: 40px 30px; }
-        .product-box { background-color: #f8f8f8; padding: 15px; border-radius: 8px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-        .button { display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #7367f0 0%, #9055ff 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
-        .footer { background-color: #f8f8f8; padding: 30px; text-align: center; font-size: 13px; color: #888888; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header"><h1>{{ __('emails/cart-abandonment.heading') }}</h1></div>
-        <div class="content">
-            <p>{{ __('emails/cart-abandonment.greeting') }} {{ $cart->user->name }},</p>
-            <p>{{ __('emails/cart-abandonment.intro') }}</p>
-            @foreach($cart->items as $item)
-            <div class="product-box">
-                <span>{{ $item->productModel->name }} × {{ $item->quantity }}</span>
-                <span>€{{ number_format($item->subtotal, 2) }}</span>
-            </div>
-            @endforeach
-            <p style="text-align: center; margin-top: 30px; font-size: 18px; color: #7367f0;">
-                <strong>{{ __('emails/cart-abandonment.label_total') }} €{{ number_format($cart->getTotal(), 2) }}</strong>
-            </p>
-            <div style="text-align: center;">
-                <a href="{{ url('/' . app()->getLocale() . '/cart') }}" class="button">{{ __('emails/cart-abandonment.btn_complete') }}</a>
-            </div>
-        </div>
-        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/cart-abandonment.footer_rights') }}</p></div>
-    </div>
-</body>
-</html>
+@extends('emails.layouts.master')
+
+@section('title', __('emails/cart-abandonment.heading'))
+@section('preheader', __('emails/cart-abandonment.intro'))
+@section('headline', __('emails/cart-abandonment.heading'))
+
+@section('content')
+    <p style="margin:0 0 16px; font-size:15px; color:#1A1A2E;">
+        {{ __('emails/cart-abandonment.greeting') }} {{ $cart->user->name }},
+    </p>
+
+    <p style="margin:0 0 24px; font-size:15px; color:#5C6370; line-height:1.6;">
+        {{ __('emails/cart-abandonment.intro') }}
+    </p>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse; margin:16px 0; background-color:#F5F6F9; border-radius:8px;">
+        @foreach($cart->items as $item)
+            <tr>
+                <td style="padding:12px 16px; border-bottom:{{ $loop->last ? 'none' : '1px solid #E5E8ED' }}; color:#1A1A2E; font-size:14px;">
+                    {{ $item->productModel->name }} <span style="color:#8B919A;">× {{ $item->quantity }}</span>
+                </td>
+                <td style="padding:12px 16px; border-bottom:{{ $loop->last ? 'none' : '1px solid #E5E8ED' }}; color:#1A1A2E; font-size:14px; font-weight:600; text-align:right; white-space:nowrap;">
+                    €{{ number_format($item->subtotal, 2) }}
+                </td>
+            </tr>
+        @endforeach
+    </table>
+
+    <p style="margin:24px 0; text-align:center; font-size:18px; color:#6366F1;">
+        <strong>{{ __('emails/cart-abandonment.label_total') }} €{{ number_format($cart->getTotal(), 2) }}</strong>
+    </p>
+
+    @include('emails.components.button', [
+        'url'   => url('/' . app()->getLocale() . '/cart'),
+        'label' => __('emails/cart-abandonment.btn_complete'),
+    ])
+@endsection

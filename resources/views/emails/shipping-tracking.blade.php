@@ -1,35 +1,39 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: 'Montserrat', sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; line-height: 1.6; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
-        .header { background: linear-gradient(135deg, #00cfe8 0%, #0097c2 100%); padding: 40px 30px; text-align: center; color: #ffffff; }
-        .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
-        .content { padding: 40px 30px; }
-        .tracking-box { background-color: #f8f8f8; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
-        .tracking-number { font-size: 24px; color: #00cfe8; font-weight: 600; }
-        .button { display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #7367f0 0%, #9055ff 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
-        .footer { background-color: #f8f8f8; padding: 30px; text-align: center; font-size: 13px; color: #888888; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header"><h1>{{ __('emails/shipping-tracking.heading') }}</h1></div>
-        <div class="content">
-            <p>{{ __('emails/shipping-tracking.greeting') }} {{ $order->user->name }},</p>
-            <p>{!! __('emails/shipping-tracking.intro_html', ['order_number' => e($order->order_number)]) !!}</p>
-            <div class="tracking-box">
-                <p style="margin: 0 0 10px 0;"><strong>{{ __('emails/shipping-tracking.label_provider') }}</strong> {{ $order->shipping_provider }}</p>
-                <p style="margin: 0 0 10px 0;"><strong>{{ __('emails/shipping-tracking.label_tracking') }}</strong></p>
-                <div class="tracking-number">{{ $order->tracking_id }}</div>
-            </div>
-            <div style="text-align: center;">
-                <a href="{{ url('/' . app()->getLocale() . '/orders/' . $order->order_number) }}" class="button">{{ __('emails/shipping-tracking.btn_track') }}</a>
-            </div>
-        </div>
-        <div class="footer"><p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/shipping-tracking.footer_rights') }}</p></div>
-    </div>
-</body>
-</html>
+@extends('emails.layouts.master')
+
+@section('title', __('emails/shipping-tracking.heading'))
+@section('preheader', __('emails/shipping-tracking.intro_html', ['order_number' => $order->order_number]))
+@section('headline', __('emails/shipping-tracking.heading'))
+
+@section('content')
+    <p style="margin:0 0 16px; font-size:15px; color:#1A1A2E;">
+        {{ __('emails/shipping-tracking.greeting') }} {{ $order->user->name }},
+    </p>
+
+    <p style="margin:0 0 24px; font-size:15px; color:#5C6370; line-height:1.6;">
+        {!! __('emails/shipping-tracking.intro_html', ['order_number' => '<strong>#' . e($order->order_number) . '</strong>']) !!}
+    </p>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:24px 0; background-color:#F5F6F9; border-radius:8px;">
+        <tr>
+            <td style="padding:20px 24px; text-align:center;">
+                <div style="font-size:12px; color:#8B919A; letter-spacing:0.4px; text-transform:uppercase; margin-bottom:6px;">
+                    {{ __('emails/shipping-tracking.label_provider') }}
+                </div>
+                <div style="font-size:15px; color:#1A1A2E; font-weight:600; margin-bottom:18px;">
+                    {{ $order->shipping_provider }}
+                </div>
+                <div style="font-size:12px; color:#8B919A; letter-spacing:0.4px; text-transform:uppercase; margin-bottom:6px;">
+                    {{ __('emails/shipping-tracking.label_tracking') }}
+                </div>
+                <div style="font-family:'Montserrat',Arial,sans-serif; font-size:22px; color:#6366F1; font-weight:700; letter-spacing:1px; word-break:break-all;">
+                    {{ $order->tracking_id }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    @include('emails.components.button', [
+        'url'   => url('/' . app()->getLocale() . '/orders/' . $order->order_number),
+        'label' => __('emails/shipping-tracking.btn_track'),
+    ])
+@endsection

@@ -307,3 +307,137 @@ Route::get('/register-with-captive-portal', function () {
     return view('register-with-captive-portal');
 })->name('register-with-captive-portal');
 
+// ── Email template previews — opt-in via env ───────────────────────────────
+// Set MAIL_PREVIEW_ENABLED=true in .env to expose /dev/emails locally.
+// Off by default so production deploys never expose previews even if APP_ENV slips.
+if (filter_var(env('MAIL_PREVIEW_ENABLED', false), FILTER_VALIDATE_BOOLEAN)) {
+    Route::prefix('dev/emails')->group(function () {
+        // Stubs that quack like the Eloquent models the mailables expect.
+        // load() and relationLoaded() are no-ops so the mailable's content() doesn't blow up.
+        $stubFor = function () {
+            $user = new class {
+                public string $name = 'Johnny Sample';
+                public string $email = 'johnny@example.com';
+                public \Carbon\Carbon $created_at;
+                public function __construct() { $this->created_at = now()->subHours(2); }
+            };
+
+            $shipping = (object) [
+                'first_name' => 'Johnny', 'last_name' => 'Sample',
+                'address_line1' => '12 rue Lafayette', 'address_line2' => 'Apt 4B',
+                'city' => 'Paris', 'province' => 'Île-de-France',
+                'postal_code' => '75009', 'country' => 'France',
+            ];
+
+            $items = collect([
+                (object) ['productModel' => (object) ['name' => 'MW-AP-3000 — Wi-Fi 6 Access Point'], 'quantity' => 2, 'subtotal' => 359.98],
+                (object) ['productModel' => (object) ['name' => 'PoE+ Injector 30W'],                  'quantity' => 1, 'subtotal' => 24.50],
+            ]);
+
+            $order = new class($user, $items, $shipping) {
+                public $user; public $items; public $shippingAddress;
+                public string $order_number    = 'MW-2026-0427';
+                public float  $product_amount  = 384.48;
+                public float  $shipping_cost   = 9.90;
+                public float  $tax_amount      = 78.88;
+                public float  $total           = 473.26;
+                public string $shipping_provider = 'Chronopost';
+                public string $tracking_id     = 'CP9X12345678FR';
+                public function __construct($user, $items, $shipping)
+                {
+                    $this->user = $user; $this->items = $items; $this->shippingAddress = $shipping;
+                }
+                public function relationLoaded($r) { return true; }
+                public function load($r) { return $this; }
+            };
+
+            $cart = new class($user, $items) {
+                public $user; public $items;
+                public function __construct($user, $items) { $this->user = $user; $this->items = $items; }
+                public function getTotal() { return 384.48; }
+            };
+
+            $subscription = [
+                'plan_name' => 'Pro Annual', 'amount' => '€199.00',
+                'interval' => 'Annual',      'start_date' => '28/04/2026',
+                'shipping_address' => [
+                    'name' => 'Johnny Sample', 'line1' => '12 rue Lafayette', 'line2' => 'Apt 4B',
+                    'postal_code' => '75009', 'city' => 'Paris',
+                    'state' => 'Île-de-France', 'country' => 'France',
+                ],
+            ];
+
+            return compact('user', 'order', 'cart', 'subscription');
+        };
+
+        $previews = [
+            'verify-email' => ['label' => 'Verify Your Email', 'mailable' => function () {
+                return new App\Mail\VerifyEmailMail('https://dev.monsieur-wifi.com/verify-email?token=PREVIEW_SAMPLE_TOKEN_123abc&email=preview@monsieur-wifi.com&set_password=1', 'Johnny', 60);
+            }],
+            'password-reset' => ['label' => 'Password Reset', 'mailable' => function () {
+                return new App\Mail\PasswordResetMail('https://dev.monsieur-wifi.com/reset-password?token=PREVIEW_SAMPLE_TOKEN_xyz789', 'Johnny', 60);
+            }],
+            'guest-otp' => ['label' => 'Guest OTP', 'mailable' => function () {
+                return new App\Mail\GuestOtpMail('123456');
+            }],
+            'cart-abandonment' => ['label' => 'Cart Abandonment', 'mailable' => function () use ($stubFor) {
+                $s = $stubFor();
+                $m = (new ReflectionClass(App\Mail\CartAbandonmentMail::class))->newInstanceWithoutConstructor();
+                $m->cart = $s['cart']; $m->locale = 'en';
+                return $m;
+            }],
+            'order-processed' => ['label' => 'Order Processed', 'mailable' => function () use ($stubFor) {
+                $s = $stubFor();
+                $m = (new ReflectionClass(App\Mail\OrderProcessedMail::class))->newInstanceWithoutConstructor();
+                $m->order = $s['order']; $m->locale = 'en';
+                return $m;
+            }],
+            'order-delivered' => ['label' => 'Order Delivered', 'mailable' => function () use ($stubFor) {
+                $s = $stubFor();
+                $m = (new ReflectionClass(App\Mail\OrderDeliveredMail::class))->newInstanceWithoutConstructor();
+                $m->order = $s['order']; $m->locale = 'en';
+                return $m;
+            }],
+            'payment-failed' => ['label' => 'Payment Failed', 'mailable' => function () use ($stubFor) {
+                $s = $stubFor();
+                $m = (new ReflectionClass(App\Mail\PaymentFailedMail::class))->newInstanceWithoutConstructor();
+                $m->order = $s['order']; $m->locale = 'en';
+                return $m;
+            }],
+            'shipping-tracking' => ['label' => 'Shipping Tracking', 'mailable' => function () use ($stubFor) {
+                $s = $stubFor();
+                $m = (new ReflectionClass(App\Mail\ShippingTrackingMail::class))->newInstanceWithoutConstructor();
+                $m->order = $s['order']; $m->locale = 'en';
+                return $m;
+            }],
+            'subscription-confirmed' => ['label' => 'Subscription Confirmed', 'mailable' => function () use ($stubFor) {
+                $s = $stubFor();
+                $m = (new ReflectionClass(App\Mail\SubscriptionConfirmedMail::class))->newInstanceWithoutConstructor();
+                $m->user = $s['user']; $m->subscriptionData = $s['subscription']; $m->locale = 'en';
+                return $m;
+            }],
+            'new-subscription-admin' => ['label' => 'New Subscription (Admin)', 'mailable' => function () use ($stubFor) {
+                $s = $stubFor();
+                $m = (new ReflectionClass(App\Mail\NewSubscriptionAdminNotification::class))->newInstanceWithoutConstructor();
+                $m->user = $s['user']; $m->subscriptionData = $s['subscription'];
+                return $m;
+            }],
+        ];
+
+        Route::get('/', function () use ($previews) {
+            $rows = collect($previews)->map(fn($p, $slug) =>
+                "<li style='margin:6px 0;'><a href='/dev/emails/{$slug}' style='color:#6366F1; text-decoration:none; font-weight:500;'>{$p['label']}</a></li>"
+            )->implode('');
+            return "<!DOCTYPE html><html><body style='font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif; padding:32px; background:#EDEEF2; color:#1A1A2E;'>"
+                 . "<h1 style='margin:0 0 16px;'>Email previews</h1>"
+                 . "<p style='color:#5C6370; margin:0 0 24px;'>Local-only. Reload after every edit to iterate.</p>"
+                 . "<ul style='line-height:2; padding-left:20px;'>{$rows}</ul></body></html>";
+        });
+
+        foreach ($previews as $slug => $preview) {
+            Route::get("/{$slug}", $preview['mailable']);
+        }
+    });
+}
+
+

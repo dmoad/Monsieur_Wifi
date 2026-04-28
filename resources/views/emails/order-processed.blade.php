@@ -1,76 +1,76 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('emails/order-processed.title') }}</title>
-    <style>
-        body { font-family: 'Montserrat', sans-serif; background-color: #f8f8f8; margin: 0; padding: 0; line-height: 1.6; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
-        .header { background: linear-gradient(135deg, #7367f0 0%, #9055ff 100%); padding: 40px 30px; text-align: center; color: #ffffff; }
-        .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
-        .content { padding: 40px 30px; }
-        .greeting { font-size: 18px; color: #333333; margin-bottom: 20px; }
-        .order-number { font-size: 24px; color: #7367f0; font-weight: 600; margin: 20px 0; }
-        .order-details { background-color: #f8f8f8; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
-        .total { font-size: 20px; font-weight: 600; color: #333; margin-top: 20px; text-align: right; }
-        .button { display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #7367f0 0%, #9055ff 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
-        .footer { background-color: #f8f8f8; padding: 30px; text-align: center; font-size: 13px; color: #888888; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>{{ __('emails/order-processed.heading') }}</h1>
-            <p>{{ __('emails/order-processed.subheading') }}</p>
-        </div>
-        <div class="content">
-            <div class="greeting">{{ __('emails/order-processed.greeting') }} {{ $order->user->name }},</div>
-            <p>{{ __('emails/order-processed.intro') }}</p>
-            <div class="order-number">{{ __('emails/order-processed.order_number_prefix') }} #{{ $order->order_number }}</div>
+@extends('emails.layouts.master')
 
-            <div class="order-details">
-                <h3 style="margin-top: 0;">{{ __('emails/order-processed.summary_heading') }}</h3>
-                @foreach($order->items as $item)
-                <div class="order-item">
-                    <span>{{ $item->productModel->name }} × {{ $item->quantity }}</span>
-                    <span>€{{ number_format($item->subtotal, 2) }}</span>
-                </div>
-                @endforeach
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #7367f0;">
-                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>{{ __('emails/order-processed.label_subtotal') }}</span>
-                        <span>€{{ number_format($order->product_amount, 2) }}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>{{ __('emails/order-processed.label_shipping') }}</span>
-                        <span>€{{ number_format($order->shipping_cost, 2) }}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                        <span>{{ __('emails/order-processed.label_tax') }}</span>
-                        <span>€{{ number_format($order->tax_amount, 2) }}</span>
-                    </div>
-                    <div class="total">{{ __('emails/order-processed.label_total') }} €{{ number_format($order->total, 2) }}</div>
-                </div>
-            </div>
+@section('title', __('emails/order-processed.title'))
+@section('preheader', __('emails/order-processed.intro'))
+@section('headline', __('emails/order-processed.heading'))
+@section('subhead', __('emails/order-processed.subheading'))
 
-            <h3>{{ __('emails/order-processed.shipping_heading') }}</h3>
-            <p>
-                {{ $order->shippingAddress->first_name }} {{ $order->shippingAddress->last_name }}<br>
-                {{ $order->shippingAddress->address_line1 }}<br>
-                @if($order->shippingAddress->address_line2){{ $order->shippingAddress->address_line2 }}<br>@endif
-                {{ $order->shippingAddress->city }}, {{ $order->shippingAddress->province }} {{ $order->shippingAddress->postal_code }}<br>
-                {{ $order->shippingAddress->country }}
-            </p>
+@section('content')
+    <p style="margin:0 0 16px; font-size:15px; color:#1A1A2E;">
+        {{ __('emails/order-processed.greeting') }} {{ $order->user->name }},
+    </p>
 
-            <div style="text-align: center;">
-                <a href="{{ url('/' . app()->getLocale() . '/orders/' . $order->order_number) }}" class="button">{{ __('emails/order-processed.btn_view_details') }}</a>
-            </div>
-        </div>
-        <div class="footer">
-            <p>&copy; {{ date('Y') }} Monsieur WiFi. {{ __('emails/order-processed.footer_rights') }}</p>
-        </div>
-    </div>
-</body>
-</html>
+    <p style="margin:0 0 24px; font-size:15px; color:#5C6370; line-height:1.6;">
+        {{ __('emails/order-processed.intro') }}
+    </p>
+
+    <p style="margin:24px 0 8px; font-size:13px; color:#8B919A; letter-spacing:0.4px; text-transform:uppercase;">
+        {{ __('emails/order-processed.order_number_prefix') }}
+    </p>
+    <p style="margin:0 0 24px; font-size:22px; color:#6366F1; font-weight:700;">
+        #{{ $order->order_number }}
+    </p>
+
+    <h3 style="margin:24px 0 8px; font-size:15px; color:#1A1A2E; font-weight:600;">
+        {{ __('emails/order-processed.summary_heading') }}
+    </h3>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse; background-color:#F5F6F9; border-radius:8px;">
+        @foreach($order->items as $item)
+            <tr>
+                <td style="padding:12px 16px; border-bottom:1px solid #E5E8ED; color:#1A1A2E; font-size:14px;">
+                    {{ $item->productModel->name }} <span style="color:#8B919A;">× {{ $item->quantity }}</span>
+                </td>
+                <td style="padding:12px 16px; border-bottom:1px solid #E5E8ED; color:#1A1A2E; font-size:14px; font-weight:600; text-align:right; white-space:nowrap;">
+                    €{{ number_format($item->subtotal, 2) }}
+                </td>
+            </tr>
+        @endforeach
+        <tr>
+            <td style="padding:10px 16px; color:#5C6370; font-size:13px;">{{ __('emails/order-processed.label_subtotal') }}</td>
+            <td style="padding:10px 16px; color:#1A1A2E; font-size:13px; text-align:right; white-space:nowrap;">€{{ number_format($order->product_amount, 2) }}</td>
+        </tr>
+        <tr>
+            <td style="padding:6px 16px; color:#5C6370; font-size:13px;">{{ __('emails/order-processed.label_shipping') }}</td>
+            <td style="padding:6px 16px; color:#1A1A2E; font-size:13px; text-align:right; white-space:nowrap;">€{{ number_format($order->shipping_cost, 2) }}</td>
+        </tr>
+        <tr>
+            <td style="padding:6px 16px; color:#5C6370; font-size:13px;">{{ __('emails/order-processed.label_tax') }}</td>
+            <td style="padding:6px 16px; color:#1A1A2E; font-size:13px; text-align:right; white-space:nowrap;">€{{ number_format($order->tax_amount, 2) }}</td>
+        </tr>
+        <tr>
+            <td style="padding:12px 16px; border-top:2px solid #6366F1; color:#1A1A2E; font-size:15px; font-weight:700;">
+                {{ __('emails/order-processed.label_total') }}
+            </td>
+            <td style="padding:12px 16px; border-top:2px solid #6366F1; color:#6366F1; font-size:18px; font-weight:700; text-align:right; white-space:nowrap;">
+                €{{ number_format($order->total, 2) }}
+            </td>
+        </tr>
+    </table>
+
+    <h3 style="margin:32px 0 8px; font-size:15px; color:#1A1A2E; font-weight:600;">
+        {{ __('emails/order-processed.shipping_heading') }}
+    </h3>
+    <p style="margin:0 0 24px; font-size:14px; color:#5C6370; line-height:1.6;">
+        {{ $order->shippingAddress->first_name }} {{ $order->shippingAddress->last_name }}<br>
+        {{ $order->shippingAddress->address_line1 }}<br>
+        @if($order->shippingAddress->address_line2){{ $order->shippingAddress->address_line2 }}<br>@endif
+        {{ $order->shippingAddress->city }}, {{ $order->shippingAddress->province }} {{ $order->shippingAddress->postal_code }}<br>
+        {{ $order->shippingAddress->country }}
+    </p>
+
+    @include('emails.components.button', [
+        'url'   => url('/' . app()->getLocale() . '/orders/' . $order->order_number),
+        'label' => __('emails/order-processed.btn_view_details'),
+    ])
+@endsection
