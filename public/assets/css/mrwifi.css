@@ -327,6 +327,45 @@
 .mw-panel { display: none; }
 .mw-panel.active { display: block; }
 
+/* Sub-tabs — same visual as .mw-tabs but compatible with Bootstrap's
+   .nav / .nav-link / data-toggle="tab" markup. Use as a nested tab bar
+   inside a card so we don't fight the global .mw-tab click handler. */
+.mw-subtabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--mw-border);
+    margin-bottom: var(--mw-space-xl);
+    padding-left: 0;
+    list-style: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.mw-subtabs::-webkit-scrollbar { display: none; }
+.mw-subtabs > .nav-item { margin-bottom: -1px; }
+.mw-subtabs .nav-link {
+    padding: 10px var(--mw-space-xl);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--mw-text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+}
+.mw-subtabs .nav-link:hover { color: var(--mw-text-primary); }
+.mw-subtabs .nav-link.active {
+    color: var(--mw-primary);
+    background: none;
+    font-weight: 600;
+    border-color: transparent;
+    border-bottom-color: var(--mw-primary);
+}
+
 /* ============================================================
    VUEXY SPACING SHIMS
    Vuexy defined fractional spacing utilities (0.25/0.5/0.75rem)

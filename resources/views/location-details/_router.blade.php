@@ -182,136 +182,124 @@
                                     {{ __('location_details.qos_zone_notice') }}
                                 </div>
 
-                                <div class="loc-panel panel-qos mb-0">
-                                    <div class="loc-panel-header">
-                                        <span class="loc-panel-icon">
-                                            <i data-feather="git-merge" style="color:var(--mw-primary);width:16px;height:16px;"></i>
-                                        </span>
-                                        <h6 class="loc-panel-title">{{ __('location_details.qos_classification') }}</h6>
+                                {{-- Enable toggle + class preview (always visible) --}}
+                                <div class="row align-items-start mb-3">
+                                    <div class="col-md-7">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="mb-0 font-weight-bold">{{ __('location_details.qos_enable') }}</span>
+                                            <div class="custom-control custom-switch custom-control-primary">
+                                                <input type="checkbox" class="custom-control-input" id="qos-enabled">
+                                                <label class="custom-control-label" for="qos-enabled"></label>
+                                            </div>
+                                        </div>
+                                        <p class="text-muted mb-0 small">{{ __('location_details.qos_enable_help') }}</p>
                                     </div>
-                                    <div class="loc-panel-body">
+                                    <div class="col-md-5 mt-3 mt-md-0 qos-classify-preview-col">
+                                        <div class="panel-sub-label mb-2">{{ __('location_details.qos_active_classes') }}</div>
+                                        <div id="qos-classes-preview" class="pt-0">
+                                            <span class="text-muted small">{{ __('common.loading') }}</span>
+                                        </div>
+                                        <small class="text-muted d-block mt-1" style="font-size:0.75rem;">{{ __('location_details.qos_managed_globally') }}</small>
+                                    </div>
+                                </div>
 
-                                        {{-- Enable toggle + class preview (always visible) --}}
-                                        <div class="row align-items-start mb-3">
-                                            <div class="col-md-7">
-                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <span class="mb-0 font-weight-bold">{{ __('location_details.qos_enable') }}</span>
-                                                    <div class="custom-control custom-switch custom-control-primary">
-                                                        <input type="checkbox" class="custom-control-input" id="qos-enabled">
-                                                        <label class="custom-control-label" for="qos-enabled"></label>
-                                                    </div>
-                                                </div>
-                                                <p class="text-muted mb-0 small">{{ __('location_details.qos_enable_help') }}</p>
+                                {{-- Inner tabs --}}
+                                <ul class="nav mw-subtabs" id="qos-inner-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="qos-tab-bw-link" data-toggle="tab" href="#qos-pane-bw" role="tab">
+                                            <i data-feather="bar-chart-2" style="width:13px;height:13px;vertical-align:text-bottom;" class="mr-1"></i>{{ __('location_details.qos_tab_bandwidth') }}
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="qos-tab-sni-link" data-toggle="tab" href="#qos-pane-sni" role="tab">
+                                            <i data-feather="tag" style="width:13px;height:13px;vertical-align:text-bottom;" class="mr-1"></i>{{ __('location_details.qos_tab_sni') }}
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content pt-3">
+                                    {{-- Tab 1: Bandwidth Limits --}}
+                                    <div class="tab-pane fade show active" id="qos-pane-bw" role="tabpanel">
+                                        <p class="small text-muted mb-3 mb-md-2">{!! __('location_details.qos_bandwidth_intro') !!}</p>
+
+                                        <div id="qos-wan-override-group" class="rounded border px-3 py-2 mb-3 bg-light" style="display:none;">
+                                            <div class="custom-control custom-checkbox mb-0">
+                                                <input type="checkbox" class="custom-control-input" id="qos-wan-use-local">
+                                                <label class="custom-control-label" for="qos-wan-use-local">{{ __('location_details.qos_wan_use_local') }}</label>
                                             </div>
-                                            <div class="col-md-5 mt-3 mt-md-0 qos-classify-preview-col">
-                                                <div class="panel-sub-label mb-2">{{ __('location_details.qos_active_classes') }}</div>
-                                                <div id="qos-classes-preview" class="pt-0">
-                                                    <span class="text-muted small">{{ __('common.loading') }}</span>
-                                                </div>
-                                                <small class="text-muted d-block mt-1" style="font-size:0.75rem;">{{ __('location_details.qos_managed_globally') }}</small>
-                                            </div>
+                                            <small class="text-muted d-block mt-1">{{ __('location_details.qos_wan_use_local_help') }}</small>
                                         </div>
 
-                                        {{-- Inner tabs --}}
-                                        <ul class="nav nav-tabs" id="qos-inner-tabs" role="tablist">
-                                            <li class="nav-item">
-                                                <a class="nav-link active" id="qos-tab-bw-link" data-toggle="tab" href="#qos-pane-bw" role="tab">
-                                                    <i data-feather="bar-chart-2" style="width:13px;height:13px;vertical-align:text-bottom;" class="mr-1"></i>{{ __('location_details.qos_tab_bandwidth') }}
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="qos-tab-sni-link" data-toggle="tab" href="#qos-pane-sni" role="tab">
-                                                    <i data-feather="tag" style="width:13px;height:13px;vertical-align:text-bottom;" class="mr-1"></i>{{ __('location_details.qos_tab_sni') }}
-                                                </a>
-                                            </li>
-                                        </ul>
-
-                                        <div class="tab-content pt-3">
-                                            {{-- Tab 1: Bandwidth Limits --}}
-                                            <div class="tab-pane fade show active" id="qos-pane-bw" role="tabpanel">
-                                                <p class="small text-muted mb-3 mb-md-2">{!! __('location_details.qos_bandwidth_intro') !!}</p>
-
-                                                <div id="qos-wan-override-group" class="rounded border px-3 py-2 mb-3 bg-light" style="display:none;">
-                                                    <div class="custom-control custom-checkbox mb-0">
-                                                        <input type="checkbox" class="custom-control-input" id="qos-wan-use-local">
-                                                        <label class="custom-control-label" for="qos-wan-use-local">{{ __('location_details.qos_wan_use_local') }}</label>
+                                        <div class="row qos-bw-split-row align-items-start">
+                                            <div class="col-12 col-md-6">
+                                                <div class="panel-sub-label">{{ __('location_details.qos_wan_capacity') }}</div>
+                                                <div class="mb-2">
+                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-down-kbps">{{ __('location_details.stat_download') }}</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-down-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
                                                     </div>
-                                                    <small class="text-muted d-block mt-1">{{ __('location_details.qos_wan_use_local_help') }}</small>
                                                 </div>
-
-                                                <div class="row qos-bw-split-row align-items-start">
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="panel-sub-label">{{ __('location_details.qos_wan_capacity') }}</div>
-                                                        <div class="mb-2">
-                                                            <label class="small text-muted mb-1 d-block" for="qos-wan-down-kbps">{{ __('location_details.stat_download') }}</label>
-                                                            <div class="input-group input-group-sm">
-                                                                <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-down-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
-                                                                <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <label class="small text-muted mb-1 d-block" for="qos-wan-up-kbps">{{ __('location_details.stat_upload') }}</label>
-                                                            <div class="input-group input-group-sm">
-                                                                <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-up-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
-                                                                <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6 qos-bw-min-col">
-                                                        <div class="panel-sub-label">{{ __('location_details.qos_min_per_class') }}</div>
-                                                        <small class="text-muted d-block mb-2" style="font-size:0.8rem;">{{ __('location_details.qos_min_per_class_help') }}</small>
-                                                        <div class="mb-2">
-                                                            <label class="small d-block mb-1" for="qos-voip-bw">{{ __('location_details.qos_voip') }} <span class="text-muted">(EF)</span></label>
-                                                            <div class="input-group input-group-sm">
-                                                                <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-voip-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
-                                                                <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-2">
-                                                            <label class="small d-block mb-1" for="qos-streaming-bw">{{ __('location_details.qos_streaming') }} <span class="text-muted">(AF41)</span></label>
-                                                            <div class="input-group input-group-sm">
-                                                                <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-streaming-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
-                                                                <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-2">
-                                                            <label class="small d-block mb-1" for="qos-be-bw">{{ __('location_details.qos_best_effort') }} <span class="text-muted">(BE)</span></label>
-                                                            <div class="input-group input-group-sm">
-                                                                <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-be-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
-                                                                <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <label class="small d-block mb-1" for="qos-bulk-bw">{{ __('location_details.qos_bulk') }} <span class="text-muted">(CS1)</span></label>
-                                                            <div class="input-group input-group-sm">
-                                                                <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-bulk-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
-                                                                <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
-                                                            </div>
-                                                        </div>
+                                                <div>
+                                                    <label class="small text-muted mb-1 d-block" for="qos-wan-up-kbps">{{ __('location_details.stat_upload') }}</label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-wan-input" id="qos-wan-up-kbps" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {{-- Tab 2: Traffic Classification (SNI) --}}
-                                            <div class="tab-pane fade" id="qos-pane-sni" role="tabpanel">
-                                                <p class="small text-muted mb-3">{{ __('location_details.router_qos_domains_help') }}</p>
-                                                @foreach(['EF' => 'router_qos_domain_class_ef', 'AF41' => 'router_qos_domain_class_af41', 'CS1' => 'router_qos_domain_class_cs1'] as $qclass => $labelKey)
-                                                    <div class="ld-router-qos-class-block mb-3" data-qos-class="{{ $qclass }}">
-                                                        <div class="small font-weight-bold mb-1">{{ __('location_details.' . $labelKey) }}</div>
-                                                        <ul class="list-unstyled small mb-2" id="ld-router-qos-list-{{ $qclass }}"></ul>
-                                                        <div class="input-group input-group-sm">
-                                                            <input type="text" class="form-control" id="ld-router-qos-input-{{ $qclass }}" maxlength="253" placeholder="{{ __('location_details.networks_qos_domain_placeholder') }}" data-qos-class="{{ $qclass }}" autocomplete="off">
-                                                            <div class="input-group-append">
-                                                                <button type="button" class="btn btn-primary ld-router-qos-add-btn" data-qos-class="{{ $qclass }}">{{ __('location_details.networks_qos_domain_add') }}</button>
-                                                            </div>
-                                                        </div>
+                                            <div class="col-12 col-md-6 qos-bw-min-col">
+                                                <div class="panel-sub-label">{{ __('location_details.qos_min_per_class') }}</div>
+                                                <small class="text-muted d-block mb-2" style="font-size:0.8rem;">{{ __('location_details.qos_min_per_class_help') }}</small>
+                                                <div class="mb-2">
+                                                    <label class="small d-block mb-1" for="qos-voip-bw">{{ __('location_details.qos_voip') }} <span class="text-muted">(EF)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-voip-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
                                                     </div>
-                                                @endforeach
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="small d-block mb-1" for="qos-streaming-bw">{{ __('location_details.qos_streaming') }} <span class="text-muted">(AF41)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-streaming-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="small d-block mb-1" for="qos-be-bw">{{ __('location_details.qos_best_effort') }} <span class="text-muted">(BE)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-be-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="small d-block mb-1" for="qos-bulk-bw">{{ __('location_details.qos_bulk') }} <span class="text-muted">(CS1)</span></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" class="form-control qos-bw-input qos-bw-class-input" id="qos-bulk-bw" min="0" max="10000" step="0.001" inputmode="decimal" placeholder="0">
+                                                        <div class="input-group-append"><span class="input-group-text">Mbps</span></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                    </div>{{-- /.loc-panel-body --}}
-                                </div>{{-- /.loc-panel --}}
+                                    {{-- Tab 2: Traffic Classification (SNI) --}}
+                                    <div class="tab-pane fade" id="qos-pane-sni" role="tabpanel">
+                                        <p class="small text-muted mb-3">{{ __('location_details.router_qos_domains_help') }}</p>
+                                        @foreach(['EF' => 'router_qos_domain_class_ef', 'AF41' => 'router_qos_domain_class_af41', 'CS1' => 'router_qos_domain_class_cs1'] as $qclass => $labelKey)
+                                            <div class="ld-router-qos-class-block mb-3" data-qos-class="{{ $qclass }}">
+                                                <div class="small font-weight-bold mb-1">{{ __('location_details.' . $labelKey) }}</div>
+                                                <ul class="list-unstyled small mb-2" id="ld-router-qos-list-{{ $qclass }}"></ul>
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" class="form-control" id="ld-router-qos-input-{{ $qclass }}" maxlength="253" placeholder="{{ __('location_details.networks_qos_domain_placeholder') }}" data-qos-class="{{ $qclass }}" autocomplete="off">
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-primary ld-router-qos-add-btn" data-qos-class="{{ $qclass }}">{{ __('location_details.networks_qos_domain_add') }}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>{{-- /#qos-settings-section --}}
 
                             <!-- Web Filter -->
