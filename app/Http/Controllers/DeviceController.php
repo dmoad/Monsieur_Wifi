@@ -1215,12 +1215,12 @@ class DeviceController extends Controller
             $query->where('owner_id', $request->owner_id);
         }
 
-        // Filter by location status
+        // Filter by location status (FK lives on locations.device_id, not on devices)
         if ($request->has('location_status')) {
             if ($request->location_status === 'assigned') {
-                $query->whereNotNull('location_id');
+                $query->whereHas('location');
             } elseif ($request->location_status === 'unassigned') {
-                $query->whereNull('location_id');
+                $query->whereDoesntHave('location');
             }
         }
 
