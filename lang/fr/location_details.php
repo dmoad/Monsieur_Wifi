@@ -104,7 +104,7 @@ return [
     'networks_field_radio_band' => 'Bande radio',
     'networks_field_enabled' => 'Réseau actif',
     'networks_field_qos_full' => 'Priorité QoS complète',
-    'networks_field_qos_hint' => 'Désactivé, ce réseau utilise la classe QoS scavenger.',
+    'networks_field_qos_hint' => 'Désactivé, ce réseau passe en priorité minimale (trafic d’arrière-plan).',
     'networks_qos_domains_title' => 'Classification du trafic (SNI)',
     'networks_qos_domains_help' => 'Ajoutez des noms d’hôte ou jokers par classe pour ce réseau WiFi. Nécessite le QoS activé dans les paramètres routeur. Le trafic non listé va en meilleur effort (BE).',
     'networks_qos_domain_class_ef' => 'EF — Temps réel (VoIP, visioconférence)',

@@ -104,7 +104,7 @@ return [
     'networks_field_radio_band' => 'Radio band',
     'networks_field_enabled' => 'Network enabled',
     'networks_field_qos_full' => 'Full QoS priority',
-    'networks_field_qos_hint' => 'When off, this network uses the scavenger QoS class.',
+    'networks_field_qos_hint' => 'When off, this network runs at lowest priority (background traffic).',
     'networks_qos_domains_title' => 'Traffic classification (SNI)',
     'networks_qos_domains_help' => 'Add hostnames or wildcards per class for this WiFi network. Requires QoS enabled in Router settings for the location. Best-effort (BE) is the default for unlisted traffic.',
     'networks_qos_domain_class_ef' => 'EF — Real-time (VoIP, video calls)',
