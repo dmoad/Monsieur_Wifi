@@ -316,7 +316,7 @@ function renderSubscription(data) {
             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
 
             $.ajax({
-                url: '/api/subscription/billing-portal',
+                url: '/api/subscription/billing-portal?locale=' + PAGE_LOCALE,
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + UserManager.getToken() },
                 success: function(response) {

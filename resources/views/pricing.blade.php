@@ -981,6 +981,7 @@
                         body: JSON.stringify({
                             price_id: priceId,
                             plan_name: plan,
+                            locale: lang,
                         }),
                     });
 
@@ -1003,6 +1004,22 @@
                     this.disabled = false;
                 }
             });
+        });
+
+        // Reset subscribe buttons when page is restored from back/forward cache
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                document.querySelectorAll('.btn-subscribe').forEach(btn => {
+                    const spinner = btn.querySelector('.loading-spinner');
+                    const btnText = btn.querySelector('.btn-text');
+                    if (spinner) spinner.classList.add('d-none');
+                    if (btnText) {
+                        const isPremium = btn.dataset.plan === 'premium';
+                        btnText.textContent = isPremium ? t.btnPremium : t.btnStandard;
+                    }
+                    btn.disabled = false;
+                });
+            }
         });
     </script>
 </body>
