@@ -66,6 +66,12 @@ Route::get('/test', function () {
     return response()->json(['message' => 'Hello, World!']);
 });
 
+// Utility: generate a readable random passphrase for SSID password fields.
+// Auth-protected so unauthenticated visitors can't enumerate the wordlist.
+Route::middleware('auth:api')->get('/utils/passphrase', function () {
+    return response()->json(['passphrase' => \App\Support\RandomPassphrase::generate(3, 20)]);
+});
+
 Route::group(['prefix' => 'devices'], function () {
     Route::get('/', [DeviceController::class, 'index']);
     Route::post('/', [DeviceController::class, 'store']);

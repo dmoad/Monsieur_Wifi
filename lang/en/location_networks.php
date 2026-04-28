@@ -46,6 +46,8 @@ return [
     'panel_security_encryption' => 'Security & Encryption',
     'wifi_password' => 'WiFi Password',
     'wifi_password_placeholder' => 'Minimum 8 characters',
+    'wifi_password_generate' => 'Generate a random passphrase',
+    'wifi_password_copy' => 'Copy password to clipboard',
     'security_protocol' => 'Security Protocol',
     'security_wpa2_psk_rec' => 'WPA2-PSK (Recommended)',
     'security_wpa_wpa2_mixed' => 'WPA/WPA2-PSK Mixed',

@@ -46,6 +46,8 @@ return [
     'panel_security_encryption' => 'Sécurité & Chiffrement',
     'wifi_password' => 'Mot de passe WiFi',
     'wifi_password_placeholder' => 'Minimum 8 caractères',
+    'wifi_password_generate' => 'Générer une phrase aléatoire',
+    'wifi_password_copy' => 'Copier le mot de passe',
     'security_protocol' => 'Protocole de sécurité',
     'security_wpa2_psk_rec' => 'WPA2-PSK (Recommandé)',
     'security_wpa_wpa2_mixed' => 'WPA/WPA2-PSK Mixte',

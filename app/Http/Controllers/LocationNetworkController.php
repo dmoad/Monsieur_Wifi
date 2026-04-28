@@ -6,6 +6,7 @@ use App\Models\Device;
 use App\Models\Location;
 use App\Models\LocationNetwork;
 use App\Support\IPv4Subnet;
+use App\Support\RandomPassphrase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -131,9 +132,9 @@ class LocationNetworkController extends Controller
             'radio' => 'nullable|string|in:all,2.4,5',
         ]);
 
-        // Set default password for password-type networks
+        // Set default password for password-type networks if the client didn't supply one
         if ($validated['type'] === 'password' && empty($validated['password'])) {
-            $validated['password'] = 'abcd1234';
+            $validated['password'] = RandomPassphrase::generate(3, 20);
         }
 
         // The DB column is NOT NULL with a default; null from the client means

@@ -146,6 +146,12 @@
                         <div class="input-group">
                             <input type="password" class="form-control" id="ld-net-password" placeholder="{{ __('location_networks.wifi_password_placeholder') }}">
                             <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="ld-net-password-generate" title="{{ __('location_networks.wifi_password_generate') }}" aria-label="{{ __('location_networks.wifi_password_generate') }}">
+                                    <i data-feather="refresh-cw"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" id="ld-net-password-copy" title="{{ __('location_networks.wifi_password_copy') }}" aria-label="{{ __('location_networks.wifi_password_copy') }}">
+                                    <i data-feather="copy"></i>
+                                </button>
                                 <button class="btn btn-outline-secondary" type="button" id="ld-net-password-toggle" aria-label="{{ __('location_details.networks_password_toggle') }}">
                                     <i data-feather="eye"></i>
                                 </button>

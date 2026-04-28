@@ -260,6 +260,29 @@ const ldNetworks = (function () {
         renderMacList();
     }
 
+    async function generatePasswordIntoField() {
+        const input = document.getElementById('ld-net-password');
+        const btn   = document.getElementById('ld-net-password-generate');
+        if (!input || !btn) return;
+        btn.disabled = true;
+        try {
+            const data = await apiFetch(`${API}/utils/passphrase`);
+            input.value = data.passphrase;
+            input.type = 'text'; // reveal so the user can read what was generated
+            const toggleIcon = document.querySelector('#ld-net-password-toggle [data-feather]');
+            if (toggleIcon) {
+                toggleIcon.setAttribute('data-feather', 'eye-off');
+                if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
+            }
+        } catch (err) {
+            if (typeof toastr !== 'undefined') {
+                toastr.error(i18n.networks_password_generate_failed || 'Could not generate a passphrase.');
+            }
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
     function addReservation() {
         const macEl = document.getElementById('ld-net-res-mac');
         const ipEl  = document.getElementById('ld-net-res-ip');
@@ -693,6 +716,8 @@ const ldNetworks = (function () {
         document.getElementById('ld-network-drawer-title').textContent = titlePrefix + ' ' + (net.ssid || '');
         // Reset drawer tabs to the first one each time the drawer opens
         activateDrawerTab('general');
+        // Always reopen with passwords masked (don't carry over a "show password" toggle from a prior session)
+        maskDrawerPasswordInputs();
 
         const type = net.type || 'password';
         setNetType(type);
@@ -908,6 +933,46 @@ const ldNetworks = (function () {
         panels.forEach(p => p.classList.toggle('active', p.dataset.drawerPanel === key));
         const body = document.getElementById('ld-network-drawer-body');
         if (body) body.scrollTop = 0;
+        // Re-mask passwords on tab switch — moving away from a panel implies the user is done reading it
+        maskDrawerPasswordInputs();
+    }
+
+    function maskDrawerPasswordInputs() {
+        ['ld-net-password', 'ld-net-portal-password'].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.type = 'password';
+        });
+        document.querySelectorAll('#ld-net-password-toggle [data-feather], #ld-net-portal-password-toggle [data-feather]')
+            .forEach(icon => icon.setAttribute('data-feather', 'eye'));
+        if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
+    }
+
+    async function copyPasswordToClipboard() {
+        const input = document.getElementById('ld-net-password');
+        if (!input) return;
+        const value = input.value;
+        if (!value) {
+            if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_password_required || 'WiFi password is required.');
+            return;
+        }
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(value);
+            } else {
+                // http fallback: use a temporary input + execCommand
+                const ta = document.createElement('textarea');
+                ta.value = value;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+            }
+            if (typeof toastr !== 'undefined') toastr.success(i18n.networks_password_copied || 'Password copied to clipboard.');
+        } catch (err) {
+            if (typeof toastr !== 'undefined') toastr.error(i18n.networks_password_copy_failed || 'Could not copy to clipboard.');
+        }
     }
 
     function buildWifiQrString(net) {
@@ -997,6 +1062,18 @@ const ldNetworks = (function () {
         if (drawerTab) {
             e.preventDefault();
             activateDrawerTab(drawerTab.dataset.drawerTab);
+            return;
+        }
+        const pwdGen = e.target.closest('#ld-net-password-generate');
+        if (pwdGen) {
+            e.preventDefault();
+            generatePasswordIntoField();
+            return;
+        }
+        const pwdCopy = e.target.closest('#ld-net-password-copy');
+        if (pwdCopy) {
+            e.preventDefault();
+            copyPasswordToClipboard();
             return;
         }
         const pwdToggle = e.target.closest('#ld-net-password-toggle, #ld-net-portal-password-toggle');

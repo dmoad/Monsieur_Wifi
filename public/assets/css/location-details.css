@@ -426,6 +426,37 @@ textarea.form-control { height: auto !important; display: block; resize: vertica
     color: var(--mw-text-secondary);
 }
 
+/* Compact icon buttons in input-group-append (eye toggle, regenerate, etc.).
+   Match the page-wide flat icon-button look instead of Bootstrap's chunky
+   btn-outline-secondary defaults. */
+.ld-drawer-section .input-group-append .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 36px;
+    background: var(--mw-bg-surface);
+    border: 1px solid var(--mw-border);
+    color: var(--mw-text-secondary);
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.ld-drawer-section .input-group-append .btn:hover,
+.ld-drawer-section .input-group-append .btn:focus {
+    background: var(--mw-primary-tint);
+    border-color: var(--mw-primary);
+    color: var(--mw-primary);
+    box-shadow: none;
+}
+.ld-drawer-section .input-group-append .btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.ld-drawer-section .input-group-append .btn svg,
+.ld-drawer-section .input-group-append .btn [data-feather] {
+    width: 14px !important;
+    height: 14px !important;
+}
+
 /* MAC Filter + DHCP Reservations (Tab 4 drawer T4.4g) */
 .ld-net-sub-block + .ld-net-sub-block {
     margin-top: var(--mw-space-xl);
