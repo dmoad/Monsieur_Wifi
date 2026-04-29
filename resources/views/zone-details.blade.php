@@ -99,6 +99,7 @@
         padding: var(--mw-space-md) var(--mw-space-lg);
         margin-bottom: var(--mw-space-sm);
         background: var(--mw-bg-surface);
+        cursor: pointer;
         transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
     }
     .location-card:hover {

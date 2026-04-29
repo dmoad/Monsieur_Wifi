@@ -340,7 +340,7 @@ function displayLocations(locations) {
     let html = paginatedLocations.map(location => {
         const isPrimary = currentZone.primary_location_id === location.id;
         return `
-            <div class="location-card ${isPrimary ? 'primary' : ''}">
+            <div class="location-card ${isPrimary ? 'primary' : ''}" onclick="window.location.href='/${PAGE_LOCALE}/locations/${location.id}?from=zone-${ZONE_ID}'">
                 <div class="lc-icon"><i data-feather="wifi"></i></div>
                 <div class="lc-body">
                     <div class="lc-name-row">
@@ -349,7 +349,7 @@ function displayLocations(locations) {
                     </div>
                     <div class="location-address">${location.address || 'N/A'}</div>
                 </div>
-                <div class="lz-row-actions">
+                <div class="lz-row-actions" onclick="event.stopPropagation()">
                     ${!isPrimary ? `
                         <button type="button" class="lz-action-btn" onclick="setPrimary(${location.id})" data-toggle="tooltip" title="${T.setPrimary}" aria-label="${T.setPrimary}">
                             <i data-feather="home"></i>

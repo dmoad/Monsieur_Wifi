@@ -2,6 +2,14 @@
 
 @php
     $locale = app()->getLocale();
+
+    // Breadcrumb context: if the user arrived from a zone (the access-points
+    // page or the zone-details page sets ?from=zone-{id}), surface the zone
+    // in the breadcrumb so the trail back is intuitive.
+    $fromZone = null;
+    if (preg_match('/^zone-(\d+)$/', request()->query('from', ''), $m)) {
+        $fromZone = \App\Models\Zone::find((int) $m[1]);
+    }
 @endphp
 
 @section('title', __('location_details.page_title'))
@@ -146,7 +154,11 @@
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
-                        <li class="breadcrumb-item"><a href="/{{ $locale }}/locations">{{ __('locations.heading') }}</a></li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/access-points">{{ __('access_points.heading') }}</a></li>
+                        @if ($fromZone)
+                            <li class="breadcrumb-item"><a href="/{{ $locale }}/access-points?tab=zones">{{ __('access_points.tab_zones') }}</a></li>
+                            <li class="breadcrumb-item"><a href="/{{ $locale }}/zones/{{ $fromZone->id }}">{{ $fromZone->name }}</a></li>
+                        @endif
                         <li class="breadcrumb-item active"><span class="location_name">{{ __('common.loading') }}</span></li>
                     </ol>
                 </div>
