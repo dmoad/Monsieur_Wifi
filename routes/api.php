@@ -10,6 +10,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\FirmwareController;
 use App\Http\Controllers\GuestNetworkUserController;
+use App\Http\Controllers\RadiusGuestSessionStatsController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LocationNetworkController;
 use App\Http\Controllers\PaymentController;
@@ -29,6 +30,10 @@ Route::post('auth/verify-email', [AuthController::class, 'verifyEmail']);
 Route::post('auth/resend-verification', [AuthController::class, 'resendVerificationEmail']);
 Route::post('temp-captive-portal-designs', [TempCaptivePortalDesignController::class, 'store']);
 Route::get('temp-captive-portal-designs/{id}', [TempCaptivePortalDesignController::class, 'index']);
+
+// RADIUS / NAS accounting callback (Bearer `RADIUS_STATS_SECRET`, or X-Api-Token header)
+Route::post('radius/guest-session-stats', [RadiusGuestSessionStatsController::class, 'store'])
+    ->middleware('radius.stats');
 
 // Stripe webhook endpoints (public, no CSRF protection)
 Route::post('payment-notifications', [PaymentController::class, 'handleWebhook']);

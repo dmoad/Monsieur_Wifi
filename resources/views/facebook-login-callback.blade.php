@@ -303,6 +303,17 @@
             return browserLang.startsWith('fr') ? 'fr' : 'en';
         }
 
+        function guestPortalClientHints() {
+            try {
+                return {
+                    os: localStorage.getItem('wifiPortalOs') || '',
+                    device_type: localStorage.getItem('wifiPortalDeviceType') || '',
+                };
+            } catch (_e) {
+                return { os: '', device_type: '' };
+            }
+        }
+
         // Apply translations
         function applyTranslations(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -431,8 +442,8 @@
             }
             
             // Prepare login data for Facebook social login
-            const loginData = {
-                location_id: locationId,
+            const loginData = $.extend({
+                location_id: parseInt(localStorage.getItem('location_id') || '0', 10),
                 mac_address: macAddress,
                 login_method: 'social',
                 social_platform: 'facebook',
@@ -441,7 +452,7 @@
                 email: '', // We could fetch this from Facebook API if needed
                 challenge: challenge,
                 ip_address: ipAddress
-            };
+            }, guestPortalClientHints());
             
             console.log('Login data:', loginData);
             

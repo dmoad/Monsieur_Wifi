@@ -135,6 +135,9 @@ return [
     'pool_size' => 'Pool size',
     'pool_size_placeholder' => 'e.g. 101',
     'pool_size_hint' => 'Number of addresses (must fit within your subnet).',
+    'dhcp_lease_duration' => 'Lease duration',
+    'dhcp_lease_hint' => 'How long the router assigns an IP before renewal. Leave blank to use the firmware default (24 h).',
+    'minutes' => 'min',
 
     // VLAN
     'sub_vlan' => 'VLAN',

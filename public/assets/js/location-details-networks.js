@@ -760,6 +760,7 @@ const ldNetworks = (function () {
         document.getElementById('ld-net-dhcp-enabled').checked = net.dhcp_enabled !== false;
         document.getElementById('ld-net-dhcp-start').value = net.dhcp_start || '';
         document.getElementById('ld-net-dhcp-end').value = net.dhcp_end != null ? net.dhcp_end : '';
+        document.getElementById('ld-net-dhcp-lease').value = net.dhcp_lease_duration ?? '';
         document.getElementById('ld-net-vlan-id').value = net.vlan_id || '';
         document.getElementById('ld-net-vlan-tagging').value = net.vlan_tagging || 'disabled';
         applyIpModeVisibility();
@@ -882,6 +883,7 @@ const ldNetworks = (function () {
             const n = parseInt(raw, 10);
             return Number.isNaN(n) ? null : n;
         })();
+        payload.dhcp_lease_duration = noDhcpServer ? null : (parseInt(document.getElementById('ld-net-dhcp-lease').value, 10) || null);
         payload.vlan_id = parseInt(document.getElementById('ld-net-vlan-id').value, 10) || null;
         payload.vlan_tagging = document.getElementById('ld-net-vlan-tagging').value;
 

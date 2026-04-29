@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GuestNetworkUser extends Model
 {
@@ -19,11 +20,13 @@ class GuestNetworkUser extends Model
         'blocked',
         'email',
         'phone',
+        'os',
+        'device_type',
     ];
 
     protected $casts = [
         'expiration_time' => 'datetime',
-        'blocked'         => 'boolean',
+        'blocked' => 'boolean',
     ];
 
     public function location(): BelongsTo
@@ -34,5 +37,10 @@ class GuestNetworkUser extends Model
     public function network(): BelongsTo
     {
         return $this->belongsTo(LocationNetwork::class);
+    }
+
+    public function loginSessions(): HasMany
+    {
+        return $this->hasMany(UserDeviceLoginSession::class);
     }
 }

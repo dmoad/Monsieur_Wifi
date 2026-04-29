@@ -115,6 +115,7 @@
         <img src="{{ asset('assets/images/Mr-Wifi.PNG') }}" alt="MrWiFi Logo" class="logo">
         <div class="loading-spinner"></div>
         <div class="loading-text" data-i18n="loading"></div>
+        <p id="nasid-text"></p>
         <div class="footer" data-i18n="footer"></div>
     </div>
     
@@ -178,6 +179,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             const currentLang = getLanguage();
             applyTranslations(currentLang);
+            var urlParams = new URLSearchParams(window.location.search);
+            var nasid = urlParams.get('nasid');
+            document.getElementById('nasid-text').textContent = nasid;
             
             // Add click listeners to language buttons
             document.querySelectorAll('.language-btn').forEach(btn => {
@@ -189,8 +193,74 @@
 
         // Apply immediately (before DOMContentLoaded for faster rendering)
         applyTranslations(getLanguage());
+
+        (function detectAndStorePortalClient() {
+            function detectDeviceType(ua) {
+                ua = ua || '';
+                const u = ua.toLowerCase();
+                if (/ipad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+                    return 'Tablet';
+                }
+                if (/android/i.test(ua) && !/mobile/i.test(ua)) {
+                    return 'Tablet';
+                }
+                if (/tablet|kindle|playbook|; wv\).*tablet/i.test(ua)) {
+                    return 'Tablet';
+                }
+                if (/mobi|iphone|ipod|android.*mobile|webos|blackberry|iemobile|opera mini|opera mobi/i.test(u)) {
+                    return 'Phone';
+                }
+                if (
+                    /\bwindows nt\b/i.test(ua)
+                    || /\bMacintosh;\s*Intel Mac OS X\b/i.test(ua)
+                    || /\bMac OS X\b/i.test(ua)
+                    || /\bX11;\s*Linux\b/i.test(ua)
+                    || /\bCrOS\b/i.test(ua)
+                ) {
+                    return 'Laptop';
+                }
+                return 'Other';
+            }
+
+            function detectOs(ua) {
+                ua = ua || '';
+                // iPadOS desktop-class Safari reports like macOS unless we detect touch Mac
+                if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
+                    return 'iOS';
+                }
+                if (/Windows NT|Windows Phone|Win64|WOW64|Windows/i.test(ua)) {
+                    return 'Windows';
+                }
+                if (/CrOS/i.test(ua)) {
+                    return 'Chrome OS';
+                }
+                if (/Android/i.test(ua)) {
+                    return 'Android';
+                }
+                if (/iPhone|iPad|iPod/i.test(ua)) {
+                    return 'iOS';
+                }
+                if (/Macintosh|Mac OS X|MacIntel|Mac_PowerPC/i.test(ua)) {
+                    return 'macOS';
+                }
+                if (/Linux/i.test(ua)) {
+                    return 'Linux';
+                }
+                return 'Unknown';
+            }
+
+            try {
+                const ua = navigator.userAgent || '';
+                const os = detectOs(ua);
+                const deviceType = detectDeviceType(ua);
+                localStorage.setItem('wifiPortalOs', os);
+                localStorage.setItem('wifiPortalDeviceType', deviceType);
+            } catch (_e) {
+                /* quota or private browsing */
+            }
+        })();
     </script>
-    
-    <script src="{{ asset('assets/images/captive-portal/js/loading.js') }}?v={{ time() }}"></script>
+
+    <script src="{{ asset('assets/js/loading.js') }}?v={{ time() }}"></script>
 </body>
 </html>

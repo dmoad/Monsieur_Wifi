@@ -399,6 +399,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label class="small text-muted mb-1 d-block" for="ld-net-dhcp-lease">
+                                    {{ __('location_networks.dhcp_lease_duration') }}
+                                </label>
+                                <div class="input-group input-group-sm" style="max-width:220px">
+                                    <input type="number" class="form-control" id="ld-net-dhcp-lease"
+                                           min="1" max="43200" step="1" placeholder="1440">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">{{ __('location_networks.minutes') }}</span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">{{ __('location_networks.dhcp_lease_hint') }}</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="ld-drawer-section">

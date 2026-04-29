@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Mail\GuestOtpMail;
+use App\Models\GuestNetworkUser;
 use App\Models\Location;
 use App\Models\LocationNetwork;
-use App\Models\GuestNetworkUser;
-use App\Models\Radcheck;
 use App\Models\OtpVerification;
+use App\Models\Radcheck;
+use App\Models\UserDeviceLoginSession;
 use App\Services\SmsService;
-use App\Mail\GuestOtpMail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Validator;
 use Log;
+use Validator;
 
 class GuestNetworkUserController extends Controller
 {
@@ -24,7 +25,7 @@ class GuestNetworkUserController extends Controller
         try {
             $locationModel = Location::find($location);
 
-            if (!$locationModel) {
+            if (! $locationModel) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
@@ -35,25 +36,26 @@ class GuestNetworkUserController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('mac_address', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
                 });
             }
 
             $guests = $query->get()->map(fn ($guest) => [
-                'id'              => $guest->id,
-                'mac_address'     => $guest->mac_address,
-                'email'           => $guest->email,
-                'phone'           => $guest->phone,
+                'id' => $guest->id,
+                'mac_address' => $guest->mac_address,
+                'email' => $guest->email,
+                'phone' => $guest->phone,
                 'expiration_time' => $guest->expiration_time?->format('Y-m-d H:i:s'),
-                'blocked'         => $guest->blocked,
-                'created_at'      => $guest->created_at->format('Y-m-d H:i:s'),
+                'blocked' => $guest->blocked,
+                'created_at' => $guest->created_at->format('Y-m-d H:i:s'),
             ]);
 
             return response()->json(['success' => true, 'data' => $guests, 'total' => $guests->count()]);
         } catch (\Exception $e) {
-            Log::error('Error fetching guest users: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Error retrieving guest users: ' . $e->getMessage()], 500);
+            Log::error('Error fetching guest users: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Error retrieving guest users: '.$e->getMessage()], 500);
         }
     }
 
@@ -65,7 +67,7 @@ class GuestNetworkUserController extends Controller
         try {
             $locationModel = Location::find($location);
 
-            if (!$locationModel) {
+            if (! $locationModel) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
@@ -75,14 +77,14 @@ class GuestNetworkUserController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('mac_address', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
                 });
             }
 
-            $guests   = $query->get();
-            $filename = "location_{$location}_guests_" . now()->format('Y-m-d_H-i-s') . '.csv';
-            $content  = "MAC Address,Email,Phone Number\n";
+            $guests = $query->get();
+            $filename = "location_{$location}_guests_".now()->format('Y-m-d_H-i-s').'.csv';
+            $content = "MAC Address,Email,Phone Number\n";
 
             foreach ($guests as $guest) {
                 $content .= sprintf("%s,%s,%s\n", $guest->mac_address ?? '', $guest->email ?? '', $guest->phone ?? '');
@@ -92,8 +94,9 @@ class GuestNetworkUserController extends Controller
                 ->header('Content-Type', 'text/csv')
                 ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
         } catch (\Exception $e) {
-            Log::error('Error exporting guest users: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Export failed: ' . $e->getMessage()], 500);
+            Log::error('Error exporting guest users: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Export failed: '.$e->getMessage()], 500);
         }
     }
 
@@ -106,7 +109,7 @@ class GuestNetworkUserController extends Controller
         $params = array_merge($request->all(), ['network_id' => $network_id]);
 
         $validator = Validator::make($params, [
-            'network_id'  => 'required|exists:location_networks,id',
+            'network_id' => 'required|exists:location_networks,id',
             'mac_address' => 'nullable|string|max:255',
         ]);
 
@@ -116,12 +119,12 @@ class GuestNetworkUserController extends Controller
 
         $network = LocationNetwork::with(['location', 'portalDesign'])->find($network_id);
 
-        if (!$network || !$network->location) {
+        if (! $network || ! $network->location) {
             return response()->json(['success' => false, 'message' => 'Network not found'], 404);
         }
 
         $user = null;
-        if (!empty($params['mac_address'])) {
+        if (! empty($params['mac_address'])) {
             $user = GuestNetworkUser::where('network_id', $network_id)
                 ->where('mac_address', $params['mac_address'])
                 ->first();
@@ -132,47 +135,47 @@ class GuestNetworkUserController extends Controller
         $authMethodsArray = $network->auth_methods ?? [$network->auth_method ?? 'click-through'];
 
         $captivePortalSettings = [
-            'captive_portal_enabled'      => $network->enabled,
-            'captive_portal_ssid'         => $network->ssid,
-            'captive_portal_visible'      => $network->visible,
-            'captive_auth_method'         => $network->auth_method,   // kept for backward compat
-            'captive_auth_methods'        => $authMethodsArray,       // multi-method array
-            'email_require_otp'           => $network->email_require_otp ?? true,
-            'session_timeout'             => $network->session_timeout,
-            'idle_timeout'                => $network->idle_timeout,
-            'captive_portal_redirect'     => $network->redirect_url,
-            'captive_social_auth_method'  => $network->social_auth_method,
-            'download_limit'              => $network->download_limit,
-            'upload_limit'                => $network->upload_limit,
+            'captive_portal_enabled' => $network->enabled,
+            'captive_portal_ssid' => $network->ssid,
+            'captive_portal_visible' => $network->visible,
+            'captive_auth_method' => $network->auth_method,   // kept for backward compat
+            'captive_auth_methods' => $authMethodsArray,       // multi-method array
+            'email_require_otp' => $network->email_require_otp ?? true,
+            'session_timeout' => $network->session_timeout,
+            'idle_timeout' => $network->idle_timeout,
+            'captive_portal_redirect' => $network->redirect_url,
+            'captive_social_auth_method' => $network->social_auth_method,
+            'download_limit' => $network->download_limit,
+            'upload_limit' => $network->upload_limit,
         ];
 
         $captivePortalIp = '10.1.0.1'; // Router provides this via uamip query param
 
         $brand = [
-            'name'              => env('APP_BRAND_NAME'),
-            'logo_url'          => env('APP_BRAND_LOGO'),
-            'welcome_message'   => env('APP_BRAND_WELCOME_MESSAGE'),
+            'name' => env('APP_BRAND_NAME'),
+            'logo_url' => env('APP_BRAND_LOGO'),
+            'welcome_message' => env('APP_BRAND_WELCOME_MESSAGE'),
             'terms_of_service_url' => env('APP_BRAND_TERMS_OF_SERVICE_URL'),
-            'privacy_policy_url'   => env('APP_BRAND_PRIVACY_POLICY_URL'),
+            'privacy_policy_url' => env('APP_BRAND_PRIVACY_POLICY_URL'),
         ];
 
         $locationData = [
-            'id'          => $network->id,           // network_id — used by JS for redirect URLs
+            'id' => $network->id,           // network_id — used by JS for redirect URLs
             'location_id' => $network->location->id,
-            'name'        => $network->location->name,
+            'name' => $network->location->name,
             'description' => $network->location->description ?? null,
-            'settings'    => $captivePortalSettings,
-            'design'      => $network->portalDesign,
-            'ip_address'  => $captivePortalIp,
-            'challenge'   => bin2hex(random_bytes(16)),
+            'settings' => $captivePortalSettings,
+            'design' => $network->portalDesign,
+            'ip_address' => $captivePortalIp,
+            'challenge' => bin2hex(random_bytes(16)),
         ];
 
         return response()->json([
-            'success'  => true,
-            'message'  => 'Network info retrieved',
+            'success' => true,
+            'message' => 'Network info retrieved',
             'location' => $locationData,
-            'user'     => $user,
-            'brand'    => $brand,
+            'user' => $user,
+            'brand' => $brand,
         ]);
     }
 
@@ -182,8 +185,8 @@ class GuestNetworkUserController extends Controller
     public function requestOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'network_id'  => 'required|exists:location_networks,id',
-            'phone'       => 'required|string|max:20',
+            'network_id' => 'required|exists:location_networks,id',
+            'phone' => 'required|string|max:20',
             'mac_address' => 'nullable|string|max:255',
         ]);
 
@@ -191,17 +194,17 @@ class GuestNetworkUserController extends Controller
             return response()->json(['success' => false, 'message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
 
-        $phone      = $request->phone;
-        $networkId  = $request->network_id;
+        $phone = $request->phone;
+        $networkId = $request->network_id;
         $macAddress = $request->mac_address;
 
         $otpVerification = OtpVerification::generateOtp($phone, $networkId, $macAddress);
 
-        $smsService = new SmsService();
+        $smsService = new SmsService;
         Log::info("Sending OTP {$otpVerification->otp} to {$phone}");
         $smsSent = $smsService->sendOtp($phone, $otpVerification->otp);
 
-        if (!$smsSent) {
+        if (! $smsSent) {
             return response()->json(['success' => false, 'message' => 'Failed to send OTP. Please try again later.'], 500);
         }
 
@@ -214,8 +217,8 @@ class GuestNetworkUserController extends Controller
     public function requestEmailOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'network_id'  => 'required|exists:location_networks,id',
-            'email'       => 'required|email|max:255',
+            'network_id' => 'required|exists:location_networks,id',
+            'email' => 'required|email|max:255',
             'mac_address' => 'nullable|string|max:255',
         ]);
 
@@ -223,22 +226,23 @@ class GuestNetworkUserController extends Controller
             return response()->json(['success' => false, 'message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
 
-        $email      = $request->email;
-        $networkId  = $request->network_id;
+        $email = $request->email;
+        $networkId = $request->network_id;
         $macAddress = $request->mac_address;
 
         // Re-use OtpVerification with email as the identifier (stored in the phone column)
         $otpVerification = OtpVerification::generateOtp($email, $networkId, $macAddress);
 
         $brandName = env('APP_BRAND_NAME', 'Monsieur WiFi');
-        $locale    = $request->input('locale', 'en');
+        $locale = $request->input('locale', 'en');
 
         Log::info("Sending email OTP {$otpVerification->otp} to {$email}");
 
         try {
             Mail::to($email)->send(new GuestOtpMail($otpVerification->otp, $brandName, $locale));
         } catch (\Exception $e) {
-            Log::error("Failed to send email OTP to {$email}: " . $e->getMessage());
+            Log::error("Failed to send email OTP to {$email}: ".$e->getMessage());
+
             return response()->json(['success' => false, 'message' => 'Failed to send verification code. Please try again later.'], 500);
         }
 
@@ -254,28 +258,32 @@ class GuestNetworkUserController extends Controller
         Log::info($input);
 
         $validator = Validator::make($input, [
-            'network_id'      => 'required|exists:location_networks,id',
-            'zone_id'         => 'nullable|integer|min:0',
-            'mac_address'     => 'nullable|string|max:255',
-            'login_method'    => 'required|string|in:email,sms,social,click-through,password',
-            'name'            => 'nullable|string|max:255',
-            'email'           => 'nullable|email|max:255',
-            'phone'           => 'nullable|string|max:255',
+            'network_id' => 'required|exists:location_networks,id',
+            'zone_id' => 'nullable|integer|min:0',
+            'mac_address' => 'nullable|string|max:255',
+            'login_method' => 'required|string|in:email,sms,social,click-through,password',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:255',
             'social_platform' => 'nullable|string|max:255',
-            'otp'             => 'nullable|string|size:4',
-            'challenge'       => 'required|string|max:255',
-            'ip_address'      => 'required|string|max:255',
+            'otp' => 'nullable|string|size:4',
+            'challenge' => 'required|string|max:255',
+            'ip_address' => 'required|string|max:255',
+            'location_id' => 'nullable|integer|exists:locations,id',
+            'os' => 'nullable|string|max:255',
+            'device_type' => 'nullable|string|in:Phone,Tablet,Laptop,Other',
         ]);
 
         if ($validator->fails()) {
             Log::info('Validation failed', $validator->errors()->toArray());
+
             return response()->json(['success' => false, 'message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
 
-        $networkId    = $input['network_id'];
-        $zoneId       = (int) ($input['zone_id'] ?? 0);
-        $macAddress   = $input['mac_address'];
-        $loginMethod  = $input['login_method'];
+        $networkId = $input['network_id'];
+        $zoneId = (int) ($input['zone_id'] ?? 0);
+        $macAddress = $input['mac_address'];
+        $loginMethod = $input['login_method'];
 
         // ── Method-specific pre-checks ───────────────────────────────────────
         if ($loginMethod === 'email') {
@@ -283,13 +291,14 @@ class GuestNetworkUserController extends Controller
                 return response()->json(['success' => false, 'message' => 'Email address is required'], 422);
             }
             $emailNetwork = LocationNetwork::find($networkId);
-            $requireOtp   = $emailNetwork ? ($emailNetwork->email_require_otp ?? true) : true;
+            $requireOtp = $emailNetwork ? ($emailNetwork->email_require_otp ?? true) : true;
             if ($requireOtp) {
                 if (empty($input['otp'])) {
                     return response()->json(['success' => false, 'message' => 'Email and verification code are required'], 422);
                 }
-                if (!OtpVerification::verifyOtp($input['email'], $input['otp'], $networkId)) {
+                if (! OtpVerification::verifyOtp($input['email'], $input['otp'], $networkId)) {
                     Log::info('Invalid or expired email OTP');
+
                     return response()->json(['success' => false, 'message' => 'Invalid or expired verification code'], 422);
                 }
             }
@@ -299,8 +308,9 @@ class GuestNetworkUserController extends Controller
             if (empty($input['phone']) || empty($input['otp'])) {
                 return response()->json(['success' => false, 'message' => 'Phone and OTP are required'], 422);
             }
-            if (!OtpVerification::verifyOtp($input['phone'], $input['otp'], $networkId)) {
+            if (! OtpVerification::verifyOtp($input['phone'], $input['otp'], $networkId)) {
                 Log::info('Invalid or expired OTP');
+
                 return response()->json(['success' => false, 'message' => 'Invalid or expired OTP'], 422);
             }
         }
@@ -320,10 +330,14 @@ class GuestNetworkUserController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid password'], 422);
         }
 
+        // Prefer the location_id sent by the client (derived from nas_id in loading.js);
+        // fall back to the network's own location for legacy / direct-URL flows.
+        $locationId = (int) ($input['location_id'] ?? $network->location_id);
+
         // ── Upsert guest user ────────────────────────────────────────────────
         $user = GuestNetworkUser::firstOrCreate(
             ['network_id' => $networkId, 'mac_address' => $macAddress],
-            ['location_id' => $network->location_id, 'zone_id' => $zoneId, 'blocked' => false]
+            ['location_id' => $locationId, 'zone_id' => $zoneId, 'blocked' => false]
         );
 
         if ($loginMethod === 'email') {
@@ -332,52 +346,95 @@ class GuestNetworkUserController extends Controller
             $user->phone = $input['phone'];
         }
 
-        $user->expiration_time    = now()->addMinutes($network->session_timeout ?? 60);
+        $user->expiration_time = now()->addMinutes($network->session_timeout ?? 60);
         $user->download_bandwidth = $network->download_limit;
-        $user->upload_bandwidth   = $network->upload_limit;
+        $user->upload_bandwidth = $network->upload_limit;
+
+        if (! empty($input['os'])) {
+            $user->os = $input['os'];
+        }
+        if (! empty($input['device_type'])) {
+            $user->device_type = $input['device_type'];
+        }
+
         $user->save();
+
+        if ($macAddress !== null && $macAddress !== '') {
+            UserDeviceLoginSession::create([
+                'guest_network_user_id' => $user->id,
+                'mac_address' => $macAddress,
+                'location_id' => $locationId,
+                'network_id' => $networkId,
+                'zone_id' => $zoneId,
+                'login_type' => $this->mapGuestPortalLoginType($loginMethod, $input['social_platform'] ?? null),
+            ]);
+        }
 
         // ── Write radcheck record ────────────────────────────────────────────
         // Read bandwidth directly from the network to avoid any stale/null
         // values that may still be on the $user object from a previous session.
         Radcheck::updateOrCreateRecord($macAddress, 'Cleartext-Password', $macAddress, '==', [
-            'network_id'         => $networkId,
-            'zone_id'            => $zoneId,
+            'network_id' => $networkId,
+            'zone_id' => $zoneId,
             'download_bandwidth' => $network->download_limit,
-            'upload_bandwidth'   => $network->upload_limit,
-            'expiration_time'    => $user->expiration_time,
-            'idle_timeout'       => $network->idle_timeout ?? 0,
+            'upload_bandwidth' => $network->upload_limit,
+            'expiration_time' => $user->expiration_time,
+            'idle_timeout' => $network->idle_timeout ?? 0,
         ]);
 
         // ── Build CoovaChilli CHAP login URL ─────────────────────────────────
-        $challenge  = $input['challenge'];
-        $uamsecret  = '';
-        $username   = $password = $macAddress;
+        $challenge = $input['challenge'];
+        $uamsecret = '';
+        $username = $password = $macAddress;
 
         Log::info("username::{$username}");
 
-        $hexchal  = pack('H32', $challenge);
-        $newchal  = pack('H*', md5($hexchal . $uamsecret));
-        $response = md5("\0" . $password . $newchal);
+        $hexchal = pack('H32', $challenge);
+        $newchal = pack('H*', md5($hexchal.$uamsecret));
+        $response = md5("\0".$password.$newchal);
 
-        $redirectUrl      = $network->redirect_url ?? env('SOLUTION_URL');
-        $loginRedirectUrl = 'http://' . $input['ip_address'] . ':3990/logon'
-            . '?username=' . $username
-            . '&response=' . $response
-            . '&userurl=' . urlencode($redirectUrl);
+        $redirectUrl = $network->redirect_url ?? env('SOLUTION_URL');
+        $loginRedirectUrl = 'http://'.$input['ip_address'].':3990/logon'
+            .'?username='.$username
+            .'&response='.$response
+            .'&userurl='.urlencode($redirectUrl);
 
         return response()->json([
-            'success'      => true,
-            'message'      => 'User logged in',
-            'user'         => $user,
-            'login_url'    => $loginRedirectUrl,
+            'success' => true,
+            'message' => 'User logged in',
+            'user' => $user,
+            'login_url' => $loginRedirectUrl,
             'chap_response' => $response,
         ]);
     }
 
+    /**
+     * Stable labels for captive portal views (click-login, email-login, …).
+     */
+    protected function mapGuestPortalLoginType(string $loginMethod, ?string $socialPlatform): string
+    {
+        return match ($loginMethod) {
+            'click-through' => 'click-login',
+            'email' => 'email-login',
+            'sms' => 'sms-login',
+            'password' => 'password-login',
+            'social' => match (strtolower((string) $socialPlatform)) {
+                'google' => 'google-login',
+                'facebook' => 'facebook-login',
+                'twitter' => 'twitter-login',
+                default => 'oauth-login',
+            },
+            default => 'unknown-login',
+        };
+    }
+
     public function store(Request $request) {}
+
     public function show(string $id) {}
+
     public function edit(string $id) {}
+
     public function update(Request $request, string $id) {}
+
     public function destroy(string $id) {}
 }

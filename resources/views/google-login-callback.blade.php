@@ -491,6 +491,17 @@
             return browserLang.startsWith('fr') ? 'fr' : 'en';
         }
 
+        function guestPortalClientHints() {
+            try {
+                return {
+                    os: localStorage.getItem('wifiPortalOs') || '',
+                    device_type: localStorage.getItem('wifiPortalDeviceType') || '',
+                };
+            } catch (_e) {
+                return { os: '', device_type: '' };
+            }
+        }
+
         // Apply translations
         function applyTranslations(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -705,15 +716,15 @@
                 $.ajax({
                     url: '/api/guest/login',
                     type: 'POST',
-                    data: {
-                        location_id: locationId,
+                    data: $.extend({
+                        location_id: parseInt(localStorage.getItem('location_id') || '0', 10),
                         mac_address: macAddress, 
                         challenge: challenge,
                         login_method: 'social',
                         social_platform: 'google',
                         social_auth_code: googleCode,
                         ip_address: ip_address
-                    },
+                    }, guestPortalClientHints()),
                     headers: { 'Accept': 'application/json' },
                     success: function(response) {
                         console.log('Guest login response:', response);

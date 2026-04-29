@@ -471,6 +471,17 @@
             }
         }
 
+        function guestPortalClientHints() {
+            try {
+                return {
+                    os: localStorage.getItem('wifiPortalOs') || '',
+                    device_type: localStorage.getItem('wifiPortalDeviceType') || '',
+                };
+            } catch (_e) {
+                return { os: '', device_type: '' };
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.language-btn').forEach(btn => {
                 btn.addEventListener('click', function () { switchLanguage(this.getAttribute('data-lang')); });
@@ -592,16 +603,17 @@
                     $.ajax({
                         url: '/api/guest/login',
                         method: 'POST',
-                        data: {
+                        data: $.extend({
                             network_id:   networkId,
                             zone_id:      zoneId,
+                            location_id:  parseInt(localStorage.getItem('location_id') || '0', 10),
                             mac_address:  macAddress,
                             login_method: 'email',
                             email:        email,
                             name:         name,
                             challenge:    challenge,
                             ip_address:   ipAddress,
-                        },
+                        }, guestPortalClientHints()),
                         success: function (response) {
                             const lang = getLanguage();
                             if (response.success) {
@@ -684,9 +696,10 @@
                 const origBgColor = $btn.css('background-color');
                 $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].verifying).prop('disabled', true);
 
-                const loginData = {
+                const loginData = $.extend({
                     network_id:   networkId,
                     zone_id:      zoneId,
+                    location_id:  parseInt(localStorage.getItem('location_id') || '0', 10),
                     mac_address:  macAddress,
                     login_method: 'email',
                     email:        email,
@@ -694,7 +707,7 @@
                     otp:          otp,
                     challenge:    challenge,
                     ip_address:   ipAddress,
-                };
+                }, guestPortalClientHints());
 
                 $.ajax({
                     url: '/api/guest/login',

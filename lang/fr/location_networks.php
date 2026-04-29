@@ -135,6 +135,9 @@ return [
     'pool_size' => 'Taille du pool',
     'pool_size_placeholder' => 'ex. 101',
     'pool_size_hint' => 'Nombre d’adresses (doit tenir dans le sous-réseau).',
+    'dhcp_lease_duration' => 'Durée du bail',
+    'dhcp_lease_hint' => 'Durée pendant laquelle le routeur attribue une IP avant renouvellement. Laisser vide pour utiliser la valeur par défaut du firmware (24 h).',
+    'minutes' => 'min',
 
     // VLAN
     'sub_vlan' => 'VLAN',

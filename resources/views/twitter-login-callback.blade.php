@@ -184,6 +184,17 @@
             return browserLang.startsWith('fr') ? 'fr' : 'en';
         }
 
+        function guestPortalClientHints() {
+            try {
+                return {
+                    os: localStorage.getItem('wifiPortalOs') || '',
+                    device_type: localStorage.getItem('wifiPortalDeviceType') || '',
+                };
+            } catch (_e) {
+                return { os: '', device_type: '' };
+            }
+        }
+
         // Apply translations
         function applyTranslations(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -346,8 +357,8 @@
             var challenge = localStorage.getItem('challenge');
             var nas_ip = localStorage.getItem('nas_ip');
             // Prepare data for the API call
-            var login_data = {
-                    location_id: location_id,
+            var login_data = $.extend({
+                    location_id: parseInt(localStorage.getItem('location_id') || '0', 10),
                     zone_id:     zone_id,
                     mac_address: mac_address,
                     login_method: 'social',
@@ -355,7 +366,7 @@
                     code: code,
                     challenge: challenge,
                     ip_address: nas_ip
-                }
+                }, guestPortalClientHints());
                 
                 console.log('Login data:', login_data);
                 

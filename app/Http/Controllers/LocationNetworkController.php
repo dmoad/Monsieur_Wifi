@@ -121,6 +121,7 @@ class LocationNetworkController extends Controller
             'dhcp_enabled' => 'boolean',
             'dhcp_start' => 'nullable|ipv4',
             'dhcp_end' => 'nullable|integer|min:1|max:16777216',
+            'dhcp_lease_duration' => 'nullable|integer|min:1|max:43200',
             'mac_filter_mode' => 'nullable|string|in:none,allow-listed,block-listed,mixed',
             'mac_filter_list' => 'nullable|array',
             'mac_filter_list.*.mac' => 'required_with:mac_filter_list|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
@@ -279,6 +280,7 @@ class LocationNetworkController extends Controller
             'dhcp_enabled' => 'sometimes|boolean',
             'dhcp_start' => 'nullable|ipv4',
             'dhcp_end' => 'nullable|integer|min:1|max:16777216',
+            'dhcp_lease_duration' => 'nullable|integer|min:1|max:43200',
             'mac_filter_mode' => 'nullable|string|in:none,allow-listed,block-listed,mixed',
             'mac_filter_list' => 'nullable|array',
             'mac_filter_list.*.mac' => 'required_with:mac_filter_list|string|regex:/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/',
@@ -369,7 +371,7 @@ class LocationNetworkController extends Controller
         $versionFields = [
             'type', 'ssid', 'enabled', 'visible', 'password', 'security',
             'auth_method', 'ip_address', 'netmask', 'gateway', 'dns1', 'dns2',
-            'vlan_id', 'vlan_tagging', 'dhcp_enabled', 'dhcp_start', 'dhcp_end',
+            'vlan_id', 'vlan_tagging', 'dhcp_enabled', 'dhcp_start', 'dhcp_end', 'dhcp_lease_duration',
             'mac_filter_mode', 'mac_filter_list', 'dhcp_reservations', 'radio',
         ];
 

@@ -35,6 +35,10 @@ return [
         ],
     ],
 
+    'radius' => [
+        'stats_secret' => env('RADIUS_STATS_SECRET'),
+    ],
+
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),

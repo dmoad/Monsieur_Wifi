@@ -331,6 +331,17 @@
             return (langCode === 'fr') ? 'fr' : 'en';
         }
 
+        function guestPortalClientHints() {
+            try {
+                return {
+                    os: localStorage.getItem('wifiPortalOs') || '',
+                    device_type: localStorage.getItem('wifiPortalDeviceType') || '',
+                };
+            } catch (_e) {
+                return { os: '', device_type: '' };
+            }
+        }
+
         function applyTranslations(lang) {
             // Update elements with data-i18n attribute
             document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -427,14 +438,15 @@
                 $.ajax({
                     url: '/api/guest/login',
                     method: 'POST',
-                    data: {
-                        network_id: networkId,
-                        zone_id:    zoneId,
+                    data: $.extend({
+                        network_id:  networkId,
+                        zone_id:     zoneId,
+                        location_id: parseInt(localStorage.getItem('location_id') || '0', 10),
                         mac_address: macAddress,
                         login_method: 'click-through',
                         challenge: challenge,
                         ip_address: ipAddress
-                    },
+                    }, guestPortalClientHints()),
                     success: function(response) {
                         console.log('response', response);
                         if (response.success) {
