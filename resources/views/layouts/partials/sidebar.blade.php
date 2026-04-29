@@ -41,16 +41,16 @@
             <span class="mw-si-label">{{ __('sidebar.captive_portals') }}</span>
         </a>
 
-        <a class="mw-si {{ request()->is('*/shop', '*/cart', '*/checkout') ? 'active' : '' }}"
+        <div class="mw-sb-section admin_and_above hidden">
+            <span>{{ __('sidebar.section_admin') }}</span>
+        </div>
+
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/shop', '*/cart', '*/checkout') ? 'active' : '' }}"
            href="/{{ $locale }}/shop"
            title="{{ __('sidebar.shop') }}">
             <i data-feather="shopping-bag"></i>
             <span class="mw-si-label">{{ __('sidebar.shop') }}</span>
         </a>
-
-        <div class="mw-sb-section admin_and_above hidden">
-            <span>{{ __('sidebar.section_admin') }}</span>
-        </div>
 
         <a class="mw-si admin_and_above hidden {{ request()->is('*/devices') ? 'active' : '' }}"
            href="/{{ $locale }}/devices"
