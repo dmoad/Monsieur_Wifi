@@ -625,6 +625,20 @@ body.mw-sb-expanded .app-content.content {
 
 .mw-sb.expanded .mw-si-label { display: block; }
 
+.mw-si-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--mw-primary);
+    background: var(--mw-primary-tint);
+    border-radius: var(--mw-radius-full);
+    vertical-align: middle;
+}
+
 /* --- Section label (replaces bare separator) --- */
 .mw-sb-section {
     width: 28px;

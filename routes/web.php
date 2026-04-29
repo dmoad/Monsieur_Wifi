@@ -101,9 +101,13 @@ foreach (['en', 'fr'] as $loc) {
             return view('location-guests', compact('location'));
         })->name('location-guests');
 
-        Route::get('/zones', function () {
-            return view('zones');
+        Route::get('/zones', function () use ($loc) {
+            return redirect("/{$loc}/access-points?tab=zones");
         })->name('zones');
+
+        Route::get('/access-points', function () {
+            return view('access-points');
+        })->name('access-points');
 
         Route::get('/zones/{zone}', function ($zone) {
             return view('zone-details', compact('zone'));

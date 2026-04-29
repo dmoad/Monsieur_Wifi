@@ -27,18 +27,11 @@
             <span class="mw-si-label">{{ __('sidebar.dashboard') }}</span>
         </a>
 
-        <a class="mw-si {{ request()->is('*/zones*') ? 'active' : '' }}"
-           href="/{{ $locale }}/zones"
-           title="{{ __('sidebar.zones') }}">
-            <i data-feather="layers"></i>
-            <span class="mw-si-label">{{ __('sidebar.zones') }}</span>
-        </a>
-
-        <a class="mw-si {{ request()->is('*/locations*') ? 'active' : '' }}"
-           href="/{{ $locale }}/locations"
-           title="{{ __('sidebar.locations') }}">
-            <i data-feather="map-pin"></i>
-            <span class="mw-si-label">{{ __('sidebar.locations') }}</span>
+        <a class="mw-si {{ (request()->is('*/access-points*') || request()->is('*/zones*') || request()->is('*/locations*')) ? 'active' : '' }}"
+           href="/{{ $locale }}/access-points"
+           title="{{ __('sidebar.access_points') }}">
+            <i data-feather="wifi"></i>
+            <span class="mw-si-label">{{ __('sidebar.access_points') }}</span>
         </a>
 
         <a class="mw-si {{ request()->is('*/captive-portals') ? 'active' : '' }}"
@@ -46,13 +39,6 @@
            title="{{ __('sidebar.captive_portals') }}">
             <i data-feather="layout"></i>
             <span class="mw-si-label">{{ __('sidebar.captive_portals') }}</span>
-        </a>
-
-        <a class="mw-si {{ request()->is('*/devices') ? 'active' : '' }}"
-           href="/{{ $locale }}/devices"
-           title="{{ __('sidebar.devices') }}">
-            <i data-feather="hard-drive"></i>
-            <span class="mw-si-label">{{ __('sidebar.devices') }}</span>
         </a>
 
         <a class="mw-si {{ request()->is('*/shop', '*/cart', '*/checkout') ? 'active' : '' }}"
@@ -65,6 +51,13 @@
         <div class="mw-sb-section admin_and_above hidden">
             <span>{{ __('sidebar.section_admin') }}</span>
         </div>
+
+        <a class="mw-si admin_and_above hidden {{ request()->is('*/devices') ? 'active' : '' }}"
+           href="/{{ $locale }}/devices"
+           title="{{ __('sidebar.fleet') }}">
+            <i data-feather="activity"></i>
+            <span class="mw-si-label">{{ __('sidebar.fleet') }}</span>
+        </a>
 
         <a class="mw-si admin_and_above hidden {{ request()->is('*/accounts') ? 'active' : '' }}"
            href="/{{ $locale }}/accounts"

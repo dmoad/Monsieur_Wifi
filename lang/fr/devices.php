@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'page_title' => 'Appareils - Monsieur WiFi',
-    'heading' => 'Appareils',
+    'page_title' => 'Flotte - Monsieur WiFi',
+    'heading' => 'Flotte',
 
     // Filter bar
     'search_placeholder' => 'Rechercher par série, MAC ou modèle…',

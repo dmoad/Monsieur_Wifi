@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'page_title' => 'Devices - Monsieur WiFi',
-    'heading' => 'Devices',
+    'page_title' => 'Fleet - Monsieur WiFi',
+    'heading' => 'Fleet',
 
     // Filter bar
     'search_placeholder' => 'Search by serial, MAC, or model…',
