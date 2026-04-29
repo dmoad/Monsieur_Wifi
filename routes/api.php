@@ -14,6 +14,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LocationNetworkController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QosController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
 use App\Http\Controllers\ZoneController;
@@ -255,9 +256,6 @@ Route::post('/network/{network_id}/guest/info', [GuestNetworkUserController::cla
 Route::post('/guest/login', [GuestNetworkUserController::class, 'login']);
 Route::post('/guest/request-otp', [GuestNetworkUserController::class, 'requestOtp']);
 Route::post('/guest/request-email-otp', [GuestNetworkUserController::class, 'requestEmailOtp']);
-
-// Subscription routes
-use App\Http\Controllers\SubscriptionController;
 
 // Public subscription routes
 Route::get('/subscription/plans', [SubscriptionController::class, 'plans']);

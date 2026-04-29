@@ -44,8 +44,8 @@
                 'portal_created' => [
                     'color' => '#00cfe8',
                     'gradient' => 'linear-gradient(135deg, #00cfe8 0%, #1ce7ff 100%)',
-                    'title' => 'Portail Captif Cr&eacute;&eacute;',
-                    'subtitle' => 'Un client vient de cr&eacute;er son portail captif',
+                    'title' => 'Portail Captif Créé',
+                    'subtitle' => 'Un client vient de créer son portail captif',
                     'badge' => 'Etape 1/3',
                     'badgeColor' => '#00cfe8',
                     'steps' => [2, 0, 0],

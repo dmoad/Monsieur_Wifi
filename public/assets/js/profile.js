@@ -81,10 +81,21 @@ $(window).on('load', function() {
     });
 });
 
+// Reset manage-subscription button when page is restored from back/forward cache
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        const $btn = $('#manage-subscription-btn');
+        if ($btn.length) {
+            $btn.prop('disabled', false).html(`<i data-feather="settings" style="width: 16px; height: 16px;"></i> ${t.subscriptionManage}`);
+            if (typeof feather !== 'undefined') feather.replace();
+        }
+    }
+});
+
 $(document).ready(function() {
     const user = UserManager.getUser();
     const token = UserManager.getToken();
-    
+
     if (!token || !user) {
         window.location.href = '/';
         return;

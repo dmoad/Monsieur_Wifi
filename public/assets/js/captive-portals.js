@@ -287,38 +287,24 @@ function fetchDesignDetails(designId) {
 }
 
 function checkUserSubscription() {
-    const ctaBannerHtml = `
-        <div class="alert alert-primary d-flex align-items-center justify-content-between mb-2" style="border-left: 4px solid #7367f0; background: linear-gradient(135deg, rgba(115,103,240,0.08), rgba(115,103,240,0.02)); border-radius: 8px; padding: 1.25rem 1.5rem;">
-            <div class="d-flex align-items-center">
-                <div style="background: rgba(115,103,240,0.15); border-radius: 50%; padding: 0.75rem; margin-right: 1rem;">
-                    <i data-feather="wifi" style="width: 24px; height: 24px; color: #7367f0;"></i>
-                </div>
-                <div>
-                    <h5 class="mb-0" style="color: #7367f0;">${t.ctaTitle}</h5>
-                    <p class="mb-0 text-muted">${t.ctaText}</p>
-                </div>
-            </div>
-            <a href="/${PAGE_LOCALE}/pricing" class="btn btn-primary ml-2 d-flex align-items-center" style="white-space: nowrap; padding: 0.6rem 1.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; gap: 0.4rem;">
-                <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.ctaButton}
-            </a>
-        </div>
-    `;
-
     $.ajax({
         url: '/api/subscription/status',
         method: 'GET',
         headers: { 'Authorization': 'Bearer ' + token },
         success: function(response) {
-            if (!response.has_subscription) {
-                $('#device-cta-banner').html(ctaBannerHtml).show();
-                if (typeof feather !== 'undefined') feather.replace();
-            } else {
+            if (response.has_subscription) {
+                // User is subscribed: hide both timeline and CTA banner
                 $('#onboarding-timeline').hide();
+                $('#device-cta-banner').hide();
+            } else {
+                // Not subscribed: show CTA banner (timeline already visible)
+                $('#device-cta-banner').show();
+                if (typeof feather !== 'undefined') feather.replace();
             }
         },
         error: function() {
             // If subscription check fails, show CTA as fallback
-            $('#device-cta-banner').html(ctaBannerHtml).show();
+            $('#device-cta-banner').show();
             if (typeof feather !== 'undefined') feather.replace();
         }
     });
@@ -616,6 +602,7 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const fromRegistration = urlParams.get('from') === 'registration';
     fetchDesigns(fromRegistration);
+    checkUserSubscription();
 
     // Server-injected edit ID: /{id} route sets window.CAPTIVE_EDIT_ID.
     if (window.CAPTIVE_EDIT_ID) {

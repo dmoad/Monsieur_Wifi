@@ -165,8 +165,8 @@ class SubscriptionController extends Controller
                 'subscription_data' => [
                     'trial_period_days' => $trialDays,
                 ],
-                'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}'),
-                'cancel_url' => url('/subscription/cancel'),
+                'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}&locale=' . ($rawLocale ?: 'en')),
+                'cancel_url' => url('/subscription/cancel?locale=' . ($rawLocale ?: 'en')),
                 'billing_address_collection' => 'required',
                 'phone_number_collection' => ['enabled' => true],
                 'tax_id_collection' => ['enabled' => true],

@@ -256,6 +256,8 @@
         };
 
         function detectLanguage() {
+            const urlLang = new URLSearchParams(window.location.search).get('locale');
+            if (urlLang === 'en' || urlLang === 'fr') return urlLang;
             const savedLang = localStorage.getItem('preferred_language');
             if (savedLang && (savedLang === 'en' || savedLang === 'fr')) return savedLang;
             const browserLang = (navigator.language || navigator.userLanguage).substring(0, 2).toLowerCase();

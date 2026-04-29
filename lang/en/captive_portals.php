@@ -13,6 +13,11 @@ return [
     'timeline_step3_label' => 'I receive my device',
     'timeline_step3_sub' => 'Delivery + setup assistance',
 
+    // Subscription CTA banner
+    'cta_title' => 'Subscribe to enable your portal',
+    'cta_text' => 'Browse our plans to activate your captive portal.',
+    'cta_button' => 'View our plans',
+
     // Designs list
     'your_designs_title' => 'Your Captive Portal Designs',
     'create_new_design' => 'Create New Design',
