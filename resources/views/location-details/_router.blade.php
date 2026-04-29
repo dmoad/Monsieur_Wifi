@@ -18,6 +18,16 @@
                                     <div class="wan-detail"><span class="interface-label">{{ __('location_details.username') }}</span><span class="interface-value" id="wan-pppoe-username">-</span></div>
                                     <div class="wan-detail"><span class="interface-label">{{ __('location_details.service_name') }}</span><span class="interface-value" id="wan-pppoe-service-name">-</span></div>
                                 </div>
+                                <div class="wan-details wan-dhcp-display_div hidden">
+                                    <div class="wan-detail" id="wan-dhcp-dns1-row" style="display:none;">
+                                        <span class="interface-label">{{ __('location_details.primary_dns') }}</span>
+                                        <span class="interface-value" id="wan-dhcp-dns1-display">-</span>
+                                    </div>
+                                    <div class="wan-detail" id="wan-dhcp-dns2-row" style="display:none;">
+                                        <span class="interface-label">{{ __('location_details.modal_wan_secondary_dns') }}</span>
+                                        <span class="interface-value" id="wan-dhcp-dns2-display">-</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Radio Settings -->

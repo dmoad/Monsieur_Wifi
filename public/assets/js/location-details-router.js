@@ -73,11 +73,12 @@ async function loadLocationSettings() {
         if (!res.success) return;
         const s = res.data.settings;
 
-        // WAN display — reset both detail rows first so type changes are reflected cleanly
+        // WAN display — reset all detail rows first so type changes are reflected cleanly
         const wanType = (s.wan_connection_type || 'dhcp').toLowerCase();
         $('#wan-type-display').text(wanType.toUpperCase());
         $('.wan-static-ip-display_div').addClass('hidden');
         $('.wan-pppoe-display_div').addClass('hidden');
+        $('.wan-dhcp-display_div').addClass('hidden');
         if (wanType === 'static') {
             $('.wan-static-ip-display_div').removeClass('hidden');
             $('#wan-ip-display').text(s.wan_ip_address || '-');
@@ -88,6 +89,18 @@ async function loadLocationSettings() {
             $('.wan-pppoe-display_div').removeClass('hidden');
             $('#wan-pppoe-username').text(s.wan_pppoe_username || '-');
             $('#wan-pppoe-service-name').text(s.wan_pppoe_service_name || '-');
+        } else if (wanType === 'dhcp') {
+            // DHCP card stays empty unless the user has overridden DNS — show
+            // only the rows that are actually configured.
+            const dns1 = s.wan_primary_dns;
+            const dns2 = s.wan_secondary_dns;
+            if (dns1 || dns2) {
+                $('.wan-dhcp-display_div').removeClass('hidden');
+                $('#wan-dhcp-dns1-row').toggle(!!dns1);
+                $('#wan-dhcp-dns1-display').text(dns1 || '-');
+                $('#wan-dhcp-dns2-row').toggle(!!dns2);
+                $('#wan-dhcp-dns2-display').text(dns2 || '-');
+            }
         }
 
         // WAN modal defaults
@@ -180,9 +193,14 @@ async function loadLocationSettings() {
 }
 
 function toggleWanFields(type) {
-    const t = (type || '').toUpperCase();
+    const t = (type || '').toLowerCase();
     $('#wan-static-fields').toggle(t === 'static');
     $('#wan-pppoe-fields').toggle(t === 'pppoe');
+    // DNS section visible for DHCP + Static. The "override" header/hint
+    // only makes sense for DHCP (you're overriding ISP-provided DNS).
+    // In Static, you're configuring DNS directly — show the inputs alone.
+    $('#wan-dns-fields').toggle(t === 'dhcp' || t === 'static');
+    $('.wan-dns-override-meta').toggle(t === 'dhcp');
 }
 
 function syncDnsFieldStates(filterOn) {
@@ -204,8 +222,6 @@ async function saveWanSettings() {
         const ip      = $('#wan-ip-address').val().trim();
         const netmask = $('#wan-netmask').val().trim();
         const gateway = $('#wan-gateway').val().trim();
-        const dns1    = $('#wan-primary-dns').val().trim();
-        const dns2    = $('#wan-secondary-dns').val().trim();
         if (!ip || !isValidIPv4(ip)) {
             toastr.warning(i18n.wan_ip_required);
             $('#wan-ip-address').focus();
@@ -221,16 +237,6 @@ async function saveWanSettings() {
             $('#wan-gateway').focus();
             return;
         }
-        if (dns1 && !isValidIPv4(dns1)) {
-            toastr.warning(i18n.wan_primary_dns_invalid);
-            $('#wan-primary-dns').focus();
-            return;
-        }
-        if (dns2 && !isValidIPv4(dns2)) {
-            toastr.warning(i18n.wan_secondary_dns_invalid);
-            $('#wan-secondary-dns').focus();
-            return;
-        }
     } else if (connType === 'pppoe') {
         if (!$('#wan-pppoe-username-modal').val().trim()) {
             toastr.warning(i18n.wan_pppoe_username_required);
@@ -240,6 +246,22 @@ async function saveWanSettings() {
         if (!$('#wan-pppoe-password').val()) {
             toastr.warning(i18n.wan_pppoe_password_required);
             $('#wan-pppoe-password').focus();
+            return;
+        }
+    }
+
+    // Shared DNS override validation (DHCP + Static). Both fields optional.
+    if (connType === 'dhcp' || connType === 'static') {
+        const dns1 = $('#wan-primary-dns').val().trim();
+        const dns2 = $('#wan-secondary-dns').val().trim();
+        if (dns1 && !isValidIPv4(dns1)) {
+            toastr.warning(i18n.wan_primary_dns_invalid);
+            $('#wan-primary-dns').focus();
+            return;
+        }
+        if (dns2 && !isValidIPv4(dns2)) {
+            toastr.warning(i18n.wan_secondary_dns_invalid);
+            $('#wan-secondary-dns').focus();
             return;
         }
     }
@@ -270,12 +292,15 @@ async function saveWanSettings() {
             data.wan_primary_dns   = null;
             data.wan_secondary_dns = null;
         } else {
-            // DHCP — clear both sets of type-specific fields
+            // DHCP — clear type-specific fields but keep optional DNS override.
+            // Firmware requirement: when wan_primary_dns/secondary_dns are set
+            // in DHCP mode, the router must use them instead of the DNS handed
+            // out by the upstream DHCP server.
             data.wan_ip_address      = null;
             data.wan_netmask         = null;
             data.wan_gateway         = null;
-            data.wan_primary_dns     = null;
-            data.wan_secondary_dns   = null;
+            data.wan_primary_dns     = $('#wan-primary-dns').val().trim() || null;
+            data.wan_secondary_dns   = $('#wan-secondary-dns').val().trim() || null;
             data.wan_pppoe_username  = null;
             data.wan_pppoe_password  = null;
             data.wan_pppoe_service_name = null;
@@ -1062,7 +1087,18 @@ function initRouterHandlers() {
 
     // Save WAN
     $(document).on('click', '.save-wan-settings', saveWanSettings);
-    $('#wan-connection-type').on('change', function () { toggleWanFields($(this).val()); });
+    $('#wan-connection-type').on('change', function () {
+        const type = $(this).val();
+        toggleWanFields(type);
+        // Pre-fill DNS with the firmware fallback (8.8.8.8 / 8.8.4.4) when
+        // the user actively switches to Static and the fields are empty —
+        // makes the "what gets used if I leave it blank" answer visible.
+        // Empty fields on initial load are preserved (user intent honored).
+        if (type === 'static') {
+            if (!$('#wan-primary-dns').val().trim())   $('#wan-primary-dns').val('8.8.8.8');
+            if (!$('#wan-secondary-dns').val().trim()) $('#wan-secondary-dns').val('8.8.4.4');
+        }
+    });
 
     // Restart device — reset modal to "Reboot Now" tab each time it opens
     $('#device-restart-btn').on('click', function () {

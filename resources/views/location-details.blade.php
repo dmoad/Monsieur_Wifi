@@ -225,13 +225,23 @@
                     <div class="form-group"><label>{{ __('location_details.ip_address') }}</label><input type="text" class="form-control" id="wan-ip-address" placeholder="192.168.1.10"></div>
                     <div class="form-group"><label>{{ __('location_details.modal_wan_netmask') }}</label><input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0"></div>
                     <div class="form-group"><label>{{ __('location_details.gateway') }}</label><input type="text" class="form-control" id="wan-gateway" placeholder="192.168.1.1"></div>
-                    <div class="form-group"><label>{{ __('location_details.primary_dns') }}</label><input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8"></div>
-                    <div class="form-group"><label>{{ __('location_details.modal_wan_secondary_dns') }}</label><input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1"></div>
                 </div>
                 <div id="wan-pppoe-fields" style="display:none;">
                     <div class="form-group"><label>{{ __('location_details.username') }}</label><input type="text" class="form-control" id="wan-pppoe-username-modal" placeholder="{{ __('location_details.username') }}"></div>
                     <div class="form-group"><label>{{ __('location_details.modal_wan_password') }}</label><input type="password" class="form-control" id="wan-pppoe-password" placeholder="{{ __('location_details.modal_wan_password') }}"></div>
                     <div class="form-group"><label>{{ __('location_details.modal_wan_service_name_optional') }}</label><input type="text" class="form-control" id="wan-pppoe-service-name-modal" placeholder="{{ __('location_details.service_name') }}"></div>
+                </div>
+                {{-- Shared DNS section: visible for DHCP + Static. Optional override of upstream DNS. --}}
+                <div id="wan-dns-fields" style="display:none;">
+                    <hr class="my-3">
+                    <div class="wan-dns-override-meta">
+                        <div class="d-flex align-items-baseline justify-content-between mb-1">
+                            <span class="font-weight-bold">{{ __('location_details.modal_wan_dns_section') }}</span>
+                        </div>
+                        <small class="text-muted d-block mb-2">{{ __('location_details.modal_wan_dns_hint') }}</small>
+                    </div>
+                    <div class="form-group"><label>{{ __('location_details.primary_dns') }}</label><input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8"></div>
+                    <div class="form-group mb-0"><label>{{ __('location_details.modal_wan_secondary_dns') }}</label><input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1"></div>
                 </div>
             </div>
             <div class="modal-footer">

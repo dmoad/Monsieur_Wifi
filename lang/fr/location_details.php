@@ -286,6 +286,8 @@ return [
     'modal_wan_service_name_optional' => 'Nom du service (optionnel)',
     'modal_save_changes' => 'Enregistrer les modifications',
     'modal_wan_static_ip' => 'IP statique',
+    'modal_wan_dns_section' => 'DNS personnalisé (optionnel)',
+    'modal_wan_dns_hint' => 'Laisser vide pour utiliser le DNS fourni automatiquement. Si renseignés, ces serveurs remplacent le DNS amont.',
 
     // Enregistrement WAN — messages toast
     'wan_ip_required' => 'Une adresse IP valide est requise en mode IP statique.',

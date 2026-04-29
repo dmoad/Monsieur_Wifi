@@ -286,6 +286,8 @@ return [
     'modal_wan_service_name_optional' => 'Service Name (Optional)',
     'modal_save_changes' => 'Save Changes',
     'modal_wan_static_ip' => 'Static IP',
+    'modal_wan_dns_section' => 'Custom DNS (optional)',
+    'modal_wan_dns_hint' => 'Leave empty to use the DNS automatically provided. When set, these override the upstream DNS.',
 
     // WAN save — toast messages
     'wan_ip_required' => 'A valid IP address is required for Static IP mode.',
