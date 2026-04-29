@@ -123,7 +123,7 @@
             Vous pouvez réessayer quand vous le souhaitez.
         </p>
         <div class="buttons">
-            <a href="/pricing" class="btn btn-primary" id="btn-retry">Réessayer</a>
+            <a href="/{{ app()->getLocale() }}/pricing" class="btn btn-primary" id="btn-retry">Réessayer</a>
             <a href="/en/dashboard" class="btn btn-outline" id="btn-dashboard">Retour au tableau de bord</a>
         </div>
     </div>
@@ -147,6 +147,8 @@
         };
 
         function detectLanguage() {
+            const urlLang = new URLSearchParams(window.location.search).get('locale');
+            if (urlLang === 'en' || urlLang === 'fr') return urlLang;
             const savedLang = localStorage.getItem('preferred_language');
             if (savedLang && (savedLang === 'en' || savedLang === 'fr')) return savedLang;
             const browserLang = (navigator.language || navigator.userLanguage).substring(0, 2).toLowerCase();
@@ -160,6 +162,7 @@
         document.getElementById('title').textContent = t.title;
         document.getElementById('message').textContent = t.message;
         document.getElementById('btn-retry').textContent = t.retry;
+        document.getElementById('btn-retry').href = '/' + lang + '/pricing';
         document.getElementById('btn-dashboard').textContent = t.dashboard;
         document.getElementById('btn-dashboard').href = '/' + lang + '/dashboard';
     </script>

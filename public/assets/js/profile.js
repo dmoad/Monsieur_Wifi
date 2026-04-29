@@ -11,6 +11,7 @@ const TRANSLATIONS = {
         failedUpdateProfile: 'Failed to update profile. Please try again.',
         uploadingPhoto: 'Uploading Photo...',
         subscriptionActive: 'Active',
+        subscriptionTrialing: 'Free trial',
         subscriptionCanceled: 'Cancelled',
         subscriptionNone: 'No active subscription',
         subscriptionPlan: 'Plan',
@@ -30,6 +31,7 @@ const TRANSLATIONS = {
         failedUpdateProfile: 'Échec de la mise à jour du profil. Veuillez réessayer.',
         uploadingPhoto: 'Téléchargement de la photo...',
         subscriptionActive: 'Actif',
+        subscriptionTrialing: 'Période d\'essai',
         subscriptionCanceled: 'Annulé',
         subscriptionNone: 'Aucun abonnement actif',
         subscriptionPlan: 'Plan',
@@ -79,10 +81,21 @@ $(window).on('load', function() {
     });
 });
 
+// Reset manage-subscription button when page is restored from back/forward cache
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        const $btn = $('#manage-subscription-btn');
+        if ($btn.length) {
+            $btn.prop('disabled', false).html(`<i data-feather="settings" style="width: 16px; height: 16px;"></i> ${t.subscriptionManage}`);
+            if (typeof feather !== 'undefined') feather.replace();
+        }
+    }
+});
+
 $(document).ready(function() {
     const user = UserManager.getUser();
     const token = UserManager.getToken();
-    
+
     if (!token || !user) {
         window.location.href = '/';
         return;
@@ -255,7 +268,7 @@ function loadSubscriptionStatus() {
             $('#subscription-section').html(`
                 <div class="d-flex align-items-center justify-content-between">
                     <p class="mb-0 text-muted">${t.subscriptionNone}</p>
-                    <a href="/pricing" class="btn btn-primary">
+                    <a href="/${PAGE_LOCALE}/pricing" class="btn btn-primary">
                         <i data-feather="shopping-bag"></i> ${t.subscriptionSubscribe}
                     </a>
                 </div>
@@ -272,17 +285,21 @@ function renderSubscription(data) {
         section.html(`
             <div class="d-flex align-items-center justify-content-between">
                 <p class="mb-0 text-muted">${t.subscriptionNone}</p>
-                <a href="/pricing" class="btn btn-primary d-flex align-items-center" style="gap: 0.4rem;">
+                <a href="/${PAGE_LOCALE}/pricing" class="btn btn-primary d-flex align-items-center" style="gap: 0.4rem;">
                     <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> ${t.subscriptionSubscribe}
                 </a>
             </div>
         `);
     } else {
         const sub = data.subscription;
-        const isActive = sub.stripe_status === 'active';
-        const statusBadge = isActive
-            ? `<span class="badge badge-light-success">${t.subscriptionActive}</span>`
-            : `<span class="badge badge-light-danger">${t.subscriptionCanceled}</span>`;
+        let statusBadge;
+        if (sub.stripe_status === 'active') {
+            statusBadge = `<span class="badge badge-light-success">${t.subscriptionActive}</span>`;
+        } else if (sub.stripe_status === 'trialing') {
+            statusBadge = `<span class="badge badge-light-info">${t.subscriptionTrialing}</span>`;
+        } else {
+            statusBadge = `<span class="badge badge-light-danger">${t.subscriptionCanceled}</span>`;
+        }
 
         let graceNote = '';
         if (sub.on_grace_period && sub.ends_at) {
@@ -310,7 +327,7 @@ function renderSubscription(data) {
             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
 
             $.ajax({
-                url: '/api/subscription/billing-portal',
+                url: '/api/subscription/billing-portal?locale=' + PAGE_LOCALE,
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + UserManager.getToken() },
                 success: function(response) {

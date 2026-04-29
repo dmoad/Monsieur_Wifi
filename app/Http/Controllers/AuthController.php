@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Mail\PasswordResetMail;
 use App\Mail\VerifyEmailMail;
+use App\Mail\OnboardingStepNotification;
+use App\Services\GoogleSheetsService;
 use Carbon\Carbon;
 use Log;
 
@@ -89,6 +91,17 @@ class AuthController extends Controller
         // Send verification email with has_design=1 so verify-email redirects to captive-portals
         $this->sendVerificationEmail($user, true);
 
+        // Notify commercial team + Google Sheets
+        try {
+            $notifEmail = env('COMMERCIAL_NOTIFICATION_EMAIL');
+            if ($notifEmail) {
+                Mail::to($notifEmail)->send(new OnboardingStepNotification($user, 'registration'));
+            }
+            app(GoogleSheetsService::class)->updateOnboardingStep($user->name, $user->email, 'registration', $user->created_at->format('d/m/Y H:i'));
+        } catch (\Exception $e) {
+            Log::error('Failed to send onboarding notification', ['error' => $e->getMessage()]);
+        }
+
         return response()->json([
             'message' => 'Registration successful! Please check your email to verify your account.',
             'requires_verification' => true,
@@ -142,6 +155,17 @@ class AuthController extends Controller
         // Send verification email with design flag only if a design was actually transferred
         $hasDesign = $request->has('design_id') && $request->design_id;
         $this->sendVerificationEmail($user, $hasDesign);
+
+        // Notify commercial team + Google Sheets
+        try {
+            $notifEmail = env('COMMERCIAL_NOTIFICATION_EMAIL');
+            if ($notifEmail) {
+                Mail::to($notifEmail)->send(new OnboardingStepNotification($user, 'registration'));
+            }
+            app(GoogleSheetsService::class)->updateOnboardingStep($user->name, $user->email, 'registration', $user->created_at->format('d/m/Y H:i'));
+        } catch (\Exception $e) {
+            Log::error('Failed to send onboarding notification', ['error' => $e->getMessage()]);
+        }
 
         return response()->json([
             'message' => 'Registration successful! Please check your email to verify your account.',

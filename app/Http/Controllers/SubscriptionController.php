@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Mail\SubscriptionConfirmedMail;
 use App\Mail\NewSubscriptionAdminNotification;
+use App\Mail\OnboardingStepNotification;
+use App\Services\GoogleSheetsService;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Log;
 
@@ -81,6 +83,7 @@ class SubscriptionController extends Controller
         $request->validate([
             'price_id' => 'required|string',
             'plan_name' => 'required|string',
+            'locale' => 'nullable|string|in:fr,en',
         ]);
 
         try {
@@ -99,8 +102,32 @@ class SubscriptionController extends Controller
             // Create checkout session with subscription + deposit
             \Stripe\Stripe::setApiKey(config('cashier.secret'));
 
+            $trialDays = (int) env('STRIPE_TRIAL_DAYS', 7);
+            $depositCents = (int) env('DEPOSIT_AMOUNT_CENTS', 5000);
+            $shippingCents = (int) env('SHIPPING_FEE_CENTS', 1500);
+            $depositLabel = number_format($depositCents / 100, 0, ',', ' ');
+            $shippingLabel = number_format($shippingCents / 100, 0, ',', ' ');
+
+            $rawLocale = $request->input('locale');
+            $locale = in_array($rawLocale, ['fr', 'en']) ? $rawLocale : 'auto';
+            $isEn = $rawLocale === 'en';
+
+            $depositName = $isEn ? 'WiFi access point deposit' : 'Caution borne WiFi';
+            $depositDesc = $isEn ? 'Refundable deposit for the Monsieur WiFi access point' : 'Caution remboursable pour la borne WiFi Monsieur WiFi';
+            $shippingName = $isEn ? 'Shipping fee' : 'Frais de livraison';
+            $shippingDesc = $isEn ? 'Delivery of the WiFi access point' : 'Livraison de la borne WiFi';
+
+            $submitMessage = $isEn
+                ? "Your subscription includes: a WiFi access point with pre-configured captive portal and setup assistance. Today you only pay the deposit ({$depositLabel}€) + shipping fee ({$shippingLabel}€). Your subscription is free for {$trialDays} days, then billed automatically."
+                : "Votre abonnement inclut : borne WiFi avec portail captif pré-paramétré et assistance à la mise en service. Aujourd'hui vous payez uniquement la caution ({$depositLabel}€) + frais de livraison ({$shippingLabel}€). Votre abonnement est offert pendant {$trialDays} jours, puis facturé automatiquement.";
+
+            $termsMessage = $isEn
+                ? 'I accept the [Terms and Conditions](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')'
+                : 'J\'accepte les [Conditions Générales de Vente](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')';
+
             $checkout = \Stripe\Checkout\Session::create([
                 'customer' => $user->stripe_id,
+                'locale' => $locale,
                 'customer_update' => [
                     'name' => 'auto',
                     'address' => 'auto',
@@ -116,16 +143,30 @@ class SubscriptionController extends Controller
                         'price_data' => [
                             'currency' => 'eur',
                             'product_data' => [
-                                'name' => 'Caution borne WiFi',
-                                'description' => 'Caution remboursable pour la borne WiFi Monsieur WiFi',
+                                'name' => $depositName,
+                                'description' => $depositDesc,
                             ],
-                            'unit_amount' => 5000, // 50€ in cents
+                            'unit_amount' => $depositCents,
+                        ],
+                        'quantity' => 1,
+                    ],
+                    [
+                        'price_data' => [
+                            'currency' => 'eur',
+                            'product_data' => [
+                                'name' => $shippingName,
+                                'description' => $shippingDesc,
+                            ],
+                            'unit_amount' => $shippingCents,
                         ],
                         'quantity' => 1,
                     ],
                 ],
-                'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}'),
-                'cancel_url' => url('/subscription/cancel'),
+                'subscription_data' => [
+                    'trial_period_days' => $trialDays,
+                ],
+                'success_url' => url('/subscription/success?session_id={CHECKOUT_SESSION_ID}&locale=' . ($rawLocale ?: 'en')),
+                'cancel_url' => url('/subscription/cancel?locale=' . ($rawLocale ?: 'en')),
                 'billing_address_collection' => 'required',
                 'phone_number_collection' => ['enabled' => true],
                 'tax_id_collection' => ['enabled' => true],
@@ -137,10 +178,10 @@ class SubscriptionController extends Controller
                 ],
                 'custom_text' => [
                     'submit' => [
-                        'message' => 'Votre abonnement inclut : une borne WiFi avec portail captif pré-paramétré et une assistance à la mise en service. Une caution de 50€ est appliquée.',
+                        'message' => $submitMessage,
                     ],
                     'terms_of_service_acceptance' => [
-                        'message' => 'J\'accepte les [Conditions Générales de Vente](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')',
+                        'message' => $termsMessage,
                     ],
                 ],
                 'metadata' => [
@@ -344,7 +385,7 @@ class SubscriptionController extends Controller
     /**
      * Get billing portal URL
      */
-    public function billingPortal()
+    public function billingPortal(Request $request)
     {
         $user = Auth::user();
 
@@ -356,7 +397,10 @@ class SubscriptionController extends Controller
         }
 
         try {
-            $url = $user->billingPortalUrl(url('/en/profile'));
+            $locale = in_array($request->input('locale'), ['fr', 'en']) ? $request->input('locale') : 'en';
+            $url = $user->billingPortalUrl(url('/' . $locale . '/profile'), [
+                'locale' => $locale,
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -631,12 +675,23 @@ class SubscriptionController extends Controller
                 }
             }
 
+            $trialEnd = null;
+            if (!empty($stripeSubscription->trial_end)) {
+                $trialEnd = \Carbon\Carbon::createFromTimestamp($stripeSubscription->trial_end)->format('d/m/Y');
+            }
+
+            $depositCents = (int) env('DEPOSIT_AMOUNT_CENTS', 5000);
+            $shippingCents = (int) env('SHIPPING_FEE_CENTS', 1500);
+
             $subscriptionData = [
                 'plan_name' => $planName,
                 'amount' => $amount,
                 'interval' => $interval,
                 'start_date' => $startDate,
                 'shipping_address' => $shippingAddress,
+                'trial_end' => $trialEnd,
+                'deposit_amount' => number_format($depositCents / 100, 2) . ' EUR',
+                'shipping_fee' => number_format($shippingCents / 100, 2) . ' EUR',
             ];
 
             // Detect user language preference (default to French)
@@ -644,8 +699,12 @@ class SubscriptionController extends Controller
 
             Mail::to($user->email)->send(new SubscriptionConfirmedMail($user, $subscriptionData, $locale));
 
-            // Send admin notification
-            Mail::to('lmermet@citypassenger.com')->send(new NewSubscriptionAdminNotification($user, $subscriptionData));
+            // Send onboarding notification to commercial team + Google Sheets
+            $notifEmail = env('COMMERCIAL_NOTIFICATION_EMAIL');
+            if ($notifEmail) {
+                Mail::to($notifEmail)->send(new OnboardingStepNotification($user, 'subscription', $subscriptionData));
+            }
+            app(GoogleSheetsService::class)->updateOnboardingStep($user->name, $user->email, 'subscription', $user->created_at->format('d/m/Y H:i'), $subscriptionData);
 
             Log::info('Subscription confirmation email sent', ['user_id' => $user->id, 'email' => $user->email]);
         } catch (\Exception $e) {

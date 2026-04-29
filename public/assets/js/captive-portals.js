@@ -286,6 +286,30 @@ function fetchDesignDetails(designId) {
     });
 }
 
+function checkUserSubscription() {
+    $.ajax({
+        url: '/api/subscription/status',
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(response) {
+            if (response.has_subscription) {
+                // User is subscribed: hide both timeline and CTA banner
+                $('#onboarding-timeline').hide();
+                $('#device-cta-banner').hide();
+            } else {
+                // Not subscribed: show CTA banner (timeline already visible)
+                $('#device-cta-banner').show();
+                if (typeof feather !== 'undefined') feather.replace();
+            }
+        },
+        error: function() {
+            // If subscription check fails, show CTA as fallback
+            $('#device-cta-banner').show();
+            if (typeof feather !== 'undefined') feather.replace();
+        }
+    });
+}
+
 function fetchDesigns(openFirstDesign = false) {
     $('#portal-designs-container').html(`
         <tr class="cp-empty-row">
@@ -578,6 +602,7 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const fromRegistration = urlParams.get('from') === 'registration';
     fetchDesigns(fromRegistration);
+    checkUserSubscription();
 
     // Server-injected edit ID: /{id} route sets window.CAPTIVE_EDIT_ID.
     if (window.CAPTIVE_EDIT_ID) {

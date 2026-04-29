@@ -13,6 +13,11 @@ return [
     'timeline_step3_label' => 'Je reçois ma borne',
     'timeline_step3_sub' => 'Livraison + assistance mise en service',
 
+    // Subscription CTA banner
+    'cta_title' => 'Abonnez-vous pour activer votre portail',
+    'cta_text' => 'Découvrez nos offres pour activer votre portail captif.',
+    'cta_button' => 'Voir nos offres',
+
     // Designs list
     'your_designs_title' => 'Vos conceptions de portail captif',
     'create_new_design' => 'Créer une nouvelle conception',
