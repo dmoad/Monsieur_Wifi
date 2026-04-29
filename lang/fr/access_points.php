@@ -41,6 +41,7 @@ return [
     'no_zones' => 'Aucune zone. Les emplacements fonctionnent en autonome.',
     'no_aps_match' => 'Aucun emplacement ne correspond à votre recherche.',
     'no_zones_match' => 'Aucune zone ne correspond à votre recherche.',
+    'all_in_zones' => 'Tous vos emplacements sont dans des zones. Passez à l’onglet Zones pour les voir.',
 
     // Actions
     'action_open' => 'Ouvrir',

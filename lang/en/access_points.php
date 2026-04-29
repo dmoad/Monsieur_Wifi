@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'page_title' => 'Access Points',
-    'heading' => 'Access Points',
-    'preview_banner' => 'A zone groups multiple APs for seamless Wi-Fi roaming: one primary AP holds the configuration, the others inherit it automatically.',
+    'page_title' => 'Locations',
+    'heading' => 'Locations',
+    'preview_banner' => 'A zone groups multiple locations for seamless Wi-Fi roaming: one primary location holds the configuration, the others inherit it automatically.',
 
     // Tabs
-    'tab_aps' => 'Access Points',
+    'tab_aps' => 'Locations',
     'tab_zones' => 'Zones',
 
     // Search / filters
@@ -23,8 +23,8 @@ return [
 
     // Zone table columns
     'col_zone_name' => 'Zone name',
-    'col_ap_count' => 'Access points',
-    'col_primary_ap' => 'Primary AP',
+    'col_ap_count' => 'Locations',
+    'col_primary_ap' => 'Primary location',
     'col_owner' => 'Owner',
 
     // Cell values
@@ -37,24 +37,25 @@ return [
     'status_offline' => 'Offline',
 
     // Empty states
-    'no_aps' => 'No access points yet.',
-    'no_zones' => 'No zones yet. APs are running standalone.',
-    'no_aps_match' => 'No access points match your search.',
+    'no_aps' => 'No locations yet.',
+    'no_zones' => 'No zones yet. Locations are running standalone.',
+    'no_aps_match' => 'No locations match your search.',
     'no_zones_match' => 'No zones match your search.',
+    'all_in_zones' => 'All your locations are inside zones. Switch to the Zones tab to see them.',
 
     // Actions
     'action_open' => 'Open',
     'action_open_zone' => 'View zone',
 
     // Grouped view
-    'primary' => 'Primary AP — others in this zone share its config',
+    'primary' => 'Primary location — others in this zone share its config',
     'primary_pill' => 'Primary',
     'open_zone' => 'Open zone',
-    'ap_singular' => 'AP',
-    'ap_plural' => 'APs',
+    'ap_singular' => 'location',
+    'ap_plural' => 'locations',
 
     // Header action buttons
-    'add_ap' => 'Add AP',
+    'add_ap' => 'Add location',
     'create_zone' => 'Create zone',
 
     // Filter chips
@@ -69,7 +70,7 @@ return [
     'meta_offline' => 'offline',
 
     // Summary cards (top of page)
-    'metric_total_aps' => 'Access Points',
+    'metric_total_aps' => 'Locations',
     'metric_online_aps' => 'Online',
     'metric_total_users' => 'Connected Users',
     'metric_total_data' => 'Data Usage',
@@ -82,10 +83,10 @@ return [
     'action_clone' => 'Clone',
     'action_delete' => 'Delete',
     'action_edit' => 'Edit',
-    'confirm_delete_ap' => 'Delete access point "{name}"? This cannot be undone.',
-    'confirm_delete_zone' => 'Delete this zone? Its access points will be ungrouped.',
-    'ap_deleted' => 'Access point deleted',
-    'ap_cloned' => 'Access point cloned',
+    'confirm_delete_ap' => 'Delete location "{name}"? This cannot be undone.',
+    'confirm_delete_zone' => 'Delete this zone? Its locations will be ungrouped.',
+    'ap_deleted' => 'Location deleted',
+    'ap_cloned' => 'Location cloned',
     'zone_deleted' => 'Zone deleted',
     'zone_created' => 'Zone created',
     'create_zone_prompt' => 'Name for the new zone:',

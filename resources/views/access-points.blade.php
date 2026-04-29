@@ -181,6 +181,23 @@
     margin-top: 4px;
 }
 
+/* Zone badge on the Locations-tab row — drill-able link to the zone */
+.ap-zone-cell-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--mw-primary);
+    background: var(--mw-primary-tint);
+    border-radius: var(--mw-radius-full);
+    text-decoration: none;
+    line-height: 1.5;
+    transition: filter 0.12s;
+}
+.ap-zone-cell-badge:hover { filter: brightness(0.95); color: var(--mw-primary); }
+.ap-zone-cell-empty { color: var(--mw-text-muted); }
+
 /* Row action buttons — match existing .lc-action-btn used on /locations */
 .ap-col-actions { text-align: right; width: 1%; white-space: nowrap; }
 .ap-row-actions {
@@ -548,6 +565,7 @@
                             <th>{{ __('access_points.col_name') }}</th>
                             <th>{{ __('access_points.col_status') }}</th>
                             <th>{{ __('access_points.col_address') }}</th>
+                            <th>{{ __('access_points.col_zone') }}</th>
                             <th>{{ __('access_points.col_users') }}</th>
                             <th>{{ __('access_points.col_data') }}</th>
                             <th>{{ __('access_points.col_last_seen') }}</th>
@@ -555,7 +573,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="7" class="ap-empty">{{ __('common.loading') }}</td></tr>
+                        <tr><td colspan="8" class="ap-empty">{{ __('common.loading') }}</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -570,6 +588,7 @@
                             <th>{{ __('access_points.col_name') }}</th>
                             <th>{{ __('access_points.col_status') }}</th>
                             <th>{{ __('access_points.col_address') }}</th>
+                            <th>{{ __('access_points.col_zone') }}</th>
                             <th>{{ __('access_points.col_users') }}</th>
                             <th>{{ __('access_points.col_data') }}</th>
                             <th>{{ __('access_points.col_last_seen') }}</th>
@@ -577,7 +596,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="7" class="ap-empty">{{ __('common.loading') }}</td></tr>
+                        <tr><td colspan="8" class="ap-empty">{{ __('common.loading') }}</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -598,6 +617,7 @@
         status_offline:  @json(__('access_points.status_offline')),
         no_aps:          @json(__('access_points.no_aps')),
         no_aps_match:    @json(__('access_points.no_aps_match')),
+        all_in_zones:    @json(__('access_points.all_in_zones')),
         primary:         @json(__('access_points.primary')),
         primary_pill:    @json(__('access_points.primary_pill')),
         open_zone:       @json(__('access_points.open_zone')),
@@ -670,7 +690,7 @@
         return `${n} ${n === 1 ? sing : plur}`;
     }
 
-    function renderApRow(ap, isPrimary, isLast) {
+    function renderApRow(ap, isPrimary, isLast, tabContext = 'aps') {
         const status = ap.online_status === 'online' ? 'online' : 'offline';
         const statusLbl = status === 'online' ? T.status_online : T.status_offline;
         const addr = [ap.city, ap.country].filter(Boolean).join(', ') || T.no_address;
@@ -684,9 +704,20 @@
             : '';
         const lastClass = isLast ? ' ap-member-last' : '';
         const safeName = JSON.stringify(ap.name || '').replace(/"/g, '&quot;');
-        // When the row is rendered inside a zone group, attach ?from=zone-X
-        // so the location detail breadcrumb traces back through the zone.
-        const fromParam = ap.zone?.id ? `?from=zone-${ap.zone.id}` : '';
+
+        // Zone cell:
+        //  - Locations tab → show zone badge (clickable) or "—" if standalone
+        //  - Zones tab     → leave empty (parent header already labels the zone)
+        let zoneCell = '';
+        if (tabContext === 'aps') {
+            zoneCell = ap.zone && ap.zone.id
+                ? `<a class="ap-zone-cell-badge" href="/${locale}/zones/${ap.zone.id}" onclick="event.stopPropagation()">${escapeHtml(ap.zone.name || '—')}</a>`
+                : `<span class="ap-zone-cell-empty">—</span>`;
+        }
+
+        // ?from=zone-X breadcrumb thread only when entering from a zone group view.
+        const fromParam = (tabContext === 'zones' && ap.zone?.id) ? `?from=zone-${ap.zone.id}` : '';
+
         return `
             <tr class="ap-member${lastClass}" onclick="window.location.href='/${locale}/locations/${ap.id}${fromParam}'">
                 <td>
@@ -700,6 +731,7 @@
                 </td>
                 <td><span class="ap-status ap-status-${status}">${escapeHtml(statusLbl)}</span></td>
                 <td>${escapeHtml(addr)}</td>
+                <td>${zoneCell}</td>
                 <td>${users}</td>
                 <td>${escapeHtml(dataUsage)}</td>
                 <td>${escapeHtml(lastSeen)}</td>
@@ -757,7 +789,7 @@
             </span>`;
 
         const memberRows = members.map((ap, i) =>
-            renderApRow(ap, !standalone && ap.id === primaryId, i === members.length - 1)
+            renderApRow(ap, !standalone && ap.id === primaryId, i === members.length - 1, 'zones')
         ).join('');
         // When a search/filter is active, force-expand so matches are visible.
         // Otherwise honour the user's per-zone preference (default = collapsed).
@@ -774,7 +806,7 @@
         return `
             <tbody class="${groupClasses}"${dataAttr}>
                 <tr class="ap-group-head">
-                    <td colspan="7">
+                    <td colspan="8">
                         <div class="ap-group-title">
                             <span class="ap-group-chevron" role="button" aria-label="toggle"><i data-feather="chevron-down"></i></span>
                             <span class="ap-group-icon"><i data-feather="${icon}"></i></span>
@@ -920,7 +952,7 @@
         const matched = Array.from(buckets.values()).reduce((s, b) => s + b.members.length, 0);
         if (!matched) {
             const empty = document.createElement('tbody');
-            empty.innerHTML = `<tr><td colspan="7" class="ap-empty">${filterActive ? T.no_aps_match : T.no_aps}</td></tr>`;
+            empty.innerHTML = `<tr><td colspan="8" class="ap-empty">${filterActive ? T.no_aps_match : T.no_aps}</td></tr>`;
             table.appendChild(empty);
             return;
         }
@@ -969,29 +1001,30 @@
         if (window.feather) window.feather.replace();
     }
 
-    // --- APs tab: flat list of standalone APs (no zone) ------------------
+    // --- Locations tab: flat list of ALL locations (with a Zone column) ----
+    // Zoned and standalone locations all appear here; the Zone column shows
+    // which zone each one belongs to (or "—" for standalone). The Zones tab
+    // keeps the grouped view for users thinking in roaming groups.
     function renderApsTab(filter = '') {
         const table = document.getElementById('ap-aps-table');
         const q = filter.trim().toLowerCase();
         const filterActive = !!q || activeFilter !== 'all';
 
-        const standalone = allAps.filter(ap => (!ap.zone || !ap.zone.id)
-            && apMatchesSearch(ap, q) && apMatchesChip(ap));
-        const totalStandalone = allAps.filter(a => !a.zone || !a.zone.id).length;
-        document.getElementById('ap-aps-tab-count').textContent = totalStandalone;
+        const visible = allAps.filter(ap => apMatchesSearch(ap, q) && apMatchesChip(ap));
+        document.getElementById('ap-aps-tab-count').textContent = allAps.length;
 
         Array.from(table.querySelectorAll('tbody')).forEach(tb => tb.remove());
 
-        if (!standalone.length) {
+        if (!visible.length) {
             const empty = document.createElement('tbody');
-            empty.innerHTML = `<tr><td colspan="7" class="ap-empty">${filterActive ? T.no_aps_match : T.no_aps}</td></tr>`;
+            empty.innerHTML = `<tr><td colspan="8" class="ap-empty">${filterActive ? T.no_aps_match : T.no_aps}</td></tr>`;
             table.appendChild(empty);
             return;
         }
 
         const tbody = document.createElement('tbody');
-        tbody.innerHTML = standalone.map((ap, i) =>
-            renderApRow(ap, false, i === standalone.length - 1)
+        tbody.innerHTML = visible.map((ap, i) =>
+            renderApRow(ap, false, i === visible.length - 1, 'aps')
                 // strip the tree-line indentation since these aren't in a group
                 .replace('class="ap-member', 'class="ap-flat-member')
         ).join('');
@@ -1035,7 +1068,7 @@
             const table = document.getElementById('ap-aps-table');
             Array.from(table.querySelectorAll('tbody')).forEach(tb => tb.remove());
             const fallback = document.createElement('tbody');
-            fallback.innerHTML = `<tr><td colspan="7" class="ap-empty">${T.no_aps}</td></tr>`;
+            fallback.innerHTML = `<tr><td colspan="8" class="ap-empty">${T.no_aps}</td></tr>`;
             table.appendChild(fallback);
         }
     }
