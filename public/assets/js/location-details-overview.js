@@ -22,6 +22,201 @@
 let analyticsChart = null;
 let locationMap = null;
 
+/** @param {string} key */
+function ldOverviewT(key) {
+    const ld = typeof window.APP_I18N !== 'undefined' ? window.APP_I18N.location_details : null;
+    return (ld && ld[key]) ? ld[key] : key;
+}
+
+function escapeHtmlOverview(str) {
+    if (str == null || str === '') {
+        return '';
+    }
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+/** @param {object} u */
+function wifiBandLabel(u) {
+    if (!u || !u.band) return '—';
+    if (u.band === '5g') return '5 GHz';
+    if (u.band === '2g') return '2.4 GHz';
+    return String(u.band);
+}
+
+/** Known AP payloads: slots[].network_type e.g. password, captive_portal */
+const WIFI_NET_TYPE_I18N = {
+    password: 'live_users_net_type_password',
+    captive_portal: 'live_users_net_type_captive_portal',
+    open: 'live_users_net_type_open',
+};
+
+/**
+ * Label for captive vs password-style networks in Live Users (wifi_stats + legacy).
+ * @param {object} u
+ * @returns {string} plain text before escape (caller escapes for HTML)
+ */
+function liveUserNetworkTypePlain(u) {
+    if (!u) return '';
+    let raw = u.network_type;
+    if (raw == null || raw === '') {
+        if (u.source === 'online_network_user') {
+            raw = u.network === 'captive' ? 'captive_portal' : 'password';
+        } else {
+            return '';
+        }
+    }
+    const key = String(raw).trim().toLowerCase();
+    const i18nKey = WIFI_NET_TYPE_I18N[key];
+    if (i18nKey) {
+        const t = ldOverviewT(i18nKey);
+        if (t !== i18nKey) {
+            return t;
+        }
+    }
+    return String(raw).replace(/_/g, ' ');
+}
+
+/** @param {number} rowStart inclusive 1-based */
+function liveUsersCountRangeLabel(rowStart, rowEnd, total) {
+    return ldOverviewT('live_users_count_range')
+        .replace(':start', String(rowStart))
+        .replace(':end', String(rowEnd))
+        .replace(':total', String(total));
+}
+
+/** @param {number} totalPages */
+function buildOnlineUsersPageButtonsHtml(totalPages, currentPage) {
+    if (totalPages <= 1) return '';
+    const maxWindow = 7;
+    let winEnd = Math.min(totalPages, currentPage + Math.floor(maxWindow / 2));
+    let winStart = Math.max(1, winEnd - maxWindow + 1);
+    winEnd = Math.min(totalPages, winStart + maxWindow - 1);
+    winStart = Math.max(1, winEnd - maxWindow + 1);
+
+    const parts = [];
+    const btn = (p) => {
+        const active = p === currentPage;
+        const cls = 'pagination-btn pagination-btn--page ld-online-users-page' + (active ? ' pagination-btn--active' : '');
+        const attr = active ? ' disabled aria-current="page"' : '';
+        return `<button type="button" class="${cls}" data-page="${p}"${attr}>${p}</button>`;
+    };
+
+    if (winStart > 1) {
+        parts.push(btn(1));
+        if (winStart > 2) {
+            parts.push('<span class="ld-online-users-pages-ellipsis">…</span>');
+        }
+    }
+    for (let p = winStart; p <= winEnd; p++) {
+        parts.push(btn(p));
+    }
+    if (winEnd < totalPages) {
+        if (winEnd < totalPages - 1) {
+            parts.push('<span class="ld-online-users-pages-ellipsis">…</span>');
+        }
+        parts.push(btn(totalPages));
+    }
+    return parts.join('');
+}
+
+function scrollOnlineUsersListTop() {
+    const el = document.getElementById('online-users-list');
+    if (el) el.scrollTop = 0;
+}
+
+/**
+ * @param {object} u
+ * @param {number} serial 1-based index including pagination offset
+ */
+function buildLiveUserCardHtml(u, serial) {
+    const mac = escapeHtmlOverview(u.mac_address || u.mac || '—');
+    const ip = escapeHtmlOverview(u.ip || '—');
+    const host = (u.hostname && String(u.hostname).trim()) ? String(u.hostname).trim() : '';
+    const user = (u.username && String(u.username).trim()) ? String(u.username).trim() : '';
+    const deviceName = escapeHtmlOverview(host || user || ldOverviewT('live_users_unknown_device'));
+    const networkLabel = u.source === 'wifi_stats'
+        ? escapeHtmlOverview(u.ssid || u.network_label || '—')
+        : escapeHtmlOverview(u.network_label || u.network || '—');
+    const networkTypePlain = liveUserNetworkTypePlain(u);
+    const networkTypeHtml = networkTypePlain
+        ? `<span class="ld-live-user__net-type" title="${escapeHtmlOverview(ldOverviewT('live_users_network_type_abbr'))}">${escapeHtmlOverview(networkTypePlain)}</span>`
+        : '';
+
+    let durationRight = '';
+    if (u.source === 'wifi_stats' && u.session_time != null) {
+        durationRight = formatDuration(u.session_time);
+    } else if (u.connected_time) {
+        durationRight = escapeHtmlOverview(u.connected_time);
+    }
+
+    const moreLabel = escapeHtmlOverview(ldOverviewT('live_users_more'));
+    const wifiMode = u.source === 'wifi_stats';
+
+    let expandInner = '';
+    if (wifiMode) {
+        const bandEscaped = escapeHtmlOverview(wifiBandLabel(u));
+        const rssiAvg = u.signal_avg_dbm != null ? `${u.signal_avg_dbm} dBm` : '—';
+        const snr = u.snr_db != null ? `${u.snr_db} dB` : '—';
+        const idleMs = u.inactive_time_ms != null ? Number(u.inactive_time_ms) : 0;
+        let idleStr;
+        if (idleMs >= 1000) {
+            idleStr = formatDuration(Math.floor(idleMs / 1000));
+        } else {
+            idleStr = `${idleMs} ms`;
+        }
+
+        const rssiInst = u.signal_dbm != null ? `${u.signal_dbm} dBm` : '—';
+        const retries = u.tx_retries != null ? String(u.tx_retries) : '—';
+        const failed = u.tx_failed != null ? String(u.tx_failed) : '—';
+
+        expandInner = `
+<div class="ld-live-user__expand-inner">
+    <p class="ld-live-user__expand-line">
+        <span class="ld-live-user__expand-k">${escapeHtmlOverview(ldOverviewT('live_users_radio'))}:</span> ${bandEscaped}</p>
+    <p class="ld-live-user__expand-line">${escapeHtmlOverview(ldOverviewT('live_users_wifi_metric_rssi'))}: ${escapeHtmlOverview(rssiAvg)}
+        <span class="ld-live-user__sep">·</span> ${escapeHtmlOverview(ldOverviewT('live_users_wifi_metric_snr'))}: ${escapeHtmlOverview(snr)}
+        <span class="ld-live-user__sep">·</span> ${escapeHtmlOverview(ldOverviewT('live_users_wifi_metric_idle'))}: ${escapeHtmlOverview(idleStr)}</p>
+    <p class="ld-live-user__expand-line">${escapeHtmlOverview(ldOverviewT('live_users_instant_rssi'))}: ${escapeHtmlOverview(rssiInst)}</p>
+    <p class="ld-live-user__expand-line">${escapeHtmlOverview(ldOverviewT('live_users_retries'))}: ${escapeHtmlOverview(retries)}
+        <span class="ld-live-user__sep">·</span> ${escapeHtmlOverview(ldOverviewT('live_users_failures'))}: ${escapeHtmlOverview(failed)}</p>
+</div>`;
+    } else {
+        expandInner = `
+<div class="ld-live-user__expand-inner">
+    <p class="ld-live-user__expand-line text-muted">${escapeHtmlOverview(ldOverviewT('live_users_legacy_sync_hint'))}</p>
+</div>`;
+    }
+
+    const serialDisp = escapeHtmlOverview(String(serial).padStart(2, '0'));
+
+    return `
+<div class="ld-live-user">
+    <div class="ld-live-user__row">
+        <span class="ld-live-user__serial" title="${escapeHtmlOverview(ldOverviewT('live_users_serial_abbr'))}">${serialDisp}</span>
+        <div class="ld-live-user__main">
+            <div class="ld-live-user__line1">
+                <span class="ld-live-user__name">${deviceName}</span>
+                <span class="ld-live-user__duration">${durationRight}</span>
+            </div>
+            <div class="ld-live-user__meta">
+                <span class="ld-live-user__mono">${mac}</span>
+                <span class="ld-live-user__sep">·</span>
+                <span class="ld-live-user__mono">${ip}</span>
+                <span class="ld-live-user__sep">·</span>
+                <span class="ld-live-user__ssid" title="${networkLabel}">${networkLabel}</span>
+                ${networkTypeHtml ? `<span class="ld-live-user__sep">·</span>${networkTypeHtml}` : ''}
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary ld-live-user__more" aria-expanded="false">${moreLabel}</button>
+    </div>
+    <div class="ld-live-user__expand">${expandInner}</div>
+</div>`;
+}
+
 // ============================================================================
 // USAGE STATS
 // ============================================================================
@@ -54,21 +249,41 @@ async function loadCurrentUsage(period) {
 
 function renderAnalyticsChart(dailyStats) {
     const categories = dailyStats.map(d => d.date);
-    const series = [{ name: 'Users', data: dailyStats.map(d => d.unique_users || 0) }];
+    const seriesUsers    = dailyStats.map(d => d.unique_users || 0);
+    const seriesSessions = dailyStats.map(d => d.sessions || 0);
+    const usersLabel    = ldOverviewT('chart_series_users');
+    const sessionsLabel = ldOverviewT('chart_series_sessions');
+
+    const series = [
+        { name: usersLabel,    data: seriesUsers },
+        { name: sessionsLabel, data: seriesSessions },
+    ];
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridColor = dark ? 'var(--mw-border)' : '#f1f1f1';
     const options = {
         theme: { mode: dark ? 'dark' : 'light' },
         chart: { type: 'area', height: 300, toolbar: { show: false }, background: 'transparent' },
-        series, xaxis: { categories },
+        series,
+        xaxis: { categories },
         stroke: { curve: 'smooth', width: 2 },
         fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0 } },
-        colors: ['#667eea'],
+        colors: ['#667eea', '#43d39e'],
         dataLabels: { enabled: false },
-        grid: { borderColor: dark ? 'var(--mw-border)' : '#f1f1f1' },
-        tooltip: { theme: dark ? 'dark' : 'light' },
+        legend: { show: true, position: 'top' },
+        grid: { borderColor: gridColor },
+        tooltip: { theme: dark ? 'dark' : 'light', shared: true, intersect: false },
+        yaxis: { labels: { formatter: val => Math.round(val) } },
     };
     if (analyticsChart) {
-        analyticsChart.updateOptions({ series, xaxis: { categories } });
+        analyticsChart.updateOptions({
+            series,
+            xaxis: { categories },
+            colors: ['#667eea', '#43d39e'],
+            fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0 } },
+            grid: { borderColor: gridColor },
+            theme: { mode: dark ? 'dark' : 'light' },
+            tooltip: { theme: dark ? 'dark' : 'light', shared: true, intersect: false },
+        });
     } else {
         analyticsChart = new ApexCharts(document.querySelector('#daily-usage-chart'), options);
         analyticsChart.render();
@@ -80,7 +295,7 @@ new MutationObserver(function () {
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
     analyticsChart.updateOptions({
         theme: { mode: dark ? 'dark' : 'light' },
-        tooltip: { theme: dark ? 'dark' : 'light' },
+        tooltip: { theme: dark ? 'dark' : 'light', shared: true, intersect: false },
         grid: { borderColor: dark ? 'var(--mw-border)' : '#f1f1f1' },
     });
 }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
@@ -96,11 +311,15 @@ let allOnlineUsers = [];
 async function loadOnlineUsers() {
     try {
         const res = await apiFetch(`${API}/locations/${location_id}/online-users`);
-        allOnlineUsers = res.data || [];
+        const payload = res.data || {};
+        allOnlineUsers = Array.isArray(payload.online_users) ? payload.online_users : [];
         onlineUsersPage = 1;
         renderOnlineUsers();
     } catch (err) {
         $('#online-users-list').html('<div class="text-center text-muted p-3"><small>Could not load online users</small></div>');
+        $('#users-pagination').hide();
+        $('#page-numbers').empty();
+        $('#count-range').hide().text('');
     }
 }
 
@@ -112,37 +331,39 @@ function renderOnlineUsers() {
     $('#online-count').text(total);
 
     if (total === 0) {
-        $('#online-users-list').html('<div class="text-center text-muted p-3"><i data-feather="wifi-off" style="width:30px;height:30px;margin-bottom:8px;"></i><div><small>No users currently connected</small></div></div>');
+        $('#online-users-list').html(
+            `<div class="text-center text-muted p-3"><i data-feather="wifi-off" style="width:30px;height:30px;margin-bottom:8px;"></i>` +
+            `<div><small>${escapeHtmlOverview(ldOverviewT('live_users_empty'))}</small></div></div>`
+        );
+        $('#users-pagination').hide();
+        $('#page-numbers').empty();
+        $('#count-range').hide().text('');
         reRenderFeather();
         return;
     }
 
     const totalPages = Math.ceil(total / USERS_PER_PAGE);
-    const html = pageUsers.map(u => `
-        <div class="user-item">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:14px;margin-right:12px;">
-                        ${(u.username || u.mac_address || 'U').charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                        <h6 style="margin:0;font-size:1rem;font-weight:600;">${u.username || u.mac_address || 'Unknown'}</h6>
-                        <small style="color:#7f8c8d;">${u.mac_address || ''}</small>
-                    </div>
-                </div>
-                <small style="color:#7f8c8d;">${u.session_time ? formatDuration(u.session_time) : ''}</small>
-            </div>
-        </div>`).join('');
+    const html = pageUsers.map((u, idx) => buildLiveUserCardHtml(u, start + idx + 1)).join('');
 
     $('#online-users-list').html(html);
+    scrollOnlineUsersListTop();
+
+    const fromRow = start + 1;
+    const toRow = Math.min(start + USERS_PER_PAGE, total);
+    $('#count-range').text(liveUsersCountRangeLabel(fromRow, toRow, total)).show();
+
+    $('#page-info').text(
+        ldOverviewT('live_users_page_of').replace(':page', String(onlineUsersPage)).replace(':pages', String(totalPages))
+    );
+    $('#page-numbers').html(buildOnlineUsersPageButtonsHtml(totalPages, onlineUsersPage));
+    $('#prev-page').prop('disabled', onlineUsersPage === 1);
+    $('#next-page').prop('disabled', onlineUsersPage === totalPages);
 
     if (totalPages > 1) {
         $('#users-pagination').show();
-        $('#page-info').text(`${onlineUsersPage} / ${totalPages}`);
-        $('#prev-page').prop('disabled', onlineUsersPage === 1);
-        $('#next-page').prop('disabled', onlineUsersPage === totalPages);
     } else {
         $('#users-pagination').hide();
+        $('#page-numbers').empty();
     }
     reRenderFeather();
 }
@@ -194,7 +415,16 @@ function initOverviewHandlers() {
         $('.period-btn').css({ background: 'transparent', color: '#6c757d' });
         $(this).css({ background: 'linear-gradient(135deg,#667eea,#764ba2)', color: 'white' });
         const days = $(this).data('period');
-        loadCurrentUsage(days + 'days');
+        const period = days + 'days';
+        currentUsagePeriod = period;
+        // Sync dropdown label if there's a matching item, otherwise show the period
+        const $match = $(`#usage-period-dropdown .dropdown-item[data-period="${period}"]`);
+        if ($match.length) {
+            $('#usage-period-btn').text($match.text());
+        } else {
+            $('#usage-period-btn').text(days + 'D');
+        }
+        loadCurrentUsage(period);
     });
 
     // Online users pagination
@@ -205,5 +435,26 @@ function initOverviewHandlers() {
     $('#next-page').on('click', function () {
         const total = Math.ceil(allOnlineUsers.length / USERS_PER_PAGE);
         if (onlineUsersPage < total) { onlineUsersPage++; renderOnlineUsers(); }
+    });
+
+    $(document).on('click', '.ld-online-users-page', function (e) {
+        e.preventDefault();
+        const $btn = $(this);
+        if ($btn.prop('disabled')) return;
+        const p = parseInt($btn.attr('data-page'), 10);
+        if (!Number.isFinite(p)) return;
+        const totalPages = Math.ceil(allOnlineUsers.length / USERS_PER_PAGE);
+        if (p < 1 || p > totalPages) return;
+        onlineUsersPage = p;
+        renderOnlineUsers();
+    });
+
+    $(document).on('click', '#online-users-list .ld-live-user__more', function (e) {
+        e.preventDefault();
+        const $btn = $(this);
+        const $card = $btn.closest('.ld-live-user');
+        const open = $card.toggleClass('is-open').hasClass('is-open');
+        $btn.attr('aria-expanded', open ? 'true' : 'false');
+        $btn.text(open ? ldOverviewT('live_users_less') : ldOverviewT('live_users_more'));
     });
 }

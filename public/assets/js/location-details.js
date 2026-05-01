@@ -33,7 +33,7 @@ let location_id = (function () {
     const last = parts[parts.length - 1];
     return /^\d+$/.test(last) ? last : null;
 })();
-let currentUsagePeriod = 'today';
+let currentUsagePeriod = '7days';
 let currentDeviceData = null;
 let networkSourceLocationId = null; // may differ from location_id when location is a non-primary zone member
 /** Whether this location may edit zone-wide settings (QoS, networks); false for non-primary zone members. */

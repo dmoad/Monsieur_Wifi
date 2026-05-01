@@ -11,6 +11,7 @@ use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\FirmwareController;
 use App\Http\Controllers\GuestNetworkUserController;
 use App\Http\Controllers\RadiusGuestSessionStatsController;
+use App\Http\Controllers\WifiStatsController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LocationNetworkController;
 use App\Http\Controllers\PaymentController;
@@ -92,6 +93,9 @@ Route::get('/devices/{device_key}/{device_secret}/v2-settings', [DeviceControlle
 Route::get('/devices/{device_key}/{device_secret}/heartbeat', [DeviceController::class, 'heartbeat']);
 Route::get('/devices/{device_key}/{device_secret}/firmware', [FirmwareController::class, 'getDeviceFirmware']);
 Route::post('/devices/{device_key}/{device_secret}/clients', [DeviceController::class, 'updateClientList']);
+Route::post('/devices/{device_key}/{device_secret}/network-stats', [WifiStatsController::class, 'store'])
+    ->middleware('throttle:15,1');
+
 
 // Device scan update routes (called by devices themselves)
 Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/started', [DeviceController::class, 'updateScanStarted']);

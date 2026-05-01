@@ -9,8 +9,12 @@ use App\Models\Firmware;
 use App\Models\Location;
 use App\Models\LocationQosDomain;
 use App\Models\LocationSettingsV2;
+use App\Models\GuestNetworkUser;
 use App\Models\OnlineNetworkUser;
 use App\Models\Radacct;
+use App\Models\UserDeviceLoginSession;
+use App\Models\WifiStat;
+use App\Models\WifiStatClient;
 use App\Models\Radcheck;
 use App\Services\GeocodingService;
 use Carbon\Carbon;
@@ -513,6 +517,14 @@ class LocationController extends Controller
     public function getOnlineUsers($id)
     {
         try {
+            $user = Auth::user();
+            if (! $user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
+
             $location = Location::find($id);
 
             if (! $location) {
@@ -522,25 +534,137 @@ class LocationController extends Controller
                 ], 404);
             }
 
-            // Get all online users for this location
-            $onlineUsers = OnlineNetworkUser::where('location_id', $id)
+            if (! $location->isAccessibleBy($user)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized',
+                ], 403);
+            }
+
+            $locationId = (int) $id;
+
+            // Only list clients from the **latest wifi-stats ingest** for this AP.
+            // A rolling ap_ts window wrongly kept stations visible long after disconnect.
+            // If ingestion is stale, fall through to legacy ARP/sync (or empty wifi list below).
+            $freshIngestCutoff = Carbon::now()->subMinutes(10);
+
+            $latestStat = null;
+            if ($location->device_id) {
+                $latestStat = WifiStat::query()
+                    ->where('device_id', $location->device_id)
+                    ->orderByDesc('received_at')
+                    ->orderByDesc('id')
+                    ->first(['id', 'received_at', 'ap_ts']);
+            }
+
+            $useWifiListing = false;
+            $wifiRowsOrdered = collect();
+
+            if ($latestStat && $latestStat->received_at && $latestStat->received_at->gte($freshIngestCutoff)) {
+                $useWifiListing = true;
+                $wifiRowsOrdered = WifiStatClient::query()
+                    ->where('wifi_stat_id', $latestStat->id)
+                    ->orderBy('ssid')
+                    ->orderBy('mac')
+                    ->get();
+            }
+
+            $transformedUsers = collect();
+
+            /** @var array<string,\App\Models\WifiStatClient> $byMac */
+            $byMac = [];
+            foreach ($wifiRowsOrdered as $row) {
+                if (isset($byMac[$row->mac])) {
+                    continue;
+                }
+                $byMac[$row->mac] = $row;
+            }
+
+            if ($useWifiListing) {
+                $gnuIds = collect($byMac)->pluck('guest_network_user_id')->filter()->unique()->values();
+                /** @var array<int,string> */
+                $guestNameById = $gnuIds->isNotEmpty()
+                    ? GuestNetworkUser::whereIn('id', $gnuIds)->pluck('name', 'id')->all()
+                    : [];
+
+                $wifiSorted = array_values($byMac);
+                usort($wifiSorted, function ($a, $b) {
+                    return [$a->ssid, $a->mac] <=> [$b->ssid, $b->mac];
+                });
+
+                foreach ($wifiSorted as $c) {
+                    $gnuId       = $c->guest_network_user_id;
+                    $guestName   = $gnuId ? ($guestNameById[(int) $gnuId] ?? null) : null;
+                    $title       = ($guestName && trim((string) $guestName) !== '') ? trim((string) $guestName) : $c->mac;
+                    $sessionTime = max(0, (int) $c->connected_time_s);
+
+                    $transformedUsers->push([
+                        'id' => null,
+                        'source' => 'wifi_stats',
+                        'mac' => $c->mac,
+                        'mac_address' => $c->mac,
+                        'ssid' => $c->ssid,
+                        'network' => $c->network,
+                        'nasid' => $c->nasid,
+                        'network_type' => $c->network_type,
+                        'band' => $c->band,
+                        'iface' => $c->iface,
+                        'radio' => $c->radio,
+                        'slot' => (int) $c->slot,
+                        'username' => $title,
+                        'hostname' => $guestName ?: null,
+                        'ip' => $c->ip,
+                        'signal_dbm' => (int) $c->signal_dbm,
+                        'signal_avg_dbm' => (int) $c->signal_avg_dbm,
+                        'snr_db' => $c->snr_db !== null ? (int) $c->snr_db : null,
+                        'inactive_time_ms' => (int) $c->inactive_time_ms,
+                        'tx_retries' => (int) $c->tx_retries,
+                        'tx_failed' => (int) $c->tx_failed,
+                        'ap_ts' => $c->ap_ts?->toIso8601String(),
+                        'stats_received_at' => $latestStat->received_at?->toIso8601String(),
+                        'session_time' => $sessionTime,
+                        'connected_time' => $sessionTime.'s associated',
+                        'last_seen' => $c->ap_ts?->format('Y-m-d H:i:s'),
+                        'network_badge' => 'badge-light-primary',
+                        'network_label' => $c->ssid,
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'location' => $location,
+                        'online_users' => $transformedUsers->values()->all(),
+                        'total_count' => $transformedUsers->count(),
+                        'source' => 'wifi_stats',
+                        'wifi_snapshot_id' => $latestStat->id,
+                        'wifi_stats_received_at' => $latestStat->received_at?->toIso8601String(),
+                    ],
+                ]);
+            }
+
+            // Legacy: no recent wifi-stats ingest — ARP / lease sync from router
+            $onlineUsers = OnlineNetworkUser::where('location_id', $locationId)
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
-            // Transform the data to include additional information
-            $transformedUsers = $onlineUsers->map(function ($user) {
+            $transformedUsers = $onlineUsers->map(function ($onlineUser) {
                 return [
-                    'id' => $user->id,
-                    'mac' => $user->mac,
-                    'type' => $user->type,
-                    'ip' => $user->ip,
-                    'interface' => $user->interface,
-                    'hostname' => $user->hostname ?: 'Unknown Device',
-                    'network' => $user->network,
-                    'connected_time' => $user->updated_at->diffForHumans(),
-                    'last_seen' => $user->updated_at->format('Y-m-d H:i:s'),
-                    'network_badge' => $user->network === 'captive' ? 'badge-light-info' : 'badge-light-success',
-                    'network_label' => $user->network === 'captive' ? 'Captive Portal' : 'Password WiFi',
+                    'id' => $onlineUser->id,
+                    'source' => 'online_network_user',
+                    'mac' => $onlineUser->mac,
+                    'mac_address' => $onlineUser->mac,
+                    'type' => $onlineUser->type,
+                    'ip' => $onlineUser->ip,
+                    'interface' => $onlineUser->interface,
+                    'hostname' => $onlineUser->hostname ?: 'Unknown Device',
+                    'username' => $onlineUser->hostname ?: $onlineUser->mac,
+                    'network' => $onlineUser->network,
+                    'network_type' => $onlineUser->network === 'captive' ? 'captive_portal' : 'password',
+                    'connected_time' => $onlineUser->updated_at->diffForHumans(),
+                    'last_seen' => $onlineUser->updated_at->format('Y-m-d H:i:s'),
+                    'network_badge' => $onlineUser->network === 'captive' ? 'badge-light-info' : 'badge-light-success',
+                    'network_label' => $onlineUser->network === 'captive' ? 'Captive Portal' : 'Password WiFi',
                 ];
             });
 
@@ -552,6 +676,7 @@ class LocationController extends Controller
                     'total_count' => $onlineUsers->count(),
                     'captive_count' => $onlineUsers->where('network', 'captive')->count(),
                     'password_count' => $onlineUsers->where('network', 'lan')->count(),
+                    'source' => 'online_network_user',
                 ],
             ]);
 
@@ -577,61 +702,107 @@ class LocationController extends Controller
             $location = Location::find($id);
 
             if (! $location) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Location not found',
-                ], 404);
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
-            // Get period from request, default to 7 days
-            $period = (int) $request->get('period', 7);
+            // ── Robust period parsing ────────────────────────────────────────
+            // Accepts: "today" → 1-day today window
+            //          "7days" / "30days" / "90days" → strip suffix, parse int
+            //          bare integer string → treat as N-day window
+            //          default → 7
+            $periodRaw = $request->get('period', '7days');
+            if ($periodRaw === 'today') {
+                $startDate = Carbon::today()->startOfDay();
+                $endDate   = Carbon::today()->endOfDay();
+                $days      = 1;
+            } else {
+                $days = (int) preg_replace('/[^0-9]/', '', (string) $periodRaw);
+                if ($days < 1) {
+                    $days = 7;
+                }
+                $endDate   = Carbon::today()->endOfDay();
+                $startDate = Carbon::today()->subDays($days - 1)->startOfDay();
+            }
 
-            // Calculate date range - ensure we include today's data
-            $endDate = Carbon::today()->endOfDay();
-            $startDate = Carbon::today()->subDays($period - 1)->startOfDay();
+            // ── Per-day aggregates from user_device_login_sessions ───────────
+            // Use a numeric UTC offset (seconds → minutes) instead of CONVERT_TZ with
+            // named timezones, which requires MySQL timezone tables to be populated.
+            $offsetMinutes = (int) round(Carbon::now()->utcOffset());
+            $dateExpr      = $offsetMinutes === 0
+                ? 'DATE(connect_time)'
+                : "DATE(DATE_ADD(connect_time, INTERVAL {$offsetMinutes} MINUTE))";
 
-            // Add debug info
-            Log::info("Date range calculation - Period: {$period} days");
-            Log::info("Start date: {$startDate->format('Y-m-d H:i:s')}");
-            Log::info("End date: {$endDate->format('Y-m-d H:i:s')}");
-            Log::info('Today: '.Carbon::today()->format('Y-m-d'));
+            $rows = UserDeviceLoginSession::query()
+                ->selectRaw("
+                    {$dateExpr}                              AS day,
+                    COUNT(*)                                 AS sessions,
+                    COUNT(DISTINCT guest_network_user_id)    AS unique_users,
+                    SUM(COALESCE(total_download, 0))         AS total_download,
+                    SUM(COALESCE(total_upload, 0))           AS total_upload,
+                    SUM(CASE WHEN session_duration IS NOT NULL THEN session_duration ELSE 0 END) AS total_duration,
+                    SUM(CASE WHEN session_duration IS NOT NULL THEN 1 ELSE 0 END)               AS sessions_with_duration
+                ")
+                ->where('location_id', $id)
+                ->where('login_success', true)
+                ->whereBetween('connect_time', [$startDate, $endDate])
+                ->groupByRaw($dateExpr)
+                ->orderByRaw($dateExpr)
+                ->get()
+                ->keyBy('day');
 
-            // Get daily statistics from Radacct
-            Log::info("Getting captive portal daily usage for location {$id}: {$startDate->format('Y-m-d H:i:s')} to {$endDate->format('Y-m-d H:i:s')}");
-            $dailyStats = Radacct::getSessionStats($id, $startDate, $endDate);
-            Log::info('Retrieved daily stats count: '.count($dailyStats));
+            // ── Fill every calendar day (zero-fill gaps) ─────────────────────
+            $dailyStats = [];
+            $cursor     = $startDate->copy()->startOfDay();
 
-            // Transform the data for the chart
-            $chartData = [];
-            Log::info('Processing daily stats for chart data:');
-            foreach ($dailyStats as $date => $stats) {
-                Log::info("Date: {$date}, Users: {$stats['unique_users']}, Sessions: {$stats['sessions']}");
-                $chartData[] = [
-                    'date' => Carbon::parse($date)->format('M j'), // Format as "Jan 15"
-                    'users' => $stats['unique_users'],
-                    'sessions' => $stats['sessions'],
-                    'data_usage' => $stats['total_bytes'],
-                    'session_time' => $stats['total_session_time'],
+            while ($cursor->lte($endDate)) {
+                $key  = $cursor->format('Y-m-d');
+                $row  = $rows->get($key);
+
+                $dailyStats[] = [
+                    'date'         => $cursor->format('M j'),
+                    'unique_users' => $row ? (int) $row->unique_users : 0,
+                    'sessions'     => $row ? (int) $row->sessions : 0,
+                    'total_download' => $row ? (int) $row->total_download : 0,
+                    'total_upload'   => $row ? (int) $row->total_upload : 0,
                 ];
+
+                $cursor->addDay();
             }
 
-            // Calculate summary statistics
-            $totalUsers = collect($dailyStats)->sum('unique_users');
-            $totalSessions = collect($dailyStats)->sum('sessions');
-            $totalDataUsage = collect($dailyStats)->sum('total_bytes');
-            $averageUsersPerDay = $totalUsers > 0 ? round($totalUsers / $period, 1) : 0;
+            // ── Period-level KPIs (single query, distinct over whole range) ──
+            $period = UserDeviceLoginSession::query()
+                ->selectRaw("
+                    COUNT(*)                                 AS total_sessions,
+                    COUNT(DISTINCT guest_network_user_id)    AS unique_users,
+                    SUM(COALESCE(total_download, 0))         AS total_download,
+                    SUM(COALESCE(total_upload, 0))           AS total_upload,
+                    SUM(CASE WHEN session_duration IS NOT NULL THEN session_duration ELSE 0 END) AS total_duration,
+                    SUM(CASE WHEN session_duration IS NOT NULL THEN 1 ELSE 0 END)               AS sessions_with_duration
+                ")
+                ->where('location_id', $id)
+                ->where('login_success', true)
+                ->whereBetween('connect_time', [$startDate, $endDate])
+                ->first();
+
+            $totalSessions  = (int) ($period->total_sessions ?? 0);
+            $uniqueUsers    = (int) ($period->unique_users ?? 0);
+            $totalDownload  = (int) ($period->total_download ?? 0);
+            $totalUpload    = (int) ($period->total_upload ?? 0);
+            $withDuration   = (int) ($period->sessions_with_duration ?? 0);
+            $totalDuration  = (int) ($period->total_duration ?? 0);
+            $avgSessionSecs = $withDuration > 0 ? (int) round($totalDuration / $withDuration) : 0;
+            $avgDailyUsers  = $days > 0 ? round($uniqueUsers / $days, 1) : 0;
 
             return response()->json([
                 'success' => true,
-                'data' => $chartData,
-                'summary' => [
-                    'total_unique_users' => $totalUsers,
-                    'total_sessions' => $totalSessions,
-                    'total_data_usage' => $totalDataUsage,
-                    'average_users_per_day' => $averageUsersPerDay,
-                    'period_days' => $period,
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
+                'data' => [
+                    'total_download'    => $totalDownload,
+                    'total_upload'      => $totalUpload,
+                    'unique_users'      => $uniqueUsers,
+                    'total_sessions'    => $totalSessions,
+                    'avg_session_seconds' => $avgSessionSecs,
+                    'avg_daily_users'   => $avgDailyUsers,
+                    'daily_stats'       => $dailyStats,
                 ],
             ]);
 

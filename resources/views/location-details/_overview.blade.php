@@ -37,7 +37,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title mb-0">{{ __('location_details.current_usage') }}</h5>
                 <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" id="usage-period-btn">{{ __('location_details.period_today') }}</button>
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" id="usage-period-btn">{{ __('location_details.period_7days') }}</button>
                     <div class="dropdown-menu dropdown-menu-right" id="usage-period-dropdown">
                         <a class="dropdown-item" href="javascript:void(0);" data-period="today">{{ __('location_details.period_today') }}</a>
                         <a class="dropdown-item" href="javascript:void(0);" data-period="7days">{{ __('location_details.period_7days') }}</a>
@@ -122,7 +122,7 @@
                                     <div class="users-count">
                                         <span class="count-number" id="online-count">0</span>
                                         <span style="color:var(--mw-text-muted); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px;">{{ __('location_details.online_label') }}</span>
-                                        <span id="count-range" style="display:none; font-size:0.75rem; color:var(--mw-text-muted);"></span>
+                                        <span id="count-range" class="ms-2 text-nowrap" style="display:none; font-size:0.75rem; color:var(--mw-text-muted);"></span>
                                     </div>
                                 </div>
                                 <div class="users-container">
