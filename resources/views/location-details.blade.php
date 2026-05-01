@@ -183,6 +183,7 @@
 
 <div class="mw-tabs">
     <button type="button" class="mw-tab active" data-tab="overview">{{ __('location_details.tab_overview') }}</button>
+    <button type="button" class="mw-tab" data-tab="analytics">{{ __('location_details.tab_analytics') }}</button>
     <button type="button" class="mw-tab" data-tab="settings">{{ __('location_details.tab_location_details') }}</button>
     <button type="button" class="mw-tab" data-tab="router">{{ __('location_details.tab_router_settings') }}</button>
     <button type="button" class="mw-tab" data-tab="networks">{{ __('location_details.tab_networks') }}</button>
@@ -191,6 +192,8 @@
 <div class="content-body">
 
 @include('location-details._overview')
+
+@include('location-details._analytics')
 
 @include('location-details._settings')
 
@@ -510,6 +513,7 @@
     window.APP_I18N.common = @json(__('common'));
 </script>
 <script src="/assets/js/location-details-overview.js?v={{ filemtime(public_path('assets/js/location-details-overview.js')) }}"></script>
+<script src="/assets/js/location-details-analytics.js?v={{ filemtime(public_path('assets/js/location-details-analytics.js')) }}"></script>
 <script src="/assets/js/location-details-settings.js?v={{ filemtime(public_path('assets/js/location-details-settings.js')) }}"></script>
 <script src="/assets/js/location-details-router.js?v={{ filemtime(public_path('assets/js/location-details-router.js')) }}"></script>
 <script src="/assets/js/location-details-networks.js?v={{ filemtime(public_path('assets/js/location-details-networks.js')) }}"></script>

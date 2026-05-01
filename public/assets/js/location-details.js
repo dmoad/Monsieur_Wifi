@@ -35,6 +35,7 @@ let location_id = (function () {
 })();
 let currentUsagePeriod = '7days';
 let currentDeviceData = null;
+let currentLocationData = null;
 let networkSourceLocationId = null; // may differ from location_id when location is a non-primary zone member
 /** Whether this location may edit zone-wide settings (QoS, networks); false for non-primary zone members. */
 let locationIsPrimaryOrStandalone = true;
@@ -184,6 +185,7 @@ async function loadLocationDetails() {
 
     const location = res.data;
     currentDeviceData = location.device || null;
+    currentLocationData = location;
 
     // Header & breadcrumb
     $('.location_name').text(location.name || '');
@@ -260,6 +262,7 @@ async function loadLocationDetails() {
 
 function initEventHandlers() {
     initOverviewHandlers();
+    initAnalyticsHandlers();
     initSettingsHandlers();
     initRouterHandlers();
 
@@ -280,6 +283,9 @@ function activateLdTab(key, { updateUrl = true } = {}) {
         url.searchParams.set('tab', key);
         history.replaceState(null, '', url);
     }
+    if (key === 'analytics') {
+        loadAnalyticsTab();
+    }
     if (key === 'networks' && !ldNetworks.isLoaded()) {
         ldNetworks.load();
     }
@@ -297,7 +303,7 @@ document.addEventListener('click', function (e) {
 (function restoreTabFromUrl() {
     const key = new URL(window.location.href).searchParams.get('tab');
     if (!key) return;
-    const allowed = ['overview', 'settings', 'router', 'networks'];
+    const allowed = ['overview', 'analytics', 'settings', 'router', 'networks'];
     if (!allowed.includes(key)) return;
     // Defer one tick so the ldNetworks IIFE + DOM are fully ready
     document.addEventListener('DOMContentLoaded', () => activateLdTab(key, { updateUrl: false }));

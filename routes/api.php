@@ -151,6 +151,11 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::post('/{id}/captive-portal/hourly-schedule/initialize', [CaptivePortalHourlyScheduleController::class, 'initializeFromWorkingHours']);
     Route::get('/{id}/captive-portal/hourly-schedule/status', [CaptivePortalHourlyScheduleController::class, 'checkCurrentStatus']);
 
+    // Analytics routes
+    Route::get('/{id}/analytics/hourly-bandwidth', [LocationController::class, 'getAnalyticsHourlyBandwidth']);
+    Route::get('/{id}/analytics/device-types',     [LocationController::class, 'getAnalyticsDeviceTypes']);
+    Route::get('/{id}/analytics/users',            [LocationController::class, 'getAnalyticsUsers']);
+
     // Location QoS toggle
     Route::put('/{id}/settings/qos', [LocationController::class, 'updateQosSettings']);
 

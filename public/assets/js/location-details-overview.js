@@ -221,14 +221,60 @@ function buildLiveUserCardHtml(u, serial) {
 // USAGE STATS
 // ============================================================================
 
+/**
+ * Compact byte label for Current Usage: whole numbers only, KB/MB/GB/TB, length ≤ 6 chars.
+ *
+ * @param {number} bytes
+ * @returns {string}
+ */
+function formatCurrentUsageBytes(bytes) {
+    const x = Number(bytes);
+    if (!Number.isFinite(x) || x <= 0) {
+        return '0 B';
+    }
+    const n = Math.floor(x);
+    if (n === 0) {
+        return '0 B';
+    }
+
+    const k = 1024;
+    const UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let i = Math.min(Math.floor(Math.log(n) / Math.log(k)), UNITS.length - 1);
+    if (i < 0) {
+        i = 0;
+    }
+
+    for (;;) {
+        let v = Math.round(n / Math.pow(k, i));
+        while (v >= k && i < UNITS.length - 1) {
+            i += 1;
+            v = Math.round(n / Math.pow(k, i));
+        }
+        const u = UNITS[i];
+        const s = u === 'B' ? `${v} B` : `${v}${u}`;
+        if (s.length <= 6) {
+            return s;
+        }
+        if (i < UNITS.length - 1) {
+            i += 1;
+            continue;
+        }
+        let tv = v;
+        while (`${tv}${u}`.length > 6 && tv >= 10) {
+            tv = Math.floor(tv / 10);
+        }
+        return `${tv}${u}`;
+    }
+}
+
 async function loadCurrentUsage(period) {
     $('#usage-loading').show();
     try {
         const res = await apiFetch(`${API}/locations/${location_id}/captive-portal/daily-usage?period=${period}`);
         const data = res.data || {};
 
-        $('#download-usage').text(formatBytes(data.total_download || 0));
-        $('#upload-usage').text(formatBytes(data.total_upload || 0));
+        $('#download-usage').text(formatCurrentUsageBytes(data.total_download || 0));
+        $('#upload-usage').text(formatCurrentUsageBytes(data.total_upload || 0));
         $('#users-sessions-count').text(`${data.unique_users || 0} / ${data.total_sessions || 0}`);
         $('#avg-session-time').text(formatDuration(data.avg_session_seconds || 0));
         $('#usage-last-updated').text('Updated: ' + new Date().toLocaleTimeString());

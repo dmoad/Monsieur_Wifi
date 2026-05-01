@@ -816,6 +816,162 @@ class LocationController extends Controller
         }
     }
 
+    // =========================================================================
+    // ANALYTICS ENDPOINTS
+    // =========================================================================
+
+    /**
+     * Hourly bandwidth for the last 24 h.
+     * Returns 24 buckets { hour, download, upload } in byte totals.
+     */
+    public function getAnalyticsHourlyBandwidth($id)
+    {
+        try {
+            $location = Location::find($id);
+            if (! $location) {
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+            }
+
+            $offsetMinutes = (int) round(Carbon::now()->utcOffset());
+            $hourExpr      = $offsetMinutes === 0
+                ? 'HOUR(connect_time)'
+                : "HOUR(DATE_ADD(connect_time, INTERVAL {$offsetMinutes} MINUTE))";
+
+            $since = Carbon::now()->subHours(24);
+
+            $rows = UserDeviceLoginSession::query()
+                ->selectRaw("{$hourExpr} AS hr,
+                             SUM(COALESCE(total_download, 0)) AS dl,
+                             SUM(COALESCE(total_upload, 0))   AS ul")
+                ->where('location_id', $id)
+                ->where('login_success', true)
+                ->where('connect_time', '>=', $since)
+                ->groupByRaw($hourExpr)
+                ->orderByRaw($hourExpr)
+                ->get()
+                ->keyBy('hr');
+
+            $buckets = [];
+            for ($h = 0; $h < 24; $h++) {
+                $row       = $rows->get($h);
+                $label     = sprintf('%02d:00', $h);
+                $buckets[] = [
+                    'hour'     => $label,
+                    'download' => $row ? (int) $row->dl : 0,
+                    'upload'   => $row ? (int) $row->ul : 0,
+                ];
+            }
+
+            return response()->json(['success' => true, 'data' => $buckets]);
+        } catch (\Exception $e) {
+            Log::error('Analytics hourly bandwidth error: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Device-type breakdown from guest_network_users for the location.
+     * Returns [{ type, count }] sorted descending by count.
+     */
+    public function getAnalyticsDeviceTypes($id)
+    {
+        try {
+            $location = Location::find($id);
+            if (! $location) {
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+            }
+
+            $rows = GuestNetworkUser::query()
+                ->selectRaw("COALESCE(NULLIF(TRIM(device_type), ''), 'Unknown') AS dtype, COUNT(*) AS cnt")
+                ->where('location_id', $id)
+                ->groupByRaw("COALESCE(NULLIF(TRIM(device_type), ''), 'Unknown')")
+                ->orderByRaw('cnt DESC')
+                ->get();
+
+            $data = $rows->map(fn ($r) => ['type' => $r->dtype, 'count' => (int) $r->cnt])->values();
+
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (\Exception $e) {
+            Log::error('Analytics device types error: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Paginated guest-user list for the location.
+     * Query params: page (default 1), per_page (default 15, max 100), search (name/mac/email).
+     */
+    public function getAnalyticsUsers($id, Request $request)
+    {
+        try {
+            $location = Location::find($id);
+            if (! $location) {
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+            }
+
+            $perPage = min((int) $request->get('per_page', 15), 100);
+            $search  = trim((string) $request->get('search', ''));
+
+            $query = GuestNetworkUser::query()
+                ->select('guest_network_users.*')
+                ->selectSub(
+                    UserDeviceLoginSession::query()
+                        ->selectRaw('COUNT(*)')
+                        ->whereColumn('guest_network_user_id', 'guest_network_users.id'),
+                    'session_count'
+                )
+                ->selectSub(
+                    UserDeviceLoginSession::query()
+                        ->selectRaw('MAX(connect_time)')
+                        ->whereColumn('guest_network_user_id', 'guest_network_users.id'),
+                    'last_seen'
+                )
+                ->where('guest_network_users.location_id', $id);
+
+            if ($search !== '') {
+                $like = '%'.$search.'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('guest_network_users.name', 'like', $like)
+                        ->orWhere('guest_network_users.mac_address', 'like', $like)
+                        ->orWhere('guest_network_users.email', 'like', $like);
+                });
+            }
+
+            $paginated = $query->orderByDesc('guest_network_users.id')->paginate($perPage);
+
+            $items = collect($paginated->items())->map(fn ($u) => [
+                'id'                => $u->id,
+                'name'              => $u->name,
+                'mac_address'       => $u->mac_address,
+                'email'             => $u->email,
+                'phone'             => $u->phone,
+                'os'                => $u->os,
+                'device_type'       => $u->device_type,
+                'blocked'           => (bool) $u->blocked,
+                'expiration_time'   => $u->expiration_time?->toDateTimeString(),
+                'session_count'     => (int) $u->session_count,
+                'last_seen'         => $u->last_seen,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'data'         => $items,
+                    'current_page' => $paginated->currentPage(),
+                    'last_page'    => $paginated->lastPage(),
+                    'total'        => $paginated->total(),
+                    'per_page'     => $paginated->perPage(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Analytics users error: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Show the form for editing the specified location.
      *
