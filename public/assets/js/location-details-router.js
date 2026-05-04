@@ -55,16 +55,35 @@ function applyQosZoneLock() {
     $('.qos-bandwidth-subsection').toggleClass('qos-bandwidth-disabled', !qosOn);
 
     if (!zoneMember) {
+        // Primary / standalone — all QoS and web filter controls fully editable
         $('#qos-enabled, #save-qos-settings').prop('disabled', false);
         $('.qos-bw-input').prop('disabled', !qosOn);
         $('#qos-wan-use-local').prop('disabled', !qosOn);
+        // SNI domain inputs
+        $('[id^="ld-router-qos-input-"]').prop('disabled', false);
+        $('.ld-router-qos-add-btn').prop('disabled', false);
+        // Web filter
+        $('#zone-web-filter-notice').hide();
+        $('#global-web-filter, #global-filter-categories, #wan-dns1, #wan-dns2').prop('disabled', false);
+        $('#save-web-filter-settings').prop('disabled', false);
         return;
     }
-    $('#qos-enabled, #save-qos-settings').prop('disabled', false);
+
+    // Non-primary zone member — zone-shared settings are read-only
+    // QoS enable/save locked; class bandwidth inputs locked
+    $('#qos-enabled').prop('disabled', true);
+    $('#save-qos-settings').prop('disabled', false); // save still allowed (WAN override is local)
     $('.qos-bw-class-input').prop('disabled', true);
     $('#qos-wan-use-local').prop('disabled', !qosOn);
     const useLocal = $('#qos-wan-use-local').is(':checked');
     $('.qos-wan-input').prop('disabled', !qosOn || !useLocal);
+    // SNI domain inputs + add buttons locked
+    $('[id^="ld-router-qos-input-"]').prop('disabled', true);
+    $('.ld-router-qos-add-btn').prop('disabled', true);
+    // Web filter locked
+    $('#zone-web-filter-notice').show();
+    $('#global-web-filter, #global-filter-categories, #wan-dns1, #wan-dns2').prop('disabled', true);
+    $('#save-web-filter-settings').prop('disabled', true);
 }
 
 async function loadLocationSettings() {

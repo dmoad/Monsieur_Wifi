@@ -274,6 +274,7 @@ return [
     'qos_title' => 'Traffic Prioritization (QoS)',
     'save_qos' => 'Save QoS',
     'qos_zone_notice' => "QoS is managed by the zone's primary location.",
+    'web_filter_zone_notice' => "Web filtering is managed by the zone's primary location.",
     'qos_classification' => 'Classification',
     'qos_enable' => 'Enable traffic prioritization',
     'qos_enable_help' => 'Classify traffic by hostname (SNI) and apply DSCP-based priority. Requires compatible router firmware.',

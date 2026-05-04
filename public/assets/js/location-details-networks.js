@@ -540,6 +540,12 @@ const ldNetworks = (function () {
             row.dataset.networkId = net.id;
             row.dataset.networkType = net.type;
 
+            if (!locationIsPrimaryOrStandalone) {
+                row.dataset.zoneLocked = 'true';
+                const deleteBtn = row.querySelector('[data-action="delete"]');
+                if (deleteBtn) deleteBtn.style.display = 'none';
+            }
+
             row.querySelector('.ld-net-name').textContent = net.ssid || '';
 
             const typeBadge = row.querySelector('.ld-net-type-badge');
@@ -591,7 +597,7 @@ const ldNetworks = (function () {
             render();
             loaded = true;
             const addBtn = document.getElementById('ld-networks-add-btn');
-            if (addBtn) addBtn.disabled = false;
+            if (addBtn) addBtn.disabled = !locationIsPrimaryOrStandalone;
             restoreEditFromUrl();
         } catch (err) {
             console.error('ldNetworks.load', err);
@@ -779,7 +785,13 @@ const ldNetworks = (function () {
         // Working-hours picker (captive only) — always init so switching type later works
         initSchedulePicker(net);
 
-        document.getElementById('ld-network-drawer-save').disabled = false;
+        document.getElementById('ld-network-drawer-save').disabled = !locationIsPrimaryOrStandalone;
+        if (!locationIsPrimaryOrStandalone) {
+            const drawerForm = document.getElementById('ld-network-drawer-form');
+            if (drawerForm) {
+                drawerForm.querySelectorAll('input, select, textarea').forEach(el => { el.disabled = true; });
+            }
+        }
 
         const body = document.getElementById('ld-network-drawer-body');
         if (body) body.scrollTop = 0;

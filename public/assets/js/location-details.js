@@ -216,6 +216,14 @@ async function loadLocationDetails() {
     }
     applyQosZoneLock();
 
+    // If the networks tab was already loaded before this function completed (race: URL
+    // had ?tab=networks so ldNetworks.load() fired on DOMContentLoaded before
+    // window.load), reload it now so it uses the correct networkSourceLocationId and
+    // renders with the correct zone-lock state (hidden delete buttons, etc.).
+    if (typeof ldNetworks !== 'undefined' && ldNetworks.isLoaded()) {
+        ldNetworks.load();
+    }
+
     // Status badge
     const isOnline = location.device && location.device.is_online;
     const $badge = $('.status-badge');

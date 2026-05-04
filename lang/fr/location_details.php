@@ -274,6 +274,7 @@ return [
     'qos_title' => 'Priorisation du trafic (QoS)',
     'save_qos' => 'Enregistrer QoS',
     'qos_zone_notice' => 'QoS est géré par l\'emplacement principal de la zone.',
+    'web_filter_zone_notice' => 'Le filtrage web est géré par l\'emplacement principal de la zone.',
     'qos_classification' => 'Classification',
     'qos_enable' => 'Activer la priorisation du trafic',
     'qos_enable_help' => 'Classez le trafic par nom d\'hôte (SNI) et appliquez une priorité basée sur DSCP. Nécessite un firmware de routeur compatible.',

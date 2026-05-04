@@ -318,6 +318,12 @@
                                     <h5 class="section-title">{{ __('location_details.web_content_filtering') }}</h5>
                                     <button class="btn btn-primary" id="save-web-filter-settings"><i data-feather="save" class="mr-2"></i>{{ __('location_details.save_web_filter') }}</button>
                                 </div>
+
+                                <div id="zone-web-filter-notice" class="alert alert-info py-2 px-3 mb-3" style="display:none;">
+                                    <i data-feather="layers" class="mr-50" style="width:16px;height:16px;vertical-align:text-bottom;"></i>
+                                    {{ __('location_details.web_filter_zone_notice') }}
+                                </div>
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
