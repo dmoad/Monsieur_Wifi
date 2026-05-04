@@ -2,23 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CaptivePortalHourlySchedule;
 use App\Models\CaptivePortalWorkingHour;
 use App\Models\Category;
 use App\Models\Device;
 use App\Models\Firmware;
+use App\Models\FlowSession;
+use App\Models\GuestNetworkUser;
 use App\Models\Location;
+use App\Models\LocationNetwork;
 use App\Models\LocationQosDomain;
 use App\Models\LocationSettingsV2;
-use App\Models\GuestNetworkUser;
 use App\Models\OnlineNetworkUser;
+use App\Models\ProductModel;
 use App\Models\Radacct;
+use App\Models\Radcheck;
 use App\Models\UserDeviceLoginSession;
 use App\Models\WifiStat;
 use App\Models\WifiStatClient;
-use App\Models\Radcheck;
 use App\Services\GeocodingService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -44,7 +50,7 @@ class LocationController extends Controller
     /**
      * Display a listing of the locations.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -82,7 +88,7 @@ class LocationController extends Controller
                 $locationData['last_seen'] = $location->device->last_seen;
             }
             // Get data usage and user statistics from accounting records for today
-            $today = \Carbon\Carbon::now()->startOfDay();
+            $today = Carbon::now()->startOfDay();
             $dataUsage = Radacct::getLocationDataUsage($location->id, $today);
 
             $activeSessions = Radacct::getActiveSessions($location->id);
@@ -128,7 +134,7 @@ class LocationController extends Controller
     /**
      * Show the form for creating a new location.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -138,7 +144,7 @@ class LocationController extends Controller
     /**
      * Store a newly created location in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -318,7 +324,7 @@ class LocationController extends Controller
         foreach ($source->networks as $network) {
             $networkData = $network->toArray();
             unset($networkData['id'], $networkData['location_id'], $networkData['created_at'], $networkData['updated_at']);
-            $clonedNetwork = new \App\Models\LocationNetwork($networkData);
+            $clonedNetwork = new LocationNetwork($networkData);
             $clonedNetwork->location_id = $cloned->id;
             $clonedNetwork->save();
         }
@@ -333,8 +339,8 @@ class LocationController extends Controller
     /**
      * Display the specified location.
      *
-     * @param  \App\Models\Location  $location
-     * @return \Illuminate\Http\Response
+     * @param  Location  $location
+     * @return Response
      */
     public function show($id)
     {
@@ -422,11 +428,11 @@ class LocationController extends Controller
 
             // Get date range from request, default to last 30 days
             $startDate = $request->has('start_date')
-                ? \Carbon\Carbon::parse($request->start_date)
-                : \Carbon\Carbon::now()->subDays(30);
+                ? Carbon::parse($request->start_date)
+                : Carbon::now()->subDays(30);
             $endDate = $request->has('end_date')
-                ? \Carbon\Carbon::parse($request->end_date)
-                : \Carbon\Carbon::now();
+                ? Carbon::parse($request->end_date)
+                : Carbon::now();
 
             // Get comprehensive statistics
             $dataUsage = Radacct::getLocationDataUsage($id, $startDate, $endDate);
@@ -512,7 +518,7 @@ class LocationController extends Controller
      * Get online users for a specific location
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function getOnlineUsers($id)
     {
@@ -571,7 +577,7 @@ class LocationController extends Controller
 
             $transformedUsers = collect();
 
-            /** @var array<string,\App\Models\WifiStatClient> $byMac */
+            /** @var array<string,WifiStatClient> $byMac */
             $byMac = [];
             foreach ($wifiRowsOrdered as $row) {
                 if (isset($byMac[$row->mac])) {
@@ -593,9 +599,9 @@ class LocationController extends Controller
                 });
 
                 foreach ($wifiSorted as $c) {
-                    $gnuId       = $c->guest_network_user_id;
-                    $guestName   = $gnuId ? ($guestNameById[(int) $gnuId] ?? null) : null;
-                    $title       = ($guestName && trim((string) $guestName) !== '') ? trim((string) $guestName) : $c->mac;
+                    $gnuId = $c->guest_network_user_id;
+                    $guestName = $gnuId ? ($guestNameById[(int) $gnuId] ?? null) : null;
+                    $title = ($guestName && trim((string) $guestName) !== '') ? trim((string) $guestName) : $c->mac;
                     $sessionTime = max(0, (int) $c->connected_time_s);
 
                     $transformedUsers->push([
@@ -694,7 +700,7 @@ class LocationController extends Controller
      * Get captive portal daily usage statistics from Radacct
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function getCaptivePortalDailyUsage($id, Request $request)
     {
@@ -713,14 +719,14 @@ class LocationController extends Controller
             $periodRaw = $request->get('period', '7days');
             if ($periodRaw === 'today') {
                 $startDate = Carbon::today()->startOfDay();
-                $endDate   = Carbon::today()->endOfDay();
-                $days      = 1;
+                $endDate = Carbon::today()->endOfDay();
+                $days = 1;
             } else {
                 $days = (int) preg_replace('/[^0-9]/', '', (string) $periodRaw);
                 if ($days < 1) {
                     $days = 7;
                 }
-                $endDate   = Carbon::today()->endOfDay();
+                $endDate = Carbon::today()->endOfDay();
                 $startDate = Carbon::today()->subDays($days - 1)->startOfDay();
             }
 
@@ -728,7 +734,7 @@ class LocationController extends Controller
             // Use a numeric UTC offset (seconds → minutes) instead of CONVERT_TZ with
             // named timezones, which requires MySQL timezone tables to be populated.
             $offsetMinutes = (int) round(Carbon::now()->utcOffset());
-            $dateExpr      = $offsetMinutes === 0
+            $dateExpr = $offsetMinutes === 0
                 ? 'DATE(connect_time)'
                 : "DATE(DATE_ADD(connect_time, INTERVAL {$offsetMinutes} MINUTE))";
 
@@ -752,18 +758,18 @@ class LocationController extends Controller
 
             // ── Fill every calendar day (zero-fill gaps) ─────────────────────
             $dailyStats = [];
-            $cursor     = $startDate->copy()->startOfDay();
+            $cursor = $startDate->copy()->startOfDay();
 
             while ($cursor->lte($endDate)) {
-                $key  = $cursor->format('Y-m-d');
-                $row  = $rows->get($key);
+                $key = $cursor->format('Y-m-d');
+                $row = $rows->get($key);
 
                 $dailyStats[] = [
-                    'date'         => $cursor->format('M j'),
+                    'date' => $cursor->format('M j'),
                     'unique_users' => $row ? (int) $row->unique_users : 0,
-                    'sessions'     => $row ? (int) $row->sessions : 0,
+                    'sessions' => $row ? (int) $row->sessions : 0,
                     'total_download' => $row ? (int) $row->total_download : 0,
-                    'total_upload'   => $row ? (int) $row->total_upload : 0,
+                    'total_upload' => $row ? (int) $row->total_upload : 0,
                 ];
 
                 $cursor->addDay();
@@ -771,38 +777,38 @@ class LocationController extends Controller
 
             // ── Period-level KPIs (single query, distinct over whole range) ──
             $period = UserDeviceLoginSession::query()
-                ->selectRaw("
+                ->selectRaw('
                     COUNT(*)                                 AS total_sessions,
                     COUNT(DISTINCT guest_network_user_id)    AS unique_users,
                     SUM(COALESCE(total_download, 0))         AS total_download,
                     SUM(COALESCE(total_upload, 0))           AS total_upload,
                     SUM(CASE WHEN session_duration IS NOT NULL THEN session_duration ELSE 0 END) AS total_duration,
                     SUM(CASE WHEN session_duration IS NOT NULL THEN 1 ELSE 0 END)               AS sessions_with_duration
-                ")
+                ')
                 ->where('location_id', $id)
                 ->where('login_success', true)
                 ->whereBetween('connect_time', [$startDate, $endDate])
                 ->first();
 
-            $totalSessions  = (int) ($period->total_sessions ?? 0);
-            $uniqueUsers    = (int) ($period->unique_users ?? 0);
-            $totalDownload  = (int) ($period->total_download ?? 0);
-            $totalUpload    = (int) ($period->total_upload ?? 0);
-            $withDuration   = (int) ($period->sessions_with_duration ?? 0);
-            $totalDuration  = (int) ($period->total_duration ?? 0);
+            $totalSessions = (int) ($period->total_sessions ?? 0);
+            $uniqueUsers = (int) ($period->unique_users ?? 0);
+            $totalDownload = (int) ($period->total_download ?? 0);
+            $totalUpload = (int) ($period->total_upload ?? 0);
+            $withDuration = (int) ($period->sessions_with_duration ?? 0);
+            $totalDuration = (int) ($period->total_duration ?? 0);
             $avgSessionSecs = $withDuration > 0 ? (int) round($totalDuration / $withDuration) : 0;
-            $avgDailyUsers  = $days > 0 ? round($uniqueUsers / $days, 1) : 0;
+            $avgDailyUsers = $days > 0 ? round($uniqueUsers / $days, 1) : 0;
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'total_download'    => $totalDownload,
-                    'total_upload'      => $totalUpload,
-                    'unique_users'      => $uniqueUsers,
-                    'total_sessions'    => $totalSessions,
+                    'total_download' => $totalDownload,
+                    'total_upload' => $totalUpload,
+                    'unique_users' => $uniqueUsers,
+                    'total_sessions' => $totalSessions,
                     'avg_session_seconds' => $avgSessionSecs,
-                    'avg_daily_users'   => $avgDailyUsers,
-                    'daily_stats'       => $dailyStats,
+                    'avg_daily_users' => $avgDailyUsers,
+                    'daily_stats' => $dailyStats,
                 ],
             ]);
 
@@ -833,7 +839,7 @@ class LocationController extends Controller
             }
 
             $offsetMinutes = (int) round(Carbon::now()->utcOffset());
-            $hourExpr      = $offsetMinutes === 0
+            $hourExpr = $offsetMinutes === 0
                 ? 'HOUR(connect_time)'
                 : "HOUR(DATE_ADD(connect_time, INTERVAL {$offsetMinutes} MINUTE))";
 
@@ -853,12 +859,12 @@ class LocationController extends Controller
 
             $buckets = [];
             for ($h = 0; $h < 24; $h++) {
-                $row       = $rows->get($h);
-                $label     = sprintf('%02d:00', $h);
+                $row = $rows->get($h);
+                $label = sprintf('%02d:00', $h);
                 $buckets[] = [
-                    'hour'     => $label,
+                    'hour' => $label,
                     'download' => $row ? (int) $row->dl : 0,
-                    'upload'   => $row ? (int) $row->ul : 0,
+                    'upload' => $row ? (int) $row->ul : 0,
                 ];
             }
 
@@ -901,18 +907,22 @@ class LocationController extends Controller
 
     /**
      * Paginated guest-user list for the location.
-     * Query params: page (default 1), per_page (default 15, max 100), search (name/mac/email).
+     * Query params: page (default 1), per_page (5|10|20|100, default 10), search (name/mac/email/phone).
      */
     public function getAnalyticsUsers($id, Request $request)
     {
         try {
-            $location = Location::find($id);
+            $location = $this->authorizeLocationAccess((int) $id);
             if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
-            $perPage = min((int) $request->get('per_page', 15), 100);
-            $search  = trim((string) $request->get('search', ''));
+            $allowedPerPage = [5, 10, 20, 100];
+            $rawPerPage = (int) $request->get('per_page', 10);
+            $perPage = in_array($rawPerPage, $allowedPerPage, true) ? $rawPerPage : 10;
+            $search = trim((string) $request->get('search', ''));
+
+            $locationId = (int) $location->id;
 
             $query = GuestNetworkUser::query()
                 ->select('guest_network_users.*')
@@ -928,41 +938,42 @@ class LocationController extends Controller
                         ->whereColumn('guest_network_user_id', 'guest_network_users.id'),
                     'last_seen'
                 )
-                ->where('guest_network_users.location_id', $id);
+                ->where('guest_network_users.location_id', $locationId);
 
             if ($search !== '') {
                 $like = '%'.$search.'%';
                 $query->where(function ($q) use ($like) {
                     $q->where('guest_network_users.name', 'like', $like)
                         ->orWhere('guest_network_users.mac_address', 'like', $like)
-                        ->orWhere('guest_network_users.email', 'like', $like);
+                        ->orWhere('guest_network_users.email', 'like', $like)
+                        ->orWhere('guest_network_users.phone', 'like', $like);
                 });
             }
 
             $paginated = $query->orderByDesc('guest_network_users.id')->paginate($perPage);
 
             $items = collect($paginated->items())->map(fn ($u) => [
-                'id'                => $u->id,
-                'name'              => $u->name,
-                'mac_address'       => $u->mac_address,
-                'email'             => $u->email,
-                'phone'             => $u->phone,
-                'os'                => $u->os,
-                'device_type'       => $u->device_type,
-                'blocked'           => (bool) $u->blocked,
-                'expiration_time'   => $u->expiration_time?->toDateTimeString(),
-                'session_count'     => (int) $u->session_count,
-                'last_seen'         => $u->last_seen,
+                'id' => $u->id,
+                'name' => $u->name,
+                'mac_address' => $u->mac_address,
+                'email' => $u->email,
+                'phone' => $u->phone,
+                'os' => $u->os,
+                'device_type' => $u->device_type,
+                'blocked' => (bool) $u->blocked,
+                'expiration_time' => $u->expiration_time?->toDateTimeString(),
+                'session_count' => (int) $u->session_count,
+                'last_seen' => $u->last_seen,
             ]);
 
             return response()->json([
                 'success' => true,
-                'data'    => [
-                    'data'         => $items,
+                'data' => [
+                    'data' => $items,
                     'current_page' => $paginated->currentPage(),
-                    'last_page'    => $paginated->lastPage(),
-                    'total'        => $paginated->total(),
-                    'per_page'     => $paginated->perPage(),
+                    'last_page' => $paginated->lastPage(),
+                    'total' => $paginated->total(),
+                    'per_page' => $paginated->perPage(),
                 ],
             ]);
         } catch (\Exception $e) {
@@ -973,9 +984,92 @@ class LocationController extends Controller
     }
 
     /**
+     * Paginated flow_sessions for the location's device (IP / flow log).
+     *
+     * Query params: page, per_page (5|10|20|100), search (optional), search_field (mac|src_ip|dst_ip).
+     */
+    public function getFlowSessions($id, Request $request)
+    {
+        try {
+            $location = $this->authorizeLocationAccess((int) $id);
+            if (! $location) {
+                return response()->json(['success' => false, 'message' => 'Location not found'], 404);
+            }
+
+            $allowedPerPage = [5, 10, 20, 100];
+            $rawPerPage = (int) $request->get('per_page', 10);
+            $perPage = in_array($rawPerPage, $allowedPerPage, true) ? $rawPerPage : 10;
+
+            $fieldMap = ['mac' => 'mac', 'src_ip' => 'src_ip', 'dst_ip' => 'dst_ip'];
+            $searchField = (string) $request->get('search_field', 'mac');
+            $column = $fieldMap[$searchField] ?? 'mac';
+
+            $search = trim((string) $request->get('search', ''));
+            if (strlen($search) > 128) {
+                $search = substr($search, 0, 128);
+            }
+
+            if (! $location->device_id) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'data' => [],
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'total' => 0,
+                        'per_page' => $perPage,
+                        'message' => 'No device assigned to this location.',
+                    ],
+                ]);
+            }
+
+            $query = FlowSession::query()
+                ->where('device_id', $location->device_id);
+
+            if ($search !== '') {
+                $query->where($column, 'like', '%'.$search.'%');
+            }
+
+            $paginated = $query->orderByDesc('first_ts')->paginate($perPage);
+
+            $items = collect($paginated->items())->map(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'mac' => $row->mac,
+                    'src_ip' => $row->src_ip,
+                    'dst_ip' => $row->dst_ip,
+                    'slot' => (int) $row->slot,
+                    'hits' => (int) $row->hits,
+                    'first_at' => $row->first_ts
+                        ? Carbon::createFromTimestamp((int) $row->first_ts)->toIso8601String()
+                        : null,
+                    'last_at' => $row->last_ts
+                        ? Carbon::createFromTimestamp((int) $row->last_ts)->toIso8601String()
+                        : null,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'data' => $items,
+                    'current_page' => $paginated->currentPage(),
+                    'last_page' => $paginated->lastPage(),
+                    'total' => $paginated->total(),
+                    'per_page' => $paginated->perPage(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Flow sessions list error: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Show the form for editing the specified location.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(Location $location)
     {
@@ -985,8 +1079,8 @@ class LocationController extends Controller
     /**
      * Update the specified location in storage.
      *
-     * @param  \App\Models\Location  $location
-     * @return \Illuminate\Http\Response
+     * @param  Location  $location
+     * @return Response
      */
     public function update(Request $request, $location_id)
     {
@@ -1852,7 +1946,7 @@ class LocationController extends Controller
                     $oldProductModelId = $device->product_model_id;
 
                     // Validate product_model_id exists
-                    if ($newProductModelId && ! \App\Models\ProductModel::find($newProductModelId)) {
+                    if ($newProductModelId && ! ProductModel::find($newProductModelId)) {
                         return response()->json([
                             'success' => false,
                             'message' => 'Invalid device model selected.',
@@ -1942,7 +2036,7 @@ class LocationController extends Controller
     /**
      * Remove the specified location from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Location $location)
     {
@@ -2120,7 +2214,7 @@ class LocationController extends Controller
             }
 
             // Get the firmware information
-            $firmware = \App\Models\Firmware::find($request->firmware_id);
+            $firmware = Firmware::find($request->firmware_id);
 
             if (! $firmware) {
                 return response()->json([
@@ -2165,7 +2259,7 @@ class LocationController extends Controller
                 ],
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -2693,7 +2787,7 @@ class LocationController extends Controller
                     // Update the MAC filter list and handle radcheck records.
                     // Use the first captive portal network for this location as the network scope.
                     $settings->mac_filter_list = $normalizedMacList;
-                    $captiveNet = \App\Models\LocationNetwork::where('location_id', $settings->location_id)
+                    $captiveNet = LocationNetwork::where('location_id', $settings->location_id)
                         ->where('type', 'captive_portal')
                         ->first();
                     if ($captiveNet) {
@@ -2789,7 +2883,7 @@ class LocationController extends Controller
      * Update MAC address for the device associated with this location
      *
      * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function updateMacAddress(Request $request, $id)
     {
@@ -2864,7 +2958,7 @@ class LocationController extends Controller
                 ],
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
@@ -2883,7 +2977,7 @@ class LocationController extends Controller
     /**
      * Update radcheck records for MAC address filtering
      *
-     * @param  \App\Models\LocationSettingsV2  $settings
+     * @param  LocationSettingsV2  $settings
      */
     /**
      * Sync radcheck MAC filter records for a specific network.
@@ -2912,7 +3006,7 @@ class LocationController extends Controller
         foreach (array_diff_key($oldMacMap, $newMacMap) as $macAddress => $macData) {
             $normalizedMac = $this->normalizeMacAddress($macAddress);
             if ($normalizedMac) {
-                \App\Models\Radcheck::where('username', $normalizedMac)
+                Radcheck::where('username', $normalizedMac)
                     ->where('attribute', 'Cleartext-Password')
                     ->where('network_id', $networkId)
                     ->delete();
@@ -2936,7 +3030,7 @@ class LocationController extends Controller
             $scopeChanged = ! $isNew && ($oldMacMap[$macAddress]['scope'] ?? 'all') !== $scope;
 
             if ($isNew || $typeChanged || $scopeChanged) {
-                \App\Models\Radcheck::updateOrCreateRecord(
+                Radcheck::updateOrCreateRecord(
                     $normalizedMac,
                     'Cleartext-Password',
                     $normalizedMac,
@@ -3033,7 +3127,7 @@ class LocationController extends Controller
      * but don't have corresponding radcheck records
      *
      * @param  int  $locationId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function syncMacAddressesToRadcheck($locationId)
     {
@@ -3077,12 +3171,12 @@ class LocationController extends Controller
                     $accessControl = $type === 'whitelist' ? 'whitelisted' : 'blacklisted';
 
                     // Scope to the first captive portal network for this location.
-                    $captiveNet = \App\Models\LocationNetwork::where('location_id', $locationId)
+                    $captiveNet = LocationNetwork::where('location_id', $locationId)
                         ->where('type', 'captive_portal')
                         ->first();
 
                     if ($captiveNet) {
-                        \App\Models\Radcheck::updateOrCreateRecord(
+                        Radcheck::updateOrCreateRecord(
                             $macAddress,
                             'Cleartext-Password',
                             $macAddress,
@@ -3229,7 +3323,7 @@ class LocationController extends Controller
         foreach ($days as $day) {
             for ($hour = 0; $hour < 24; $hour++) {
                 // Default to enabled (24/7 access for new locations)
-                \App\Models\CaptivePortalHourlySchedule::updateOrCreate(
+                CaptivePortalHourlySchedule::updateOrCreate(
                     [
                         'location_id' => $locationId,
                         'day_of_week' => $day,
@@ -3258,7 +3352,7 @@ class LocationController extends Controller
         }
 
         // Fetch categories with their names from the database
-        $categories = \App\Models\Category::whereIn('id', $categoryIds)
+        $categories = Category::whereIn('id', $categoryIds)
             ->select('id', 'name')
             ->get()
             ->map(function ($category) {

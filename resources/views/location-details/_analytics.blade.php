@@ -92,10 +92,20 @@
                             <span class="badge badge-secondary ml-2" id="analytics-users-total" style="font-size:0.75rem;"></span>
                         </h5>
                     </div>
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                        <label class="mb-0 small text-muted d-none d-sm-inline" for="analytics-users-per-page">{{ __('location_details.analytics_users_per_page') }}</label>
+                        <select class="form-control form-control-sm" id="analytics-users-per-page" style="width:auto;min-width:4.5rem;">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="100">100</option>
+                        </select>
                         <input type="text" class="form-control form-control-sm" id="analytics-user-search"
                                placeholder="{{ __('location_details.analytics_search_placeholder') }}"
                                style="width:200px;">
+                        <a href="/{{ $locale }}/locations/{{ $location }}/ip-log" class="btn btn-sm btn-outline-primary">
+                            {{ __('location_details.analytics_ip_log_button') }}
+                        </a>
                         <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-users-refresh">
                             <i data-feather="refresh-cw"></i>
                         </button>
@@ -130,7 +140,7 @@
                         </table>
                     </div>
                     {{-- Pagination --}}
-                    <div class="d-flex justify-content-between align-items-center px-3 py-2" id="analytics-users-pagination" style="display:none!important;">
+                    <div class="d-flex justify-content-between align-items-center px-3 py-2" id="analytics-users-pagination" style="display:none;">
                         <small class="text-muted" id="analytics-users-count-range"></small>
                         <div class="d-flex align-items-center gap-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-users-prev" disabled>

@@ -798,6 +798,7 @@ let zdDeviceChart           = null;
 let zdAnalyticsPeriod       = '7days';
 let zdUsersPage             = 1;
 let zdUsersLastPage         = 1;
+let zdUsersPerPage          = 10;
 let zdUsersSearch           = '';
 let zdUsersSearchTimer      = null;
 
@@ -1075,15 +1076,16 @@ async function zdLoadUsers(page, search) {
     if (loadingEl) loadingEl.style.display = 'block';
 
     try {
-        let url = `${zdApiBase()}/analytics/users?page=${page}&per_page=15`;
+        let url = `${zdApiBase()}/analytics/users?page=${page}&per_page=10`;
         if (search) url += `&search=${encodeURIComponent(search)}`;
 
         const res = await zdFetch(url);
         if (res.success && res.data) {
-            const { data, current_page, last_page, total } = res.data;
+            const { data, current_page, last_page, total, per_page } = res.data;
+            if (typeof per_page === 'number') zdUsersPerPage = per_page;
             zdUsersLastPage = last_page;
             zdRenderUsersTable(data || []);
-            zdRenderUsersPagination(current_page, last_page, total);
+            zdRenderUsersPagination(current_page, last_page, total, per_page);
         }
     } catch (err) {
         console.error('Zone users load error:', err);
@@ -1125,7 +1127,7 @@ function zdRenderUsersTable(users) {
     if (typeof feather !== 'undefined') feather.replace();
 }
 
-function zdRenderUsersPagination(currentPage, lastPage, total) {
+function zdRenderUsersPagination(currentPage, lastPage, total, perPage) {
     const paginationEl = document.getElementById('zd-users-pagination');
     const countEl      = document.getElementById('zd-users-count-range');
     const pageInfoEl   = document.getElementById('zd-users-page-info');
@@ -1136,12 +1138,15 @@ function zdRenderUsersPagination(currentPage, lastPage, total) {
     if (totalEl) totalEl.textContent = total || '';
 
     if (!paginationEl) return;
+
+    const pp = typeof perPage === 'number' && perPage > 0 ? perPage : zdUsersPerPage;
+
     if (lastPage <= 1) {
         paginationEl.style.setProperty('display', 'none', 'important');
     } else {
         paginationEl.style.setProperty('display', 'flex', 'important');
-        const start = (currentPage - 1) * 15 + 1;
-        const end   = Math.min(currentPage * 15, total);
+        const start = (currentPage - 1) * pp + 1;
+        const end   = Math.min(currentPage * pp, total);
         if (countEl) countEl.textContent = `${start}–${end} / ${total}`;
         if (pageInfoEl) pageInfoEl.textContent = `${currentPage} / ${lastPage}`;
         if (prevBtn) prevBtn.disabled = currentPage <= 1;

@@ -105,6 +105,12 @@ foreach (['en', 'fr'] as $loc) {
             return view('location-guests', compact('location'));
         })->name('location-guests');
 
+        Route::get('/locations/{location}/ip-log', function ($location) {
+            $locale = app()->getLocale();
+
+            return view('location-ip-log', compact('location', 'locale'));
+        })->name('location-ip-log');
+
         Route::get('/zones', function () use ($loc) {
             return redirect("/{$loc}/access-points?tab=zones");
         })->name('zones');

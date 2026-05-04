@@ -30,6 +30,7 @@ let analyticsUsersPage     = 1;
 let analyticsUsersTotal    = 0;
 let analyticsUsersLastPage = 1;
 let analyticsUsersSearch   = '';
+let analyticsUsersPerPage  = 10;
 let analyticsSearchTimer   = null;
 
 // ============================================================================
@@ -49,6 +50,11 @@ function ldAnalyticsT(key) {
 function loadAnalyticsTab() {
     if (analyticsLoaded) return;
     analyticsLoaded = true;
+
+    const perSel = document.getElementById('analytics-users-per-page');
+    if (perSel && perSel.value) {
+        analyticsUsersPerPage = parseInt(perSel.value, 10) || 10;
+    }
 
     loadHourlyBandwidth();
     loadDailyBandwidth(analyticsCurrentPeriod);
@@ -320,16 +326,17 @@ async function loadAnalyticsUsers(page, search) {
     if (loadingEl) loadingEl.style.display = 'block';
 
     try {
-        let url = `${API}/locations/${location_id}/analytics/users?page=${page}&per_page=15`;
+        let url = `${API}/locations/${location_id}/analytics/users?page=${page}&per_page=${analyticsUsersPerPage}`;
         if (search) url += `&search=${encodeURIComponent(search)}`;
 
         const res = await apiFetch(url);
         if (res.success && res.data) {
-            const { data, current_page, last_page, total } = res.data;
+            const { data, current_page, last_page, total, per_page } = res.data;
             analyticsUsersTotal    = total;
             analyticsUsersLastPage = last_page;
+            if (typeof per_page === 'number') analyticsUsersPerPage = per_page;
             renderUsersTable(data || []);
-            renderUsersPagination(current_page, last_page, total);
+            renderUsersPagination(current_page, last_page, total, per_page);
         }
     } catch (err) {
         console.error('Analytics users load error:', err);
@@ -385,7 +392,7 @@ function renderUsersTable(users) {
     reRenderFeather();
 }
 
-function renderUsersPagination(currentPage, lastPage, total) {
+function renderUsersPagination(currentPage, lastPage, total, perPage) {
     const paginationEl = document.getElementById('analytics-users-pagination');
     const countEl      = document.getElementById('analytics-users-count-range');
     const pageInfoEl   = document.getElementById('analytics-users-page-info');
@@ -397,17 +404,20 @@ function renderUsersPagination(currentPage, lastPage, total) {
 
     if (!paginationEl) return;
 
-    if (lastPage <= 1) {
+    const pp = typeof perPage === 'number' && perPage > 0 ? perPage : analyticsUsersPerPage;
+
+    if (!total || total <= 0) {
         paginationEl.style.display = 'none';
-    } else {
-        paginationEl.style.display = 'flex';
-        const start = (currentPage - 1) * 15 + 1;
-        const end   = Math.min(currentPage * 15, total);
-        if (countEl) countEl.textContent = `${start}–${end} / ${total}`;
-        if (pageInfoEl) pageInfoEl.textContent = `${currentPage} / ${lastPage}`;
-        if (prevBtn) prevBtn.disabled = currentPage <= 1;
-        if (nextBtn) nextBtn.disabled = currentPage >= lastPage;
+        return;
     }
+
+    paginationEl.style.display = 'flex';
+    const start = (currentPage - 1) * pp + 1;
+    const end   = Math.min(currentPage * pp, total);
+    if (countEl) countEl.textContent = `${start}–${end} / ${total}`;
+    if (pageInfoEl) pageInfoEl.textContent = `${currentPage} / ${lastPage}`;
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= lastPage;
 }
 
 // ============================================================================
@@ -455,6 +465,11 @@ function initAnalyticsHandlers() {
         analyticsSearchTimer = setTimeout(() => {
             loadAnalyticsUsers(1, val);
         }, 350);
+    });
+
+    $(document).on('change', '#analytics-users-per-page', function () {
+        analyticsUsersPerPage = parseInt($(this).val(), 10) || 10;
+        loadAnalyticsUsers(1, analyticsUsersSearch);
     });
 
     // Refresh users
