@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
@@ -109,21 +110,24 @@ class SubscriptionController extends Controller
             $shippingLabel = number_format($shippingCents / 100, 0, ',', ' ');
 
             $rawLocale = $request->input('locale');
-            $locale = in_array($rawLocale, ['fr', 'en']) ? $rawLocale : 'auto';
-            $isEn = $rawLocale === 'en';
+            $validLocale = in_array($rawLocale, ['fr', 'en'], true);
+            $locale = $validLocale ? $rawLocale : 'auto';
+            App::setLocale($validLocale ? $rawLocale : 'fr');
 
-            $depositName = $isEn ? 'WiFi access point deposit' : 'Caution borne WiFi';
-            $depositDesc = $isEn ? 'Refundable deposit for the Monsieur WiFi access point' : 'Caution remboursable pour la borne WiFi Monsieur WiFi';
-            $shippingName = $isEn ? 'Shipping fee' : 'Frais de livraison';
-            $shippingDesc = $isEn ? 'Delivery of the WiFi access point' : 'Livraison de la borne WiFi';
+            $depositName = __('stripe.deposit_name');
+            $depositDesc = __('stripe.deposit_desc');
+            $shippingName = __('stripe.shipping_name');
+            $shippingDesc = __('stripe.shipping_desc');
 
-            $submitMessage = $isEn
-                ? "Your subscription includes: a WiFi access point with pre-configured captive portal and setup assistance. Today you only pay the deposit ({$depositLabel}€) + shipping fee ({$shippingLabel}€). Your subscription is free for {$trialDays} days, then billed automatically."
-                : "Votre abonnement inclut : borne WiFi avec portail captif pré-paramétré et assistance à la mise en service. Aujourd'hui vous payez uniquement la caution ({$depositLabel}€) + frais de livraison ({$shippingLabel}€). Votre abonnement est offert pendant {$trialDays} jours, puis facturé automatiquement.";
+            $submitMessage = __('stripe.submit_message', [
+                'deposit' => $depositLabel,
+                'shipping' => $shippingLabel,
+                'days' => $trialDays,
+            ]);
 
-            $termsMessage = $isEn
-                ? 'I accept the [Terms and Conditions](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')'
-                : 'J\'accepte les [Conditions Générales de Vente](' . config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv') . ')';
+            $termsMessage = __('stripe.terms_message', [
+                'url' => config('services.stripe.terms_url', 'https://monsieur-wifi.com/cgv'),
+            ]);
 
             $checkout = \Stripe\Checkout\Session::create([
                 'customer' => $user->stripe_id,
