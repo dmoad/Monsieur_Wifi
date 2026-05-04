@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BlockedDomain;
+use App\Models\CaptivePortalHourlySchedule;
 use App\Models\Category;
 use App\Models\Device;
 use App\Models\Firmware;
@@ -16,6 +17,7 @@ use App\Models\ScanResult;
 use App\Models\SystemSetting;
 use App\Models\Zone;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -37,7 +39,7 @@ class DeviceController extends Controller
     /**
      * Display a listing of the devices.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -49,7 +51,7 @@ class DeviceController extends Controller
     /**
      * Show the form for creating a new device.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -59,7 +61,7 @@ class DeviceController extends Controller
     /**
      * Store a newly created device in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -96,7 +98,7 @@ class DeviceController extends Controller
     /**
      * Display the specified device.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(Device $device)
     {
@@ -106,7 +108,7 @@ class DeviceController extends Controller
     /**
      * Show the form for editing the specified device.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(Device $device)
     {
@@ -116,7 +118,7 @@ class DeviceController extends Controller
     /**
      * Update the specified device in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, Device $device)
     {
@@ -137,7 +139,7 @@ class DeviceController extends Controller
     /**
      * Remove the specified device from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Device $device)
     {
@@ -541,6 +543,8 @@ class DeviceController extends Controller
             'hash' => $firmwareInfo ? $firmwareInfo->md5sum : null,
         ];
 
+        $logServer = env('LOG_SERVER_DOMAIN');
+
         // ── QoS block ────────────────────────────────────────────────────────
         // Per-bridge `rules` (domain lists) + policy; all bridges share one location-level domain list.
         $locationDomains = LocationQosDomain::where('location_id', $networksSource->id)
@@ -566,7 +570,27 @@ class DeviceController extends Controller
             'firmware' => $firmware,
             'qos' => $qosBlock,
             'zone_roaming' => $this->zoneRoamingPayload($location),
+            'log_server' => $logServer,
         ]);
+    }
+
+    public function flowIngest($device_key, $device_secret, Request $request)
+    {
+        $device = Device::where('device_key', $device_key)
+            ->where('device_secret', $device_secret)
+            ->first();
+
+        if (! $device) {
+            return response()->json(['error' => 'Invalid device credentials'], 401);
+        }
+
+        $raw = $request->getContent();
+        $decompressed = @gzdecode($raw);
+
+        Log::info("flowIngest device={$device->id} batch=".$request->header('X-Batch-Id', ''));
+        Log::info($decompressed !== false ? $decompressed : $raw);
+
+        return response()->json(['ok' => true]);
     }
 
     /**
@@ -657,7 +681,7 @@ class DeviceController extends Controller
         Log::info("Checking captive portal hourly schedule for location {$locationId}: {$currentDayOfWeek} hour {$currentHour} ({$currentTime})");
 
         // Get hourly schedule for the current hour
-        $hourlySchedule = \App\Models\CaptivePortalHourlySchedule::where('location_id', $locationId)
+        $hourlySchedule = CaptivePortalHourlySchedule::where('location_id', $locationId)
             ->where('day_of_week', $currentDayOfWeek)
             ->where('hour', $currentHour)
             ->first();
@@ -770,7 +794,7 @@ class DeviceController extends Controller
     /**
      * Reboot a device and increment the reboot count.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function reboot(Device $device)
     {

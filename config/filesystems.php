@@ -36,6 +36,10 @@ return [
             'serve' => true,
             'throw' => false,
             'report' => false,
+            // Ensure flow-ingest payload dirs/files are group-readable so
+            // the queue worker (mrwifi-admin) can read what php-fpm (www-data) writes.
+            'directory_permissions' => 0775,
+            'file_permissions' => 0664,
         ],
 
         'public' => [

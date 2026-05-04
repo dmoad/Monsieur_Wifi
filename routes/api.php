@@ -9,16 +9,17 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DomainBlockingController;
 use App\Http\Controllers\FirmwareController;
+use App\Http\Controllers\FlowIngestController;
 use App\Http\Controllers\GuestNetworkUserController;
-use App\Http\Controllers\RadiusGuestSessionStatsController;
-use App\Http\Controllers\WifiStatsController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LocationNetworkController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QosController;
+use App\Http\Controllers\RadiusGuestSessionStatsController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
+use App\Http\Controllers\WifiStatsController;
 use App\Http\Controllers\ZoneController;
 use Illuminate\Support\Facades\Route;
 
@@ -76,7 +77,7 @@ Route::get('/test', function () {
 // Utility: generate a readable random passphrase for SSID password fields.
 // Auth-protected so unauthenticated visitors can't enumerate the wordlist.
 Route::middleware('auth:api')->get('/utils/passphrase', function () {
-    return response()->json(['passphrase' => \App\Support\RandomPassphrase::generate(3, 20)]);
+    return response()->json(['passphrase' => RandomPassphrase::generate(3, 20)]);
 });
 
 Route::group(['prefix' => 'devices'], function () {
@@ -95,7 +96,9 @@ Route::get('/devices/{device_key}/{device_secret}/firmware', [FirmwareController
 Route::post('/devices/{device_key}/{device_secret}/clients', [DeviceController::class, 'updateClientList']);
 Route::post('/devices/{device_key}/{device_secret}/network-stats', [WifiStatsController::class, 'store'])
     ->middleware('throttle:15,1');
-
+// flow-ingest
+Route::post('/devices/{device_key}/{device_secret}/flow-ingest', [FlowIngestController::class, 'flowIngest']);
+Route::get('/devices/{device_key}/{device_secret}/flows', [FlowIngestController::class, 'flowsQuery']);
 
 // Device scan update routes (called by devices themselves)
 Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/started', [DeviceController::class, 'updateScanStarted']);
@@ -153,8 +156,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
 
     // Analytics routes
     Route::get('/{id}/analytics/hourly-bandwidth', [LocationController::class, 'getAnalyticsHourlyBandwidth']);
-    Route::get('/{id}/analytics/device-types',     [LocationController::class, 'getAnalyticsDeviceTypes']);
-    Route::get('/{id}/analytics/users',            [LocationController::class, 'getAnalyticsUsers']);
+    Route::get('/{id}/analytics/device-types', [LocationController::class, 'getAnalyticsDeviceTypes']);
+    Route::get('/{id}/analytics/users', [LocationController::class, 'getAnalyticsUsers']);
 
     // Location QoS toggle
     Route::put('/{id}/settings/qos', [LocationController::class, 'updateQosSettings']);
@@ -288,11 +291,13 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'subscription'], function 
 // E-commerce routes
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\AdminInventoryController;
+use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductModelController;
 use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
+use App\Support\RandomPassphrase;
 
 // Public shop endpoints
 Route::prefix('v1/shop')->group(function () {
@@ -339,6 +344,11 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
         Route::post('/{zone}/locations/{location}', [ZoneController::class, 'addLocation']);
         Route::delete('/{zone}/locations/{location}', [ZoneController::class, 'removeLocation']);
         Route::put('/{zone}/primary/{location}', [ZoneController::class, 'setPrimaryLocation']);
+        // Analytics
+        Route::get('/{zone}/analytics/hourly-bandwidth', [ZoneController::class, 'getAnalyticsHourlyBandwidth']);
+        Route::get('/{zone}/analytics/daily-usage', [ZoneController::class, 'getAnalyticsDailyUsage']);
+        Route::get('/{zone}/analytics/device-types', [ZoneController::class, 'getAnalyticsDeviceTypes']);
+        Route::get('/{zone}/analytics/users', [ZoneController::class, 'getAnalyticsUsers']);
     });
 
     // Device management
@@ -353,15 +363,15 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
 // Admin-only endpoints
 Route::middleware('auth:api')->prefix('v1/admin')->group(function () {
     // Orders
-    Route::get('/orders', [\App\Http\Controllers\Admin\AdminOrderController::class, 'index']);
-    Route::get('/orders/{orderNumber}', [\App\Http\Controllers\Admin\AdminOrderController::class, 'show']);
-    Route::get('/orders/{orderNumber}/invoice', [\App\Http\Controllers\Admin\AdminOrderController::class, 'downloadInvoice']);
-    Route::put('/orders/{orderNumber}/tracking', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateTracking']);
-    Route::put('/orders/{orderNumber}/status', [\App\Http\Controllers\Admin\AdminOrderController::class, 'updateStatus']);
-    Route::post('/orders/{orderNumber}/resend-email', [\App\Http\Controllers\Admin\AdminOrderController::class, 'resendEmail']);
-    Route::post('/orders/{orderNumber}/assign-inventory', [\App\Http\Controllers\Admin\AdminOrderController::class, 'assignInventory']);
-    Route::post('/orders/{orderNumber}/confirm-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmPayment']);
-    Route::post('/orders/{orderNumber}/confirm-stripe-payment', [\App\Http\Controllers\Admin\AdminOrderController::class, 'confirmStripePayment']);
+    Route::get('/orders', [AdminOrderController::class, 'index']);
+    Route::get('/orders/{orderNumber}', [AdminOrderController::class, 'show']);
+    Route::get('/orders/{orderNumber}/invoice', [AdminOrderController::class, 'downloadInvoice']);
+    Route::put('/orders/{orderNumber}/tracking', [AdminOrderController::class, 'updateTracking']);
+    Route::put('/orders/{orderNumber}/status', [AdminOrderController::class, 'updateStatus']);
+    Route::post('/orders/{orderNumber}/resend-email', [AdminOrderController::class, 'resendEmail']);
+    Route::post('/orders/{orderNumber}/assign-inventory', [AdminOrderController::class, 'assignInventory']);
+    Route::post('/orders/{orderNumber}/confirm-payment', [AdminOrderController::class, 'confirmPayment']);
+    Route::post('/orders/{orderNumber}/confirm-stripe-payment', [AdminOrderController::class, 'confirmStripePayment']);
 
     // Shipping rates
     Route::get('/shipping-rates', [AdminShippingController::class, 'index']);

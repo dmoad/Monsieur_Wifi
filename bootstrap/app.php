@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\VerifyRadiusStatsToken;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,15 +16,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'radius.stats' => \App\Http\Middleware\VerifyRadiusStatsToken::class,
+            'radius.stats' => VerifyRadiusStatsToken::class,
         ]);
         $middleware->web(append: [
-            \App\Http\Middleware\SetLocale::class,
+            SetLocale::class,
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('cart:send-abandonment-emails')->daily();
         $schedule->command('devices:reboot-scheduled')->everyMinute();
+        $schedule->command('flows:rotate-partitions')->dailyAt('02:00');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

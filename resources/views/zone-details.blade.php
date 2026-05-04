@@ -8,6 +8,7 @@
 
 @push('styles')
 <link rel="stylesheet" href="/assets/vendors/css/forms/select/select2.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/vendors/css/charts/apexcharts.css">
 <style>
     .zone-info-card {
         background: var(--mw-bg-surface);
@@ -274,6 +275,7 @@
     <div id="zone-content" style="display: none;">
         <div class="mw-tabs" role="tablist">
             <button class="mw-tab active" data-tab="info" role="tab">{{ __('zone_details.tab_information') }}</button>
+            <button class="mw-tab" data-tab="analytics" role="tab">Analytics</button>
             <button class="mw-tab" data-tab="locations" role="tab">{{ __('zone_details.tab_locations') }}</button>
         </div>
 
@@ -281,6 +283,128 @@
             <div id="zone-info-container"></div>
             <div id="zone-settings-container"></div>
         </div>
+
+        <div class="mw-panel" id="zd-panel-analytics" role="tabpanel">
+
+            {{-- Row 1: Hourly Bandwidth + Users & Sessions ─────────────────── --}}
+            <div class="row g-4 mb-4 mt-1">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Bandwidth (24h)</h5>
+                            <small class="text-muted" id="zd-hourly-updated"></small>
+                        </div>
+                        <div class="card-body">
+                            <div id="zd-hourly-chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Users &amp; Sessions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="zd-user-sessions-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Row 2: Per-day Bandwidth + Device Types ─────────────────────── --}}
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Daily Download / Upload</h5>
+                            <div class="d-flex" style="background:rgba(0,0,0,0.05);border-radius:10px;padding:4px;border:1px solid rgba(0,0,0,0.1);">
+                                <button class="zd-period-btn active" data-period="7"
+                                        style="padding:6px 14px;border:none;background:var(--mw-primary);color:white;border-radius:8px;cursor:pointer;font-size:0.8rem;">7D</button>
+                                <button class="zd-period-btn" data-period="30"
+                                        style="padding:6px 14px;border:none;background:transparent;color:#6c757d;border-radius:8px;cursor:pointer;font-size:0.8rem;">30D</button>
+                                <button class="zd-period-btn" data-period="90"
+                                        style="padding:6px 14px;border:none;background:transparent;color:#6c757d;border-radius:8px;cursor:pointer;font-size:0.8rem;">90D</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="zd-daily-chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Connected Device Types</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-center">
+                            <div id="zd-device-type-chart"></div>
+                            <div id="zd-device-type-empty" class="text-center text-muted py-4" style="display:none;">
+                                <small>No data available</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Row 3: Guest User Table ──────────────────────────────────────── --}}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                Guest Users (Unique)
+                                <span class="badge badge-secondary ml-2" id="zd-users-total" style="font-size:0.75rem;"></span>
+                            </h5>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="text" class="form-control form-control-sm" id="zd-user-search"
+                                       placeholder="Search name, MAC, email…" style="width:200px;">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="zd-users-refresh">
+                                    <i data-feather="refresh-cw"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="zd-users-loading" class="text-center py-4" style="display:none;">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                <small class="d-block mt-2 text-muted">Loading…</small>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>MAC Address</th>
+                                            <th>Email</th>
+                                            <th>Device Type</th>
+                                            <th>OS</th>
+                                            <th>Sessions</th>
+                                            <th>Last Seen</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="zd-users-tbody">
+                                        <tr><td colspan="8" class="text-center text-muted py-4"><small>Loading users…</small></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2" id="zd-users-pagination" style="display:none!important;">
+                                <small class="text-muted" id="zd-users-count-range"></small>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="zd-users-prev" disabled>
+                                        <i data-feather="chevron-left"></i>
+                                    </button>
+                                    <span id="zd-users-page-info" class="text-muted" style="font-size:0.8rem;"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="zd-users-next" disabled>
+                                        <i data-feather="chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>{{-- #zd-panel-analytics --}}
 
         <div class="mw-panel" id="zd-panel-locations" role="tabpanel">
             <div class="card">
@@ -362,6 +486,7 @@
 @endsection
 
 @push('scripts')
+<script src="/assets/vendors/js/charts/apexcharts.min.js"></script>
 <script src="/assets/vendors/js/forms/select/select2.full.min.js"></script>
 <script>
     const ZONE_ID = {{ $zone }};
