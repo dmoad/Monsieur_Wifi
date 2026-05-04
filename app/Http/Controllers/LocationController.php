@@ -705,8 +705,7 @@ class LocationController extends Controller
     public function getCaptivePortalDailyUsage($id, Request $request)
     {
         try {
-            $location = Location::find($id);
-
+            $location = $this->authorizeLocationAccess((int) $id);
             if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
@@ -833,7 +832,7 @@ class LocationController extends Controller
     public function getAnalyticsHourlyBandwidth($id)
     {
         try {
-            $location = Location::find($id);
+            $location = $this->authorizeLocationAccess((int) $id);
             if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
@@ -883,7 +882,7 @@ class LocationController extends Controller
     public function getAnalyticsDeviceTypes($id)
     {
         try {
-            $location = Location::find($id);
+            $location = $this->authorizeLocationAccess((int) $id);
             if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
