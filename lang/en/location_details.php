@@ -451,6 +451,10 @@ return [
     'analytics_users_empty' => 'No users found.',
     'analytics_users_error' => 'Failed to load users.',
     'analytics_users_loading' => 'Loading users…',
+    'analytics_export_csv' => 'Export CSV',
+    'analytics_export_started' => 'CSV export started. Check your downloads folder.',
+    'analytics_export_failed' => 'Failed to export CSV.',
+    'analytics_refresh_tooltip' => 'Refresh charts and guest list',
 
     // IP Log (flow_sessions per location device)
     'ip_log_page_title' => 'IP Log',

@@ -10,7 +10,9 @@ use App\Models\OtpVerification;
 use App\Models\Radcheck;
 use App\Models\UserDeviceLoginSession;
 use App\Services\SmsService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Log;
 use Validator;
@@ -60,38 +62,87 @@ class GuestNetworkUserController extends Controller
     }
 
     /**
-     * Export guest users to CSV.
+     * Export guest users to CSV (matches Analytics guest table columns; optional search filter).
      */
     public function export(Request $request, $location)
     {
         try {
             $locationModel = Location::find($location);
 
-            if (! $locationModel) {
+            $user = Auth::guard('api')->user();
+            if (! $locationModel || ! $user || ! $locationModel->isAccessibleBy($user)) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
-            $query = GuestNetworkUser::where('location_id', $location)->orderBy('created_at', 'desc');
+            $query = GuestNetworkUser::query()
+                ->select('guest_network_users.*')
+                ->selectSub(
+                    UserDeviceLoginSession::query()
+                        ->selectRaw('COUNT(*)')
+                        ->whereColumn('guest_network_user_id', 'guest_network_users.id'),
+                    'session_count'
+                )
+                ->selectSub(
+                    UserDeviceLoginSession::query()
+                        ->selectRaw('MAX(connect_time)')
+                        ->whereColumn('guest_network_user_id', 'guest_network_users.id'),
+                    'last_seen'
+                )
+                ->where('guest_network_users.location_id', $location);
 
             if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    $q->where('mac_address', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%");
+                $search = trim((string) $request->search);
+                $like = '%'.$search.'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('guest_network_users.name', 'like', $like)
+                        ->orWhere('guest_network_users.mac_address', 'like', $like)
+                        ->orWhere('guest_network_users.email', 'like', $like)
+                        ->orWhere('guest_network_users.phone', 'like', $like);
                 });
             }
 
-            $guests = $query->get();
+            $guests = $query->orderByDesc('guest_network_users.id')->get();
+
             $filename = "location_{$location}_guests_".now()->format('Y-m-d_H-i-s').'.csv';
-            $content = "MAC Address,Email,Phone Number\n";
+
+            $stream = fopen('php://temp', 'w+');
+            fputcsv($stream, [
+                'Name',
+                'MAC Address',
+                'Email',
+                'Phone',
+                'Device Type',
+                'OS',
+                'Sessions',
+                'Last Seen',
+                'Status',
+            ]);
 
             foreach ($guests as $guest) {
-                $content .= sprintf("%s,%s,%s\n", $guest->mac_address ?? '', $guest->email ?? '', $guest->phone ?? '');
+                $lastSeen = $guest->last_seen
+                    ? Carbon::parse($guest->last_seen)->format('Y-m-d H:i:s')
+                    : '';
+                $status = $guest->blocked ? 'Blocked' : 'Active';
+
+                fputcsv($stream, [
+                    $guest->name ?? '',
+                    $guest->mac_address ?? '',
+                    $guest->email ?? '',
+                    $guest->phone ?? '',
+                    $guest->device_type ?? '',
+                    $guest->os ?? '',
+                    (string) ((int) ($guest->session_count ?? 0)),
+                    $lastSeen,
+                    $status,
+                ]);
             }
 
+            rewind($stream);
+            $content = stream_get_contents($stream);
+            fclose($stream);
+
             return response($content)
-                ->header('Content-Type', 'text/csv')
+                ->header('Content-Type', 'text/csv; charset=UTF-8')
                 ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
         } catch (\Exception $e) {
             Log::error('Error exporting guest users: '.$e->getMessage());

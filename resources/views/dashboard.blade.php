@@ -215,7 +215,7 @@
                         </div>
                         <div class="mt-auto">
                             <div class="db-summary-num" id="data-used-count">—</div>
-                            <div class="db-summary-lbl">{{ __('dashboard.data_used') }}</div>
+                            <div class="db-summary-lbl">{{ __('dashboard.data_usage_today') }}</div>
                         </div>
                     </div>
                 </div>
@@ -371,7 +371,7 @@
                                 <div class="mw-stat-icon mw-stat-icon-info"><i data-feather="activity"></i></div>
                                 <div class="db-metric-body">
                                     <div class="db-metric-name">{{ __('dashboard.data_usage') }}</div>
-                                    <div class="db-metric-sub">{{ __('dashboard.total_bandwidth_consumed') }}</div>
+                                    <div class="db-metric-sub">{{ __('dashboard.data_usage_subtitle') }}</div>
                                 </div>
                                 <div class="db-metric-val" id="analytics-data-usage">—</div>
                             </div>

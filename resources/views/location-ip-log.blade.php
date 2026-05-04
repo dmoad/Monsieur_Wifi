@@ -73,7 +73,6 @@
                             <th>{{ __('location_details.ip_log_col_first_seen') }}</th>
                             <th>{{ __('location_details.ip_log_col_last_seen') }}</th>
                             <th>{{ __('location_details.ip_log_col_hits') }}</th>
-                            <th>{{ __('location_details.ip_log_col_slot') }}</th>
                         </tr>
                     </thead>
                     <tbody id="ip-log-tbody">

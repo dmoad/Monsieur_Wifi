@@ -451,6 +451,10 @@ return [
     'analytics_users_empty' => 'Aucun utilisateur trouvé.',
     'analytics_users_error' => 'Échec du chargement des utilisateurs.',
     'analytics_users_loading' => 'Chargement des utilisateurs…',
+    'analytics_export_csv' => 'Exporter CSV',
+    'analytics_export_started' => 'Export CSV lancé. Vérifiez votre dossier de téléchargements.',
+    'analytics_export_failed' => 'Échec de l\'export CSV.',
+    'analytics_refresh_tooltip' => 'Actualiser les graphiques et la liste des invités',
 
     // IP Log (flow_sessions par appareil de l\'emplacement)
     'ip_log_page_title' => 'Journal IP',

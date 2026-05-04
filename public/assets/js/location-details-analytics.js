@@ -60,6 +60,7 @@ function loadAnalyticsTab() {
     loadDailyBandwidth(analyticsCurrentPeriod);
     loadDeviceTypes();
     loadAnalyticsUsers(1, '');
+    reRenderFeather();
 }
 
 // ============================================================================
@@ -420,6 +421,48 @@ function renderUsersPagination(currentPage, lastPage, total, perPage) {
     if (nextBtn) nextBtn.disabled = currentPage >= lastPage;
 }
 
+async function exportAnalyticsGuestUsersCsv() {
+    const token = UserManager.getToken();
+    if (!token) {
+        window.location.href = '/';
+        return;
+    }
+
+    const searchParam = analyticsUsersSearch
+        ? `?search=${encodeURIComponent(analyticsUsersSearch)}`
+        : '';
+    const url = `${API}/locations/${location_id}/guest-users/export${searchParam}`;
+    const link = document.createElement('a');
+    link.style.display = 'none';
+
+    try {
+        const res = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + token,
+                Accept: 'text/csv',
+            },
+        });
+        if (!res.ok) throw new Error('Export failed');
+        const blob = await res.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        link.href = downloadUrl;
+        link.download = `location_${location_id}_guests_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+        if (typeof toastr !== 'undefined') {
+            toastr.success(ldAnalyticsT('analytics_export_started'));
+        }
+    } catch (e) {
+        console.error(e);
+        if (typeof toastr !== 'undefined') {
+            toastr.error(ldAnalyticsT('analytics_export_failed'));
+        }
+    }
+}
+
 // ============================================================================
 // THEME OBSERVER (keeps all three charts in sync)
 // ============================================================================
@@ -478,6 +521,10 @@ function initAnalyticsHandlers() {
         loadHourlyBandwidth();
         loadDeviceTypes();
         loadDailyBandwidth(analyticsCurrentPeriod);
+    });
+
+    $(document).on('click', '#analytics-users-export-csv', function () {
+        exportAnalyticsGuestUsersCsv();
     });
 
     // Pagination

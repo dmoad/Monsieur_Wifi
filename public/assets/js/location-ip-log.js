@@ -80,6 +80,22 @@ function fmtMac(mac) {
     return escHtml(octets ? octets.join('-') : cleaned);
 }
 
+/**
+ * Normalize MAC for API search: DB stores lowercase colon-separated octets (see ProcessFlowBatch).
+ * Strips separators, keeps hex only, lowercases, rejoins pairs with ':'.
+ */
+function normalizeMacForSearch(raw) {
+    const trimmed = String(raw).trim();
+    if (!trimmed) return '';
+    const hex = trimmed.replace(/[^0-9a-fA-F]/g, '').toLowerCase();
+    if (!hex) return trimmed.toLowerCase();
+    const parts = [];
+    for (let i = 0; i < hex.length; i += 2) {
+        parts.push(hex.slice(i, i + 2));
+    }
+    return parts.join(':');
+}
+
 function renderFlowRows(rows) {
     const tbody = document.getElementById('ip-log-tbody');
     if (!tbody) return;
@@ -96,7 +112,6 @@ function renderFlowRows(rows) {
         <td>${fmtDt(r.first_at)}</td>
         <td>${fmtDt(r.last_at)}</td>
         <td>${Number(r.hits) || 0}</td>
-        <td>${Number(r.slot) || 0}</td>
     </tr>`).join('');
 }
 
@@ -136,7 +151,10 @@ async function loadFlowSessions(page) {
     const searchFieldEl = document.getElementById('ip-log-search-field');
     const searchInputEl = document.getElementById('ip-log-search-input');
     const searchField = searchFieldEl?.value || 'mac';
-    const searchVal = (searchInputEl?.value || '').trim();
+    let searchVal = (searchInputEl?.value || '').trim();
+    if (searchField === 'mac' && searchVal) {
+        searchVal = normalizeMacForSearch(searchVal);
+    }
 
     try {
         let url = `${API}/locations/${locationId}/flow-sessions?page=${page}&per_page=${flowPerPage}`

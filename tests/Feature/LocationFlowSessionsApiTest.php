@@ -55,7 +55,7 @@ class LocationFlowSessionsApiTest extends TestCase
         for ($i = 1; $i <= 7; $i++) {
             DB::table('flow_sessions')->insert([
                 'device_id' => $device->id,
-                'mac' => sprintf('AA-BB-CC-DD-EE-%02d', $i),
+                'mac' => sprintf('aa:bb:cc:dd:ee:%02x', $i),
                 'src_ip' => "192.168.1.{$i}",
                 'dst_ip' => '8.8.8.8',
                 'slot' => 0,
@@ -82,12 +82,12 @@ class LocationFlowSessionsApiTest extends TestCase
         $macRow = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
             'Accept' => 'application/json',
-        ])->getJson("/api/locations/{$location->id}/flow-sessions?search_field=mac&search=EE-03");
+        ])->getJson("/api/locations/{$location->id}/flow-sessions?search_field=mac&search=".rawurlencode('ee:03'));
 
         $macRow->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.total', 1)
-            ->assertJsonPath('data.data.0.mac', 'AA-BB-CC-DD-EE-03');
+            ->assertJsonPath('data.data.0.mac', 'aa:bb:cc:dd:ee:03');
 
         $srcRow = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,

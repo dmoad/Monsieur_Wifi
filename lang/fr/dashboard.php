@@ -21,7 +21,8 @@ return [
     'updated_just_now' => 'Mis à jour à l\'instant',
     'routers_online' => 'Routeurs en ligne',
     'active_users' => 'Utilisateurs actifs',
-    'data_used' => 'Données utilisées',
+    'data_usage_today' => 'Utilisation des données aujourd\'hui',
+    'data_usage_subtitle' => 'Volume téléchargement et envoi',
     'uptime' => 'Temps de fonctionnement',
 
     // Network map
@@ -53,7 +54,6 @@ return [
     'total_users' => 'Total utilisateurs',
     'unique_users_connected' => 'Utilisateurs uniques connectés',
     'data_usage' => 'Utilisation des données',
-    'total_bandwidth_consumed' => 'Bande passante totale consommée',
     'network_availability' => 'Disponibilité du réseau',
     'total_sessions' => 'Total sessions',
     'connection_sessions' => 'Sessions de connexion',

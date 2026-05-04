@@ -21,7 +21,8 @@ return [
     'updated_just_now' => 'Updated just now',
     'routers_online' => 'Routers Online',
     'active_users' => 'Active Users',
-    'data_used' => 'Data Used',
+    'data_usage_today' => 'Data Usage Today',
+    'data_usage_subtitle' => 'Download and upload volume',
     'uptime' => 'Uptime',
 
     // Network map
@@ -53,7 +54,6 @@ return [
     'total_users' => 'Total Users',
     'unique_users_connected' => 'Unique users connected',
     'data_usage' => 'Data Usage',
-    'total_bandwidth_consumed' => 'Total bandwidth consumed',
     'network_availability' => 'Network availability',
     'total_sessions' => 'Total Sessions',
     'connection_sessions' => 'Connection sessions',

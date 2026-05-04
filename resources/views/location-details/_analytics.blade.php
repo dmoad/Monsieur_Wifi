@@ -85,30 +85,43 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-2">
-                        <i data-feather="users" style="color:var(--mw-primary);width:16px;height:16px;"></i>
-                        <h5 class="card-title mb-0">{{ __('location_details.analytics_users_title') }}
-                            <span class="badge badge-secondary ml-2" id="analytics-users-total" style="font-size:0.75rem;"></span>
-                        </h5>
+                <div class="card-header p-0 border-bottom-0">
+                    {{-- Title + primary actions (IP Log, Export, Refresh) --}}
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 px-3 py-2 border-bottom">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                            <i data-feather="users" style="color:var(--mw-primary);width:16px;height:16px;flex-shrink:0;"></i>
+                            <h5 class="card-title mb-0 text-truncate">{{ __('location_details.analytics_users_title') }}
+                                <span class="badge badge-secondary ml-2" id="analytics-users-total" style="font-size:0.75rem;"></span>
+                            </h5>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ml-auto">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="{{ __('location_details.analytics_users_title') }}">
+                                <a href="/{{ $locale }}/locations/{{ $location }}/ip-log" class="btn btn-outline-primary d-flex align-items-center">
+                                    <i data-feather="external-link" style="width:14px;height:14px;"></i>
+                                    <span class="ml-50">{{ __('location_details.analytics_ip_log_button') }}</span>
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary d-flex align-items-center" id="analytics-users-export-csv" title="{{ __('location_details.analytics_export_csv') }}">
+                                    <i data-feather="download" style="width:14px;height:14px;"></i>
+                                    <span class="ml-50 d-none d-md-inline">{{ __('location_details.analytics_export_csv') }}</span>
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-icon btn-outline-secondary" id="analytics-users-refresh" title="{{ __('location_details.analytics_refresh_tooltip') }}">
+                                <i data-feather="refresh-cw" style="width:14px;height:14px;"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-                        <label class="mb-0 small text-muted d-none d-sm-inline" for="analytics-users-per-page">{{ __('location_details.analytics_users_per_page') }}</label>
+                    {{-- Filters: per-page + search --}}
+                    <div class="d-flex flex-wrap align-items-center gap-2 px-3 py-2 bg-light rounded-bottom" style="border-top:1px solid rgba(0,0,0,0.06);">
+                        <label class="mb-0 small text-muted" for="analytics-users-per-page">{{ __('location_details.analytics_users_per_page') }}</label>
                         <select class="form-control form-control-sm" id="analytics-users-per-page" style="width:auto;min-width:4.5rem;">
                             <option value="5">5</option>
                             <option value="10" selected>10</option>
                             <option value="20">20</option>
                             <option value="100">100</option>
                         </select>
-                        <input type="text" class="form-control form-control-sm" id="analytics-user-search"
+                        <input type="search" class="form-control form-control-sm flex-grow-1" id="analytics-user-search"
                                placeholder="{{ __('location_details.analytics_search_placeholder') }}"
-                               style="width:200px;">
-                        <a href="/{{ $locale }}/locations/{{ $location }}/ip-log" class="btn btn-sm btn-outline-primary">
-                            {{ __('location_details.analytics_ip_log_button') }}
-                        </a>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-users-refresh">
-                            <i data-feather="refresh-cw"></i>
-                        </button>
+                               style="min-width:160px;max-width:420px;">
                     </div>
                 </div>
                 <div class="card-body p-0">

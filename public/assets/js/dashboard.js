@@ -7,16 +7,33 @@ let dataUsageChart = null;
 
 // ── API calls ──────────────────────────────────────────────────────────────
 
+function dashboardOverviewApiUrl() {
+    try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('debug_active_sessions') === '1') {
+            return '/api/dashboard/overview?debug_active_sessions=1';
+        }
+    } catch (e) { /* IE / older browsers */ }
+    return '/api/dashboard/overview';
+}
+
 function loadDashboardOverview() {
     const token = UserManager.getToken();
     if (!token) return;
 
     $.ajax({
-        url: '/api/dashboard/overview',
+        url: dashboardOverviewApiUrl(),
         method: 'GET',
         headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
         success: function(response) {
             if (response.success) {
+                if (response.data.debug_open_sessions_for_active_users) {
+                    console.log(
+                        '[dashboard] Active Users — open sessions counted toward summary:',
+                        response.data.debug_open_sessions_for_active_users.length,
+                        response.data.debug_open_sessions_for_active_users
+                    );
+                }
                 updateOverviewDisplay(response.data);
                 updateLocationCards(response.data.locations.data);
             } else {
@@ -75,13 +92,24 @@ function loadDataUsageTrends(period) {
 
 // ── Display updaters ───────────────────────────────────────────────────────
 
+function formatOverviewTodayBandwidth(ns) {
+    var gb = ns.data_used_gb != null ? Number(ns.data_used_gb) : Number(ns.data_used_tb || 0) * 1024;
+    if (!Number.isFinite(gb)) gb = 0;
+    if (gb >= 1024) {
+        var tb = gb / 1024;
+        return { value: tb.toFixed(2), suffix: 'TB' };
+    }
+    return { value: gb.toFixed(1), suffix: 'GB' };
+}
+
 function updateOverviewDisplay(data) {
     const loc = data.locations;
     const ns = data.network_stats;
 
     $('#routers-online-count').html(ns.routers_online + '<span class="db-summary-suffix">/ ' + ns.routers_total + '</span>');
-    $('#active-users-count').text(ns.active_users.toLocaleString());
-    $('#data-used-count').html(ns.data_used_tb + '<span class="db-summary-suffix">TB</span>');
+    $('#active-users-count').text((parseInt(ns.active_users, 10) || 0).toLocaleString());
+    var bw = formatOverviewTodayBandwidth(ns);
+    $('#data-used-count').html(bw.value + '<span class="db-summary-suffix">' + bw.suffix + '</span>');
     $('#uptime-percentage').html(ns.uptime_percentage + '<span class="db-summary-suffix">%</span>');
 
     initializeNetworkMap(loc.data);

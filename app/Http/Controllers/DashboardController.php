@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Location;
-use App\Models\Device;
-use App\Models\Radacct;
+use App\Models\UserDeviceLoginSession;
+use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -26,7 +28,7 @@ class DashboardController extends Controller
     /**
      * Show the dashboard view (static)
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function index()
     {
@@ -34,44 +36,117 @@ class DashboardController extends Controller
     }
 
     /**
+     * Resolve locations visible to the authenticated user (same rules everywhere below).
+     *
+     * @return Collection<int, Location>
+     */
+    protected function locationsVisibleToUser($user)
+    {
+        if ($user->isAdminOrAbove()) {
+            return Location::with('device')->get();
+        }
+
+        return Location::with('device')->where(function ($q) use ($user) {
+            $q->where('owner_id', $user->id)
+                ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+        })->get();
+    }
+
+    /**
+     * When true, overview JSON includes debug_open_sessions_for_active_users (same rows counted for Active Users).
+     */
+    protected function shouldExposeActiveSessionsDebug(Request $request, $user): bool
+    {
+        if (config('app.debug')) {
+            return true;
+        }
+        if (filter_var(env('DASHBOARD_DEBUG_ACTIVE_SESSIONS', false), FILTER_VALIDATE_BOOLEAN)) {
+            return true;
+        }
+        if ($user->isAdminOrAbove() && $request->boolean('debug_active_sessions')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * One debug row per MAC (newest open session kept); matches Active Users (distinct MAC,
+     * connect within {@see UserDeviceLoginSession::ACTIVE_SESSION_MAX_CONNECT_AGE_HOURS}h).
+     *
+     * @param  array<int, int|string>  $locationIds
+     * @return list<array<string, mixed>>
+     */
+    protected function activeSessionsCountedForOverview(array $locationIds): array
+    {
+        if ($locationIds === []) {
+            return [];
+        }
+
+        return UserDeviceLoginSession::query()
+            ->successful()
+            ->forLocations($locationIds)
+            ->openSessions()
+            ->connectStartedWithinActiveWindow()
+            ->with(['location:id,name'])
+            ->orderByDesc('connect_time')
+            ->orderByDesc('id')
+            ->get()
+            ->unique(fn (UserDeviceLoginSession $s) => UserDeviceLoginSession::normalizedMacKey($s->mac_address))
+            ->sortBy(fn (UserDeviceLoginSession $s) => [$s->location_id, $s->id])
+            ->values()
+            ->map(static fn (UserDeviceLoginSession $s): array => [
+                'id' => $s->id,
+                'location_id' => $s->location_id,
+                'location_name' => $s->location?->name,
+                'guest_network_user_id' => $s->guest_network_user_id,
+                'mac_address' => $s->mac_address,
+                'login_type' => $s->login_type,
+                'connect_time' => $s->connect_time?->toIso8601String(),
+                'login_success' => (bool) $s->login_success,
+                'disconnect_time' => $s->disconnect_time?->toIso8601String(),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
      * Get dashboard overview data via API
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function getOverview()
+    public function getOverview(Request $request)
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'User not authenticated'
+                'message' => 'User not authenticated',
             ], 401);
         }
         try {
-            if ($user->isAdminOrAbove()) {
-                $locations = Location::with('device')->get();
-            } else {
-                $locations = Location::with('device')->where(function ($q) use ($user) {
-                    $q->where('owner_id', $user->id)
-                      ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
-                })->get();
-            }
-            // Calculate location statistics
+            $locations = $this->locationsVisibleToUser($user);
+            $locationIds = $locations->pluck('id')->all();
+
+            $todayStart = Carbon::now()->startOfDay();
+            $todayEnd = Carbon::now()->endOfDay();
+
+            $openCounts = UserDeviceLoginSession::openSessionCountsByLocation($locationIds);
+            $todayStats = UserDeviceLoginSession::dayConnectStatsByLocation($locationIds, $todayStart, $todayEnd);
+
             $totalLocations = $locations->count();
             $onlineLocations = 0;
             $offlineLocations = 0;
-            
-            // Process each location to determine online status and get usage data
-            $locationsData = $locations->map(function ($location) use (&$onlineLocations, &$offlineLocations) {
+
+            $locationsData = $locations->map(function ($location) use (&$onlineLocations, &$offlineLocations, $openCounts, $todayStats) {
                 $locationData = $location->toArray();
                 $locationData['online_status'] = 'offline';
-                
-                // Check device online status
+
                 if ($location->device && $location->device->last_seen) {
                     $lastSeen = new \DateTime($location->device->last_seen);
-                    $now = new \DateTime();
+                    $now = new \DateTime;
                     $interval = $now->getTimestamp() - $lastSeen->getTimestamp();
-                    
+
                     if ($interval <= 90) {
                         $locationData['online_status'] = 'online';
                         $onlineLocations++;
@@ -81,54 +156,60 @@ class DashboardController extends Controller
                 } else {
                     $offlineLocations++;
                 }
-                
-                // Get today's usage data for this location
-                $today = Carbon::now()->startOfDay();
-                $dataUsage = Radacct::getLocationDataUsage($location->id, $today);
-                $activeSessions = Radacct::getActiveSessions($location->id);
-                
-                $locationData['users'] = $activeSessions->count();
-                $locationData['unique_users_today'] = $dataUsage['unique_users'];
-                $locationData['data_usage_gb'] = $dataUsage['total_gb'];
-                $locationData['total_sessions'] = $dataUsage['total_sessions'];
+
+                $lid = $location->id;
+                $locationData['users'] = (int) $openCounts->get($lid, 0);
+
+                $dayRow = $todayStats->get($lid);
+                $locationData['unique_users_today'] = $dayRow ? $dayRow->unique_users : 0;
+                $locationData['data_usage_gb'] = $dayRow && $dayRow->bytes > 0
+                    ? round($dayRow->bytes / (1024 ** 3), 2)
+                    : 0;
+                $locationData['total_sessions'] = $dayRow ? $dayRow->total_sessions : 0;
                 $locationData['device'] = $location->device;
-                
+
                 return $locationData;
             });
-            
-            // Calculate network-wide statistics
-            $totalActiveUsers = $locationsData->sum('users');
-            $totalDataUsageGB = $locationsData->sum('data_usage_gb');
-            $totalDataUsageTB = round($totalDataUsageGB / 1024, 2);
-            
-            // Calculate overall uptime percentage
+
+            $totalActiveUsers = UserDeviceLoginSession::openDistinctMacCountForLocations($locationIds);
+
+            $totalBytesToday = $todayStats->sum(fn ($row) => $row->bytes);
+            $totalDataUsageGB = round($totalBytesToday / (1024 ** 3), 2);
+
             $uptimePercentage = $totalLocations > 0 ? round(($onlineLocations / $totalLocations) * 100, 1) : 0;
-            
+
+            $payload = [
+                'locations' => [
+                    'total' => $totalLocations,
+                    'online' => $onlineLocations,
+                    'offline' => $offlineLocations,
+                    'data' => $locationsData,
+                ],
+                'network_stats' => [
+                    'routers_online' => $onlineLocations,
+                    'routers_total' => $totalLocations,
+                    'active_users' => $totalActiveUsers,
+                    'data_used_gb' => $totalDataUsageGB,
+                    'data_used_tb' => round($totalDataUsageGB / 1024, 4),
+                    'uptime_percentage' => $uptimePercentage,
+                ],
+            ];
+
+            if ($this->shouldExposeActiveSessionsDebug($request, $user)) {
+                $payload['debug_open_sessions_for_active_users'] = $this->activeSessionsCountedForOverview($locationIds);
+            }
+
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'locations' => [
-                        'total' => $totalLocations,
-                        'online' => $onlineLocations,
-                        'offline' => $offlineLocations,
-                        'data' => $locationsData
-                    ],
-                    'network_stats' => [
-                        'routers_online' => $onlineLocations,
-                        'routers_total' => $totalLocations,
-                        'active_users' => $totalActiveUsers,
-                        'data_used_tb' => $totalDataUsageTB,
-                        'uptime_percentage' => $uptimePercentage
-                    ]
-                ]
+                'data' => $payload,
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error loading dashboard overview data: ' . $e->getMessage());
-            
+            Log::error('Error loading dashboard overview data: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error loading dashboard data: ' . $e->getMessage()
+                'message' => 'Error loading dashboard data: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -136,22 +217,20 @@ class DashboardController extends Controller
     /**
      * Get network analytics data via API
      *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function getAnalytics(Request $request)
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'User not authenticated'
+                'message' => 'User not authenticated',
             ], 401);
         }
         try {
-            $period = $request->input('period', '7'); // Default 7 days
-            
-            // Calculate date range based on period
+            $period = $request->input('period', '7');
+
             $endDate = Carbon::now();
             switch ($period) {
                 case '1':
@@ -169,184 +248,154 @@ class DashboardController extends Controller
                 default:
                     $startDate = Carbon::now()->subDays(7);
             }
-            
-            
-            if ($user->isAdminOrAbove()) {
-                $locations = Location::with('device')->get();
-            } else {
-                $locations = Location::with('device')->where(function ($q) use ($user) {
-                    $q->where('owner_id', $user->id)
-                      ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
-                })->get();
-            }
-            
-            $analyticsStats = [
-                'total_users' => 0,
-                'total_data_gb' => 0,
-                'total_sessions' => 0,
-                'uptime' => 0
-            ];
-            
+
+            $locations = $this->locationsVisibleToUser($user);
+            $locationIds = $locations->pluck('id')->all();
+
+            $agg = UserDeviceLoginSession::aggregatePeriodTotals($locationIds, $startDate, $endDate);
+
+            $totalDataGb = round($agg->bytes / (1024 ** 3), 2);
+
             $onlineCount = 0;
-            
             foreach ($locations as $location) {
-                $periodUsage = Radacct::getLocationDataUsage($location->id, $startDate, $endDate);
-                $analyticsStats['total_users'] += $periodUsage['unique_users'];
-                $analyticsStats['total_data_gb'] += $periodUsage['total_gb'];
-                $analyticsStats['total_sessions'] += $periodUsage['total_sessions'];
-                
-                // Check if location is online for uptime calculation
                 if ($location->device && $location->device->last_seen) {
                     $lastSeen = new \DateTime($location->device->last_seen);
-                    $now = new \DateTime();
+                    $now = new \DateTime;
                     $interval = $now->getTimestamp() - $lastSeen->getTimestamp();
-                    
+
                     if ($interval <= 90) {
                         $onlineCount++;
                     }
                 }
             }
-            
-            $analyticsStats['uptime'] = $locations->count() > 0 ? 
-                round(($onlineCount / $locations->count()) * 100, 1) : 0;
-            
+
+            $uptime = $locations->count() > 0
+                ? round(($onlineCount / $locations->count()) * 100, 1)
+                : 0;
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'period' => $period,
                     'date_range' => [
                         'start' => $startDate->format('Y-m-d'),
-                        'end' => $endDate->format('Y-m-d')
+                        'end' => $endDate->format('Y-m-d'),
                     ],
                     'analytics' => [
-                        'total_users' => $analyticsStats['total_users'],
-                        'data_usage_gb' => round($analyticsStats['total_data_gb'], 1),
-                        'total_sessions' => $analyticsStats['total_sessions'],
-                        'uptime' => $analyticsStats['uptime']
-                    ]
-                ]
+                        'total_users' => $agg->distinct_guests,
+                        'data_usage_gb' => $totalDataGb,
+                        'total_sessions' => $agg->sessions,
+                        'uptime' => $uptime,
+                    ],
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error loading dashboard analytics data: ' . $e->getMessage());
-            
+            Log::error('Error loading dashboard analytics data: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error loading analytics data: ' . $e->getMessage()
+                'message' => 'Error loading analytics data: '.$e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get data usage trends from radacct table
+     * Get data usage trends from user_device_login_sessions (by connect_time).
      *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function getDataUsageTrends(Request $request)
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'User not authenticated'
+                'message' => 'User not authenticated',
             ], 401);
         }
         try {
-            $period = $request->input('period', '7'); // Default 7 days
-            
-            // Calculate date range based on period
+            $period = $request->input('period', '7');
+
             $endDate = Carbon::now();
             switch ($period) {
                 case '7':
-                    $startDate = Carbon::now()->subDays(6); // Include today = 7 days
+                    $startDate = Carbon::now()->subDays(6);
                     break;
                 case '30':
-                    $startDate = Carbon::now()->subDays(29); // Include today = 30 days
+                    $startDate = Carbon::now()->subDays(29);
                     break;
                 case '365':
-                    $startDate = Carbon::now()->subDays(364); // Include today = 365 days
+                    $startDate = Carbon::now()->subDays(364);
                     break;
                 default:
                     $startDate = Carbon::now()->subDays(6);
             }
-            if ($user->isAdminOrAbove()) {
-                $locations = Location::all();
-            } else {
-                $locations = Location::where(function ($q) use ($user) {
+
+            $locations = $user->isAdminOrAbove()
+                ? Location::all()
+                : Location::where(function ($q) use ($user) {
                     $q->where('owner_id', $user->id)
-                      ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
+                        ->orWhereJsonContains('shared_users', ['user_id' => $user->id]);
                 })->get();
-            }
-            
-            // Initialize daily usage array
+
+            $locationIds = $locations->pluck('id')->all();
+
+            $byDay = UserDeviceLoginSession::dailyDownloadUploadBytesByCalendarDay($locationIds, $startDate, $endDate);
+
             $dailyUsage = [];
             $totalDownloadGB = 0;
             $totalUploadGB = 0;
-            
-            // Generate daily data for the period
-            $currentDate = $startDate->copy();
-            while ($currentDate->lte($endDate)) {
-                $dayStart = $currentDate->copy()->startOfDay();
-                $dayEnd = $currentDate->copy()->endOfDay();
-                
-                $dayDownloadBytes = 0;
-                $dayUploadBytes = 0;
-                
-                // Aggregate data from all locations for this day
-                foreach ($locations as $location) {
-                    $dayUsage = Radacct::getLocationDataUsage($location->id, $dayStart, $dayEnd);
-                    
-                    // Get input and output bytes for this day
-                    $records = Radacct::where('location_id', $location->id)
-                        ->where('acctstarttime', '>=', $dayStart)
-                        ->where('acctstarttime', '<=', $dayEnd)
-                        ->get();
-                    
-                    $dayDownloadBytes += $records->sum('acctinputoctets');
-                    $dayUploadBytes += $records->sum('acctoutputoctets');
-                }
-                
-                // Convert bytes to GB
-                $dayDownloadGB = round($dayDownloadBytes / (1024 * 1024 * 1024), 2);
-                $dayUploadGB = round($dayUploadBytes / (1024 * 1024 * 1024), 2);
-                
+
+            $currentDate = $startDate->copy()->startOfDay();
+            $endDay = $endDate->copy()->startOfDay();
+
+            while ($currentDate->lte($endDay)) {
+                $key = $currentDate->format('Y-m-d');
+                $row = $byDay->get($key);
+
+                $dlBytes = $row ? $row->download_bytes : 0;
+                $ulBytes = $row ? $row->upload_bytes : 0;
+
+                $dayDownloadGB = round($dlBytes / (1024 ** 3), 2);
+                $dayUploadGB = round($ulBytes / (1024 ** 3), 2);
+
                 $dailyUsage[] = [
-                    'date' => $currentDate->format('Y-m-d'),
+                    'date' => $key,
                     'download_gb' => $dayDownloadGB,
-                    'upload_gb' => $dayUploadGB
+                    'upload_gb' => $dayUploadGB,
                 ];
-                
+
                 $totalDownloadGB += $dayDownloadGB;
                 $totalUploadGB += $dayUploadGB;
-                
+
                 $currentDate->addDay();
             }
-            
+
             $totalUsageGB = $totalDownloadGB + $totalUploadGB;
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'period' => $period,
                     'date_range' => [
                         'start' => $startDate->format('Y-m-d'),
-                        'end' => $endDate->format('Y-m-d')
+                        'end' => $endDate->format('Y-m-d'),
                     ],
                     'total_usage_gb' => round($totalUsageGB, 2),
                     'total_download_gb' => round($totalDownloadGB, 2),
                     'total_upload_gb' => round($totalUploadGB, 2),
-                    'daily_usage' => $dailyUsage
-                ]
+                    'daily_usage' => $dailyUsage,
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Error loading data usage trends: ' . $e->getMessage());
-            
+            Log::error('Error loading data usage trends: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error loading data usage trends: ' . $e->getMessage()
+                'message' => 'Error loading data usage trends: '.$e->getMessage(),
             ], 500);
         }
     }
-} 
+}
