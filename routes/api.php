@@ -98,7 +98,8 @@ Route::post('/devices/{device_key}/{device_secret}/clients', [DeviceController::
 Route::post('/devices/{device_key}/{device_secret}/network-stats', [WifiStatsController::class, 'store'])
     ->middleware('throttle:15,1');
 // flow-ingest
-Route::post('/devices/{device_key}/{device_secret}/flow-ingest', [FlowIngestController::class, 'flowIngest']);
+Route::post('/devices/{device_key}/{device_secret}/flow-ingest', [FlowIngestController::class, 'flowIngest'])
+    ->middleware('throttle:15,1');
 Route::get('/devices/{device_key}/{device_secret}/flows', [FlowIngestController::class, 'flowsQuery']);
 
 // Device scan update routes (called by devices themselves)
