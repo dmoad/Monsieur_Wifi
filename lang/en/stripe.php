@@ -15,4 +15,21 @@ return [
 
     // :url terms-and-conditions URL
     'terms_message' => 'I accept the [Terms and Conditions](:url)',
+
+    // /subscription/cancel page (Stripe checkout-cancelled redirect)
+    'cancel' => [
+        'page_title' => 'Payment cancelled - Monsieur WiFi',
+        'title' => 'Payment cancelled',
+        'message' => 'Your payment has been cancelled. No amount has been charged to your account. You can try again whenever you want.',
+        'retry' => 'Try again',
+        'dashboard' => 'Back to dashboard',
+    ],
+
+    // /subscription/success page (Stripe checkout-completed redirect)
+    'success' => [
+        'page_title' => 'Payment successful - Monsieur WiFi',
+        'title' => 'Payment successful!',
+        'message' => 'Congratulations! Your subscription is now active. You can start using all the features of your plan.',
+        'dashboard' => 'Go to dashboard',
+    ],
 ];

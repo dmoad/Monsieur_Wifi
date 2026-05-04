@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html class="loading" lang="en" data-textdirection="ltr">
+<html class="loading" lang="{{ app()->getLocale() }}" data-textdirection="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="Monsieur WiFi - Paiement réussi">
-    <title id="page-title">Paiement réussi - Monsieur WiFi</title>
+    <meta name="description" content="{{ __('stripe.success.page_title') }}">
+    <title>{{ __('stripe.success.page_title') }}</title>
     <link rel="shortcut icon" type="image/x-icon" href="/assets/images/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -205,20 +205,20 @@
                 <div class="timeline-circle">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
-                <div class="timeline-label" id="timeline-label-1">Je design mon portail</div>
-                <div class="timeline-sublabel" id="timeline-sub-1">Portail captif personnalisé</div>
+                <div class="timeline-label">{{ __('captive_portals.timeline_step1_label') }}</div>
+                <div class="timeline-sublabel">{{ __('captive_portals.timeline_step1_sub') }}</div>
             </div>
             <div class="timeline-step completed">
                 <div class="timeline-circle">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
-                <div class="timeline-label" id="timeline-label-2">Je m'abonne</div>
-                <div class="timeline-sublabel" id="timeline-sub-2">Choix de l'offre et paiement</div>
+                <div class="timeline-label">{{ __('captive_portals.timeline_step2_label') }}</div>
+                <div class="timeline-sublabel">{{ __('captive_portals.timeline_step2_sub') }}</div>
             </div>
             <div class="timeline-step active">
                 <div class="timeline-circle">3</div>
-                <div class="timeline-label" id="timeline-label-3">Je reçois ma borne</div>
-                <div class="timeline-sublabel" id="timeline-sub-3">Livraison + assistance mise en service</div>
+                <div class="timeline-label">{{ __('captive_portals.timeline_step3_label') }}</div>
+                <div class="timeline-sublabel">{{ __('captive_portals.timeline_step3_sub') }}</div>
             </div>
         </div>
     </div>
@@ -229,58 +229,12 @@
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
         </div>
-        <h1 class="success-title" id="title">Paiement réussi !</h1>
-        <p class="success-message" id="message">
-            Félicitations ! Votre abonnement est maintenant actif.
-            Vous pouvez commencer à utiliser toutes les fonctionnalités de votre plan.
-        </p>
-        <a href="/en/dashboard" class="btn-dashboard" id="btn-dashboard">Accéder au tableau de bord</a>
+        <h1 class="success-title">{{ __('stripe.success.title') }}</h1>
+        <p class="success-message">{{ __('stripe.success.message') }}</p>
+        <a href="/{{ app()->getLocale() }}/dashboard" class="btn-dashboard">{{ __('stripe.success.dashboard') }}</a>
     </div>
 
     <script>
-        const translations = {
-            en: {
-                pageTitle: 'Payment successful - Monsieur WiFi',
-                title: 'Payment successful!',
-                message: 'Congratulations! Your subscription is now active. You can start using all the features of your plan.',
-                button: 'Go to dashboard',
-                timeline: { label1: 'I design my portal', sub1: 'Custom captive portal', label2: 'I subscribe', sub2: 'Choose plan & payment', label3: 'I receive my device', sub3: 'Delivery + setup assistance' }
-            },
-            fr: {
-                pageTitle: 'Paiement réussi - Monsieur WiFi',
-                title: 'Paiement réussi !',
-                message: 'Félicitations ! Votre abonnement est maintenant actif. Vous pouvez commencer à utiliser toutes les fonctionnalités de votre plan.',
-                button: 'Accéder au tableau de bord',
-                timeline: { label1: 'Je design mon portail', sub1: 'Portail captif personnalisé', label2: 'Je m\'abonne', sub2: 'Choix de l\'offre et paiement', label3: 'Je reçois ma borne', sub3: 'Livraison + assistance mise en service' }
-            }
-        };
-
-        function detectLanguage() {
-            const urlLang = new URLSearchParams(window.location.search).get('locale');
-            if (urlLang === 'en' || urlLang === 'fr') return urlLang;
-            const savedLang = localStorage.getItem('preferred_language');
-            if (savedLang && (savedLang === 'en' || savedLang === 'fr')) return savedLang;
-            const browserLang = (navigator.language || navigator.userLanguage).substring(0, 2).toLowerCase();
-            return browserLang === 'fr' ? 'fr' : 'en';
-        }
-
-        const lang = detectLanguage();
-        const t = translations[lang];
-
-        document.title = t.pageTitle;
-        document.getElementById('title').textContent = t.title;
-        document.getElementById('message').textContent = t.message;
-        document.getElementById('btn-dashboard').textContent = t.button;
-        document.getElementById('btn-dashboard').href = '/' + lang + '/dashboard';
-
-        // Update timeline
-        document.getElementById('timeline-label-1').textContent = t.timeline.label1;
-        document.getElementById('timeline-sub-1').textContent = t.timeline.sub1;
-        document.getElementById('timeline-label-2').textContent = t.timeline.label2;
-        document.getElementById('timeline-sub-2').textContent = t.timeline.sub2;
-        document.getElementById('timeline-label-3').textContent = t.timeline.label3;
-        document.getElementById('timeline-sub-3').textContent = t.timeline.sub3;
-
         // Confetti effect
         function createConfetti() {
             const colors = ['#7367f0', '#28a745', '#ffc107', '#17a2b8', '#e83e8c', '#6610f2', '#fd7e14'];

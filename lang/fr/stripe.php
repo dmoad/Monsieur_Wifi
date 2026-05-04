@@ -15,4 +15,21 @@ return [
 
     // :url URL des conditions générales de vente
     'terms_message' => "J'accepte les [Conditions Générales de Vente](:url)",
+
+    // Page /subscription/cancel (redirection Stripe après annulation)
+    'cancel' => [
+        'page_title' => 'Paiement annulé - Monsieur WiFi',
+        'title' => 'Paiement annulé',
+        'message' => "Votre paiement a été annulé. Aucun montant n'a été débité de votre compte. Vous pouvez réessayer quand vous le souhaitez.",
+        'retry' => 'Réessayer',
+        'dashboard' => 'Retour au tableau de bord',
+    ],
+
+    // Page /subscription/success (redirection Stripe après succès)
+    'success' => [
+        'page_title' => 'Paiement réussi - Monsieur WiFi',
+        'title' => 'Paiement réussi !',
+        'message' => "Félicitations ! Votre abonnement est maintenant actif. Vous pouvez commencer à utiliser toutes les fonctionnalités de votre plan.",
+        'dashboard' => 'Accéder au tableau de bord',
+    ],
 ];
