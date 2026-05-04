@@ -886,9 +886,12 @@
 
 <div class="content-body">
     @php
-        $timelineStep = (int) request()->query('step', 1);
-        if ($timelineStep < 1 || $timelineStep > 3) { $timelineStep = 1; }
-        $tlCircleBase = 'width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px;';
+        $timelineStep = (int) request()->query('step', 0);
+        if ($timelineStep < 1 || $timelineStep > 3) { $timelineStep = 0; }
+    @endphp
+    @if ($timelineStep)
+        @php
+            $tlCircleBase = 'width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; margin-bottom:12px;';
             $tlCircleOn   = $tlCircleBase . ' background:var(--mw-primary); color:white; box-shadow:0 4px 15px rgba(99,102,241,0.4);';
             $tlCircleOff  = $tlCircleBase . ' background:#f0f0f0; color:#999; border:2px solid #ddd;';
             $tlLabelBase  = 'font-size:0.85rem; font-weight:600; text-align:center;';
@@ -919,9 +922,11 @@
                 </div>
             </div>
         </div>
+    @endif
 
-        <!-- Device CTA Banner (revealed by JS if user is not subscribed) -->
-        <div id="device-cta-banner" class="alert alert-primary d-flex align-items-center justify-content-between mb-2" style="display:none; border-left: 4px solid #7367f0; background: linear-gradient(135deg, rgba(115,103,240,0.08), rgba(115,103,240,0.02)); border-radius: 8px; padding: 1.25rem 1.5rem;">
+    @if (request()->has('showOffers'))
+        <!-- Device CTA Banner (showcase-site flow; gated by ?showOffers) -->
+        <div class="alert alert-primary d-flex align-items-center justify-content-between mb-2" style="border-left: 4px solid #7367f0; background: linear-gradient(135deg, rgba(115,103,240,0.08), rgba(115,103,240,0.02)); border-radius: 8px; padding: 1.25rem 1.5rem;">
             <div class="d-flex align-items-center">
                 <div style="background: rgba(115,103,240,0.15); border-radius: 50%; padding: 0.75rem; margin-right: 1rem;">
                     <i data-feather="wifi" style="width: 24px; height: 24px; color: #7367f0;"></i>
@@ -935,6 +940,7 @@
                 <i data-feather="shopping-bag" style="width: 16px; height: 16px;"></i> {{ __('captive_portals.js_cta_button') }}
             </a>
         </div>
+    @endif
 
     <!-- Captive Portal Designs List -->
     <section id="captive-portal-designs-list">
