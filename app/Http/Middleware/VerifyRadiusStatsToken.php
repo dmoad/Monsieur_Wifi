@@ -31,8 +31,6 @@ class VerifyRadiusStatsToken
             Log::warning('Radius guest-session-stats rejected: invalid or missing token', [
                 'ip' => $request->ip(),
             ]);
-            Log::info('Token: ' . $token);
-            Log::info('Secret: ' . $secret);
 
             abort(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
         }
