@@ -21,6 +21,7 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TempCaptivePortalDesignController;
 use App\Http\Controllers\WifiStatsController;
 use App\Http\Controllers\ZoneController;
+use App\Support\RandomPassphrase;
 use Illuminate\Support\Facades\Route;
 
 // Public routes (no auth required)
@@ -298,7 +299,6 @@ use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
-use App\Support\RandomPassphrase;
 
 // Public shop endpoints
 Route::prefix('v1/shop')->group(function () {
