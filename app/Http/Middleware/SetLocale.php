@@ -13,10 +13,14 @@ class SetLocale
     public function handle(Request $request, Closure $next): Response
     {
         $segment = $request->segment(1);
+        $query = (string) $request->query('locale', '');
 
         if (in_array($segment, self::SUPPORTED, true)) {
             app()->setLocale($segment);
             session(['locale' => $segment]);
+        } elseif (in_array($query, self::SUPPORTED, true)) {
+            app()->setLocale($query);
+            session(['locale' => $query]);
         } elseif ($saved = session('locale')) {
             if (in_array($saved, self::SUPPORTED, true)) {
                 app()->setLocale($saved);
