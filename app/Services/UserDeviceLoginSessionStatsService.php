@@ -7,6 +7,7 @@ use App\Models\LocationNetwork;
 use App\Models\UserDeviceLoginSession;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Log;
 
 class UserDeviceLoginSessionStatsService
 {
@@ -206,6 +207,7 @@ class UserDeviceLoginSessionStatsService
      */
     public function applyStats(UserDeviceLoginSession $session, string $status, array $validated): UserDeviceLoginSession
     {
+        Log::info('applyStats:===============================================>>>>>>> Status::::====>>> ' . $status);
         $acctSessionId = $validated['acct_session_id'];
 
         if ($session->radius_session_id !== null
@@ -246,6 +248,12 @@ class UserDeviceLoginSessionStatsService
             }
         }
 
+        if ($status === 'interim') {
+            Log::info("Interim payloaddata:===============================================>>>>>>> ");
+            Log::info($validated);
+        }
+
+        $session->last_update_time = Carbon::now();
         $session->save();
 
         return $session->fresh();

@@ -33,6 +33,16 @@ let analyticsUsersSearch   = '';
 let analyticsUsersPerPage  = 10;
 let analyticsSearchTimer   = null;
 
+// Sessions table state
+let analyticsSessionsPage       = 1;
+let analyticsSessionsTotal      = 0;
+let analyticsSessionsLastPage   = 1;
+let analyticsSessionsSearch     = '';
+let analyticsSessionsPerPage    = 10;
+let analyticsSessionsStatus     = 'all';
+let analyticsSessionsSearchTimer = null;
+let analyticsSessionsLoaded     = false;
+
 // ============================================================================
 // I18N HELPER (mirrors ldOverviewT pattern)
 // ============================================================================
@@ -464,6 +474,131 @@ async function exportAnalyticsGuestUsersCsv() {
 }
 
 // ============================================================================
+// GUEST SESSIONS TABLE
+// ============================================================================
+
+async function loadAnalyticsSessions(page, search, status) {
+    analyticsSessionsPage   = page;
+    analyticsSessionsSearch = search;
+    analyticsSessionsStatus = status || analyticsSessionsStatus;
+
+    const loadingEl = document.getElementById('analytics-sessions-loading');
+    if (loadingEl) loadingEl.style.display = 'block';
+
+    try {
+        let url = `${API}/locations/${location_id}/analytics/sessions?page=${page}&per_page=${analyticsSessionsPerPage}`;
+        if (search)                          url += `&search=${encodeURIComponent(search)}`;
+        if (analyticsSessionsStatus !== 'all') url += `&status=${analyticsSessionsStatus}`;
+
+        const res = await apiFetch(url);
+        if (res.success && res.data) {
+            const { data, current_page, last_page, total, per_page } = res.data;
+            analyticsSessionsTotal    = total;
+            analyticsSessionsLastPage = last_page;
+            if (typeof per_page === 'number') analyticsSessionsPerPage = per_page;
+            renderSessionsTable(data || []);
+            renderSessionsPagination(current_page, last_page, total, per_page);
+            analyticsSessionsLoaded = true;
+        }
+    } catch (err) {
+        console.error('Analytics sessions load error:', err);
+        const tbody = document.getElementById('analytics-sessions-tbody');
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger py-4"><small>${ldAnalyticsT('analytics_sessions_error')}</small></td></tr>`;
+        }
+    } finally {
+        if (loadingEl) loadingEl.style.display = 'none';
+    }
+}
+
+function renderSessionsTable(sessions) {
+    const tbody = document.getElementById('analytics-sessions-tbody');
+    if (!tbody) return;
+
+    if (sessions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4"><small>${ldAnalyticsT('analytics_sessions_empty')}</small></td></tr>`;
+        return;
+    }
+
+    const escHtml = s => {
+        if (s == null || s === '') return '—';
+        return String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    };
+
+    const fmtDt = s => {
+        if (!s) return '—';
+        try {
+            return new Date(s).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
+        } catch { return escHtml(s); }
+    };
+
+    const fmtDuration = secs => {
+        if (secs == null || secs <= 0) return '—';
+        const h = Math.floor(secs / 3600);
+        const m = Math.floor((secs % 3600) / 60);
+        const s = secs % 60;
+        if (h > 0) return `${h}h ${m}m`;
+        if (m > 0) return `${m}m ${s}s`;
+        return `${s}s`;
+    };
+
+    const fmtBytes = bytes => {
+        if (!bytes || bytes <= 0) return '—';
+        const k = 1024, units = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), units.length - 1);
+        return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + units[i];
+    };
+
+    tbody.innerHTML = sessions.map(s => {
+        const isActive = s.status === 'active';
+        const badge = isActive
+            ? `<span class="badge badge-success">${ldAnalyticsT('analytics_sessions_status_active')}</span>`
+            : `<span class="badge badge-secondary">${ldAnalyticsT('analytics_status_terminated')}</span>`;
+
+        return `<tr>
+            <td><code style="font-size:0.75rem;">${escHtml(s.mac_address)}</code></td>
+            <td>${escHtml(s.network_ssid)}</td>
+            <td>${escHtml(s.login_type)}</td>
+            <td>${fmtDt(s.connect_time)}</td>
+            <td>${isActive ? '<span class="text-success">—</span>' : fmtDt(s.disconnect_time)}</td>
+            <td>${fmtDuration(s.session_duration)}</td>
+            <td>${badge}</td>
+            <td>${fmtBytes(s.total_download)}</td>
+            <td>${fmtBytes(s.total_upload)}</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderSessionsPagination(currentPage, lastPage, total, perPage) {
+    const paginationEl = document.getElementById('analytics-sessions-pagination');
+    const countEl      = document.getElementById('analytics-sessions-count-range');
+    const pageInfoEl   = document.getElementById('analytics-sessions-page-info');
+    const prevBtn      = document.getElementById('analytics-sessions-prev');
+    const nextBtn      = document.getElementById('analytics-sessions-next');
+    const totalEl      = document.getElementById('analytics-sessions-total');
+
+    if (totalEl) totalEl.textContent = total || '';
+    if (!paginationEl) return;
+
+    const pp = typeof perPage === 'number' && perPage > 0 ? perPage : analyticsSessionsPerPage;
+
+    if (!total || total <= 0) {
+        paginationEl.style.display = 'none';
+        return;
+    }
+
+    paginationEl.style.display = 'flex';
+    const start = (currentPage - 1) * pp + 1;
+    const end   = Math.min(currentPage * pp, total);
+    if (countEl)    countEl.textContent    = `${start}–${end} / ${total}`;
+    if (pageInfoEl) pageInfoEl.textContent = `${currentPage} / ${lastPage}`;
+    if (prevBtn)    prevBtn.disabled       = currentPage <= 1;
+    if (nextBtn)    nextBtn.disabled       = currentPage >= lastPage;
+}
+
+// ============================================================================
 // THEME OBSERVER (keeps all three charts in sync)
 // ============================================================================
 
@@ -501,6 +636,21 @@ function initAnalyticsHandlers() {
         loadDailyBandwidth(analyticsCurrentPeriod);
     });
 
+    // Tab switch: swap toolbars + lazy-load sessions on first visit
+    $(document).on('shown.bs.tab', '#analytics-tab-sessions-link', function () {
+        $('#analytics-toolbar-users').hide();
+        $('#analytics-toolbar-sessions').css('display', '');
+        if (!analyticsSessionsLoaded) {
+            const perSel = document.getElementById('analytics-sessions-per-page');
+            if (perSel) analyticsSessionsPerPage = parseInt(perSel.value, 10) || 10;
+            loadAnalyticsSessions(1, '', 'all');
+        }
+    });
+    $(document).on('shown.bs.tab', '#analytics-tab-users-link', function () {
+        $('#analytics-toolbar-sessions').hide();
+        $('#analytics-toolbar-users').css('display', '');
+    });
+
     // User search — debounced
     $(document).on('input', '#analytics-user-search', function () {
         clearTimeout(analyticsSearchTimer);
@@ -527,7 +677,7 @@ function initAnalyticsHandlers() {
         exportAnalyticsGuestUsersCsv();
     });
 
-    // Pagination
+    // Pagination — users
     $(document).on('click', '#analytics-users-prev', function () {
         if (analyticsUsersPage > 1) {
             loadAnalyticsUsers(analyticsUsersPage - 1, analyticsUsersSearch);
@@ -537,6 +687,43 @@ function initAnalyticsHandlers() {
     $(document).on('click', '#analytics-users-next', function () {
         if (analyticsUsersPage < analyticsUsersLastPage) {
             loadAnalyticsUsers(analyticsUsersPage + 1, analyticsUsersSearch);
+        }
+    });
+
+    // Sessions search — debounced
+    $(document).on('input', '#analytics-sessions-search', function () {
+        clearTimeout(analyticsSessionsSearchTimer);
+        const val = $(this).val().trim();
+        analyticsSessionsSearchTimer = setTimeout(() => {
+            loadAnalyticsSessions(1, val, analyticsSessionsStatus);
+        }, 350);
+    });
+
+    $(document).on('change', '#analytics-sessions-per-page', function () {
+        analyticsSessionsPerPage = parseInt($(this).val(), 10) || 10;
+        loadAnalyticsSessions(1, analyticsSessionsSearch, analyticsSessionsStatus);
+    });
+
+    $(document).on('change', '#analytics-sessions-status', function () {
+        analyticsSessionsStatus = $(this).val();
+        loadAnalyticsSessions(1, analyticsSessionsSearch, analyticsSessionsStatus);
+    });
+
+    // Refresh sessions
+    $(document).on('click', '#analytics-sessions-refresh', function () {
+        loadAnalyticsSessions(1, analyticsSessionsSearch, analyticsSessionsStatus);
+    });
+
+    // Pagination — sessions
+    $(document).on('click', '#analytics-sessions-prev', function () {
+        if (analyticsSessionsPage > 1) {
+            loadAnalyticsSessions(analyticsSessionsPage - 1, analyticsSessionsSearch, analyticsSessionsStatus);
+        }
+    });
+
+    $(document).on('click', '#analytics-sessions-next', function () {
+        if (analyticsSessionsPage < analyticsSessionsLastPage) {
+            loadAnalyticsSessions(analyticsSessionsPage + 1, analyticsSessionsSearch, analyticsSessionsStatus);
         }
     });
 }

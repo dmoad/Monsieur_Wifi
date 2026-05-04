@@ -81,21 +81,34 @@
 
     </div>
 
-    {{-- ── Row 3: Guest User List ───────────────────────────────────────────── --}}
+    {{-- ── Row 3: Guest Users & Sessions ──────────────────────────────────── --}}
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header p-0 border-bottom-0">
-                    {{-- Title + primary actions (IP Log, Export, Refresh) --}}
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 px-3 py-2 border-bottom">
-                        <div class="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
-                            <i data-feather="users" style="color:var(--mw-primary);width:16px;height:16px;flex-shrink:0;"></i>
-                            <h5 class="card-title mb-0 text-truncate">{{ __('location_details.analytics_users_title') }}
-                                <span class="badge badge-secondary ml-2" id="analytics-users-total" style="font-size:0.75rem;"></span>
-                            </h5>
-                        </div>
-                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ml-auto">
-                            <div class="btn-group btn-group-sm" role="group" aria-label="{{ __('location_details.analytics_users_title') }}">
+
+                    {{-- Tab bar --}}
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 px-3 pt-2 border-bottom">
+                        <ul class="nav mw-subtabs mb-0" id="analytics-table-tabs" role="tablist" style="border:none;">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="analytics-tab-users-link" data-toggle="tab" href="#analytics-tab-users" role="tab">
+                                    <i data-feather="users" style="width:13px;height:13px;vertical-align:text-bottom;" class="mr-1"></i>
+                                    {{ __('location_details.analytics_users_title') }}
+                                    <span class="badge badge-secondary ml-1" id="analytics-users-total" style="font-size:0.72rem;"></span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="analytics-tab-sessions-link" data-toggle="tab" href="#analytics-tab-sessions" role="tab">
+                                    <i data-feather="activity" style="width:13px;height:13px;vertical-align:text-bottom;" class="mr-1"></i>
+                                    {{ __('location_details.analytics_sessions_title') }}
+                                    <span class="badge badge-secondary ml-1" id="analytics-sessions-total" style="font-size:0.72rem;"></span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        {{-- Actions (shared toolbar, content swaps per active tab) --}}
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ml-auto pb-2" id="analytics-toolbar-users">
+                            <div class="btn-group btn-group-sm" role="group">
                                 <a href="/{{ $locale }}/locations/{{ $location }}/ip-log" class="btn btn-outline-primary d-flex align-items-center">
                                     <i data-feather="external-link" style="width:14px;height:14px;"></i>
                                     <span class="ml-50">{{ __('location_details.analytics_ip_log_button') }}</span>
@@ -109,63 +122,140 @@
                                 <i data-feather="refresh-cw" style="width:14px;height:14px;"></i>
                             </button>
                         </div>
-                    </div>
-                    {{-- Filters: per-page + search --}}
-                    <div class="d-flex flex-wrap align-items-center gap-2 px-3 py-2 bg-light rounded-bottom" style="border-top:1px solid rgba(0,0,0,0.06);">
-                        <label class="mb-0 small text-muted" for="analytics-users-per-page">{{ __('location_details.analytics_users_per_page') }}</label>
-                        <select class="form-control form-control-sm" id="analytics-users-per-page" style="width:auto;min-width:4.5rem;">
-                            <option value="5">5</option>
-                            <option value="10" selected>10</option>
-                            <option value="20">20</option>
-                            <option value="100">100</option>
-                        </select>
-                        <input type="search" class="form-control form-control-sm flex-grow-1" id="analytics-user-search"
-                               placeholder="{{ __('location_details.analytics_search_placeholder') }}"
-                               style="min-width:160px;max-width:420px;">
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div id="analytics-users-loading" class="text-center py-4" style="display:none;">
-                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                        <small class="d-block mt-2 text-muted">{{ __('common.loading') }}</small>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="analytics-users-table">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>{{ __('location_details.analytics_col_name') }}</th>
-                                    <th>{{ __('location_details.analytics_col_mac') }}</th>
-                                    <th>{{ __('location_details.analytics_col_email') }}</th>
-                                    <th>{{ __('location_details.analytics_col_device') }}</th>
-                                    <th>{{ __('location_details.analytics_col_os') }}</th>
-                                    <th>{{ __('location_details.analytics_col_sessions') }}</th>
-                                    <th>{{ __('location_details.analytics_col_last_seen') }}</th>
-                                    <th>{{ __('location_details.analytics_col_status') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody id="analytics-users-tbody">
-                                <tr>
-                                    <td colspan="8" class="text-center text-muted py-4">
-                                        <small>{{ __('location_details.analytics_users_loading') }}</small>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    {{-- Pagination --}}
-                    <div class="d-flex justify-content-between align-items-center px-3 py-2" id="analytics-users-pagination" style="display:none;">
-                        <small class="text-muted" id="analytics-users-count-range"></small>
-                        <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-users-prev" disabled>
-                                <i data-feather="chevron-left"></i>
-                            </button>
-                            <span id="analytics-users-page-info" class="text-muted" style="font-size:0.8rem;"></span>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-users-next" disabled>
-                                <i data-feather="chevron-right"></i>
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ml-auto pb-2" id="analytics-toolbar-sessions" style="display:none!important;">
+                            <button type="button" class="btn btn-sm btn-icon btn-outline-secondary" id="analytics-sessions-refresh" title="{{ __('location_details.analytics_refresh_tooltip') }}">
+                                <i data-feather="refresh-cw" style="width:14px;height:14px;"></i>
                             </button>
                         </div>
                     </div>
+
                 </div>
+
+                <div class="tab-content">
+
+                    {{-- ── Tab 1: Guest Users ───────────────────────────────── --}}
+                    <div class="tab-pane fade show active" id="analytics-tab-users" role="tabpanel">
+                        {{-- Filters --}}
+                        <div class="d-flex flex-wrap align-items-center gap-2 px-3 py-2 bg-light" style="border-bottom:1px solid rgba(0,0,0,0.06);">
+                            <label class="mb-0 small text-muted" for="analytics-users-per-page">{{ __('location_details.analytics_users_per_page') }}</label>
+                            <select class="form-control form-control-sm" id="analytics-users-per-page" style="width:auto;min-width:4.5rem;">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="100">100</option>
+                            </select>
+                            <input type="search" class="form-control form-control-sm flex-grow-1" id="analytics-user-search"
+                                   placeholder="{{ __('location_details.analytics_search_placeholder') }}"
+                                   style="min-width:160px;max-width:420px;">
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="analytics-users-loading" class="text-center py-4" style="display:none;">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                <small class="d-block mt-2 text-muted">{{ __('common.loading') }}</small>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="analytics-users-table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>{{ __('location_details.analytics_col_name') }}</th>
+                                            <th>{{ __('location_details.analytics_col_mac') }}</th>
+                                            <th>{{ __('location_details.analytics_col_email') }}</th>
+                                            <th>{{ __('location_details.analytics_col_device') }}</th>
+                                            <th>{{ __('location_details.analytics_col_os') }}</th>
+                                            <th>{{ __('location_details.analytics_col_sessions') }}</th>
+                                            <th>{{ __('location_details.analytics_col_last_seen') }}</th>
+                                            <th>{{ __('location_details.analytics_col_status') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="analytics-users-tbody">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <small>{{ __('location_details.analytics_users_loading') }}</small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2" id="analytics-users-pagination" style="display:none;">
+                                <small class="text-muted" id="analytics-users-count-range"></small>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-users-prev" disabled>
+                                        <i data-feather="chevron-left"></i>
+                                    </button>
+                                    <span id="analytics-users-page-info" class="text-muted" style="font-size:0.8rem;"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-users-next" disabled>
+                                        <i data-feather="chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ── Tab 2: Guest User Sessions ───────────────────────── --}}
+                    <div class="tab-pane fade" id="analytics-tab-sessions" role="tabpanel">
+                        {{-- Filters --}}
+                        <div class="d-flex flex-wrap align-items-center gap-2 px-3 py-2 bg-light" style="border-bottom:1px solid rgba(0,0,0,0.06);">
+                            <label class="mb-0 small text-muted" for="analytics-sessions-per-page">{{ __('location_details.analytics_users_per_page') }}</label>
+                            <select class="form-control form-control-sm" id="analytics-sessions-per-page" style="width:auto;min-width:4.5rem;">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="100">100</option>
+                            </select>
+                            <select class="form-control form-control-sm" id="analytics-sessions-status" style="width:auto;min-width:7rem;">
+                                <option value="all">{{ __('location_details.analytics_sessions_status_all') }}</option>
+                                <option value="active">{{ __('location_details.analytics_sessions_status_active') }}</option>
+                                <option value="terminated">{{ __('location_details.analytics_sessions_status_terminated') }}</option>
+                            </select>
+                            <input type="search" class="form-control form-control-sm flex-grow-1" id="analytics-sessions-search"
+                                   placeholder="{{ __('location_details.analytics_sessions_search_placeholder') }}"
+                                   style="min-width:160px;max-width:420px;">
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="analytics-sessions-loading" class="text-center py-4" style="display:none;">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                <small class="d-block mt-2 text-muted">{{ __('common.loading') }}</small>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="analytics-sessions-table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>{{ __('location_details.analytics_col_mac') }}</th>
+                                            <th>{{ __('location_details.analytics_sessions_col_network') }}</th>
+                                            <th>{{ __('location_details.analytics_sessions_col_login_type') }}</th>
+                                            <th>{{ __('location_details.analytics_sessions_col_connect') }}</th>
+                                            <th>{{ __('location_details.analytics_sessions_col_disconnect') }}</th>
+                                            <th>{{ __('location_details.analytics_sessions_col_duration') }}</th>
+                                            <th>{{ __('location_details.analytics_col_status') }}</th>
+                                            <th>{{ __('location_details.analytics_sessions_col_download') }}</th>
+                                            <th>{{ __('location_details.analytics_sessions_col_upload') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="analytics-sessions-tbody">
+                                        <tr>
+                                            <td colspan="9" class="text-center text-muted py-4">
+                                                <small>{{ __('location_details.analytics_users_loading') }}</small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2" id="analytics-sessions-pagination" style="display:none;">
+                                <small class="text-muted" id="analytics-sessions-count-range"></small>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-sessions-prev" disabled>
+                                        <i data-feather="chevron-left"></i>
+                                    </button>
+                                    <span id="analytics-sessions-page-info" class="text-muted" style="font-size:0.8rem;"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="analytics-sessions-next" disabled>
+                                        <i data-feather="chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>{{-- /.tab-content --}}
             </div>
         </div>
     </div>

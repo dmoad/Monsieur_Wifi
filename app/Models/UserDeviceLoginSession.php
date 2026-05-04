@@ -29,6 +29,7 @@ class UserDeviceLoginSession extends Model
         'total_upload',
         'session_duration',
         'login_success',
+        'last_update_time',
     ];
 
     protected $casts = [
@@ -36,6 +37,7 @@ class UserDeviceLoginSession extends Model
         'network_id' => 'integer',
         'connect_time' => 'datetime',
         'disconnect_time' => 'datetime',
+        'last_update_time' => 'datetime',
         'login_success' => 'boolean',
     ];
 

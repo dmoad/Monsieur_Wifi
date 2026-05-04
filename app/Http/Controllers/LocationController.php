@@ -983,6 +983,71 @@ class LocationController extends Controller
     }
 
     /**
+     * Paginated list of UserDeviceLoginSessions for the location's analytics Sessions tab.
+     */
+    public function getAnalyticsSessions($id, Request $request): JsonResponse
+    {
+        try {
+            $location = $this->authorizeLocationAccess((int) $id);
+
+            $perPage = max(1, min(200, (int) ($request->input('per_page', 10))));
+            $search  = trim((string) $request->input('search', ''));
+            $status  = $request->input('status', 'all'); // 'all' | 'active' | 'terminated'
+
+            $query = UserDeviceLoginSession::query()
+                ->with(['network:id,ssid'])
+                ->where('location_id', $location->id)
+                ->where('login_success', true);
+
+            if ($status === 'active') {
+                $query->whereNull('disconnect_time');
+            } elseif ($status === 'terminated') {
+                $query->whereNotNull('disconnect_time');
+            }
+
+            if ($search !== '') {
+                $like = '%'.$search.'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('mac_address', 'like', $like)
+                      ->orWhere('login_type', 'like', $like)
+                      ->orWhere('radius_session_id', 'like', $like);
+                });
+            }
+
+            $paginated = $query->orderByDesc('connect_time')->paginate($perPage);
+
+            $items = collect($paginated->items())->map(fn ($s) => [
+                'id'                => $s->id,
+                'mac_address'       => $s->mac_address,
+                'network_ssid'      => $s->network?->ssid,
+                'login_type'        => $s->login_type,
+                'connect_time'      => $s->connect_time?->toIso8601String(),
+                'disconnect_time'   => $s->disconnect_time?->toIso8601String(),
+                'session_duration'  => $s->session_duration,
+                'total_download'    => $s->total_download,
+                'total_upload'      => $s->total_upload,
+                'last_update_time'  => $s->last_update_time?->toIso8601String(),
+                'status'            => $s->disconnect_time ? 'terminated' : 'active',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'data'         => $items,
+                    'current_page' => $paginated->currentPage(),
+                    'last_page'    => $paginated->lastPage(),
+                    'total'        => $paginated->total(),
+                    'per_page'     => $paginated->perPage(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Analytics sessions error: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Paginated flow_sessions for the location's device (IP / flow log).
      *
      * Query params: page, per_page (5|10|20|100), search (optional), search_field (mac|src_ip|dst_ip).

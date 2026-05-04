@@ -397,7 +397,8 @@ class GuestNetworkUserController extends Controller
             $user->phone = $input['phone'];
         }
 
-        $user->expiration_time = now()->addMinutes($network->session_timeout ?? 60);
+        // $user->expiration_time = now()->addMinutes($network->session_timeout ?? 60);
+        $user->expiration_time = now('UTC')->addMinutes($network->session_timeout ?? 60);
         $user->download_bandwidth = $network->download_limit;
         $user->upload_bandwidth = $network->upload_limit;
 
@@ -429,7 +430,7 @@ class GuestNetworkUserController extends Controller
             'zone_id' => $zoneId,
             'download_bandwidth' => $network->download_limit,
             'upload_bandwidth' => $network->upload_limit,
-            'expiration_time' => $user->expiration_time,
+            'expiration_time' => now('UTC')->addMinutes($network->session_timeout ?? 60), // $user->expiration_time,
             'idle_timeout' => $network->idle_timeout ?? 0,
         ]);
 

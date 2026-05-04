@@ -457,6 +457,23 @@ return [
     'analytics_export_failed' => 'Failed to export CSV.',
     'analytics_refresh_tooltip' => 'Refresh charts and guest list',
 
+    // Sessions tab
+    'analytics_sessions_title' => 'Guest Sessions',
+    'analytics_sessions_col_network' => 'Network (SSID)',
+    'analytics_sessions_col_login_type' => 'Login Type',
+    'analytics_sessions_col_connect' => 'Connected',
+    'analytics_sessions_col_disconnect' => 'Disconnected',
+    'analytics_sessions_col_duration' => 'Duration',
+    'analytics_sessions_col_download' => 'Download',
+    'analytics_sessions_col_upload' => 'Upload',
+    'analytics_sessions_status_all' => 'All',
+    'analytics_sessions_status_active' => 'Active',
+    'analytics_sessions_status_terminated' => 'Terminated',
+    'analytics_sessions_search_placeholder' => 'Search MAC, login type…',
+    'analytics_sessions_empty' => 'No sessions found.',
+    'analytics_sessions_error' => 'Failed to load sessions.',
+    'analytics_status_terminated' => 'Terminated',
+
     // IP Log (flow_sessions per location device)
     'ip_log_page_title' => 'IP Log',
     'ip_log_heading' => 'IP Log',

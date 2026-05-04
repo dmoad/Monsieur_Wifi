@@ -26,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('cart:send-abandonment-emails')->daily();
         $schedule->command('devices:reboot-scheduled')->everyMinute();
         $schedule->command('flows:rotate-partitions')->dailyAt('02:00');
+        $schedule->command('sessions:close-stale')->everyFiveMinutes();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

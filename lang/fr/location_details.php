@@ -457,6 +457,23 @@ return [
     'analytics_export_failed' => 'Échec de l\'export CSV.',
     'analytics_refresh_tooltip' => 'Actualiser les graphiques et la liste des invités',
 
+    // Sessions tab
+    'analytics_sessions_title' => 'Sessions invités',
+    'analytics_sessions_col_network' => 'Réseau (SSID)',
+    'analytics_sessions_col_login_type' => 'Type de connexion',
+    'analytics_sessions_col_connect' => 'Connecté',
+    'analytics_sessions_col_disconnect' => 'Déconnecté',
+    'analytics_sessions_col_duration' => 'Durée',
+    'analytics_sessions_col_download' => 'Téléchargement',
+    'analytics_sessions_col_upload' => 'Upload',
+    'analytics_sessions_status_all' => 'Tous',
+    'analytics_sessions_status_active' => 'Actif',
+    'analytics_sessions_status_terminated' => 'Terminé',
+    'analytics_sessions_search_placeholder' => 'Rechercher MAC, type…',
+    'analytics_sessions_empty' => 'Aucune session trouvée.',
+    'analytics_sessions_error' => 'Échec du chargement des sessions.',
+    'analytics_status_terminated' => 'Terminé',
+
     // IP Log (flow_sessions par appareil de l\'emplacement)
     'ip_log_page_title' => 'Journal IP',
     'ip_log_heading' => 'Journal IP',
