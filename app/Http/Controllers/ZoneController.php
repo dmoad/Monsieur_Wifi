@@ -504,6 +504,9 @@ class ZoneController extends Controller
             if (! $zone) {
                 return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
             }
+            if (! $zone->isAccessibleBy(Auth::user())) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
 
             $offsetMinutes = (int) round(Carbon::now()->utcOffset());
             $hourExpr = $offsetMinutes === 0
@@ -552,6 +555,9 @@ class ZoneController extends Controller
             $zone = Zone::find($zoneId);
             if (! $zone) {
                 return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
+            }
+            if (! $zone->isAccessibleBy(Auth::user())) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
             }
 
             $periodRaw = $request->get('period', '7days');
@@ -659,6 +665,9 @@ class ZoneController extends Controller
             if (! $zone) {
                 return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
             }
+            if (! $zone->isAccessibleBy(Auth::user())) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
 
             // One row per unique MAC (latest by id) before grouping by device_type.
             $dedupIds = GuestNetworkUser::selectRaw('MAX(id) as id')
@@ -691,6 +700,9 @@ class ZoneController extends Controller
             $zone = Zone::find($zoneId);
             if (! $zone) {
                 return response()->json(['success' => false, 'message' => 'Zone not found'], 404);
+            }
+            if (! $zone->isAccessibleBy(Auth::user())) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
             }
 
             $perPage = min((int) $request->get('per_page', 15), 100);
