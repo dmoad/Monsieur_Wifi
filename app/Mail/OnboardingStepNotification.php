@@ -20,25 +20,28 @@ class OnboardingStepNotification extends Mailable
      * @param User $user
      * @param string $step  'registration' | 'portal_created' | 'subscription'
      * @param array $stepData  Additional data for the step
+     * @param string $locale  Recipient locale; defaults to 'fr' since this
+     *                        notification targets the FR commercial team.
      */
-    public function __construct(User $user, string $step, array $stepData = [])
+    public function __construct(User $user, string $step, array $stepData = [], string $locale = 'fr')
     {
         $this->user = $user;
         $this->step = $step;
         $this->stepData = $stepData;
+        $this->locale = $locale;
     }
 
     public function envelope(): Envelope
     {
-        $subjects = [
-            'registration' => 'Nouvelle inscription',
-            'portal_created' => 'Nouveau portail captif créé',
-            'subscription' => 'Nouvel abonnement souscrit',
+        $subjectKeys = [
+            'registration' => 'emails/onboarding-step.subject_registration',
+            'portal_created' => 'emails/onboarding-step.subject_portal_created',
+            'subscription' => 'emails/onboarding-step.subject_subscription',
         ];
 
-        $subject = ($subjects[$this->step] ?? 'Nouvelle étape') . ' - ' . $this->user->name;
+        $key = $subjectKeys[$this->step] ?? 'emails/onboarding-step.subject_default';
 
-        return new Envelope(subject: $subject . ' - Monsieur WiFi');
+        return new Envelope(subject: __($key, ['name' => $this->user->name]));
     }
 
     public function content(): Content
