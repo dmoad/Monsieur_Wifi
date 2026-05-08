@@ -53,6 +53,9 @@ class LocationSettingsV2 extends Model
         'qos_enabled',
         'qos_bw',
         'qos_bw_wan_use_local',
+
+        // Alerts
+        'offline_notification_email',
     ];
 
     protected $casts = [
@@ -77,6 +80,8 @@ class LocationSettingsV2 extends Model
         'web_filter_domains' => 'array',
         'web_filter_categories' => 'array',
         'qos_bw' => 'array',
+
+        'offline_notification_sent_at' => 'datetime',
     ];
 
     // ── WAN connection type constants ────────────────────────────────────────

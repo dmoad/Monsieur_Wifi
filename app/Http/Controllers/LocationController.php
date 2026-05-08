@@ -2506,6 +2506,7 @@ class LocationController extends Controller
             }
 
             $data = ['settings' => $settings];
+
             if ($location->zone_id && ! $location->isPrimaryInZone()) {
                 $zone = $location->zone()->with('primaryLocation.settings')->first();
                 $primarySettings = $zone?->primaryLocation?->settings;
@@ -2546,6 +2547,10 @@ class LocationController extends Controller
                     'message' => 'Location not found',
                 ], 404);
             }
+
+            $request->validate([
+                'offline_notification_email' => 'sometimes|nullable|email|max:255',
+            ]);
 
             $settings = LocationSettingsV2::where('location_id', $id)->first();
 
@@ -2612,7 +2617,15 @@ class LocationController extends Controller
                 'web_filter_domains',
                 'web_filter_categories',
                 'qos_enabled',
+                'offline_notification_email',
             ]);
+
+            if (array_key_exists('offline_notification_email', $settingsData)) {
+                $settingsData['offline_notification_email'] =
+                    ($settingsData['offline_notification_email'] === '' || $settingsData['offline_notification_email'] === null)
+                        ? null
+                        : $settingsData['offline_notification_email'];
+            }
 
             // Check for router setting changes that require config version increment
             $routerSettingsChanged = false;

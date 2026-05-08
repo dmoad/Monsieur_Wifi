@@ -94,10 +94,6 @@ function processNetworkData(location, parsed, macAddress, challenge, nasIp) {
     const settings = location.settings;
     const design   = location.design || {};
 
-    console.log('Network data:', location);
-    console.log('Design data:', design);
-    console.log('Parsed nasid:', parsed);
-
     localStorage.setItem('location_data', JSON.stringify(location));
     localStorage.setItem('design_data', JSON.stringify(design));
     localStorage.setItem('nas_ip', nasIp);
@@ -114,10 +110,18 @@ function processNetworkData(location, parsed, macAddress, challenge, nasIp) {
     }
 
     // location.id is the network_id returned by the info() endpoint
-    const networkId  = location.id;
-    const zoneId     = parsed.zoneId;
-    const authMethod = settings.captive_auth_method;
+    const networkId = location.id;
+    const zoneId    = parsed.zoneId;
+    const methods = (settings.captive_auth_methods && settings.captive_auth_methods.length)
+        ? settings.captive_auth_methods
+        : [settings.captive_auth_method || 'click-through'];
 
+    if (methods.length > 1) {
+        window.location.href = `/login-select/${networkId}/${zoneId}/${macAddress}`;
+        return;
+    }
+
+    const authMethod = methods[0];
     switch (authMethod) {
         case 'email':
             window.location.href = `/email-login/${networkId}/${zoneId}/${macAddress}`;

@@ -159,6 +159,23 @@
                                 </div>
                             </div>
 
+                            <!-- Offline heartbeat alert email -->
+                            <div class="content-section" id="offline-notification-section">
+                                <div class="section-header">
+                                    <h5 class="section-title">{{ __('location_details.offline_notify_section_title') }}</h5>
+                                </div>
+                                <p class="text-muted small mb-3">{{ __('location_details.offline_notify_email_hint') }}</p>
+                                <div id="offline-notification-edit-wrap">
+                                    <div class="form-group mb-2">
+                                        <label for="offline-notification-email">{{ __('location_details.offline_notify_email_label') }}</label>
+                                        <input type="email" class="form-control" id="offline-notification-email" autocomplete="email" placeholder="you@example.com">
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm" id="save-offline-notification-settings">
+                                        <i data-feather="save" class="mr-1"></i>{{ __('location_details.offline_notify_save') }}
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- VLAN Support -->
                             <div class="content-section">
                                 <div class="section-header">

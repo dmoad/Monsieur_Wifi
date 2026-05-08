@@ -379,6 +379,10 @@ class DeviceController extends Controller
         }
 
         $settings = LocationSettingsV2::where('location_id', $location->id)->first();
+        if ($settings && $settings->offline_notification_sent_at !== null) {
+            $settings->offline_notification_sent_at = null;
+            $settings->save();
+        }
 
         // Check if captive portal should be enabled based on working hours.
         // For zone members, use the primary location's schedule so all APs in

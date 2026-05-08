@@ -115,6 +115,7 @@
         <img src="{{ asset('assets/images/Mr-Wifi.PNG') }}" alt="MrWiFi Logo" class="logo">
         <div class="loading-spinner"></div>
         <div class="loading-text" data-i18n="loading"></div>
+        <!-- <div class="loading-text" id="nasid-text"></div> -->
         
         <div class="footer" data-i18n="footer"></div>
     </div>

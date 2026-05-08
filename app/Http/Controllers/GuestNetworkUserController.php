@@ -408,6 +408,9 @@ class GuestNetworkUserController extends Controller
         if (! empty($input['device_type'])) {
             $user->device_type = $input['device_type'];
         }
+        if (array_key_exists('name', $input) && $input['name'] !== null) {
+            $user->name = $input['name'];
+        }
 
         $user->save();
 

@@ -201,6 +201,9 @@ async function loadLocationSettings() {
             $('#qos-be-bw').val(kbpsToMbpsDisplay(bw.be_bw));
             $('#qos-bulk-bw').val(kbpsToMbpsDisplay(bw.bulk_bw));
         }
+        // Offline alert email (per location)
+        $('#offline-notification-email').val(s.offline_notification_email || '');
+
         loadQosClassesPreview();
         loadQosDomainsForLocation();
         applyQosZoneLock();
@@ -208,6 +211,28 @@ async function loadLocationSettings() {
         reRenderFeather();
     } catch (err) {
         handleApiError(err, 'loadLocationSettings');
+    }
+}
+
+async function saveOfflineNotificationSettings() {
+    const $btn = $('#save-offline-notification-settings');
+    const origHtml = $btn.html();
+    $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
+    try {
+        const raw = $('#offline-notification-email').val().trim();
+        await apiFetch(`${API}/locations/${location_id}/settings`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                offline_notification_email: raw === '' ? null : raw,
+            }),
+        });
+        toastr.success(i18n.offline_notify_saved);
+        await loadLocationSettings();
+    } catch (err) {
+        handleApiError(err, 'saveOfflineNotificationSettings');
+    } finally {
+        $btn.prop('disabled', false).html(origHtml);
+        reRenderFeather();
     }
 }
 
@@ -1046,6 +1071,8 @@ async function applyOptimalChannels() {
 function initRouterHandlers() {
     // Save radio
     $('#save-radio-settings').on('click', saveRadioSettings);
+
+    $('#save-offline-notification-settings').on('click', saveOfflineNotificationSettings);
 
     // Save web filter
     $('#save-web-filter-settings').on('click', saveWebFilterSettings);
