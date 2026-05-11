@@ -162,10 +162,6 @@ const AddLocationModal = (function () {
             showFieldError('location-name', T.location_name_required || 'Name required');
             hasErrors = true;
         }
-        if (!locationData.device_id && !locationData.inventory_item_id) {
-            showFieldError('device-select', T.device_required || 'Device required');
-            hasErrors = true;
-        }
 
         if (hasErrors) {
             btn.innerHTML = T.add_location || 'Add Location';

@@ -75,6 +75,7 @@ return [
     'available_suffix' => 'Disponible',
     'inventory_stock_group' => 'Stock disponible (sera activé)',
     'inventory_stock_suffix' => 'Stock',
+    'select_device_optional_help' => 'Facultatif — vous pourrez attacher un appareil plus tard depuis la page de l\'emplacement.',
     'devices_assigned_elsewhere_group' => 'Appareils assignés à d\'autres emplacements',
     'assigned_to_prefix' => 'Assigné à :',
     'unknown_location' => 'Emplacement inconnu',

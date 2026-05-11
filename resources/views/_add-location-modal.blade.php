@@ -27,11 +27,11 @@
                         <input type="text" class="form-control" id="location-address" placeholder="{{ __('locations.address_placeholder') }}">
                     </div>
                     <div class="form-group">
-                        <label for="device-select">{{ __('locations.select_device_label') }} <span class="text-danger">*</span></label>
-                        <select class="form-control" id="device-select" required>
+                        <label for="device-select">{{ __('locations.select_device_label') }}</label>
+                        <select class="form-control" id="device-select">
                             <option value="">{{ __('locations.select_device_placeholder') }}</option>
                         </select>
-                        <small class="form-text text-muted" id="device-select-hint">{{ __('locations.select_device_help') }}</small>
+                        <small class="form-text text-muted" id="device-select-hint">{{ __('locations.select_device_optional_help') }}</small>
                     </div>
                     <div class="form-group">
                         <label for="location-notes">{{ __('locations.description_label') }}</label>

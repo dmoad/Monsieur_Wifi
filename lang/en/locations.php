@@ -75,6 +75,7 @@ return [
     'available_suffix' => 'Available',
     'inventory_stock_group' => 'Available Stock (will be activated)',
     'inventory_stock_suffix' => 'Stock',
+    'select_device_optional_help' => 'Optional — you can attach a device later from the location page.',
     'devices_assigned_elsewhere_group' => 'Devices Assigned to Other Locations',
     'assigned_to_prefix' => 'Assigned to:',
     'unknown_location' => 'Unknown Location',
