@@ -2984,6 +2984,7 @@ class LocationController extends Controller
             $request->validate([
                 'mac_address' => 'nullable|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
                 'device_id' => 'nullable|integer|exists:devices,id',
+                'inventory_item_id' => 'nullable|integer|exists:inventory_items,id',
             ]);
 
             $location = Location::find($id);
@@ -2991,8 +2992,31 @@ class LocationController extends Controller
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
-            // If a device_id is supplied, reassign the location to that device first
-            if ($request->filled('device_id')) {
+            // If the caller picked a stock inventory item instead of an existing
+            // device, convert it on the spot — same lazy bridge as create-location.
+            if ($request->filled('inventory_item_id')) {
+                $inventoryItem = InventoryItem::findOrFail($request->inventory_item_id);
+                if ($inventoryItem->device_id || $inventoryItem->status !== 'available') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Inventory item is no longer available.',
+                    ], 422);
+                }
+                $ownerId = $location->owner_id ?: $location->user_id ?: Auth::id();
+                $newDevice = $inventoryItem->convertToDevice($ownerId);
+                $inventoryItem->device_id = $newDevice->id;
+                $inventoryItem->status = 'sold';
+                $inventoryItem->save();
+                $location->device_id = $newDevice->id;
+                $location->save();
+                $device = $newDevice;
+                Log::info('Device auto-created from inventory item during location assign', [
+                    'device_id' => $newDevice->id,
+                    'inventory_item_id' => $inventoryItem->id,
+                    'location_id' => $location->id,
+                    'owner_id' => $ownerId,
+                ]);
+            } elseif ($request->filled('device_id')) {
                 $newDevice = Device::findOrFail($request->device_id);
 
                 // Detach the new device from any other location it may currently be on
