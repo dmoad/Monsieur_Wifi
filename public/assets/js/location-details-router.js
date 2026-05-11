@@ -642,14 +642,27 @@ async function loadDevicesForAssignment() {
         const res = await apiFetch(`${API}/v1/devices/available-for-location`);
         const unassigned = res.unassigned || [];
         const assigned = res.assigned || [];
+        const inventoryStock = res.inventory_stock || [];
         const $select = $('#device-select');
         const currentDeviceId = currentDeviceData?.id || null;
+        // Option values are prefixed (`device:N` / `inv:N`) so the submit
+        // handler can route to the right backend field. Same convention as
+        // the create-location modal.
         $select.empty().append('<option value="">— Select an AP —</option>');
         if (unassigned.length) {
             const $group = $('<optgroup label="Unassigned APs"></optgroup>');
             unassigned.forEach(d => {
                 const label = [d.name || d.serial_number, d.mac_address].filter(Boolean).join(' — ');
-                $group.append(`<option value="${d.id}" data-mac="${d.mac_address}">${label}</option>`);
+                $group.append(`<option value="device:${d.id}" data-mac="${d.mac_address}">${label}</option>`);
+            });
+            $select.append($group);
+        }
+        if (inventoryStock.length) {
+            const $group = $('<optgroup label="Available Stock (will be activated)"></optgroup>');
+            inventoryStock.forEach(it => {
+                const model = it.product_model?.name || '';
+                const label = [it.serial_number, it.mac_address, model ? `(${model})` : ''].filter(Boolean).join(' — ');
+                $group.append(`<option value="inv:${it.id}" data-mac="${it.mac_address}">${label}</option>`);
             });
             $select.append($group);
         }
@@ -658,16 +671,16 @@ async function loadDevicesForAssignment() {
             assigned.forEach(d => {
                 const locationName = d.location?.name || '';
                 const label = [d.name || d.serial_number, d.mac_address, locationName ? `(${locationName})` : ''].filter(Boolean).join(' — ');
-                $group.append(`<option value="${d.id}" data-mac="${d.mac_address}">${label}</option>`);
+                $group.append(`<option value="device:${d.id}" data-mac="${d.mac_address}">${label}</option>`);
             });
             $select.append($group);
         }
-        if (!unassigned.length && !assigned.length) {
+        if (!unassigned.length && !inventoryStock.length && !assigned.length) {
             $select.append('<option value="" disabled>No devices found</option>');
         }
         // Pre-select the device currently assigned to this location
         if (currentDeviceId) {
-            $select.val(currentDeviceId).trigger('change');
+            $select.val(`device:${currentDeviceId}`).trigger('change');
         }
     } catch (err) {
         $('#device-select').html(`<option value="">${i18n.device_load_failed || ''}</option>`);
@@ -680,16 +693,24 @@ async function saveDeviceAssignment() {
     $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     try {
-        const deviceId = $('#device-select').val();
-        if (!deviceId) {
+        const selectedValue = $('#device-select').val() || '';
+        if (!selectedValue) {
             toastr.error(i18n.device_select_required);
             return;
         }
         const $selectedOpt = $('#device-select option:selected');
         const mac = ($selectedOpt.data('mac') || '').replace(/-/g, ':');
+
+        // Decode prefix-encoded value to route to the right backend field.
+        const body = {};
+        if (selectedValue.startsWith('device:')) {
+            body.device_id = parseInt(selectedValue.slice('device:'.length), 10);
+        } else if (selectedValue.startsWith('inv:')) {
+            body.inventory_item_id = parseInt(selectedValue.slice('inv:'.length), 10);
+        }
         await apiFetch(`${API}/locations/${location_id}/update-mac-address`, {
             method: 'POST',
-            body: JSON.stringify({ device_id: parseInt(deviceId) }),
+            body: JSON.stringify(body),
         });
         // Update currentDeviceData so the modal label is correct next time it opens
         if (currentDeviceData) {
