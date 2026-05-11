@@ -3,6 +3,7 @@
  *
  * Shared UI primitives:
  *  - MwConfirm — promise-based confirm/alert dialog (replaces window.confirm)
+ *  - MwPrompt  — promise-based single-string input dialog (replaces window.prompt)
  *  - MwDrawer  — right-anchored overlay, opened via [data-mw-drawer-open="id"]
  *               and closed via [data-mw-drawer-close] or Escape
  *
@@ -85,6 +86,107 @@ const MwConfirm = (function () {
         document.body.classList.add('mw-drawer-locked');
         okBtn.focus();
         return new Promise((resolveFn) => { pending = { resolve: resolveFn }; });
+    }
+
+    return { open };
+})();
+
+const MwPrompt = (function () {
+    let backdrop = null;
+    let dialog = null;
+    let input = null;
+    let pending = null;
+    let previousFocus = null;
+
+    function ensureEls() {
+        if (backdrop && dialog) return;
+        backdrop = document.createElement('div');
+        backdrop.className = 'mw-confirm-backdrop';
+        document.body.appendChild(backdrop);
+
+        dialog = document.createElement('div');
+        dialog.className = 'mw-confirm mw-prompt';
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.innerHTML = `
+            <div class="mw-confirm-header" data-mw-prompt-title></div>
+            <div class="mw-confirm-body">
+                <label class="mw-prompt-label" data-mw-prompt-label></label>
+                <input type="text" class="form-control mw-prompt-input" data-mw-prompt-input />
+            </div>
+            <div class="mw-confirm-footer">
+                <button type="button" class="btn btn-outline-secondary" data-mw-prompt-cancel></button>
+                <button type="button" class="btn btn-primary" data-mw-prompt-ok></button>
+            </div>`;
+        document.body.appendChild(dialog);
+        input = dialog.querySelector('[data-mw-prompt-input]');
+
+        backdrop.addEventListener('click', () => resolve(null));
+        dialog.querySelector('[data-mw-prompt-cancel]').addEventListener('click', () => resolve(null));
+        dialog.querySelector('[data-mw-prompt-ok]').addEventListener('click', () => submit());
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); submit(); }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (!pending) return;
+            if (e.key === 'Escape') { e.preventDefault(); resolve(null); }
+        });
+    }
+
+    function submit() {
+        if (!pending) return;
+        const value = input.value.trim();
+        if (pending.required && !value) {
+            input.focus();
+            input.classList.add('is-invalid');
+            return;
+        }
+        resolve(value);
+    }
+
+    function resolve(result) {
+        if (!pending) return;
+        backdrop.classList.remove('is-open');
+        dialog.classList.remove('is-open');
+        document.body.classList.remove('mw-drawer-locked');
+        input.classList.remove('is-invalid');
+        const p = pending;
+        pending = null;
+        if (previousFocus && typeof previousFocus.focus === 'function') {
+            previousFocus.focus();
+            previousFocus = null;
+        }
+        p.resolve(result);
+    }
+
+    function open(opts = {}) {
+        ensureEls();
+        if (pending) pending.resolve(null);
+        const {
+            title = 'Enter a value',
+            label = '',
+            placeholder = '',
+            defaultValue = '',
+            confirmText = 'OK',
+            cancelText = 'Cancel',
+            required = true,
+        } = opts;
+        dialog.querySelector('[data-mw-prompt-title]').textContent = title;
+        const labelEl = dialog.querySelector('[data-mw-prompt-label]');
+        labelEl.textContent = label;
+        labelEl.style.display = label ? '' : 'none';
+        input.value = defaultValue;
+        input.placeholder = placeholder;
+        input.classList.remove('is-invalid');
+        dialog.querySelector('[data-mw-prompt-cancel]').textContent = cancelText;
+        dialog.querySelector('[data-mw-prompt-ok]').textContent = confirmText;
+        previousFocus = document.activeElement;
+        backdrop.classList.add('is-open');
+        dialog.classList.add('is-open');
+        document.body.classList.add('mw-drawer-locked');
+        // Defer focus so the transition has a chance to start
+        setTimeout(() => { input.focus(); input.select(); }, 0);
+        return new Promise((resolveFn) => { pending = { resolve: resolveFn, required }; });
     }
 
     return { open };

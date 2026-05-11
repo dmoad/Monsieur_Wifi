@@ -1217,6 +1217,19 @@ body.mw-drawer-locked {
     padding: var(--mw-space-lg) var(--mw-space-xl);
     border-top: 1px solid var(--mw-border-light);
 }
+.mw-prompt-label {
+    display: block;
+    margin-bottom: var(--mw-space-xs);
+    color: var(--mw-text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+}
+.mw-prompt-input {
+    width: 100%;
+}
+.mw-prompt-input.is-invalid {
+    border-color: var(--mw-danger, #ef4444);
+}
 
 /* ================================================================
    FORM CONTROLS — dark-mode overrides
