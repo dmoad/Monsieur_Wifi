@@ -90,5 +90,8 @@ return [
     'zone_deleted' => 'Zone deleted',
     'zone_created' => 'Zone created',
     'create_zone_prompt' => 'Name for the new zone:',
+    'create_zone_placeholder' => 'e.g. Main office',
+    'action_create' => 'Create',
+    'action_cancel' => 'Cancel',
     'action_failed' => 'Action failed — please try again',
 ];

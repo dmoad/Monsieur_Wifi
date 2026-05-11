@@ -636,7 +636,11 @@
         ap_cloned:       @json(__('access_points.ap_cloned')),
         zone_deleted:    @json(__('access_points.zone_deleted')),
         zone_created:    @json(__('access_points.zone_created')),
+        create_zone:        @json(__('access_points.create_zone')),
         create_zone_prompt: @json(__('access_points.create_zone_prompt')),
+        create_zone_placeholder: @json(__('access_points.create_zone_placeholder')),
+        action_create:   @json(__('access_points.action_create')),
+        action_cancel:   @json(__('access_points.action_cancel')),
         action_failed:   @json(__('access_points.action_failed')),
     };
 
@@ -894,7 +898,13 @@
             }
         },
         async createZone() {
-            const name = (prompt(T.create_zone_prompt) || '').trim();
+            const name = await MwPrompt.open({
+                title:        T.create_zone,
+                label:        T.create_zone_prompt,
+                placeholder:  T.create_zone_placeholder,
+                confirmText:  T.action_create,
+                cancelText:   T.action_cancel,
+            });
             if (!name) return;
             const token = (typeof UserManager !== 'undefined') ? UserManager.getToken() : null;
             try {
