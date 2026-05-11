@@ -632,6 +632,7 @@
         action_edit:     @json(__('access_points.action_edit')),
         confirm_delete_ap:   @json(__('access_points.confirm_delete_ap')),
         confirm_delete_zone: @json(__('access_points.confirm_delete_zone')),
+        confirm_delete_zone_title: @json(__('access_points.confirm_delete_zone_title')),
         ap_deleted:      @json(__('access_points.ap_deleted')),
         ap_cloned:       @json(__('access_points.ap_cloned')),
         zone_deleted:    @json(__('access_points.zone_deleted')),
@@ -882,7 +883,14 @@
             }
         },
         async deleteZone(zoneId) {
-            if (!confirm(T.confirm_delete_zone)) return;
+            const ok = await MwConfirm.open({
+                title:       T.confirm_delete_zone_title,
+                message:     T.confirm_delete_zone,
+                confirmText: T.action_delete,
+                cancelText:  T.action_cancel,
+                destructive: true,
+            });
+            if (!ok) return;
             const token = (typeof UserManager !== 'undefined') ? UserManager.getToken() : null;
             try {
                 const res = await fetch(APP_CONFIG.API.BASE_URL + '/v1/zones/' + zoneId, {

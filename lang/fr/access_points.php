@@ -85,6 +85,7 @@ return [
     'action_edit' => 'Modifier',
     'confirm_delete_ap' => 'Supprimer l’emplacement « {name} » ? Cette action est irréversible.',
     'confirm_delete_zone' => 'Supprimer cette zone ? Ses emplacements deviendront indépendants.',
+    'confirm_delete_zone_title' => 'Supprimer la zone ?',
     'ap_deleted' => 'Emplacement supprimé',
     'ap_cloned' => 'Emplacement cloné',
     'zone_deleted' => 'Zone supprimée',

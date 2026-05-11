@@ -85,6 +85,7 @@ return [
     'action_edit' => 'Edit',
     'confirm_delete_ap' => 'Delete location "{name}"? This cannot be undone.',
     'confirm_delete_zone' => 'Delete this zone? Its locations will be ungrouped.',
+    'confirm_delete_zone_title' => 'Delete zone?',
     'ap_deleted' => 'Location deleted',
     'ap_cloned' => 'Location cloned',
     'zone_deleted' => 'Zone deleted',
