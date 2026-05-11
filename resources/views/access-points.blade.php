@@ -821,7 +821,7 @@
 
     function renderSummary() {
         const totalAps   = allAps.length;
-        const totalZones = new Set(allAps.filter(a => a.zone?.id).map(a => a.zone.id)).size;
+        const totalZones = allZones.length;
         document.getElementById('ap-summary').innerHTML =
             `<strong>${totalZones}</strong> ${escapeHtml(totalZones === 1 ? T.zone_singular : T.zone_plural)}` +
             ` <span class="ap-meta-sep">·</span> ` +
@@ -929,8 +929,13 @@
         const q = filter.trim().toLowerCase();
         const filterActive = !!q || activeFilter !== 'all';
 
-        // Bucket grouped APs by zone (skip standalone — they live in the other tab)
+        // Seed buckets from the canonical zones list so empty zones (just-created,
+        // or every member moved out) still render. Without this, a zone is only
+        // visible once at least one AP is assigned to it.
         const buckets = new Map();
+        for (const z of allZones) {
+            buckets.set(z.id, { zone: { id: z.id, name: z.name }, members: [] });
+        }
         for (const ap of allAps) {
             if (!ap.zone || !ap.zone.id) continue;
             if (!apMatchesSearch(ap, q)) continue;
@@ -940,17 +945,20 @@
             }
             buckets.get(ap.zone.id).members.push(ap);
         }
+        // When a filter/search is active, hide empty zones — the user is
+        // looking for matching APs, not browsing fleet structure.
+        if (filterActive) {
+            for (const [id, b] of buckets) {
+                if (b.members.length === 0) buckets.delete(id);
+            }
+        }
 
-        // Total zone count for the tab pill = zones the user owns regardless
-        // of filtering, so the badge reads as fleet shape, not result count.
-        const totalZones = new Set(allAps.filter(a => a.zone?.id).map(a => a.zone.id)).size;
-        document.getElementById('ap-zones-tab-count').textContent = totalZones;
+        document.getElementById('ap-zones-tab-count').textContent = allZones.length;
 
         // Strip current tbodies
         Array.from(table.querySelectorAll('tbody')).forEach(tb => tb.remove());
 
-        const matched = Array.from(buckets.values()).reduce((s, b) => s + b.members.length, 0);
-        if (!matched) {
+        if (buckets.size === 0) {
             const empty = document.createElement('tbody');
             empty.innerHTML = `<tr><td colspan="8" class="ap-empty">${filterActive ? T.no_aps_match : T.no_aps}</td></tr>`;
             table.appendChild(empty);
