@@ -1,11 +1,5 @@
-<!--
-  Create-location modal partial.
-  Include from any page that needs to offer location creation:
-      @include('_add-location-modal')
-
-  Open from JS:
-      AddLocationModal.open({ onSuccess: () => refreshMyData() });
--->
+{{-- Create-location modal partial. Include with @@include('_add-location-modal'). --}}
+{{-- Open from JS: AddLocationModal.open({ onSuccess: () => refreshMyData() }). --}}
 <div class="modal fade" id="add-location-modal" tabindex="-1" role="dialog" aria-labelledby="add-location-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
