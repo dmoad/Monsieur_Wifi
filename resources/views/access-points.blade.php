@@ -473,9 +473,9 @@
                 <button type="button" class="btn btn-outline-primary btn-sm" onclick="apActions.createZone()">
                     <i data-feather="layers" class="mr-50"></i>{{ __('access_points.create_zone') }}
                 </button>
-                <a href="/{{ $locale }}/locations" class="btn btn-primary btn-sm">
+                <button type="button" class="btn btn-primary btn-sm" onclick="apActions.openAddLocation()">
                     <i data-feather="plus" class="mr-50"></i>{{ __('access_points.add_ap') }}
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -603,6 +603,8 @@
         </div>
     </div>
 </div>
+
+@include('_add-location-modal')
 @endsection
 
 @push('scripts')
@@ -938,6 +940,9 @@
                 console.error(err);
                 if (typeof toastr !== 'undefined') toastr.error(T.action_failed);
             }
+        },
+        openAddLocation() {
+            AddLocationModal.open({ onSuccess: () => loadData() });
         },
     };
 
