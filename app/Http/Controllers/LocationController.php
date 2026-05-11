@@ -164,8 +164,8 @@ class LocationController extends Controller
             'manager_name' => 'nullable|string|max:255',
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:255',
-            'device_id' => 'required_without:inventory_item_id|nullable|exists:devices,id',
-            'inventory_item_id' => 'required_without:device_id|nullable|exists:inventory_items,id',
+            'device_id' => 'nullable|exists:devices,id',
+            'inventory_item_id' => 'nullable|exists:inventory_items,id',
             'owner_id' => 'nullable|exists:users,id',
         ]);
 
@@ -206,8 +206,11 @@ class LocationController extends Controller
             $ownerId = $user->id;
         }
 
-        // Either the caller picked an existing device, or they picked a stock
-        // inventory item which we convert into a device on the spot.
+        // Resolve a device only if one was actually picked. Locations can be
+        // created without a device and have one attached later from
+        // /locations/{id}.
+        $device = null;
+        $firmware = null;
         if ($request->filled('inventory_item_id')) {
             $inventoryItem = InventoryItem::findOrFail($request->inventory_item_id);
             if ($inventoryItem->device_id || $inventoryItem->status !== 'available') {
@@ -226,39 +229,31 @@ class LocationController extends Controller
                 'inventory_item_id' => $inventoryItem->id,
                 'owner_id' => $ownerId,
             ]);
-        } else {
+        } elseif ($request->filled('device_id')) {
             $device = Device::with('firmware')->find($request->device_id);
         }
 
-        // Check if device is already assigned to another location
-        $existingLocation = Location::where('device_id', $device->id)->first();
-        if ($existingLocation) {
-            // Device is assigned to another location - reassign it
-            Log::info('Reassigning device to new location', [
-                'device_id' => $device->id,
-                'old_location' => $existingLocation->name,
-                'old_location_id' => $existingLocation->id,
-                'new_location_request' => $request->name,
-            ]);
-
-            // Remove device from old location
-            $existingLocation->device_id = null;
-            $existingLocation->save();
-
-            Log::info('Device removed from old location', [
-                'old_location_id' => $existingLocation->id,
-                'old_location_name' => $existingLocation->name,
-            ]);
+        if ($device) {
+            // Reassign the device if it was already attached to another location
+            $existingLocation = Location::where('device_id', $device->id)->first();
+            if ($existingLocation) {
+                Log::info('Reassigning device to new location', [
+                    'device_id' => $device->id,
+                    'old_location' => $existingLocation->name,
+                    'old_location_id' => $existingLocation->id,
+                    'new_location_request' => $request->name,
+                ]);
+                $existingLocation->device_id = null;
+                $existingLocation->save();
+            }
+            $firmware = $device->firmware;
         }
 
-        // Get the firmware from the device
-        $firmware = $device->firmware;
-
-        // Create the location with the device
+        // Create the location (with or without a device)
         $location = new Location($request->except(['mac_address', 'device_name', 'serial_number', 'owner_id', 'inventory_item_id']));
-        $location->device_id = $device->id;
-        $location->user_id = $ownerId;  // User who created/manages the location
-        $location->owner_id = $ownerId; // Owner of the location
+        $location->device_id = $device?->id;
+        $location->user_id = $ownerId;
+        $location->owner_id = $ownerId;
         $location->save();
 
         // Create the location settings (v2 — router-level only)
