@@ -73,6 +73,8 @@ return [
     'select_a_device' => 'Select a device...',
     'available_devices_group' => 'Available Devices',
     'available_suffix' => 'Available',
+    'inventory_stock_group' => 'Available Stock (will be activated)',
+    'inventory_stock_suffix' => 'Stock',
     'devices_assigned_elsewhere_group' => 'Devices Assigned to Other Locations',
     'assigned_to_prefix' => 'Assigned to:',
     'unknown_location' => 'Unknown Location',

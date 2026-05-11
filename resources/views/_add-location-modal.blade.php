@@ -65,6 +65,8 @@
         select_a_device:                 @json(__('locations.select_a_device')),
         available_devices_group:         @json(__('locations.available_devices_group')),
         available_suffix:                @json(__('locations.available_suffix')),
+        inventory_stock_group:           @json(__('locations.inventory_stock_group')),
+        inventory_stock_suffix:          @json(__('locations.inventory_stock_suffix')),
         devices_assigned_elsewhere_group:@json(__('locations.devices_assigned_elsewhere_group')),
         assigned_to_prefix:              @json(__('locations.assigned_to_prefix')),
         unknown_location:                @json(__('locations.unknown_location')),

@@ -73,6 +73,8 @@ return [
     'select_a_device' => 'Sélectionner un appareil...',
     'available_devices_group' => 'Appareils disponibles',
     'available_suffix' => 'Disponible',
+    'inventory_stock_group' => 'Stock disponible (sera activé)',
+    'inventory_stock_suffix' => 'Stock',
     'devices_assigned_elsewhere_group' => 'Appareils assignés à d\'autres emplacements',
     'assigned_to_prefix' => 'Assigné à :',
     'unknown_location' => 'Emplacement inconnu',

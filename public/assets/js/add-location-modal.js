@@ -74,12 +74,24 @@ const AddLocationModal = (function () {
             const data = await response.json();
             const select = $('#device-select');
 
+            // Option values are prefixed so the submit handler can tell whether
+            // the picked row is an existing Device row or a yet-to-convert
+            // InventoryItem row. Prefix is dropped before sending to the API.
             let options = `<option value="">${T.select_a_device || 'Select a device...'}</option>`;
 
             if (data.unassigned && data.unassigned.length > 0) {
                 options += `<optgroup label="${T.available_devices_group || 'Available Devices'}">`;
                 data.unassigned.forEach(d => {
-                    options += `<option value="${d.id}">${escapeHtml(d.serial_number)} - ${escapeHtml(d.mac_address)} (${escapeHtml(d.model)}) - ${T.available_suffix || 'Available'}</option>`;
+                    options += `<option value="device:${d.id}">${escapeHtml(d.serial_number)} - ${escapeHtml(d.mac_address)} (${escapeHtml(d.model)}) - ${T.available_suffix || 'Available'}</option>`;
+                });
+                options += '</optgroup>';
+            }
+
+            if (data.inventory_stock && data.inventory_stock.length > 0) {
+                options += `<optgroup label="${T.inventory_stock_group || 'Available Stock (will be activated)'}">`;
+                data.inventory_stock.forEach(it => {
+                    const model = it.product_model ? it.product_model.name : '';
+                    options += `<option value="inv:${it.id}">${escapeHtml(it.serial_number)} - ${escapeHtml(it.mac_address)}${model ? ` (${escapeHtml(model)})` : ''} - ${T.inventory_stock_suffix || 'Stock'}</option>`;
                 });
                 options += '</optgroup>';
             }
@@ -88,12 +100,16 @@ const AddLocationModal = (function () {
                 options += `<optgroup label="${T.devices_assigned_elsewhere_group || 'Assigned to Other Locations'}">`;
                 data.assigned.forEach(d => {
                     const locationName = d.location ? d.location.name : (T.unknown_location || 'Unknown');
-                    options += `<option value="${d.id}">${escapeHtml(d.serial_number)} - ${escapeHtml(d.mac_address)} (${escapeHtml(d.model)}) - ${T.assigned_to_prefix || 'Assigned to:'} ${escapeHtml(locationName)}</option>`;
+                    options += `<option value="device:${d.id}">${escapeHtml(d.serial_number)} - ${escapeHtml(d.mac_address)} (${escapeHtml(d.model)}) - ${T.assigned_to_prefix || 'Assigned to:'} ${escapeHtml(locationName)}</option>`;
                 });
                 options += '</optgroup>';
             }
 
-            if ((!data.unassigned || data.unassigned.length === 0) && (!data.assigned || data.assigned.length === 0)) {
+            const empty =
+                (!data.unassigned || data.unassigned.length === 0) &&
+                (!data.inventory_stock || data.inventory_stock.length === 0) &&
+                (!data.assigned || data.assigned.length === 0);
+            if (empty) {
                 options = `<option value="">${T.no_devices_found || 'No devices found'}</option>`;
             }
 
@@ -120,12 +136,20 @@ const AddLocationModal = (function () {
         $('.form-error').remove();
         $('.is-invalid').removeClass('is-invalid');
 
+        const selectedValue = $('#device-select').val() || '';
         const locationData = {
             name: $('#location-name').val(),
             address: $('#location-address').val(),
-            device_id: $('#device-select').val(),
             description: $('#location-notes').val()
         };
+
+        // Selected value is encoded as `device:<id>` or `inv:<id>` — the prefix
+        // tells the backend which kind of row we picked. Strip & route here.
+        if (selectedValue.startsWith('device:')) {
+            locationData.device_id = selectedValue.slice('device:'.length);
+        } else if (selectedValue.startsWith('inv:')) {
+            locationData.inventory_item_id = selectedValue.slice('inv:'.length);
+        }
 
         if (UserManager.isAdminOrAbove() && $('#owner-select').val()) {
             locationData.owner_id = $('#owner-select').val();
@@ -138,7 +162,7 @@ const AddLocationModal = (function () {
             showFieldError('location-name', T.location_name_required || 'Name required');
             hasErrors = true;
         }
-        if (!locationData.device_id) {
+        if (!locationData.device_id && !locationData.inventory_item_id) {
             showFieldError('device-select', T.device_required || 'Device required');
             hasErrors = true;
         }
