@@ -7,6 +7,7 @@ use App\Models\CaptivePortalHourlySchedule;
 use App\Models\Category;
 use App\Models\Device;
 use App\Models\Firmware;
+use App\Models\InventoryItem;
 use App\Models\Location;
 use App\Models\LocationNetwork;
 use App\Models\LocationQosDomain;
@@ -1373,10 +1374,23 @@ class DeviceController extends Controller
         $unassignedDevices = $unassignedQuery->orderBy('serial_number')->get();
         $assignedDevices = $assignedQuery->orderBy('serial_number')->get();
 
+        // Inventory items not yet converted to a device. Picking one of these
+        // in the location modal triggers conversion server-side. Stock is
+        // org-wide, so no owner_id filter applies (admin sees all stock).
+        $inventoryStock = collect();
+        if ($isAdmin) {
+            $inventoryStock = InventoryItem::with('productModel')
+                ->where('status', 'available')
+                ->whereNull('device_id')
+                ->orderBy('serial_number')
+                ->get();
+        }
+
         return response()->json([
             'success' => true,
             'unassigned' => $unassignedDevices,
             'assigned' => $assignedDevices,
+            'inventory_stock' => $inventoryStock,
         ]);
     }
 }
