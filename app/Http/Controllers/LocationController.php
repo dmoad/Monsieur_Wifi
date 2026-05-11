@@ -9,6 +9,7 @@ use App\Models\Device;
 use App\Models\Firmware;
 use App\Models\FlowSession;
 use App\Models\GuestNetworkUser;
+use App\Models\InventoryItem;
 use App\Models\Location;
 use App\Models\LocationNetwork;
 use App\Models\LocationQosDomain;
@@ -163,7 +164,8 @@ class LocationController extends Controller
             'manager_name' => 'nullable|string|max:255',
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:255',
-            'device_id' => 'required|exists:devices,id',
+            'device_id' => 'required_without:inventory_item_id|nullable|exists:devices,id',
+            'inventory_item_id' => 'required_without:device_id|nullable|exists:inventory_items,id',
             'owner_id' => 'nullable|exists:users,id',
         ]);
 
@@ -196,8 +198,37 @@ class LocationController extends Controller
             }
         }
 
-        // Get existing device with firmware relationship
-        $device = Device::with('firmware')->find($request->device_id);
+        // Resolve owner first — needed to set owner_id on a freshly converted
+        // device if the caller picked an inventory item instead of a device.
+        $user = Auth::user();
+        $ownerId = $request->owner_id;
+        if (! $user->isAdminOrAbove() || ! $ownerId) {
+            $ownerId = $user->id;
+        }
+
+        // Either the caller picked an existing device, or they picked a stock
+        // inventory item which we convert into a device on the spot.
+        if ($request->filled('inventory_item_id')) {
+            $inventoryItem = InventoryItem::findOrFail($request->inventory_item_id);
+            if ($inventoryItem->device_id || $inventoryItem->status !== 'available') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Inventory item is no longer available.',
+                ], 422);
+            }
+            $device = $inventoryItem->convertToDevice($ownerId);
+            $inventoryItem->device_id = $device->id;
+            $inventoryItem->status = 'sold';
+            $inventoryItem->save();
+            $device->load('firmware');
+            Log::info('Device auto-created from inventory item during location creation', [
+                'device_id' => $device->id,
+                'inventory_item_id' => $inventoryItem->id,
+                'owner_id' => $ownerId,
+            ]);
+        } else {
+            $device = Device::with('firmware')->find($request->device_id);
+        }
 
         // Check if device is already assigned to another location
         $existingLocation = Location::where('device_id', $device->id)->first();
@@ -223,20 +254,8 @@ class LocationController extends Controller
         // Get the firmware from the device
         $firmware = $device->firmware;
 
-        // Determine the owner_id
-        $user = Auth::user();
-        $ownerId = $request->owner_id;
-
-        // If not admin, force owner_id to be the current user
-        if (! $user->isAdminOrAbove()) {
-            $ownerId = $user->id;
-        } elseif (! $ownerId) {
-            // If admin doesn't specify owner_id, use current user
-            $ownerId = $user->id;
-        }
-
         // Create the location with the device
-        $location = new Location($request->except(['mac_address', 'device_name', 'serial_number', 'owner_id']));
+        $location = new Location($request->except(['mac_address', 'device_name', 'serial_number', 'owner_id', 'inventory_item_id']));
         $location->device_id = $device->id;
         $location->user_id = $ownerId;  // User who created/manages the location
         $location->owner_id = $ownerId; // Owner of the location
