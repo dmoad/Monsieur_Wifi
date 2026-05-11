@@ -218,12 +218,18 @@ class UserDeviceLoginSessionStatsService
 
         $session->radius_session_id = $acctSessionId;
 
-        if (array_key_exists('acct_output_octets', $validated) && $validated['acct_output_octets'] !== null) {
-            $session->total_upload = (int) $validated['acct_output_octets'];
+        if (array_key_exists('acct_output_octets', $validated) && $validated['acct_output_octets'] !== null && $validated['acct_output_octets'] !== 0) {
+            // this updates only if the new value > current value
+            if ($session->total_upload < (int) $validated['acct_output_octets']) {
+                $session->total_upload = (int) $validated['acct_output_octets'];
+            }
         }
 
-        if (array_key_exists('acct_input_octets', $validated) && $validated['acct_input_octets'] !== null) {
-            $session->total_download = (int) $validated['acct_input_octets'];
+        if (array_key_exists('acct_input_octets', $validated) && $validated['acct_input_octets'] !== null && $validated['acct_input_octets'] !== 0) {
+            // this updates only if the new value > current value
+            if ($session->total_download < (int) $validated['acct_input_octets']) {
+                $session->total_download = (int) $validated['acct_input_octets'];
+            }
         }
 
         if (array_key_exists('acct_session_time', $validated) && $validated['acct_session_time'] !== null) {
