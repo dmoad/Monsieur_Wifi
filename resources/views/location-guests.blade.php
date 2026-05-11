@@ -38,7 +38,7 @@
                 <div class="breadcrumb-wrapper">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/{{ $locale }}/dashboard">{{ __('common.home') }}</a></li>
-                        <li class="breadcrumb-item"><a href="/{{ $locale }}/locations">{{ __('sidebar.locations') }}</a></li>
+                        <li class="breadcrumb-item"><a href="/{{ $locale }}/access-points">{{ __('sidebar.access_points') }}</a></li>
                         <li class="breadcrumb-item active">{{ __('location_guests.breadcrumb') }}</li>
                     </ol>
                 </div>

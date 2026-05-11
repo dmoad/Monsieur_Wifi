@@ -80,8 +80,8 @@ foreach (['en', 'fr'] as $loc) {
             return view('accounts');
         })->name('accounts');
 
-        Route::get('/locations', function () {
-            return view('locations');
+        Route::get('/locations', function () use ($loc) {
+            return redirect("/{$loc}/access-points", 301);
         })->name('locations');
 
         Route::get('/locations/{location}', function ($location) {
@@ -197,7 +197,7 @@ Route::get('/accounts', function () {
 });
 
 Route::get('/locations', function () {
-    return redirect('/en/locations');
+    return redirect('/en/access-points', 301);
 });
 
 Route::get('/system-settings', function () {
