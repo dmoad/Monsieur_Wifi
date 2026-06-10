@@ -34,8 +34,11 @@ class CheckOfflineHeartbeats extends Command
                             continue;
                         }
 
-                        $email = $location->settings?->offline_notification_email;
-                        if ($email === null || trim((string) $email) === '') {
+                        $emails = array_filter(
+                            (array) ($location->settings?->offline_notification_emails ?? []),
+                            fn ($e) => is_string($e) && trim($e) !== ''
+                        );
+                        if (empty($emails)) {
                             continue;
                         }
 
@@ -65,7 +68,7 @@ class CheckOfflineHeartbeats extends Command
                         $locale = config('app.locale', 'en');
 
                         try {
-                            Mail::to($email)
+                            Mail::to(array_values($emails))
                                 ->send(new LocationOfflineNotification($location, $location->device, $lastSeen, $locale));
                         } catch (\Throwable $e) {
                             Log::error('Offline heartbeat email failed for location '.$location->id.': '.$e->getMessage());

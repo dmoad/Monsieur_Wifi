@@ -2183,36 +2183,52 @@ class LocationController extends Controller
             // Geocode address if address fields have actually changed and lat/lng not provided
             $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
             $hasAddressChange = false;
+            $changedFields = [];
             foreach ($addressFields as $field) {
                 if (array_key_exists($field, $validated) && $validated[$field] !== $location->$field) {
+                    $changedFields[$field] = ['old' => $location->$field, 'new' => $validated[$field]];
                     $hasAddressChange = true;
-                    Log::info("Address field '{$field}' changed from '{$location->$field}' to '{$validated[$field]}'");
-                    break;
                 }
             }
 
+            if ($changedFields) {
+                Log::info('updateGeneral: address field(s) changed', $changedFields);
+            }
+
             if ($hasAddressChange && ! isset($validated['latitude']) && ! isset($validated['longitude'])) {
-                Log::info('Address fields updated, attempting to geocode');
+                $geocodeInput = [
+                    'address'     => $validated['address']     ?? $location->address,
+                    'city'        => $validated['city']        ?? $location->city,
+                    'state'       => $validated['state']       ?? $location->state,
+                    'country'     => $validated['country']     ?? $location->country,
+                    'postal_code' => $validated['postal_code'] ?? $location->postal_code,
+                ];
+                Log::info('updateGeneral: triggering geocode', $geocodeInput);
+
                 $geocodingService = new GeocodingService;
                 $geocodeResult = $geocodingService->geocodeAddress(
-                    $validated['address'] ?? $location->address,
-                    $validated['city'] ?? $location->city,
-                    $validated['state'] ?? $location->state,
-                    $validated['country'] ?? $location->country,
-                    $validated['postal_code'] ?? $location->postal_code
+                    $geocodeInput['address'],
+                    $geocodeInput['city'],
+                    $geocodeInput['state'],
+                    $geocodeInput['country'],
+                    $geocodeInput['postal_code']
                 );
 
                 if ($geocodeResult) {
                     $validated['latitude'] = $geocodeResult['lat'];
                     $validated['longitude'] = $geocodeResult['lng'];
-                    Log::info('Successfully geocoded updated address', [
-                        'latitude' => $geocodeResult['lat'],
-                        'longitude' => $geocodeResult['lng'],
+                    Log::info('updateGeneral: geocode succeeded', [
+                        'latitude'          => $geocodeResult['lat'],
+                        'longitude'         => $geocodeResult['lng'],
                         'formatted_address' => $geocodeResult['formatted_address'],
                     ]);
                 } else {
-                    Log::warning('Failed to geocode updated address');
+                    Log::error('updateGeneral: geocode returned null — coordinates will NOT be updated', $geocodeInput);
                 }
+            } elseif (! $hasAddressChange) {
+                Log::info('updateGeneral: no address fields changed, geocoding skipped');
+            } else {
+                Log::info('updateGeneral: lat/lng provided explicitly, geocoding skipped');
             }
 
             // Log owner_id changes if any
@@ -2563,7 +2579,20 @@ class LocationController extends Controller
             }
 
             $request->validate([
-                'offline_notification_email' => 'sometimes|nullable|email|max:255',
+                'offline_notification_emails' => 'sometimes|nullable|array',
+                'offline_notification_emails.*' => 'email|max:255',
+                'channel_2g' => ['sometimes', 'nullable', function ($attribute, $value, $fail) {
+                    $allowed = ['auto', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'];
+                    if (! in_array((string) $value, $allowed, true)) {
+                        $fail("The {$attribute} must be 'auto' or a valid 2.4 GHz channel (1–14).");
+                    }
+                }],
+                'channel_5g' => ['sometimes', 'nullable', function ($attribute, $value, $fail) {
+                    $allowed = ['auto', '36', '40', '44', '48', '52', '56', '60', '64', '100', '104', '108', '112', '116', '120', '124', '128', '132', '136', '140', '144', '149', '153', '157', '161', '165'];
+                    if (! in_array((string) $value, $allowed, true)) {
+                        $fail("The {$attribute} must be 'auto' or a valid 5 GHz channel.");
+                    }
+                }],
             ]);
 
             $settings = LocationSettingsV2::where('location_id', $id)->first();
@@ -2631,14 +2660,25 @@ class LocationController extends Controller
                 'web_filter_domains',
                 'web_filter_categories',
                 'qos_enabled',
-                'offline_notification_email',
+                'offline_notification_emails',
             ]);
 
-            if (array_key_exists('offline_notification_email', $settingsData)) {
-                $settingsData['offline_notification_email'] =
-                    ($settingsData['offline_notification_email'] === '' || $settingsData['offline_notification_email'] === null)
-                        ? null
-                        : $settingsData['offline_notification_email'];
+            if (array_key_exists('offline_notification_emails', $settingsData)) {
+                $emails = $settingsData['offline_notification_emails'];
+                if (empty($emails)) {
+                    $settingsData['offline_notification_emails'] = null;
+                } else {
+                    $settingsData['offline_notification_emails'] = array_values(
+                        array_filter((array) $emails, fn ($e) => is_string($e) && trim($e) !== '')
+                    ) ?: null;
+                }
+            }
+
+            // Normalise channel values: store as string so "auto" round-trips cleanly.
+            foreach (['channel_2g', 'channel_5g'] as $channelKey) {
+                if (array_key_exists($channelKey, $settingsData) && $settingsData[$channelKey] !== null) {
+                    $settingsData[$channelKey] = (string) $settingsData[$channelKey];
+                }
             }
 
             // Check for router setting changes that require config version increment

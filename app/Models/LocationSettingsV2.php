@@ -55,7 +55,7 @@ class LocationSettingsV2 extends Model
         'qos_bw_wan_use_local',
 
         // Alerts
-        'offline_notification_email',
+        'offline_notification_emails',
     ];
 
     protected $casts = [
@@ -70,8 +70,7 @@ class LocationSettingsV2 extends Model
         // Integers
         'transmit_power_2g' => 'integer',
         'transmit_power_5g' => 'integer',
-        'channel_2g' => 'integer',
-        'channel_5g' => 'integer',
+        // channel_2g / channel_5g intentionally omitted — stored as string to allow "auto"
         'channel_width_2g' => 'integer',
         'channel_width_5g' => 'integer',
         'wan_mtu' => 'integer',
@@ -81,6 +80,7 @@ class LocationSettingsV2 extends Model
         'web_filter_categories' => 'array',
         'qos_bw' => 'array',
 
+        'offline_notification_emails' => 'array',
         'offline_notification_sent_at' => 'datetime',
     ];
 

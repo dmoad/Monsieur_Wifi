@@ -28,7 +28,7 @@ class GeocodingService
     public function geocodeAddress($address, $city = null, $state = null, $country = null, $postalCode = null)
     {
         if (empty($this->apiKey)) {
-            Log::warning('Google Maps API key not configured for geocoding');
+            Log::error('Geocoding skipped: GOOGLE_MAPS_KEY is not set or is empty in config/env');
             return null;
         }
 
@@ -36,16 +36,29 @@ class GeocodingService
         $fullAddress = $this->buildFullAddress($address, $city, $state, $country, $postalCode);
         
         if (empty($fullAddress)) {
-            Log::info('No address provided for geocoding');
+            Log::warning('Geocoding skipped: all address parts are empty', [
+                'address' => $address, 'city' => $city, 'state' => $state,
+                'country' => $country, 'postal_code' => $postalCode,
+            ]);
             return null;
         }
 
         try {
-            Log::info('Attempting to geocode address: ' . $fullAddress);
+            Log::info('Geocoding request', [
+                'full_address' => $fullAddress,
+                'api_key_prefix' => substr($this->apiKey, 0, 6).'…',
+            ]);
             
             $response = Http::get($this->baseUrl, [
                 'address' => $fullAddress,
                 'key' => $this->apiKey
+            ]);
+
+            Log::info('Geocoding API response', [
+                'http_status' => $response->status(),
+                'google_status' => $response->json()['status'] ?? 'n/a',
+                'error_message' => $response->json()['error_message'] ?? null,
+                'result_count' => count($response->json()['results'] ?? []),
             ]);
 
             if ($response->successful()) {
@@ -54,9 +67,11 @@ class GeocodingService
                 if ($data['status'] === 'OK' && !empty($data['results'])) {
                     $location = $data['results'][0]['geometry']['location'];
                     
-                    Log::info('Geocoding successful for address: ' . $fullAddress, [
+                    Log::info('Geocoding successful', [
+                        'full_address' => $fullAddress,
                         'lat' => $location['lat'],
-                        'lng' => $location['lng']
+                        'lng' => $location['lng'],
+                        'formatted_address' => $data['results'][0]['formatted_address'],
                     ]);
                     
                     return [
@@ -65,21 +80,23 @@ class GeocodingService
                         'formatted_address' => $data['results'][0]['formatted_address']
                     ];
                 } else {
-                    Log::warning('Geocoding failed for address: ' . $fullAddress, [
-                        'status' => $data['status'],
-                        'error_message' => $data['error_message'] ?? 'No error message provided'
+                    Log::error('Geocoding API returned non-OK status', [
+                        'full_address' => $fullAddress,
+                        'google_status' => $data['status'],
+                        'error_message' => $data['error_message'] ?? 'none',
                     ]);
                 }
             } else {
-                Log::error('HTTP request failed for geocoding', [
-                    'status' => $response->status(),
-                    'response' => $response->body()
+                Log::error('Geocoding HTTP request failed', [
+                    'full_address' => $fullAddress,
+                    'http_status' => $response->status(),
+                    'response_body' => $response->body(),
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Exception occurred during geocoding', [
+            Log::error('Geocoding exception', [
                 'message' => $e->getMessage(),
-                'address' => $fullAddress
+                'full_address' => $fullAddress,
             ]);
         }
 

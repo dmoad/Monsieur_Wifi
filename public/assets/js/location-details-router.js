@@ -140,8 +140,8 @@ async function loadLocationSettings() {
         $('#power-level-5g').val(s.transmit_power_5g || 17);
         $('#channel-width-2g').val(s.channel_width_2g || 40);
         $('#channel-width-5g').val(s.channel_width_5g || 80);
-        $('#channel-2g').val(s.channel_2g || 6);
-        $('#channel-5g').val(s.channel_5g || 36);
+        $('#channel-2g').val(String(s.channel_2g ?? 'auto'));
+        $('#channel-5g').val(String(s.channel_5g ?? 'auto'));
 
         // Web filter
         const filterOn = !!s.web_filter_enabled;
@@ -201,8 +201,9 @@ async function loadLocationSettings() {
             $('#qos-be-bw').val(kbpsToMbpsDisplay(bw.be_bw));
             $('#qos-bulk-bw').val(kbpsToMbpsDisplay(bw.bulk_bw));
         }
-        // Offline alert email (per location)
-        $('#offline-notification-email').val(s.offline_notification_email || '');
+        // Offline alert emails (per location)
+        offlineNotificationEmails = Array.isArray(s.offline_notification_emails) ? s.offline_notification_emails.slice() : [];
+        renderOfflineEmailTags();
 
         loadQosClassesPreview();
         loadQosDomainsForLocation();
@@ -214,16 +215,55 @@ async function loadLocationSettings() {
     }
 }
 
+// ── Offline notification email tag management ────────────────────────────────
+
+let offlineNotificationEmails = [];
+
+function renderOfflineEmailTags() {
+    const $container = $('#offline-notification-email-tags');
+    $container.empty();
+    if (offlineNotificationEmails.length === 0) {
+        $container.append(`<span class="text-muted small" id="offline-emails-empty">${i18n.offline_notify_no_emails || ''}</span>`);
+        return;
+    }
+    offlineNotificationEmails.forEach((email, idx) => {
+        const $tag = $(`
+            <span class="badge badge-secondary d-inline-flex align-items-center" style="font-size:0.85rem; padding:6px 10px; margin:2px;">
+                ${$('<span>').text(email).html()}
+                <button type="button" class="btn btn-link p-0 ml-2 text-white offline-email-remove" data-idx="${idx}" style="line-height:1; font-size:0.9rem; opacity:0.85;">&times;</button>
+            </span>
+        `);
+        $container.append($tag);
+    });
+    reRenderFeather();
+}
+
+function addOfflineNotificationEmail() {
+    const val = $('#offline-notification-email-input').val().trim();
+    if (val === '') return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (! emailRegex.test(val)) {
+        toastr.warning(i18n.offline_notify_invalid_email || 'Invalid email address.');
+        return;
+    }
+    if (offlineNotificationEmails.includes(val)) {
+        toastr.warning(i18n.offline_notify_duplicate_email || 'This email is already in the list.');
+        return;
+    }
+    offlineNotificationEmails.push(val);
+    $('#offline-notification-email-input').val('');
+    renderOfflineEmailTags();
+}
+
 async function saveOfflineNotificationSettings() {
     const $btn = $('#save-offline-notification-settings');
     const origHtml = $btn.html();
     $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
     try {
-        const raw = $('#offline-notification-email').val().trim();
         await apiFetch(`${API}/locations/${location_id}/settings`, {
             method: 'PUT',
             body: JSON.stringify({
-                offline_notification_email: raw === '' ? null : raw,
+                offline_notification_emails: offlineNotificationEmails.length > 0 ? offlineNotificationEmails : null,
             }),
         });
         toastr.success(i18n.offline_notify_saved);
@@ -367,14 +407,16 @@ async function saveRadioSettings() {
     $btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin mr-1"></i>${commonI18n.saving || ''}`);
 
     try {
+        const rawCh2g = $('#channel-2g').val();
+        const rawCh5g = $('#channel-5g').val();
         const data = {
             country_code: $('#wifi-country').val(),
             transmit_power_2g: parseInt($('#power-level-2g').val()),
             transmit_power_5g: parseInt($('#power-level-5g').val()),
             channel_width_2g: parseInt($('#channel-width-2g').val()),
             channel_width_5g: parseInt($('#channel-width-5g').val()),
-            channel_2g: parseInt($('#channel-2g').val()),
-            channel_5g: parseInt($('#channel-5g').val()),
+            channel_2g: rawCh2g === 'auto' ? 'auto' : parseInt(rawCh2g),
+            channel_5g: rawCh5g === 'auto' ? 'auto' : parseInt(rawCh5g),
         };
         await apiFetch(`${API}/locations/${location_id}/settings`, { method: 'PUT', body: JSON.stringify(data) });
         toastr.success(i18n.radio_settings_saved);
@@ -1094,6 +1136,18 @@ function initRouterHandlers() {
     $('#save-radio-settings').on('click', saveRadioSettings);
 
     $('#save-offline-notification-settings').on('click', saveOfflineNotificationSettings);
+
+    $('#offline-notification-email-add').on('click', addOfflineNotificationEmail);
+
+    $('#offline-notification-email-input').on('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); addOfflineNotificationEmail(); }
+    });
+
+    $(document).on('click', '.offline-email-remove', function () {
+        const idx = parseInt($(this).data('idx'), 10);
+        offlineNotificationEmails.splice(idx, 1);
+        renderOfflineEmailTags();
+    });
 
     // Save web filter
     $('#save-web-filter-settings').on('click', saveWebFilterSettings);

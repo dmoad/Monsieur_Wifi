@@ -107,8 +107,9 @@
                                                 <div class="form-group mb-0">
                                                     <label for="channel-2g">{{ __('location_details.band_channel') }}</label>
                                                     <select class="form-control" id="channel-2g">
+                                                        <option value="auto">{{ __('location_details.channel_auto') }}</option>
                                                         <option value="1">Ch 1 (2412)</option><option value="2">Ch 2</option><option value="3">Ch 3</option><option value="4">Ch 4</option><option value="5">Ch 5</option>
-                                                        <option value="6" selected>Ch 6 (2437)</option><option value="7">Ch 7</option><option value="8">Ch 8</option><option value="9">Ch 9</option><option value="10">Ch 10</option>
+                                                        <option value="6">Ch 6 (2437)</option><option value="7">Ch 7</option><option value="8">Ch 8</option><option value="9">Ch 9</option><option value="10">Ch 10</option>
                                                         <option value="11">Ch 11</option><option value="12">Ch 12</option><option value="13">Ch 13</option><option value="14">Ch 14 (2484)</option>
                                                     </select>
                                                 </div>
@@ -141,7 +142,8 @@
                                                 <div class="form-group mb-0">
                                                     <label for="channel-5g">{{ __('location_details.band_channel') }}</label>
                                                     <select class="form-control" id="channel-5g">
-                                                        <option value="36" selected>Ch 36</option><option value="40">Ch 40</option><option value="44">Ch 44</option><option value="48">Ch 48</option>
+                                                        <option value="auto">{{ __('location_details.channel_auto') }}</option>
+                                                        <option value="36">Ch 36</option><option value="40">Ch 40</option><option value="44">Ch 44</option><option value="48">Ch 48</option>
                                                         <option value="52">Ch 52</option><option value="56">Ch 56</option><option value="60">Ch 60</option><option value="64">Ch 64</option>
                                                         <option value="100">Ch 100</option><option value="104">Ch 104</option><option value="108">Ch 108</option><option value="112">Ch 112</option>
                                                         <option value="116">Ch 116</option><option value="120">Ch 120</option><option value="124">Ch 124</option><option value="128">Ch 128</option>
@@ -166,9 +168,16 @@
                                 </div>
                                 <p class="text-muted small mb-3">{{ __('location_details.offline_notify_email_hint') }}</p>
                                 <div id="offline-notification-edit-wrap">
-                                    <div class="form-group mb-2">
-                                        <label for="offline-notification-email">{{ __('location_details.offline_notify_email_label') }}</label>
-                                        <input type="email" class="form-control" id="offline-notification-email" autocomplete="email" placeholder="you@example.com">
+                                    <label class="mb-1">{{ __('location_details.offline_notify_email_label') }}</label>
+                                    <div id="offline-notification-email-tags" class="d-flex flex-wrap gap-1 mb-2" style="gap:6px; min-height:32px;"></div>
+                                    <div class="input-group input-group-sm mb-2">
+                                        <input type="email" class="form-control" id="offline-notification-email-input" autocomplete="email" placeholder="{{ __('location_details.offline_notify_email_placeholder') }}">
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-secondary" id="offline-notification-email-add">
+                                                <i data-feather="plus" style="width:14px;height:14px;"></i>
+                                                {{ __('location_details.offline_notify_add') }}
+                                            </button>
+                                        </div>
                                     </div>
                                     <button type="button" class="btn btn-primary btn-sm" id="save-offline-notification-settings">
                                         <i data-feather="save" class="mr-1"></i>{{ __('location_details.offline_notify_save') }}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\LocationOnlineNotification;
 use App\Models\BlockedDomain;
 use App\Models\CaptivePortalHourlySchedule;
 use App\Models\Category;
@@ -19,8 +20,10 @@ use App\Models\SystemSetting;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -381,6 +384,20 @@ class DeviceController extends Controller
 
         $settings = LocationSettingsV2::where('location_id', $location->id)->first();
         if ($settings && $settings->offline_notification_sent_at !== null) {
+            $emails = array_filter(
+                (array) ($settings->offline_notification_emails ?? []),
+                fn ($e) => is_string($e) && trim($e) !== ''
+            );
+            if (! empty($emails)) {
+                $locale = config('app.locale', 'en');
+                try {
+                    Mail::to(array_values($emails))->send(
+                        new LocationOnlineNotification($location, $device, Carbon::now(), $locale)
+                    );
+                } catch (\Throwable $e) {
+                    Log::error('Back-online email failed for location '.$location->id.': '.$e->getMessage());
+                }
+            }
             $settings->offline_notification_sent_at = null;
             $settings->save();
         }
