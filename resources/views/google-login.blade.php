@@ -352,6 +352,9 @@
     <script src="/app-assets/js/core/app.js"></script>
     
     <script>
+        const googleOAuthClientId = @json(config('services.google.client_id'));
+        const googleOAuthRedirectUri = @json(config('services.google.redirect'));
+
         // Language system - Initialize before DOM ready
         const translations = {
             en: {
@@ -503,6 +506,12 @@
                     return;
                 }
 
+                if (! googleOAuthClientId || ! googleOAuthRedirectUri) {
+                    showAlert(translations[lang].missingParams, 'danger');
+                    console.error('Google OAuth is not configured (client ID or redirect URI missing)');
+                    return;
+                }
+
                 const $button = $(this);
                 const originalText = $button.html();
                 $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + translations[lang].connecting)
@@ -524,8 +533,8 @@
                 
                 // Construct Google OAuth URL
                 const googleLoginUrl = 'https://accounts.google.com/o/oauth2/v2/auth' +
-                '?client_id=1054715244217-bik1jertq6rd5r6qerd2k62pfds3231q.apps.googleusercontent.com' +
-                '&redirect_uri=https%3A%2F%2Fmrwifi.cnctdwifi.com%2Fsocial-login%2Fgoogle-callback' +
+                '?client_id=' + encodeURIComponent(googleOAuthClientId) +
+                '&redirect_uri=' + encodeURIComponent(googleOAuthRedirectUri) +
                 '&response_type=code' +
                 '&scope=email%20profile' +
                 '&state=' + encodeURIComponent(JSON.stringify(loginData)) +

@@ -48,4 +48,13 @@ return [
         'terms_url' => env('STRIPE_TERMS_URL', 'https://monsieur-wifi.com/cgv'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_OAUTH_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_OAUTH_CLIENT_SECRET'),
+        'redirect' => env(
+            'GOOGLE_OAUTH_REDIRECT_URI',
+            rtrim((string) env('APP_URL', 'http://localhost'), '/').'/social-login/google-callback'
+        ),
+    ],
+
 ];

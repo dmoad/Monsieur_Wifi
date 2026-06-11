@@ -613,31 +613,35 @@
                     return;
                 }
                 
-                // Extract location and MAC from login_url
-                // Expected format: /social-login/google/{location_id}/{mac_address}
+                // Extract network_id and MAC from login_url.
+                // New route:    /social-login/google/{network_id}/{zone_id}/{mac_address}
+                // Legacy route: /social-login/google/{network_id}/{mac_address}
                 const loginUrlPath = new URL(stateObj.login_url).pathname;
                 const pathParts = loginUrlPath.split('/').filter(part => part.length > 0);
                 
                 console.log('Login URL path:', loginUrlPath);
                 console.log('Path parts:', pathParts);
                 
-                let locationId, macAddress;
+                let networkId, zoneId, macAddress;
                 
                 if (pathParts.length >= 4 && pathParts[0] === 'social-login' && pathParts[1] === 'google') {
-                    locationId = pathParts[2];
-                    macAddress = pathParts[3];
-                    console.log('Extracted from social-login path - Location:', locationId, 'MAC:', macAddress);
+                    const hasZone = pathParts.length >= 5;
+                    networkId  = pathParts[2];
+                    zoneId     = hasZone ? pathParts[3] : '0';
+                    macAddress = hasZone ? pathParts[4] : pathParts[3];
+                    console.log('Extracted from social-login path - Network:', networkId, 'Zone:', zoneId, 'MAC:', macAddress);
                 } else if (pathParts.length >= 3 && pathParts[0] === 'google-login') {
-                    locationId = pathParts[1];
+                    networkId  = pathParts[1];
+                    zoneId     = '0';
                     macAddress = pathParts[2];
-                    console.log('Extracted from google-login path - Location:', locationId, 'MAC:', macAddress);
+                    console.log('Extracted from google-login path - Network:', networkId, 'MAC:', macAddress);
                 }
                 
                 // Update debug info
-                $('#location-id').text(locationId || 'Not found');
+                $('#location-id').text(networkId || 'Not found');
                 $('#mac-address').text(macAddress || 'Not found');
                 
-                if (!locationId || !macAddress) {
+                if (!networkId || !macAddress) {
                     showError('Information Missing', 'Could not determine your location or device information.');
                     $('#debug-info').show();
                     return;
@@ -649,20 +653,21 @@
                 $('#challenge').text(challenge || 'Not found');
                 
                 if (!challenge) {
-                    console.log('Challenge not found in localStorage, fetching location info...');
-                    // If challenge is missing, try to get location information first
+                    console.log('Challenge not found in localStorage, fetching network info...');
                     $.ajax({
-                        url: `/api/captive-portal/${locationId}/info`,
+                        url: `/api/captive-portal/${networkId}/info`,
                         type: 'GET',
                         data: { mac_address: macAddress },
                         headers: { 'Accept': 'application/json' },
                         success: function(locationInfo) {
-                            console.log('Location info response:', locationInfo);
+                            console.log('Network info response:', locationInfo);
                             
                             if (locationInfo.success && locationInfo.location) {
                                 // Store the challenge and other important data
                                 localStorage.setItem('location_data', JSON.stringify(locationInfo.location));
                                 localStorage.setItem('challenge', locationInfo.location.challenge);
+                                localStorage.setItem('zone_id', zoneId || '0');
+                                localStorage.setItem('location_id', locationInfo.location.location_id || '0');
                                 
                                 const updatedChallenge = locationInfo.location.challenge;
                                 $('#challenge').text(updatedChallenge);
@@ -679,7 +684,7 @@
                                 }
                                 
                                 // Now that we have the challenge, proceed with guest login
-                                proceedWithGuestLogin(locationId, macAddress, updatedChallenge, code);
+                                proceedWithGuestLogin(networkId, zoneId, macAddress, updatedChallenge, code, locationInfo.location.location_id);
                             } else {
                                 showError('Location Not Found', 'Could not retrieve location information for WiFi access.');
                                 $('#debug-info').show();
@@ -693,8 +698,10 @@
                         }
                     });
                 } else {
-                    // We have the challenge, proceed with guest login
-                    proceedWithGuestLogin(locationId, macAddress, challenge, code);
+                    // We have the challenge — also resolve location_id from stored location_data
+                    const storedData = JSON.parse(localStorage.getItem('location_data') || '{}');
+                    const storedLocationId = storedData.location_id || parseInt(localStorage.getItem('location_id') || '0', 10);
+                    proceedWithGuestLogin(networkId, zoneId, macAddress, challenge, code, storedLocationId);
                 }
                 
             } catch (e) {
@@ -705,8 +712,10 @@
             }
             
             // Function to proceed with guest login using Google authentication
-            function proceedWithGuestLogin(locationId, macAddress, challenge, googleCode) {
+            function proceedWithGuestLogin(networkId, zoneId, macAddress, challenge, googleCode, locationId) {
                 console.log('Proceeding with guest login:');
+                console.log('- Network ID:', networkId);
+                console.log('- Zone ID:', zoneId);
                 console.log('- Location ID:', locationId);
                 console.log('- MAC Address:', macAddress);
                 console.log('- Challenge:', challenge);
@@ -717,8 +726,10 @@
                     url: '/api/guest/login',
                     type: 'POST',
                     data: $.extend({
-                        location_id: parseInt(localStorage.getItem('location_id') || '0', 10),
-                        mac_address: macAddress, 
+                        network_id: parseInt(networkId, 10),
+                        zone_id: parseInt(zoneId || '0', 10),
+                        location_id: locationId ? parseInt(locationId, 10) : undefined,
+                        mac_address: macAddress,
                         challenge: challenge,
                         login_method: 'social',
                         social_platform: 'google',
