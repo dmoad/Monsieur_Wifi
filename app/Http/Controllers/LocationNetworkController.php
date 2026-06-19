@@ -169,6 +169,14 @@ class LocationNetworkController extends Controller
             $validated['dhcp_enabled'] = false;
         }
 
+        // dns1/dns2 are NOT NULL with a default; drop empty values so the
+        // column default applies instead of inserting null.
+        foreach (['dns1', 'dns2'] as $f) {
+            if (array_key_exists($f, $validated) && $validated[$f] === null) {
+                unset($validated[$f]);
+            }
+        }
+
         // Each bridge mode may only be used by one network per location.
         $bridgeErr = $this->assertBridgeModeUnique($locationId, $resolvedIpMode);
         if ($bridgeErr !== null) {
@@ -346,6 +354,14 @@ class LocationNetworkController extends Controller
                 unset($validated[$f]);
             }
             $validated['dhcp_enabled'] = false;
+        }
+
+        // dns1/dns2 are NOT NULL with a default; an empty field means "keep
+        // current" rather than "clear" — preserve the existing row value.
+        foreach (['dns1', 'dns2'] as $f) {
+            if (array_key_exists($f, $validated) && $validated[$f] === null) {
+                unset($validated[$f]);
+            }
         }
 
         // Each bridge mode may only be used by one network per location (exclude current row).
