@@ -22,14 +22,15 @@ class CaptivePortalController extends Controller
         $location = Location::find($location_id);
         
         if (!$location) {
-            return response()->view('errors.404', [], 404);
+            abort(404);
         }
-        
+
         // Get the location settings
         $locationSettings = LocationSettingsV2::where('location_id', $location_id)->first();
-        
+
         if (!$locationSettings) {
-            return response()->view('errors.500', ['message' => 'Location settings not found'], 500);
+            Log::error('Captive portal: location settings not found', ['location_id' => $location_id]);
+            abort(500);
         }
         
         // Determine the authentication method
@@ -96,7 +97,7 @@ class CaptivePortalController extends Controller
         $design = CaptivePortalDesign::find($design_id);
 
         if (!$design) {
-            return response()->view('errors.404', [], 404);
+            abort(404);
         }
 
         return view('captive-portal-preview', compact('design'));

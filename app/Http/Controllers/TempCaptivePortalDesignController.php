@@ -16,7 +16,7 @@ class TempCaptivePortalDesignController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Design not found'
-            ], 200);
+            ], 404);
         }
         return response()->json([
             'success' => true,
