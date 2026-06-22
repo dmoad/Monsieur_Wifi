@@ -530,7 +530,7 @@
                                 .prop('disabled', false);
                                 
                             // Show error in alert
-                            // showAlert(response.message || 'Failed to connect', 'danger');
+                            showAlert(response.message || translations[lang].verificationFailed, 'danger');
                             
                             // After a short delay, show the second part
                             setTimeout(function() {
@@ -550,7 +550,7 @@
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
-                        // showAlert(errorMessage, 'danger');
+                        showAlert(errorMessage, 'danger');
                         
                         // After a short delay, show the second part
                         setTimeout(function() {

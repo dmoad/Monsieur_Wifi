@@ -756,7 +756,7 @@
                                 .prop('disabled', false);
                                 
                             // Show alert with error details
-                            // showAlert(response.message || 'Failed to verify code', 'danger');
+                            showAlert(response.message || translations[lang].verificationFailed, 'danger');
                             
                             // After a short delay, show the second part of the error message
                             setTimeout(function() {
@@ -776,7 +776,7 @@
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
-                        // showAlert(errorMessage, 'danger');
+                        showAlert(errorMessage, 'danger');
                         
                         // After a short delay, show the second part of the error message
                         setTimeout(function() {
