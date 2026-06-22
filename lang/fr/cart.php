@@ -25,4 +25,15 @@ return [
     'js_remove_btn' => 'Retirer',
     'js_toast_item_removed' => 'Article retiré du panier',
     'js_toast_remove_failed' => 'Échec du retrait de l\'article',
+
+    // Controller response messages (returned by CartController, surfaced via data.message)
+    'added' => 'Article ajouté au panier avec succès.',
+    'insufficient_stock' => 'Stock insuffisant.',
+    'add_failed' => 'Échec de l\'ajout de l\'article au panier.',
+    'updated' => 'Panier mis à jour avec succès.',
+    'update_failed' => 'Échec de la mise à jour du panier.',
+    'item_removed' => 'Article retiré du panier.',
+    'remove_failed' => 'Échec du retrait de l\'article.',
+    'cleared' => 'Panier vidé.',
+    'clear_failed' => 'Échec du vidage du panier.',
 ];

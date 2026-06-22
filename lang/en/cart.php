@@ -25,4 +25,15 @@ return [
     'js_remove_btn' => 'Remove',
     'js_toast_item_removed' => 'Item removed from cart',
     'js_toast_remove_failed' => 'Failed to remove item',
+
+    // Controller response messages (returned by CartController, surfaced via data.message)
+    'added' => 'Item added to cart successfully.',
+    'insufficient_stock' => 'Insufficient stock available.',
+    'add_failed' => 'Failed to add item to cart.',
+    'updated' => 'Cart updated successfully.',
+    'update_failed' => 'Failed to update cart.',
+    'item_removed' => 'Item removed from cart.',
+    'remove_failed' => 'Failed to remove item.',
+    'cleared' => 'Cart cleared.',
+    'clear_failed' => 'Failed to clear cart.',
 ];

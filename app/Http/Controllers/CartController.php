@@ -50,7 +50,7 @@ class CartController extends Controller
                 DB::rollBack();
                 return response()->json([
                     'success' => false,
-                    'message' => 'Insufficient stock available.',
+                    'message' => __('cart.insufficient_stock'),
                 ], 400);
             }
 
@@ -58,15 +58,20 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Item added to cart successfully.',
+                'message' => __('cart.added'),
                 'cart' => $cart->load('items'),
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Cart addItem failed', [
+                'user_id' => $user->id,
+                'product_id' => $request->product_id,
+                'error' => $e->getMessage(),
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add item to cart.',
+                'message' => __('cart.add_failed'),
             ], 500);
         }
     }
@@ -91,7 +96,7 @@ class CartController extends Controller
                 DB::rollBack();
                 return response()->json([
                     'success' => false,
-                    'message' => 'Insufficient stock available.',
+                    'message' => __('cart.insufficient_stock'),
                 ], 400);
             }
 
@@ -99,15 +104,20 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cart updated successfully.',
+                'message' => __('cart.updated'),
                 'cart' => $cart->load('items'),
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Cart updateItem failed', [
+                'user_id' => $user->id,
+                'item_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update cart.',
+                'message' => __('cart.update_failed'),
             ], 500);
         }
     }
@@ -127,15 +137,20 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Item removed from cart.',
+                'message' => __('cart.item_removed'),
                 'cart' => $cart->load('items'),
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Cart removeItem failed', [
+                'user_id' => $user->id,
+                'item_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to remove item.',
+                'message' => __('cart.remove_failed'),
             ], 500);
         }
     }
@@ -155,12 +170,20 @@ class CartController extends Controller
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollBack();
+                Log::error('Cart clear failed', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => __('cart.clear_failed'),
+                ], 500);
             }
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Cart cleared.',
+            'message' => __('cart.cleared'),
         ]);
     }
 
