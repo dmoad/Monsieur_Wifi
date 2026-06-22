@@ -10,6 +10,7 @@ const TRANSLATIONS = {
         profileUpdatedSuccess: 'Profile updated successfully!',
         failedUpdateProfile: 'Failed to update profile. Please try again.',
         uploadingPhoto: 'Uploading Photo...',
+        photoUploadFailed: 'Profile saved, but the photo failed to upload.',
         subscriptionActive: 'Active',
         subscriptionTrialing: 'Free trial',
         subscriptionCanceled: 'Cancelled',
@@ -30,6 +31,7 @@ const TRANSLATIONS = {
         profileUpdatedSuccess: 'Profil mis à jour avec succès !',
         failedUpdateProfile: 'Échec de la mise à jour du profil. Veuillez réessayer.',
         uploadingPhoto: 'Téléchargement de la photo...',
+        photoUploadFailed: 'Profil enregistré, mais le téléchargement de la photo a échoué.',
         subscriptionActive: 'Actif',
         subscriptionTrialing: 'Période d\'essai',
         subscriptionCanceled: 'Annulé',
@@ -209,13 +211,16 @@ $(document).ready(function() {
                                 localStorage.setItem('profile_picture', uploadResponse.profile_picture);
                                 $('.user-profile-picture').attr('src', '/uploads/profile_pictures/' + uploadResponse.profile_picture);
                             }
+                            toastr.success(t.profileUpdatedSuccess, 'Success');
                         },
                         error: function(xhr, status, error) {
+                            // Profile itself was saved (outer PUT succeeded); only the
+                            // photo upload failed, so warn rather than claim full success.
                             console.error('Error uploading profile picture:', error);
+                            toastr.warning(t.photoUploadFailed);
                         },
                         complete: function() {
                             $button.html(originalText).prop('disabled', false);
-                            toastr.success(t.profileUpdatedSuccess, 'Success');
                         }
                     });
                 } else {

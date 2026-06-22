@@ -19,6 +19,7 @@ const TRANSLATIONS = {
         invalidFileType: 'Please select a valid image file (JPG or PNG)',
         fileTooLarge: 'File size must be less than 2MB',
         partialSuccess: 'User updated but profile picture upload failed',
+        partialSuccessCreate: 'Account created but profile picture upload failed',
         failedCreateAccount: 'Failed to create account. Please try again.',
         failedUpdateAccount: 'Failed to update user account. Please try again.',
         failedDeleteAccount: 'Failed to delete user account. Please try again.',
@@ -47,6 +48,7 @@ const TRANSLATIONS = {
         invalidFileType: 'Veuillez sélectionner un fichier image valide (JPG ou PNG)',
         fileTooLarge: 'La taille du fichier doit être inférieure à 2 Mo',
         partialSuccess: 'Utilisateur mis à jour mais échec du téléchargement de la photo de profil',
+        partialSuccessCreate: 'Compte créé mais échec du téléchargement de la photo de profil',
         failedCreateAccount: 'Échec de la création du compte. Veuillez réessayer.',
         failedUpdateAccount: 'Échec de la mise à jour du compte utilisateur. Veuillez réessayer.',
         failedDeleteAccount: 'Échec de la suppression du compte utilisateur. Veuillez réessayer.',
@@ -275,7 +277,8 @@ $(document).ready(function() {
                     fd.append('user_id', response.user.id);
                     $.ajax({ url: '/api/auth/upload-profile-picture', type: 'POST',
                         data: fd, headers: { 'Authorization': 'Bearer ' + token },
-                        processData: false, contentType: false });
+                        processData: false, contentType: false,
+                        error: () => toastr.warning(t.partialSuccessCreate) });
                 }
                 $('#add-account-form')[0].reset();
                 $('#new-account-upload-img').attr('src', '/assets/avatar-default.jpg');
