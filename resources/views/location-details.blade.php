@@ -510,7 +510,6 @@
     };
     window.APP_I18N = window.APP_I18N || {};
     window.APP_I18N.location_details = @json(__('location_details'));
-    window.APP_I18N.common = @json(__('common'));
 </script>
 <script src="/assets/js/location-details-overview.js?v={{ filemtime(public_path('assets/js/location-details-overview.js')) }}"></script>
 <script src="/assets/js/location-details-analytics.js?v={{ filemtime(public_path('assets/js/location-details-analytics.js')) }}"></script>
