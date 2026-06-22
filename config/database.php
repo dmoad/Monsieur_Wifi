@@ -57,9 +57,12 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            // Only reference the SSL-CA option when it is actually configured.
+            // PDO::MYSQL_ATTR_SSL_CA is deprecated on PHP 8.4+ in favour of
+            // Pdo\Mysql::ATTR_SSL_CA; pick whichever the runtime supports.
+            'options' => extension_loaded('pdo_mysql') && env('MYSQL_ATTR_SSL_CA') ? [
+                (PHP_VERSION_ID >= 80400 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+            ] : [],
         ],
 
         'radius' => [
@@ -92,9 +95,12 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            // Only reference the SSL-CA option when it is actually configured.
+            // PDO::MYSQL_ATTR_SSL_CA is deprecated on PHP 8.4+ in favour of
+            // Pdo\Mysql::ATTR_SSL_CA; pick whichever the runtime supports.
+            'options' => extension_loaded('pdo_mysql') && env('MYSQL_ATTR_SSL_CA') ? [
+                (PHP_VERSION_ID >= 80400 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+            ] : [],
         ],
 
         'pgsql' => [
