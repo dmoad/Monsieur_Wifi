@@ -81,6 +81,7 @@ return [
     'unknown_location' => 'Emplacement inconnu',
     'no_devices_found' => 'Aucun appareil disponible',
     'error_loading_devices' => 'Erreur lors du chargement des appareils',
+    'error_loading_users' => 'Échec du chargement des utilisateurs',
 
     // Validation + action feedback
     'location_name_required' => 'Le nom de l\'emplacement est requis',

@@ -72,6 +72,7 @@
         unknown_location:                @json(__('locations.unknown_location')),
         no_devices_found:                @json(__('locations.no_devices_found')),
         error_loading_devices:           @json(__('locations.error_loading_devices')),
+        error_loading_users:             @json(__('locations.error_loading_users')),
     };
 </script>
 <script src="/assets/js/add-location-modal.js?v={{ filemtime(public_path('assets/js/add-location-modal.js')) }}"></script>

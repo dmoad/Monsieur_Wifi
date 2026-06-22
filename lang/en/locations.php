@@ -81,6 +81,7 @@ return [
     'unknown_location' => 'Unknown Location',
     'no_devices_found' => 'No devices found',
     'error_loading_devices' => 'Error loading devices',
+    'error_loading_users' => 'Failed to load users',
 
     // Validation + action feedback
     'location_name_required' => 'Location name is required',

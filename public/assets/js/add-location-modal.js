@@ -54,6 +54,7 @@ const AddLocationModal = (function () {
             $('#device-select-hint').text(T.select_owner_first_hint || '');
         } catch (error) {
             console.error('Error loading users:', error);
+            if (typeof toastr !== 'undefined') toastr.error(T.error_loading_users || 'Failed to load users');
         }
     }
 
@@ -117,6 +118,7 @@ const AddLocationModal = (function () {
             $('#device-select-hint').text(T.select_device_help || '');
         } catch (error) {
             console.error('Error loading devices:', error);
+            if (typeof toastr !== 'undefined') toastr.error(T.error_loading_devices || 'Error loading devices');
             $('#device-select')
                 .html(`<option value="">${T.error_loading_devices || 'Error loading devices'}</option>`)
                 .prop('disabled', false);
@@ -205,7 +207,9 @@ const AddLocationModal = (function () {
                     btn.innerHTML = T.add_location || 'Add Location';
                     btn.disabled = false;
                 }, 3000);
-                console.error('Error creating location:', xhr);
+                // Surface the server's actual reason (validation, conflict, etc.),
+                // falling back to a generic localized message via the shared helper.
+                handleApiError(xhr, 'createLocation');
             }
         });
     }
