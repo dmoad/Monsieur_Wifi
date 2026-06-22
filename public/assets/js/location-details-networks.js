@@ -590,7 +590,13 @@ const ldNetworks = (function () {
         try {
             const [netsRes, settingsRes] = await Promise.all([
                 apiFetch(`${API}/locations/${netLocationId()}/networks`),
-                apiFetch(`${API}/locations/${location_id}/settings`).catch(() => null),
+                apiFetch(`${API}/locations/${location_id}/settings`).catch((e) => {
+                    // Non-fatal: networks still render without the VLAN flag, but
+                    // don't swallow it silently — log and warn so it's diagnosable.
+                    console.warn('ldNetworks: failed to load location settings', e);
+                    if (typeof toastr !== 'undefined') toastr.warning(i18n.networks_settings_load_failed || 'Could not load network settings.');
+                    return null;
+                }),
             ]);
             data = (netsRes && netsRes.data && netsRes.data.networks) || [];
             vlanEnabled = !!(settingsRes && settingsRes.data && settingsRes.data.settings && settingsRes.data.settings.vlan_enabled);

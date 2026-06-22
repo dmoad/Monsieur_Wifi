@@ -157,6 +157,7 @@ return [
     'networks_password_required' => 'Le mot de passe WiFi est requis.',
     'networks_password_too_short' => 'Le mot de passe WiFi doit contenir au moins 8 caractères.',
     'networks_password_generate_failed' => 'Impossible de générer une phrase secrète.',
+    'networks_settings_load_failed' => 'Impossible de charger les paramètres réseau.',
     'networks_password_copied' => 'Mot de passe copié dans le presse-papier.',
     'networks_password_copy_failed' => 'Impossible de copier dans le presse-papier.',
     'networks_email_otp' => 'Exiger un code de vérification par e-mail (OTP)',

@@ -157,6 +157,7 @@ return [
     'networks_password_required' => 'WiFi password is required.',
     'networks_password_too_short' => 'WiFi password must be at least 8 characters.',
     'networks_password_generate_failed' => 'Could not generate a passphrase.',
+    'networks_settings_load_failed' => 'Could not load network settings.',
     'networks_password_copied' => 'Password copied to clipboard.',
     'networks_password_copy_failed' => 'Could not copy to clipboard.',
     'networks_email_otp' => 'Require email verification code (OTP)',
