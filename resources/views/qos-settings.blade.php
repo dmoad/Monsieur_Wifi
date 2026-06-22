@@ -179,12 +179,6 @@ async function apiFetch(url, opts = {}) {
     return res.json();
 }
 
-function handleApiError(err, ctx) {
-    const msg = err?.body?.message || err?.message || T.generic_error;
-    console.error(ctx, err);
-    toastr.error(msg);
-}
-
 // ── Class metadata (technical IDs only; labels and priority descriptions come from T) ──
 const CLASS_META = {
     EF:   { badge: 'qos-badge-ef',   techIds: 'EF · DSCP 46' },

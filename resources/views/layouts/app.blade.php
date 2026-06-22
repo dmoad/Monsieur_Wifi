@@ -119,6 +119,11 @@
     <script src="/assets/vendors/js/extensions/toastr.min.js"></script>
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/mw-primitives.js?v={{ filemtime(public_path('assets/js/mw-primitives.js')) }}"></script>
+    <script src="/assets/js/app-errors.js?v={{ filemtime(public_path('assets/js/app-errors.js')) }}"></script>
+    <script>
+        window.APP_I18N = window.APP_I18N || {};
+        window.APP_I18N.common = @json(__('common'));
+    </script>
 
     @stack('scripts')
 

@@ -68,13 +68,6 @@ async function apiFetch(url, options = {}) {
     return res.json();
 }
 
-function handleApiError(err, context = '') {
-    console.error('API Error' + (context ? ` [${context}]` : ''), err);
-    const msg = err?.body?.message || err?.message || 'An unexpected error occurred.';
-    if (typeof toastr !== 'undefined') toastr.error(msg, 'Error');
-    if (err?.status === 401) window.location.href = '/login';
-}
-
 function reRenderFeather() {
     if (typeof feather !== 'undefined') feather.replace({ width: 14, height: 14 });
 }

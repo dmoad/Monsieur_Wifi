@@ -6,6 +6,8 @@ return [
     'cancel' => 'Cancel',
     'close' => 'Close',
     'cloning' => 'Cloning…',
+    'error_title' => 'Error',
+    'generic_error' => 'An unexpected error occurred.',
     'home' => 'Home',
     'inactive' => 'Inactive',
     'items_per_page' => 'Items per page:',
