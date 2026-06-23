@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms of Service - Mr WiFi</title>
-    <!-- Bootstrap CSS -->
+    <title>Privacy Policy - Mr WiFi</title>
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
@@ -13,7 +12,6 @@
     <style>
         :root {
             --theme-color: #7367f0;
-            --theme-color-light: #7367f015;
             --theme-color-dark: #5e50ee;
         }
 
@@ -27,7 +25,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        .privacy-container {
+        .legal-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 16px;
@@ -37,235 +35,177 @@
             margin: 0 auto;
         }
 
-        .privacy-header {
+        .legal-header {
             text-align: center;
             margin-bottom: 2rem;
             border-bottom: 1px solid #eee;
             padding-bottom: 1rem;
         }
 
-        .privacy-section {
+        .legal-header h1 {
+            color: var(--theme-color);
+            font-weight: 600;
+        }
+
+        .legal-section {
             margin-bottom: 2rem;
         }
 
-        .privacy-section h2 {
+        .legal-section h2 {
+            color: #333;
+            font-size: 1.5rem;
             margin-bottom: 1rem;
+            font-weight: 600;
         }
 
-        .privacy-section p {
+        .legal-section p,
+        .legal-section li {
             margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.6;
         }
 
-        .privacy-section ul {
-            margin-bottom: 1rem;
-        }
-
-        .privacy-section li {
-            margin-bottom: 0.5rem;
-        }
-
-        .privacy-section li:last-child {
-            margin-bottom: 0;
-        }
-
-        .privacy-section a {
-            color: var(--theme-color);
-            text-decoration: none;
-        }
-
-        .privacy-section a:hover {
-            color: var(--theme-color-dark);
-        }
-
-        .privacy-section ul {
+        .legal-section ul {
             padding-left: 1.5rem;
         }
 
-        .privacy-section strong {
+        .legal-section a {
             color: var(--theme-color);
         }
 
-        .privacy-section code {
-            background-color: var(--theme-color-light);
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            border-top: 1px solid #eee;
+            padding-top: 1.5rem;
         }
 
-        .privacy-section pre {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-radius: 8px;
+        .brand-logo {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            max-width: 200px;
         }
 
-        .privacy-section blockquote {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-left: 4px solid var(--theme-color);
-            border-radius: 8px;
-        }
-
-        .privacy-section img {
+        .brand-logo img {
+            max-height: 100%;
             max-width: 100%;
-            height: auto;
+            object-fit: contain;
+        }
+
+        .btn-back {
+            background-color: var(--theme-color);
+            color: white;
+            border: none;
             border-radius: 8px;
+            padding: 10px 20px;
+            margin-top: 1rem;
         }
 
-        .privacy-section blockquote {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-left: 4px solid var(--theme-color);
-            border-radius: 8px;
+        .btn-back:hover {
+            background-color: var(--theme-color-dark);
+            color: white;
         }
 
-        .privacy-section pre {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-radius: 8px;
+        @media (max-width: 768px) {
+            .legal-container {
+                margin: 0 1rem;
+                padding: 1.5rem;
+            }
         }
-
-        .privacy-section code {
-            background-color: var(--theme-color-light);
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-        }
-
-        .privacy-section blockquote {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-left: 4px solid var(--theme-color);
-            border-radius: 8px;
-        }
-
-        .privacy-section img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-
-        .privacy-section blockquote {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-left: 4px solid var(--theme-color);
-            border-radius: 8px;
-        }
-
-        .privacy-section pre {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-radius: 8px;
-        }
-
-        .privacy-section code {
-            background-color: var(--theme-color-light);
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-        }
-
-        .privacy-section blockquote {
-            background-color: var(--theme-color-light);
-            padding: 1rem;
-            border-left: 4px solid var(--theme-color);
-            border-radius: 8px;
-        }
-
-        .privacy-section img {
-            max-width: 100%;
-            height: auto;
-        }
-
     </style>
+</head>
+<body>
+    <div class="legal-container">
+        <div class="legal-header">
+            <h1>Privacy Policy</h1>
+            <p class="text-muted">Last Updated: {{ date('F j, Y') }}</p>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+        <div class="legal-section">
+            <h2>1. Introduction</h2>
+            <p>Welcome to Mr WiFi. We respect your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and safeguard your information when you use our website and WiFi services.</p>
+        </div>
 
+        <div class="legal-section">
+            <h2>2. The Data We Collect</h2>
+            <p>We may collect, use, store, and transfer different kinds of personal data about you, including:</p>
+            <ul>
+                <li><strong>Identity Data:</strong> First name, last name, username, or similar identifier.</li>
+                <li><strong>Contact Data:</strong> Email address, telephone numbers, and physical address.</li>
+                <li><strong>Technical Data:</strong> IP address, login data, browser type and version, device information, and other technology identifiers.</li>
+                <li><strong>WiFi Usage Data:</strong> Information about your connection to and usage of WiFi networks through our service.</li>
+                <li><strong>Location Data:</strong> Approximate or precise location data to provide relevant WiFi networks.</li>
+            </ul>
+        </div>
 
+        <div class="legal-section">
+            <h2>3. How We Use Your Data</h2>
+            <p>We use your personal data to:</p>
+            <ul>
+                <li>Provide and maintain our service</li>
+                <li>Notify you about changes to our service</li>
+                <li>Provide customer support</li>
+                <li>Improve our service through analysis</li>
+                <li>Monitor usage and detect technical issues</li>
+                <li>Send news, special offers, and information about related services (where permitted)</li>
+            </ul>
+        </div>
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-            
-            
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h1 class="mb-0">Privacy Policy</h1>
-                </div>
-                <div class="card-body">
-                    <p class="lead">Last Updated: {{ date('F j, Y') }}</p>
-                    
-                    <h2>1. Introduction</h2>
-                    <p>Welcome to MrWiFi. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website and use our services, and tell you about your privacy rights.</p>
-                    
-                    <h2>2. The Data We Collect</h2>
-                    <p>We may collect, use, store and transfer different kinds of personal data about you including:</p>
-                    <ul>
-                        <li><strong>Identity Data:</strong> Including first name, last name, username or similar identifier.</li>
-                        <li><strong>Contact Data:</strong> Including email address, telephone numbers, and physical address.</li>
-                        <li><strong>Technical Data:</strong> Including internet protocol (IP) address, your login data, browser type and version, device information, and other technology identifiers on the devices you use to access our service.</li>
-                        <li><strong>WiFi Usage Data:</strong> Information about your connection to and usage of WiFi networks through our service.</li>
-                        <li><strong>Location Data:</strong> When you use our WiFi services, we may collect approximate or precise location data to provide you with relevant WiFi networks.</li>
-                    </ul>
-                    
-                    <h2>3. How We Use Your Data</h2>
-                    <p>We use your personal data for the following purposes:</p>
-                    <ul>
-                        <li>To provide and maintain our service</li>
-                        <li>To notify you about changes to our service</li>
-                        <li>To provide customer support</li>
-                        <li>To gather analysis or valuable information so that we can improve our service</li>
-                        <li>To monitor the usage of our service</li>
-                        <li>To detect, prevent and address technical issues</li>
-                        <li>To provide you with news, special offers and general information about other services which we offer</li>
-                    </ul>
-                    
-                    <h2>4. Data Security</h2>
-                    <p>We have implemented appropriate security measures to prevent your personal data from being accidentally lost, used, or accessed in an unauthorized way. We limit access to your personal data to those employees, agents, contractors, and other third parties who have a business need to know.</p>
-                    
-                    <h2>5. Data Retention</h2>
-                    <p>We will only retain your personal data for as long as necessary to fulfill the purposes we collected it for, including for the purposes of satisfying any legal, accounting, or reporting requirements.</p>
-                    
-                    <h2>6. Your Legal Rights</h2>
-                    <p>Under certain circumstances, you have rights under data protection laws in relation to your personal data, including the right to:</p>
-                    <ul>
-                        <li>Request access to your personal data</li>
-                        <li>Request correction of your personal data</li>
-                        <li>Request erasure of your personal data</li>
-                        <li>Object to processing of your personal data</li>
-                        <li>Request restriction of processing your personal data</li>
-                        <li>Request transfer of your personal data</li>
-                        <li>Right to withdraw consent</li>
-                    </ul>
-                    
-                    <h2>7. Cookies</h2>
-                    <p>We use cookies and similar tracking technologies to track the activity on our service and hold certain information. Cookies are files with a small amount of data which may include an anonymous unique identifier.</p>
-                    
-                    <h2>8. Changes to This Privacy Policy</h2>
-                    <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date at the top of this policy.</p>
-                    
-                    <h2>9. Contact Us</h2>
-                    <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-                    <ul>
-                        <li>Email: privacy@mrwifi.cnctdwifi.com</li>
-                        <li>Phone: +91 9826000770</li>
-                    </ul>
-                </div>
+        <div class="legal-section">
+            <h2>4. Data Security</h2>
+            <p>We implement appropriate security measures to prevent unauthorized access, loss, or misuse of your personal data. Access is limited to employees, agents, and contractors who have a business need to know.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>5. Data Retention</h2>
+            <p>We retain personal data only as long as necessary for the purposes collected, including legal, accounting, or reporting requirements.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>6. Your Legal Rights</h2>
+            <p>Depending on applicable law, you may have the right to:</p>
+            <ul>
+                <li>Request access to your personal data</li>
+                <li>Request correction of your personal data</li>
+                <li>Request erasure of your personal data</li>
+                <li>Object to or restrict processing of your personal data</li>
+                <li>Request transfer of your personal data</li>
+                <li>Withdraw consent where processing is consent-based</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <h2>7. Cookies</h2>
+            <p>We use cookies and similar technologies to track activity on our service and store certain information. Cookies are small files that may include an anonymous unique identifier.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>8. Changes to This Privacy Policy</h2>
+            <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated &ldquo;Last Updated&rdquo; date.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>9. Contact Us</h2>
+            <p>If you have questions about this Privacy Policy, contact us at:</p>
+            <ul>
+                <li>Email: privacy@mrwifi.cnctdwifi.com</li>
+                <li>Phone: +91 9826000770</li>
+            </ul>
+            <p>See also our <a href="{{ route('tos') }}">Terms of Service</a>.</p>
+        </div>
+
+        <div class="footer">
+            <div class="brand-logo">
+                <img src="/assets/images/Mr-Wifi.PNG" alt="Mr WiFi Logo">
             </div>
+            <div class="text-muted small">Powered by Mr WiFi</div>
+            <a href="javascript:history.back()" class="btn btn-back mt-3">
+                <i class="fa fa-arrow-left mr-1"></i> Go Back
+            </a>
         </div>
     </div>
-</div>
-
-</q>
-</div>
-</div>
-</div>
-</div>
-</div>
+</body>
+</html>

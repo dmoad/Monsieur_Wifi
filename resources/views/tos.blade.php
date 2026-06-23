@@ -177,7 +177,7 @@
 
         <div class="tos-section">
             <h2>5. Privacy and Data Collection</h2>
-            <p>Our Privacy Policy describes how we handle the information and content you provide to us when you use our Service. You understand that through your use of the Service, you consent to the collection and use of this information, including the transfer of this information for storage, processing, and use by Mr WiFi.</p>
+            <p>Our <a href="{{ route('privacy-policy') }}">Privacy Policy</a> describes how we handle the information and content you provide to us when you use our Service. You understand that through your use of the Service, you consent to the collection and use of this information, including the transfer of this information for storage, processing, and use by Mr WiFi.</p>
             <p>We may collect information related to your device, connection, and usage patterns to improve the Service and for security purposes.</p>
         </div>
 

@@ -383,12 +383,35 @@ class LocationNetworkController extends Controller
             ], 422);
         }
 
-        // Determine if config version should be incremented
+        // Determine if config version should be incremented.
+        // Includes all fields the router actually acts on — both infrastructure fields
+        // (ssid, password, IP, VLAN, DHCP, radio) and captive-portal fields that control
+        // how the router hands off authentication (auth_methods, social provider, timeouts,
+        // bandwidth limits, portal design, redirect URL, working hours, QoS policy).
         $versionFields = [
-            'type', 'ssid', 'enabled', 'visible', 'password', 'security',
-            'auth_method', 'ip_address', 'netmask', 'gateway', 'dns1', 'dns2',
-            'vlan_id', 'vlan_tagging', 'dhcp_enabled', 'dhcp_start', 'dhcp_end', 'dhcp_lease_duration',
-            'mac_filter_mode', 'mac_filter_list', 'dhcp_reservations', 'radio',
+            // Core network identity
+            'type', 'ssid', 'enabled', 'visible', 'radio',
+            // Security
+            'password', 'security', 'cipher_suites',
+            // Captive-portal auth
+            'auth_method', 'auth_methods', 'social_auth_method', 'email_require_otp',
+            'portal_password', 'portal_design_id',
+            // Session
+            'session_timeout', 'idle_timeout', 'redirect_url',
+            // Bandwidth
+            'download_limit', 'upload_limit',
+            // QoS
+            'qos_policy',
+            // IP / networking
+            'ip_mode', 'bridge_lan_dhcp_mode', 'ip_address', 'netmask', 'gateway', 'dns1', 'dns2',
+            // VLAN
+            'vlan_id', 'vlan_tagging',
+            // DHCP
+            'dhcp_enabled', 'dhcp_start', 'dhcp_end', 'dhcp_lease_duration', 'dhcp_reservations',
+            // MAC filtering
+            'mac_filter_mode', 'mac_filter_list',
+            // Working hours
+            'working_hours',
         ];
 
         $shouldIncrement = false;

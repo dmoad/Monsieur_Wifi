@@ -202,21 +202,8 @@ class DeviceController extends Controller
             'accounting_port' => $system_settings->accounting_port,
         ];
 
-        $whitelist_domains = env('GUEST_WHITELIST_DOMAINS');
-        $whitelist_servers = env('GUEST_WHITELIST_SERVERS');
-        // if settings.captive_auth_method is set to social and captive_social_auth_method is set to twitter then return whitelist_domains as ['twitter.com']
-        if ($settings->captive_auth_method == 'social' && $settings->captive_social_auth_method == 'google') {
-            $whitelist_domains = $whitelist_domains.','.env('GOOGLE_WHITELIST_DOMAINS');
-            $whitelist_servers = $whitelist_servers.','.env('GOOGLE_WHITELIST_SERVERS');
-        }
-
-        if ($settings->captive_auth_method == 'social' && $settings->captive_social_auth_method == 'facebook') {
-            $whitelist_domains = $whitelist_domains.','.env('FACEBOOK_WHITELIST_DOMAINS');
-            $whitelist_servers = $whitelist_servers.','.env('FACEBOOK_WHITELIST_SERVERS');
-        }
-
-        $whitelist_domains = rtrim($whitelist_domains, ',');
-        $whitelist_servers = rtrim($whitelist_servers, ',');
+        $whitelist_domains = env('GUEST_WHITELIST_DOMAINS', '');
+        $whitelist_servers = env('GUEST_WHITELIST_SERVERS', '');
 
         $guest_settings = [
             'login_url' => env('GUEST_LOGIN_URL'),
@@ -290,24 +277,35 @@ class DeviceController extends Controller
             $settings->wifi_password = $firstPasswordNetwork->password;
         }
 
-        // Update captive whitelist based on new networks table if flat settings
-        // are not set (new locations will use networks table only).
-        if ($networkRows->isNotEmpty()) {
-            $captiveNetwork = $networkRows->firstWhere('type', 'captive_portal');
-            if ($captiveNetwork && $captiveNetwork->auth_method === 'social') {
-                $socialMethod = $captiveNetwork->social_auth_method;
-                if ($socialMethod === 'google') {
-                    $whitelist_domains .= ','.env('GOOGLE_WHITELIST_DOMAINS', '');
-                    $whitelist_servers .= ','.env('GOOGLE_WHITELIST_SERVERS', '');
-                } elseif ($socialMethod === 'facebook') {
-                    $whitelist_domains .= ','.env('FACEBOOK_WHITELIST_DOMAINS', '');
-                    $whitelist_servers .= ','.env('FACEBOOK_WHITELIST_SERVERS', '');
+        // Extend the whitelist based on social auth configuration.
+        // location_networks rows are authoritative; flat location_settings fields are
+        // the fallback for old locations that pre-date the networks table.
+        $captiveNetworks = $networkRows->where('type', 'captive_portal');
+        if ($captiveNetworks->isNotEmpty()) {
+            foreach ($captiveNetworks as $captiveNetwork) {
+                $authMethods = (array) ($captiveNetwork->auth_methods ?? []);
+                $isSocial = $captiveNetwork->auth_method === 'social'
+                    || in_array('social', $authMethods, true);
+
+                if ($isSocial) {
+                    [$whitelist_domains, $whitelist_servers] = $this->appendSocialWhitelist(
+                        $captiveNetwork->social_auth_method,
+                        $whitelist_domains,
+                        $whitelist_servers
+                    );
                 }
-                $whitelist_domains = rtrim($whitelist_domains, ',');
-                $whitelist_servers = rtrim($whitelist_servers, ',');
-                $guest_settings['whitelist_domains'] = $whitelist_domains;
-                $guest_settings['whitelist_servers'] = $whitelist_servers;
             }
+            $guest_settings['whitelist_domains'] = $whitelist_domains;
+            $guest_settings['whitelist_servers'] = $whitelist_servers;
+        } elseif ($settings->captive_auth_method == 'social') {
+            // Fallback: no network rows exist yet, use flat location_settings columns.
+            [$whitelist_domains, $whitelist_servers] = $this->appendSocialWhitelist(
+                $settings->captive_social_auth_method,
+                $whitelist_domains,
+                $whitelist_servers
+            );
+            $guest_settings['whitelist_domains'] = $whitelist_domains;
+            $guest_settings['whitelist_servers'] = $whitelist_servers;
         }
 
         $locationDomains = LocationQosDomain::where('location_id', $networksSource->id)
@@ -511,24 +509,24 @@ class DeviceController extends Controller
                     $whitelistDomains = env('GUEST_WHITELIST_DOMAINS', '');
                     $whitelistServers = env('GUEST_WHITELIST_SERVERS', '');
 
-                    if ($network->auth_method === 'social') {
-                        match ($network->social_auth_method) {
-                            'google' => [
-                                $whitelistDomains .= ','.env('GOOGLE_WHITELIST_DOMAINS', ''),
-                                $whitelistServers .= ','.env('GOOGLE_WHITELIST_SERVERS', ''),
-                            ],
-                            'facebook' => [
-                                $whitelistDomains .= ','.env('FACEBOOK_WHITELIST_DOMAINS', ''),
-                                $whitelistServers .= ','.env('FACEBOOK_WHITELIST_SERVERS', ''),
-                            ],
-                            default => null,
-                        };
+                    // Check both the legacy single-value auth_method column and the
+                    // new auth_methods array so all social configurations are covered.
+                    $authMethods = (array) ($network->auth_methods ?? []);
+                    $isSocial = $network->auth_method === 'social'
+                        || in_array('social', $authMethods, true);
+
+                    if ($isSocial) {
+                        [$whitelistDomains, $whitelistServers] = $this->appendSocialWhitelist(
+                            $network->social_auth_method,
+                            $whitelistDomains,
+                            $whitelistServers
+                        );
                     }
 
                     $networkData['guest_settings'] = [
                         'login_url' => env('GUEST_LOGIN_URL'),
-                        'whitelist_domains' => rtrim($whitelistDomains, ','),
-                        'whitelist_servers' => rtrim($whitelistServers, ','),
+                        'whitelist_domains' => $whitelistDomains,
+                        'whitelist_servers' => $whitelistServers,
                     ];
 
                     // Each captive network uses the system radius for now;
@@ -619,6 +617,43 @@ class DeviceController extends Controller
      * Build the device QoS JSON: per-bridge policies + per-bridge `rules` (domain lists).
      * All bridges for a location share the same domain list sourced from `location_qos_domains`.
      */
+    /**
+     * Append social-provider whitelist domains/servers based on the configured provider.
+     * Handles google, facebook, and twitter. Uses array merging internally so leading/
+     * trailing commas and empty env values never produce malformed strings.
+     *
+     * @return array{0: string, 1: string}  [$domains, $servers]
+     */
+    private function appendSocialWhitelist(?string $socialMethod, string $domains, string $servers): array
+    {
+        $method = strtolower((string) $socialMethod);
+
+        $domainParts = array_filter(explode(',', $domains), fn ($v) => $v !== '');
+        $serverParts = array_filter(explode(',', $servers), fn ($v) => $v !== '');
+
+        $merge = static function (array &$parts, string $envKey): void {
+            $extra = array_filter(explode(',', env($envKey, '')), fn ($v) => $v !== '');
+            $parts = array_values(array_unique(array_merge($parts, $extra)));
+        };
+
+        if (str_contains($method, 'google')) {
+            $merge($domainParts, 'GOOGLE_WHITELIST_DOMAINS');
+            $merge($serverParts, 'GOOGLE_WHITELIST_SERVERS');
+        }
+
+        if (str_contains($method, 'facebook')) {
+            $merge($domainParts, 'FACEBOOK_WHITELIST_DOMAINS');
+            $merge($serverParts, 'FACEBOOK_WHITELIST_SERVERS');
+        }
+
+        if (str_contains($method, 'twitter')) {
+            $merge($domainParts, 'TWITTER_WHITELIST_DOMAINS');
+            $merge($serverParts, 'TWITTER_WHITELIST_SERVERS');
+        }
+
+        return [implode(',', $domainParts), implode(',', $serverParts)];
+    }
+
     private function buildQosBlockForDevice(bool $qosEnabled, Collection $networkRows, Collection $locationDomains): array
     {
         if (! $qosEnabled) {

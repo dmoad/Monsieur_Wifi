@@ -94,18 +94,18 @@ async function loadHourlyBandwidth() {
 function renderHourlyChart(buckets) {
     const categories = buckets.map(b => b.hour);
 
-    // Convert total bytes accumulated over one hour → average Mbps for that hour:
-    //   bytes  ×  8 bits/byte  ÷  3600 s/hour  ÷  1,000,000 bits/Mbit
-    const BYTES_TO_MBPS = 8 / (3600 * 1_000_000);
-    const dlMbps = buckets.map(b => parseFloat(((b.download || 0) * BYTES_TO_MBPS).toFixed(3)));
-    const ulMbps = buckets.map(b => parseFloat(((b.upload   || 0) * BYTES_TO_MBPS).toFixed(3)));
+    // Convert total bytes accumulated over one hour → average Kbps for that hour:
+    //   bytes  ×  8 bits/byte  ÷  3600 s/hour  ÷  1,000 bits/Kbit
+    const BYTES_TO_KBPS = 8 / (3600 * 1_000);
+    const dlKbps = buckets.map(b => parseFloat(((b.download || 0) * BYTES_TO_KBPS).toFixed(1)));
+    const ulKbps = buckets.map(b => parseFloat(((b.upload   || 0) * BYTES_TO_KBPS).toFixed(1)));
 
     const dark      = document.documentElement.getAttribute('data-theme') === 'dark';
     const gridColor = dark ? 'var(--mw-border)' : '#f1f1f1';
 
     const series = [
-        { name: ldAnalyticsT('analytics_series_download'), data: dlMbps },
-        { name: ldAnalyticsT('analytics_series_upload'),   data: ulMbps },
+        { name: ldAnalyticsT('analytics_series_download'), data: dlKbps },
+        { name: ldAnalyticsT('analytics_series_upload'),   data: ulKbps },
     ];
 
     const options = {
@@ -119,8 +119,8 @@ function renderHourlyChart(buckets) {
         legend:      { show: true, position: 'top' },
         grid:        { borderColor: gridColor },
         tooltip:     { theme: dark ? 'dark' : 'light', shared: true, intersect: false,
-                       y: { formatter: val => `${val} Mbps` } },
-        yaxis:       { labels: { formatter: val => `${val}` }, title: { text: 'Mbps', style: { fontSize: '11px' } } },
+                       y: { formatter: val => `${val} Kbps` } },
+        yaxis:       { labels: { formatter: val => `${val}` }, title: { text: 'Kbps', style: { fontSize: '11px' } } },
         markers:     { size: 3 },
     };
 
@@ -132,7 +132,7 @@ function renderHourlyChart(buckets) {
             grid:    { borderColor: gridColor },
             theme:   { mode: dark ? 'dark' : 'light' },
             tooltip: { theme: dark ? 'dark' : 'light', shared: true, intersect: false,
-                       y: { formatter: val => `${val} Mbps` } },
+                       y: { formatter: val => `${val} Kbps` } },
         });
     } else {
         const el = document.querySelector('#analytics-hourly-chart');

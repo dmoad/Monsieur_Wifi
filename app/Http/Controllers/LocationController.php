@@ -1291,10 +1291,18 @@ class LocationController extends Controller
 
                     // Session settings
                     if (isset($settings['session_timeout'])) {
+                        if ($settings['session_timeout'] != $locationSettings->session_timeout) {
+                            $increment_version = 1;
+                            Log::info('Session timeout updated');
+                        }
                         $locationSettings->session_timeout = $settings['session_timeout'];
                     }
 
                     if (isset($settings['idle_timeout'])) {
+                        if ($settings['idle_timeout'] != $locationSettings->idle_timeout) {
+                            $increment_version = 1;
+                            Log::info('Idle timeout updated');
+                        }
                         $locationSettings->idle_timeout = $settings['idle_timeout'];
                     }
 
