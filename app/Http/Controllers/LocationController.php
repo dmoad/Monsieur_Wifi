@@ -962,6 +962,14 @@ class LocationController extends Controller
                         ->whereColumn('guest_network_user_id', 'guest_network_users.id'),
                     'last_seen'
                 )
+                ->selectSub(
+                    UserDeviceLoginSession::query()
+                        ->selectRaw('COUNT(*)')
+                        ->whereColumn('guest_network_user_id', 'guest_network_users.id')
+                        ->where('login_success', true)
+                        ->whereNull('disconnect_time'),
+                    'active_session_count'
+                )
                 ->where('guest_network_users.location_id', $locationId)
                 ->when($networkId, fn ($q) => $q->where('guest_network_users.network_id', $networkId));
 
@@ -989,6 +997,7 @@ class LocationController extends Controller
                 'expiration_time' => $u->expiration_time?->toDateTimeString(),
                 'session_count' => (int) $u->session_count,
                 'last_seen' => $u->last_seen,
+                'active' => ((int) $u->active_session_count) > 0,
             ]);
 
             return response()->json([

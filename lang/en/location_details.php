@@ -461,6 +461,7 @@ return [
     'analytics_col_last_seen' => 'Last Seen',
     'analytics_col_status' => 'Status',
     'analytics_status_active' => 'Active',
+    'analytics_status_inactive' => 'Inactive',
     'analytics_status_blocked' => 'Blocked',
     'analytics_users_empty' => 'No users found.',
     'analytics_users_error' => 'Failed to load users.',

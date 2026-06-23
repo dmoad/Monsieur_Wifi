@@ -30,6 +30,11 @@ let analyticsCurrentPeriod = '7days';
 // Network sub-tab state: null = "Combined" (all captive-portal networks)
 let analyticsCurrentNetworkId = null;
 let analyticsNetworks         = [];
+
+// Live wifi-stats radio analytics keyed by normalized MAC (for active Guest Users)
+let analyticsLiveStatsByMac = {};
+// Cache of the last-rendered users page so we can re-render once live stats arrive
+let analyticsUsersLast = [];
 let analyticsUsersPage     = 1;
 let analyticsUsersTotal    = 0;
 let analyticsUsersLastPage = 1;
@@ -75,6 +80,7 @@ function loadAnalyticsTab() {
     loadDailyBandwidth(analyticsCurrentPeriod);
     loadDeviceTypes();
     loadAnalyticsUsers(1, '');
+    loadAnalyticsLiveStats();
     reRenderFeather();
 }
 
@@ -418,9 +424,75 @@ async function loadAnalyticsUsers(page, search) {
     }
 }
 
+/** Normalize a MAC for matching across data sources (lowercase, hex only). */
+function analyticsNormMac(m) {
+    return String(m == null ? '' : m).toLowerCase().replace(/[^0-9a-f]/g, '');
+}
+
+/** Human band label from a wifi-stats client record. */
+function analyticsWifiBandLabel(u) {
+    if (!u || !u.band) return '—';
+    if (u.band === '5g') return '5 GHz';
+    if (u.band === '2g') return '2.4 GHz';
+    return String(u.band);
+}
+
+/**
+ * Fetch the live wifi-stats snapshot (same source as the Overview "Live Users"
+ * panel) and index radio analytics by MAC. Re-renders the users table so any
+ * already-listed active users gain their "More" radio detail.
+ */
+async function loadAnalyticsLiveStats() {
+    try {
+        const res = await apiFetch(`${API}/locations/${location_id}/online-users`);
+        const list = (res && res.data && Array.isArray(res.data.online_users))
+            ? res.data.online_users : [];
+        const map = {};
+        list.forEach(u => {
+            if (u && u.source === 'wifi_stats') {
+                const key = analyticsNormMac(u.mac_address || u.mac);
+                if (key) map[key] = u;
+            }
+        });
+        analyticsLiveStatsByMac = map;
+        if (analyticsUsersLast.length) renderUsersTable(analyticsUsersLast);
+    } catch (err) {
+        console.error('Analytics live stats load error:', err);
+    }
+}
+
+/** Radio analytics block for an active user, mirroring the Overview Live Users expand. */
+function buildAnalyticsRadioDetailHtml(u) {
+    const esc = s => String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+
+    const band    = esc(analyticsWifiBandLabel(u));
+    const rssiAvg = u.signal_avg_dbm != null ? `${u.signal_avg_dbm} dBm` : '—';
+    const snr     = u.snr_db != null ? `${u.snr_db} dB` : '—';
+    const idleMs  = u.inactive_time_ms != null ? Number(u.inactive_time_ms) : 0;
+    const idleStr = idleMs >= 1000 ? formatDuration(Math.floor(idleMs / 1000)) : `${idleMs} ms`;
+    const rssiInst = u.signal_dbm != null ? `${u.signal_dbm} dBm` : '—';
+    const retries  = u.tx_retries != null ? String(u.tx_retries) : '—';
+    const failed   = u.tx_failed != null ? String(u.tx_failed) : '—';
+
+    return `
+<div class="px-2 py-1" style="font-size:0.8rem;line-height:1.7;">
+    <div><strong>${esc(ldAnalyticsT('live_users_radio'))}:</strong> ${band}</div>
+    <div>${esc(ldAnalyticsT('live_users_wifi_metric_rssi'))}: ${esc(rssiAvg)}
+        <span class="text-muted">·</span> ${esc(ldAnalyticsT('live_users_wifi_metric_snr'))}: ${esc(snr)}
+        <span class="text-muted">·</span> ${esc(ldAnalyticsT('live_users_wifi_metric_idle'))}: ${esc(idleStr)}</div>
+    <div>${esc(ldAnalyticsT('live_users_instant_rssi'))}: ${esc(rssiInst)}</div>
+    <div>${esc(ldAnalyticsT('live_users_retries'))}: ${esc(retries)}
+        <span class="text-muted">·</span> ${esc(ldAnalyticsT('live_users_failures'))}: ${esc(failed)}</div>
+</div>`;
+}
+
 function renderUsersTable(users) {
     const tbody = document.getElementById('analytics-users-tbody');
     if (!tbody) return;
+
+    analyticsUsersLast = users;
 
     if (users.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4"><small>${ldAnalyticsT('analytics_users_empty')}</small></td></tr>`;
@@ -441,12 +513,20 @@ function renderUsersTable(users) {
         try { return new Date(s).toLocaleDateString(); } catch { return escHtml(s); }
     };
 
-    tbody.innerHTML = users.map(u => {
+    tbody.innerHTML = users.map((u, idx) => {
         const badge = u.blocked
             ? `<span class="badge badge-danger">${ldAnalyticsT('analytics_status_blocked')}</span>`
-            : `<span class="badge badge-success">${ldAnalyticsT('analytics_status_active')}</span>`;
+            : u.active
+                ? `<span class="badge badge-success">${ldAnalyticsT('analytics_status_active')}</span>`
+                : `<span class="badge badge-secondary">${ldAnalyticsT('analytics_status_inactive')}</span>`;
 
-        return `<tr>
+        const radio = u.active ? analyticsLiveStatsByMac[analyticsNormMac(u.mac_address)] : null;
+        const detailId = `analytics-user-radio-${idx}`;
+        const moreBtn = radio
+            ? `<button type="button" class="btn btn-sm btn-outline-primary ml-2 analytics-user-more" data-target="${detailId}" aria-expanded="false" style="padding:1px 8px;font-size:0.72rem;">${ldAnalyticsT('live_users_more')}</button>`
+            : '';
+
+        const mainRow = `<tr>
             <td>${escHtml(u.name)}</td>
             <td><code style="font-size:0.75rem;">${escHtml(u.mac_address)}</code></td>
             <td>${escHtml(u.email)}</td>
@@ -454,8 +534,14 @@ function renderUsersTable(users) {
             <td>${escHtml(u.os)}</td>
             <td>${u.session_count || 0}</td>
             <td>${fmtDate(u.last_seen)}</td>
-            <td>${badge}</td>
+            <td class="text-nowrap">${badge}${moreBtn}</td>
         </tr>`;
+
+        const detailRow = radio
+            ? `<tr class="analytics-user-radio-row" id="${detailId}" style="display:none;"><td colspan="8" class="bg-light p-0">${buildAnalyticsRadioDetailHtml(radio)}</td></tr>`
+            : '';
+
+        return mainRow + detailRow;
     }).join('');
 
     reRenderFeather();
@@ -746,9 +832,20 @@ function initAnalyticsHandlers() {
     // Refresh users
     $(document).on('click', '#analytics-users-refresh', function () {
         loadAnalyticsUsers(1, analyticsUsersSearch);
+        loadAnalyticsLiveStats();
         loadHourlyBandwidth();
         loadDeviceTypes();
         loadDailyBandwidth(analyticsCurrentPeriod);
+    });
+
+    // Toggle per-user radio analytics detail row (active Guest Users)
+    $(document).on('click', '.analytics-user-more', function () {
+        const id = $(this).attr('data-target');
+        const $row = $('#' + id);
+        const open = $row.is(':visible');
+        $row.toggle(!open);
+        $(this).attr('aria-expanded', String(!open))
+            .text(open ? ldAnalyticsT('live_users_more') : ldAnalyticsT('live_users_less'));
     });
 
     $(document).on('click', '#analytics-users-export-csv', function () {

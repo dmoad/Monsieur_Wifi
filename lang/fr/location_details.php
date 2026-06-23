@@ -461,6 +461,7 @@ return [
     'analytics_col_last_seen' => 'Dernière connexion',
     'analytics_col_status' => 'Statut',
     'analytics_status_active' => 'Actif',
+    'analytics_status_inactive' => 'Inactif',
     'analytics_status_blocked' => 'Bloqué',
     'analytics_users_empty' => 'Aucun utilisateur trouvé.',
     'analytics_users_error' => 'Échec du chargement des utilisateurs.',
