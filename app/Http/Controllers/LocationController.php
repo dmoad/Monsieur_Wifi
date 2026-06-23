@@ -743,6 +743,8 @@ class LocationController extends Controller
                 $startDate = Carbon::today()->subDays($days - 1)->startOfDay();
             }
 
+            $networkId = $request->filled('network_id') ? (int) $request->get('network_id') : null;
+
             // ── Per-day aggregates from user_device_login_sessions ───────────
             // Use a numeric UTC offset (seconds → minutes) instead of CONVERT_TZ with
             // named timezones, which requires MySQL timezone tables to be populated.
@@ -763,6 +765,7 @@ class LocationController extends Controller
                 ")
                 ->where('location_id', $id)
                 ->where('login_success', true)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId))
                 ->whereBetween('connect_time', [$startDate, $endDate])
                 ->groupByRaw($dateExpr)
                 ->orderByRaw($dateExpr)
@@ -800,6 +803,7 @@ class LocationController extends Controller
                 ')
                 ->where('location_id', $id)
                 ->where('login_success', true)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId))
                 ->whereBetween('connect_time', [$startDate, $endDate])
                 ->first();
 
@@ -843,13 +847,15 @@ class LocationController extends Controller
      * Hourly bandwidth for the last 24 h.
      * Returns 24 buckets { hour, download, upload } in byte totals.
      */
-    public function getAnalyticsHourlyBandwidth($id)
+    public function getAnalyticsHourlyBandwidth($id, Request $request)
     {
         try {
             $location = $this->authorizeLocationAccess((int) $id);
             if (! $location) {
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
+
+            $networkId = $request->filled('network_id') ? (int) $request->get('network_id') : null;
 
             $offsetMinutes = (int) round(Carbon::now()->utcOffset());
             $hourExpr = $offsetMinutes === 0
@@ -864,6 +870,7 @@ class LocationController extends Controller
                              SUM(COALESCE(total_upload, 0))   AS ul")
                 ->where('location_id', $id)
                 ->where('login_success', true)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId))
                 ->where('connect_time', '>=', $since)
                 ->groupByRaw($hourExpr)
                 ->orderByRaw($hourExpr)
@@ -893,7 +900,7 @@ class LocationController extends Controller
      * Device-type breakdown from guest_network_users for the location.
      * Returns [{ type, count }] sorted descending by count.
      */
-    public function getAnalyticsDeviceTypes($id)
+    public function getAnalyticsDeviceTypes($id, Request $request)
     {
         try {
             $location = $this->authorizeLocationAccess((int) $id);
@@ -901,9 +908,12 @@ class LocationController extends Controller
                 return response()->json(['success' => false, 'message' => 'Location not found'], 404);
             }
 
+            $networkId = $request->filled('network_id') ? (int) $request->get('network_id') : null;
+
             $rows = GuestNetworkUser::query()
                 ->selectRaw("COALESCE(NULLIF(TRIM(device_type), ''), 'Unknown') AS dtype, COUNT(*) AS cnt")
                 ->where('location_id', $id)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId))
                 ->groupByRaw("COALESCE(NULLIF(TRIM(device_type), ''), 'Unknown')")
                 ->orderByRaw('cnt DESC')
                 ->get();
@@ -934,6 +944,7 @@ class LocationController extends Controller
             $rawPerPage = (int) $request->get('per_page', 10);
             $perPage = in_array($rawPerPage, $allowedPerPage, true) ? $rawPerPage : 10;
             $search = trim((string) $request->get('search', ''));
+            $networkId = $request->filled('network_id') ? (int) $request->get('network_id') : null;
 
             $locationId = (int) $location->id;
 
@@ -951,7 +962,8 @@ class LocationController extends Controller
                         ->whereColumn('guest_network_user_id', 'guest_network_users.id'),
                     'last_seen'
                 )
-                ->where('guest_network_users.location_id', $locationId);
+                ->where('guest_network_users.location_id', $locationId)
+                ->when($networkId, fn ($q) => $q->where('guest_network_users.network_id', $networkId));
 
             if ($search !== '') {
                 $like = '%'.$search.'%';
@@ -1007,11 +1019,13 @@ class LocationController extends Controller
             $perPage = max(1, min(200, (int) ($request->input('per_page', 10))));
             $search  = trim((string) $request->input('search', ''));
             $status  = $request->input('status', 'all'); // 'all' | 'active' | 'terminated'
+            $networkId = $request->filled('network_id') ? (int) $request->get('network_id') : null;
 
             $query = UserDeviceLoginSession::query()
                 ->with(['network:id,ssid'])
                 ->where('location_id', $location->id)
-                ->where('login_success', true);
+                ->where('login_success', true)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId));
 
             if ($status === 'active') {
                 $query->whereNull('disconnect_time');

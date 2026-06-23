@@ -438,6 +438,7 @@ return [
     'tab_analytics' => 'Analytics',
     'analytics_map_title' => 'Location Map',
     'analytics_map_no_coords' => 'No coordinates available',
+    'analytics_network_combined' => 'Combined',
     'analytics_hourly_title' => 'Bandwidth (24h)',
     'analytics_daily_title' => 'Daily Download / Upload',
     'analytics_device_types_title' => 'Connected Device Types',

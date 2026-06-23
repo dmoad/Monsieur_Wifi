@@ -438,6 +438,7 @@ return [
     'tab_analytics' => 'Analytique',
     'analytics_map_title' => 'Carte de l\'emplacement',
     'analytics_map_no_coords' => 'Aucune coordonnée disponible',
+    'analytics_network_combined' => 'Combiné',
     'analytics_hourly_title' => 'Bande passante (24h)',
     'analytics_daily_title' => 'Téléchargement / Envoi journalier',
     'analytics_device_types_title' => 'Types d\'appareils connectés',

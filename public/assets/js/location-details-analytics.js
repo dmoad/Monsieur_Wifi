@@ -26,6 +26,10 @@ let analyticsDailyChart         = null;
 let analyticsDeviceChart        = null;
 let analyticsLoaded        = false;
 let analyticsCurrentPeriod = '7days';
+
+// Network sub-tab state: null = "Combined" (all captive-portal networks)
+let analyticsCurrentNetworkId = null;
+let analyticsNetworks         = [];
 let analyticsUsersPage     = 1;
 let analyticsUsersTotal    = 0;
 let analyticsUsersLastPage = 1;
@@ -66,6 +70,7 @@ function loadAnalyticsTab() {
         analyticsUsersPerPage = parseInt(perSel.value, 10) || 10;
     }
 
+    loadAnalyticsNetworkTabs();
     loadHourlyBandwidth();
     loadDailyBandwidth(analyticsCurrentPeriod);
     loadDeviceTypes();
@@ -74,12 +79,61 @@ function loadAnalyticsTab() {
 }
 
 // ============================================================================
+// NETWORK SUB-TABS (Combined + one tab per captive-portal network)
+// ============================================================================
+
+/** Returns the network_id query fragment, or '' when "Combined" is selected. */
+function netParam() {
+    return analyticsCurrentNetworkId ? `network_id=${analyticsCurrentNetworkId}` : '';
+}
+
+async function loadAnalyticsNetworkTabs() {
+    try {
+        const res = await apiFetch(`${API}/locations/${location_id}/networks`);
+        const all = (res && res.data && res.data.networks) ? res.data.networks : [];
+        analyticsNetworks = all.filter(n => n.type === 'captive_portal');
+        renderAnalyticsNetworkTabs();
+    } catch (err) {
+        console.error('Analytics network tabs load error:', err);
+    }
+}
+
+function renderAnalyticsNetworkTabs() {
+    const wrap = document.getElementById('analytics-network-tabs');
+    if (!wrap) return;
+
+    const escHtml = s => String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+
+    const btn = (label, netId) => {
+        const isActive = (netId === null && analyticsCurrentNetworkId === null)
+            || (netId !== null && String(netId) === String(analyticsCurrentNetworkId));
+        const bg    = isActive ? 'var(--mw-primary)' : 'transparent';
+        const color = isActive ? 'white' : '#6c757d';
+        return `<button type="button" class="analytics-network-btn${isActive ? ' active' : ''}"
+                data-network-id="${netId === null ? '' : netId}"
+                style="padding:6px 14px;border:none;background:${bg};color:${color};border-radius:8px;cursor:pointer;font-size:0.8rem;">${escHtml(label)}</button>`;
+    };
+
+    const combinedLabel = ldAnalyticsT('analytics_network_combined');
+    let html = `<div class="d-flex flex-wrap" style="background:rgba(0,0,0,0.05);border-radius:10px;padding:4px;border:1px solid rgba(0,0,0,0.1);gap:2px;">`;
+    html += btn(combinedLabel === 'analytics_network_combined' ? 'Combined' : combinedLabel, null);
+    analyticsNetworks.forEach(n => {
+        html += btn(n.ssid || `#${n.id}`, n.id);
+    });
+    html += `</div>`;
+    wrap.innerHTML = html;
+}
+
+// ============================================================================
 // HOURLY BANDWIDTH CHART
 // ============================================================================
 
 async function loadHourlyBandwidth() {
     try {
-        const res = await apiFetch(`${API}/locations/${location_id}/analytics/hourly-bandwidth`);
+        const np = netParam();
+        const res = await apiFetch(`${API}/locations/${location_id}/analytics/hourly-bandwidth${np ? '?' + np : ''}`);
         if (res.success) {
             renderHourlyChart(res.data || []);
             const ts = new Date().toLocaleTimeString();
@@ -148,7 +202,8 @@ function renderHourlyChart(buckets) {
 
 async function loadDailyBandwidth(period) {
     try {
-        const res = await apiFetch(`${API}/locations/${location_id}/captive-portal/daily-usage?period=${period}`);
+        const np = netParam();
+        const res = await apiFetch(`${API}/locations/${location_id}/captive-portal/daily-usage?period=${period}${np ? '&' + np : ''}`);
         if (res.data && res.data.daily_stats) {
             renderDailyChart(res.data.daily_stats);
             renderUsersSessionsChart(res.data.daily_stats);
@@ -271,7 +326,8 @@ function renderUsersSessionsChart(dailyStats) {
 
 async function loadDeviceTypes() {
     try {
-        const res = await apiFetch(`${API}/locations/${location_id}/analytics/device-types`);
+        const np = netParam();
+        const res = await apiFetch(`${API}/locations/${location_id}/analytics/device-types${np ? '?' + np : ''}`);
         if (res.success) {
             renderDeviceTypeChart(res.data || []);
         }
@@ -339,6 +395,8 @@ async function loadAnalyticsUsers(page, search) {
     try {
         let url = `${API}/locations/${location_id}/analytics/users?page=${page}&per_page=${analyticsUsersPerPage}`;
         if (search) url += `&search=${encodeURIComponent(search)}`;
+        const np = netParam();
+        if (np) url += `&${np}`;
 
         const res = await apiFetch(url);
         if (res.success && res.data) {
@@ -489,6 +547,8 @@ async function loadAnalyticsSessions(page, search, status) {
         let url = `${API}/locations/${location_id}/analytics/sessions?page=${page}&per_page=${analyticsSessionsPerPage}`;
         if (search)                          url += `&search=${encodeURIComponent(search)}`;
         if (analyticsSessionsStatus !== 'all') url += `&status=${analyticsSessionsStatus}`;
+        const np = netParam();
+        if (np) url += `&${np}`;
 
         const res = await apiFetch(url);
         if (res.success && res.data) {
@@ -627,6 +687,24 @@ new MutationObserver(function () {
 // ============================================================================
 
 function initAnalyticsHandlers() {
+    // Network sub-tabs: switch active network and reload every widget
+    $(document).on('click', '.analytics-network-btn', function () {
+        const raw = $(this).attr('data-network-id');
+        const newId = raw ? raw : null;
+        if (String(newId) === String(analyticsCurrentNetworkId)) return;
+
+        analyticsCurrentNetworkId = newId;
+        renderAnalyticsNetworkTabs();
+
+        loadHourlyBandwidth();
+        loadDailyBandwidth(analyticsCurrentPeriod);
+        loadDeviceTypes();
+        loadAnalyticsUsers(1, analyticsUsersSearch);
+        if (analyticsSessionsLoaded) {
+            loadAnalyticsSessions(1, analyticsSessionsSearch, analyticsSessionsStatus);
+        }
+    });
+
     // Period buttons for daily chart
     $(document).on('click', '.analytics-period-btn', function () {
         $('.analytics-period-btn').css({ background: 'transparent', color: '#6c757d' });

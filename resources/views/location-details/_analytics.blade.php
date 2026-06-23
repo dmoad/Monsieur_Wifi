@@ -1,5 +1,8 @@
 <div class="mw-panel" id="ld-panel-analytics">
 
+    {{-- ── Network sub-tabs (Combined + one per captive-portal network) ────── --}}
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3" id="analytics-network-tabs"></div>
+
     {{-- ── Row 1: Hourly Bandwidth + Users & Sessions ─────────────────────── --}}
     <div class="row g-4 mb-4">
 
