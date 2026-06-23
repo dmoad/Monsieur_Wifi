@@ -22,11 +22,15 @@ class GuestNetworkUser extends Model
         'phone',
         'os',
         'device_type',
+        'login_successful_count',
+        'login_failure_count',
     ];
 
     protected $casts = [
         'expiration_time' => 'datetime',
         'blocked' => 'boolean',
+        'login_successful_count' => 'integer',
+        'login_failure_count' => 'integer',
     ];
 
     public function location(): BelongsTo

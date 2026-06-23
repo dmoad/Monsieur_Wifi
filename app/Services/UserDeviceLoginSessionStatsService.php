@@ -7,6 +7,7 @@ use App\Models\LocationNetwork;
 use App\Models\UserDeviceLoginSession;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Log;
 
 class UserDeviceLoginSessionStatsService
@@ -216,7 +217,18 @@ class UserDeviceLoginSessionStatsService
             abort(409, 'Session already linked to a different Acct-Session-Id');
         }
 
+        // Capture whether this acct_session_id was already linked before we write it.
+        // Used below to deduplicate login_successful_count increments.
+        $alreadyLinked = $session->radius_session_id === $acctSessionId;
+
         $session->radius_session_id = $acctSessionId;
+
+        // Increment login_successful_count exactly once per unique Accounting-Start.
+        // Repeated callbacks with the same acct_session_id are skipped ($alreadyLinked).
+        if ($status === 'start' && ! $alreadyLinked && $session->guest_network_user_id) {
+            GuestNetworkUser::whereKey($session->guest_network_user_id)
+                ->increment('login_successful_count');
+        }
 
         if (array_key_exists('acct_output_octets', $validated) && $validated['acct_output_octets'] !== null && $validated['acct_output_octets'] !== 0) {
             // this updates only if the new value > current value
@@ -263,6 +275,53 @@ class UserDeviceLoginSessionStatsService
         $session->save();
 
         return $session->fresh();
+    }
+
+    /**
+     * Record a login failure for the guest device identified by MAC + NAS identifier.
+     * Called from the /guest-login?res=failed page (server-side, query-string params).
+     *
+     * A 15-second cache guard prevents F5/reload from inflating the counter.
+     */
+    public function recordLoginFailureByNas(?string $mac, ?string $nasId): void
+    {
+        try {
+            if ($mac === null || $mac === '') {
+                return;
+            }
+
+            $normMac = strtolower(preg_replace('/[^a-fA-F0-9]/', '', $mac));
+            if (strlen($normMac) !== 12) {
+                return;
+            }
+
+            // Deduplicate rapid reloads of the failure page within a 15-second window.
+            $cacheKey = "login_fail:{$normMac}:{$nasId}";
+            if (! Cache::add($cacheKey, 1, now()->addSeconds(15))) {
+                return;
+            }
+
+            $parsed     = $this->parseNasId($nasId);
+            $zoneId     = $parsed['zone_id'];
+            $locationId = $parsed['location_id'];
+            $networkId  = $parsed['network_id'];
+
+            // Fallback: derive location from network row when nasId did not supply it.
+            if ($locationId === null && $networkId !== null) {
+                $locationId = LocationNetwork::find($networkId)?->location_id;
+            }
+
+            $variants = $this->macAddressVariants($mac);
+            $guest    = $this->findOrCreateGuestNetworkUser($variants, $mac, $locationId, $networkId, $zoneId);
+
+            GuestNetworkUser::whereKey($guest->id)->increment('login_failure_count');
+
+        } catch (\Throwable $e) {
+            Log::warning('recordLoginFailureByNas failed: '.$e->getMessage(), [
+                'mac'   => $mac,
+                'nasId' => $nasId,
+            ]);
+        }
     }
 
     /**

@@ -998,7 +998,26 @@ class LocationController extends Controller
                 'session_count' => (int) $u->session_count,
                 'last_seen' => $u->last_seen,
                 'active' => ((int) $u->active_session_count) > 0,
+                'login_successful_count' => (int) $u->login_successful_count,
+                'login_failure_count' => (int) $u->login_failure_count,
             ]);
+
+            // Aggregate login counts across ALL matching rows (not just this page).
+            $totalsQuery = GuestNetworkUser::query()
+                ->where('location_id', $locationId)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId));
+            if ($search !== '') {
+                $like = '%'.$search.'%';
+                $totalsQuery->where(function ($q) use ($like) {
+                    $q->where('name', 'like', $like)
+                        ->orWhere('mac_address', 'like', $like)
+                        ->orWhere('email', 'like', $like)
+                        ->orWhere('phone', 'like', $like);
+                });
+            }
+            $totals = $totalsQuery->selectRaw(
+                'SUM(login_successful_count) AS total_successful, SUM(login_failure_count) AS total_failures'
+            )->first();
 
             return response()->json([
                 'success' => true,
@@ -1008,6 +1027,10 @@ class LocationController extends Controller
                     'last_page' => $paginated->lastPage(),
                     'total' => $paginated->total(),
                     'per_page' => $paginated->perPage(),
+                    'totals' => [
+                        'login_successful_count' => (int) ($totals->total_successful ?? 0),
+                        'login_failure_count' => (int) ($totals->total_failures ?? 0),
+                    ],
                 ],
             ]);
         } catch (\Exception $e) {

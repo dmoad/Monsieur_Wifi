@@ -43,7 +43,7 @@
     <div class="row g-4 mb-4">
 
         {{-- Per-day download/upload --}}
-        <div class="col-lg-8">
+        <div class="col-lg-6">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2">
@@ -66,7 +66,7 @@
         </div>
 
         {{-- Device types donut --}}
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <div class="card h-100">
                 <div class="card-header d-flex align-items-center gap-2">
                     <i data-feather="pie-chart" style="color:var(--mw-primary);width:16px;height:16px;"></i>
@@ -75,6 +75,23 @@
                 <div class="card-body d-flex flex-column justify-content-center">
                     <div id="analytics-device-type-chart"></div>
                     <div id="analytics-device-type-empty" class="text-center text-muted py-4" style="display:none;">
+                        <i data-feather="inbox" style="width:32px;height:32px;margin-bottom:8px;"></i>
+                        <div><small>{{ __('location_details.analytics_no_data') }}</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Login Success vs Failure donut --}}
+        <div class="col-lg-3">
+            <div class="card h-100">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i data-feather="check-circle" style="color:var(--mw-primary);width:16px;height:16px;"></i>
+                    <h5 class="card-title mb-0">{{ __('location_details.analytics_login_stats_title') }}</h5>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div id="analytics-login-stats-chart"></div>
+                    <div id="analytics-login-stats-empty" class="text-center text-muted py-4" style="display:none;">
                         <i data-feather="inbox" style="width:32px;height:32px;margin-bottom:8px;"></i>
                         <div><small>{{ __('location_details.analytics_no_data') }}</small></div>
                     </div>
@@ -167,12 +184,13 @@
                                             <th>{{ __('location_details.analytics_col_os') }}</th>
                                             <th>{{ __('location_details.analytics_col_sessions') }}</th>
                                             <th>{{ __('location_details.analytics_col_last_seen') }}</th>
+                                            <th>{{ __('location_details.analytics_col_logins') }}</th>
                                             <th>{{ __('location_details.analytics_col_status') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody id="analytics-users-tbody">
                                         <tr>
-                                            <td colspan="8" class="text-center text-muted py-4">
+                                            <td colspan="9" class="text-center text-muted py-4">
                                                 <small>{{ __('location_details.analytics_users_loading') }}</small>
                                             </td>
                                         </tr>

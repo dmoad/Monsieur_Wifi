@@ -212,7 +212,7 @@
                     return 'Phone';
                 }
                 if (
-                    /\bwindows nt\b/i.test(ua)
+                    /windows nt|win64|wow64|\bwindows\b/i.test(ua)
                     || /\bMacintosh;\s*Intel Mac OS X\b/i.test(ua)
                     || /\bMac OS X\b/i.test(ua)
                     || /\bX11;\s*Linux\b/i.test(ua)

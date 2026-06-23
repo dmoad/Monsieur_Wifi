@@ -171,46 +171,57 @@ const AddLocationModal = (function () {
             return;
         }
 
-        $.ajax({
-            url: APP_CONFIG.API.BASE_URL + '/locations',
-            type: 'POST',
-            data: locationData,
-            headers: { 'Authorization': 'Bearer ' + token },
-            success: function (response) {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-success');
-                let successMessage = T.location_created || 'Location created';
-                if (response.firmware) {
-                    successMessage += `<br><small>${T.assigned_firmware_prefix || 'Assigned firmware:'} ${escapeHtml(response.firmware.name)}</small>`;
-                }
-                btn.innerHTML = successMessage;
-
-                setTimeout(function () {
-                    btn.classList.remove('btn-success');
-                    btn.classList.add('btn-primary');
-                    btn.innerHTML = T.add_location || 'Add Location';
-                    btn.disabled = false;
-                    $('#add-location-modal').modal('hide');
-                    document.getElementById('add-location-form').reset();
-                    $('.form-error').remove();
-                    $('.is-invalid').removeClass('is-invalid');
-                    if (typeof onSuccessCallback === 'function') onSuccessCallback(response);
-                }, 2500);
+        fetch(APP_CONFIG.API.BASE_URL + '/locations', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
             },
-            error: function (xhr) {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-danger');
-                btn.innerHTML = T.error_creating_location || 'Error creating location';
-                setTimeout(function () {
-                    btn.classList.remove('btn-danger');
-                    btn.classList.add('btn-primary');
-                    btn.innerHTML = T.add_location || 'Add Location';
-                    btn.disabled = false;
-                }, 3000);
-                // Surface the server's actual reason (validation, conflict, etc.),
-                // falling back to a generic localized message via the shared helper.
-                handleApiError(xhr, 'createLocation');
+            body: JSON.stringify(locationData),
+        })
+        .then(async function (res) {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const err = new Error(data.message || 'Request failed');
+                err.status = res.status;
+                err.body   = data;
+                throw err;
             }
+            return data;
+        })
+        .then(function (response) {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            let successMessage = T.location_created || 'Location created';
+            if (response.firmware) {
+                successMessage += `<br><small>${T.assigned_firmware_prefix || 'Assigned firmware:'} ${escapeHtml(response.firmware.name)}</small>`;
+            }
+            btn.innerHTML = successMessage;
+
+            setTimeout(function () {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-primary');
+                btn.innerHTML = T.add_location || 'Add Location';
+                btn.disabled = false;
+                $('#add-location-modal').modal('hide');
+                document.getElementById('add-location-form').reset();
+                $('.form-error').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                if (typeof onSuccessCallback === 'function') onSuccessCallback(response);
+            }, 2500);
+        })
+        .catch(function (err) {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-danger');
+            btn.innerHTML = T.error_creating_location || 'Error creating location';
+            setTimeout(function () {
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-primary');
+                btn.innerHTML = T.add_location || 'Add Location';
+                btn.disabled = false;
+            }, 3000);
+            handleApiError(err, 'createLocation');
         });
     }
 
@@ -239,6 +250,16 @@ const AddLocationModal = (function () {
         });
 
         document.getElementById('add-location-btn').addEventListener('click', handleSubmit);
+
+        // Prevent ENTER key inside form inputs from submitting the form
+        // (which would navigate the page and abort any in-flight requests).
+        const form = document.getElementById('add-location-form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleSubmit(e);
+            });
+        }
     }
 
     function open(opts = {}) {

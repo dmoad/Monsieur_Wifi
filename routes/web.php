@@ -226,6 +226,8 @@ Route::get('/guest-login', function () {
     if ($responseState === 'success') {
         return view('guest-login-success');
     } else if ($responseState === 'failed') {
+        app(\App\Services\UserDeviceLoginSessionStatsService::class)
+            ->recordLoginFailureByNas(request('mac'), request('nasid'));
         return view('guest-login-failed');
     } else if ($responseState === 'already') {
         return view('already-logged-in');

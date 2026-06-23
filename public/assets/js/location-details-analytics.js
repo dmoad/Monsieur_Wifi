@@ -24,6 +24,7 @@ let analyticsHourlyChart        = null;
 let analyticsUserSessionsChart  = null;
 let analyticsDailyChart         = null;
 let analyticsDeviceChart        = null;
+let analyticsLoginStatsChart    = null;
 let analyticsLoaded        = false;
 let analyticsCurrentPeriod = '7days';
 
@@ -370,20 +371,72 @@ function renderDeviceTypeChart(data) {
                       dropShadow: { enabled: false } },
         plotOptions: { pie: { donut: { size: '55%' }, expandOnClick: false } },
         tooltip: { theme: dark ? 'dark' : 'light',
-                   y: { formatter: (val, { seriesIndex, w }) => `${val} (${w.globals.seriesNames[seriesIndex]})` } },
+                   y: { formatter: val => String(val) } },
     };
 
     if (analyticsDeviceChart) {
         analyticsDeviceChart.updateOptions({
             series: counts,
             labels,
-            theme:  { mode: dark ? 'dark' : 'light' },
-            tooltip: { theme: dark ? 'dark' : 'light' },
+            theme:   { mode: dark ? 'dark' : 'light' },
+            tooltip: { theme: dark ? 'dark' : 'light', y: { formatter: val => String(val) } },
         });
     } else {
         if (!chartEl) return;
         analyticsDeviceChart = new ApexCharts(chartEl, options);
         analyticsDeviceChart.render();
+    }
+}
+
+// ============================================================================
+// LOGIN SUCCESS / FAILURE DONUT
+// ============================================================================
+
+function renderLoginStatsChart(totals) {
+    const successful = totals.login_successful_count || 0;
+    const failures   = totals.login_failure_count    || 0;
+
+    const emptyEl = document.getElementById('analytics-login-stats-empty');
+    const chartEl = document.getElementById('analytics-login-stats-chart');
+
+    if (successful === 0 && failures === 0) {
+        if (chartEl) chartEl.style.display = 'none';
+        if (emptyEl) emptyEl.style.display = 'block';
+        return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (chartEl) chartEl.style.display = 'block';
+
+    const dark    = document.documentElement.getAttribute('data-theme') === 'dark';
+    const labels  = [ldAnalyticsT('analytics_login_success'), ldAnalyticsT('analytics_login_failure')];
+    const series  = [successful, failures];
+    const colors  = ['#43d39e', '#ea5455'];
+
+    const options = {
+        theme:  { mode: dark ? 'dark' : 'light' },
+        chart:  { type: 'donut', height: 300, background: 'transparent' },
+        series,
+        labels,
+        colors,
+        legend: { show: true, position: 'bottom', fontSize: '12px', horizontalAlign: 'center' },
+        dataLabels: { enabled: true, formatter: val => `${Math.round(val)}%`,
+                      dropShadow: { enabled: false } },
+        plotOptions: { pie: { donut: { size: '55%' }, expandOnClick: false } },
+        tooltip: { theme: dark ? 'dark' : 'light',
+                   y: { formatter: val => String(val) } },
+    };
+
+    if (analyticsLoginStatsChart) {
+        analyticsLoginStatsChart.updateOptions({
+            series,
+            labels,
+            theme:   { mode: dark ? 'dark' : 'light' },
+            tooltip: { theme: dark ? 'dark' : 'light', y: { formatter: val => String(val) } },
+        });
+    } else {
+        if (!chartEl) return;
+        analyticsLoginStatsChart = new ApexCharts(chartEl, options);
+        analyticsLoginStatsChart.render();
     }
 }
 
@@ -406,18 +459,19 @@ async function loadAnalyticsUsers(page, search) {
 
         const res = await apiFetch(url);
         if (res.success && res.data) {
-            const { data, current_page, last_page, total, per_page } = res.data;
+            const { data, current_page, last_page, total, per_page, totals } = res.data;
             analyticsUsersTotal    = total;
             analyticsUsersLastPage = last_page;
             if (typeof per_page === 'number') analyticsUsersPerPage = per_page;
             renderUsersTable(data || []);
             renderUsersPagination(current_page, last_page, total, per_page);
+            if (totals) renderLoginStatsChart(totals);
         }
     } catch (err) {
         console.error('Analytics users load error:', err);
         const tbody = document.getElementById('analytics-users-tbody');
         if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4"><small>${ldAnalyticsT('analytics_users_error')}</small></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger py-4"><small>${ldAnalyticsT('analytics_users_error')}</small></td></tr>`;
         }
     } finally {
         if (loadingEl) loadingEl.style.display = 'none';
@@ -495,7 +549,7 @@ function renderUsersTable(users) {
     analyticsUsersLast = users;
 
     if (users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4"><small>${ldAnalyticsT('analytics_users_empty')}</small></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4"><small>${ldAnalyticsT('analytics_users_empty')}</small></td></tr>`;
         return;
     }
 
@@ -526,6 +580,12 @@ function renderUsersTable(users) {
             ? `<button type="button" class="btn btn-sm btn-outline-primary ml-2 analytics-user-more" data-target="${detailId}" aria-expanded="false" style="padding:1px 8px;font-size:0.72rem;">${ldAnalyticsT('live_users_more')}</button>`
             : '';
 
+        const loginCol = `<span title="${ldAnalyticsT('analytics_col_logins_success')}: ${u.login_successful_count} / ${ldAnalyticsT('analytics_col_logins_failure')}: ${u.login_failure_count}" style="cursor:default;">
+            <span class="text-success font-weight-bold">${u.login_successful_count || 0}</span>
+            <span class="text-muted">/</span>
+            <span class="text-danger font-weight-bold">${u.login_failure_count || 0}</span>
+        </span>`;
+
         const mainRow = `<tr>
             <td>${escHtml(u.name)}</td>
             <td><code style="font-size:0.75rem;">${escHtml(u.mac_address)}</code></td>
@@ -534,11 +594,12 @@ function renderUsersTable(users) {
             <td>${escHtml(u.os)}</td>
             <td>${u.session_count || 0}</td>
             <td>${fmtDate(u.last_seen)}</td>
+            <td class="text-nowrap">${loginCol}</td>
             <td class="text-nowrap">${badge}${moreBtn}</td>
         </tr>`;
 
         const detailRow = radio
-            ? `<tr class="analytics-user-radio-row" id="${detailId}" style="display:none;"><td colspan="8" class="bg-light p-0">${buildAnalyticsRadioDetailHtml(radio)}</td></tr>`
+            ? `<tr class="analytics-user-radio-row" id="${detailId}" style="display:none;"><td colspan="9" class="bg-light p-0">${buildAnalyticsRadioDetailHtml(radio)}</td></tr>`
             : '';
 
         return mainRow + detailRow;
