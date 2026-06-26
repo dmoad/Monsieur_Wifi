@@ -353,6 +353,7 @@ class DeviceController extends Controller
             $uptime = 0;
         } else {
             $uptime = $request->input('uptime');
+            Log::info('For device name: '.$device->name.' -- uptime: '.$uptime);
         }
         $device->uptime = $uptime;
 

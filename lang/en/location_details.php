@@ -16,7 +16,7 @@ return [
     'mac_address' => 'MAC Address',
     'firmware' => 'Firmware',
     'total_users' => 'Total Users',
-    'daily_usage' => 'Daily Usage',
+    'daily_usage' => 'Usage Today',
     'uptime' => 'Uptime',
     'restart_button' => 'Restart',
     'update_button' => 'Update',

@@ -816,12 +816,38 @@ class LocationController extends Controller
             $avgSessionSecs = $withDuration > 0 ? (int) round($totalDuration / $withDuration) : 0;
             $avgDailyUsers = $days > 0 ? round($uniqueUsers / $days, 1) : 0;
 
+            // All-time unique users (not period-filtered).
+            $allTimeUniqueUsers = (int) UserDeviceLoginSession::query()
+                ->where('location_id', $id)
+                ->where('login_success', true)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId))
+                ->distinct('guest_network_user_id')
+                ->count('guest_network_user_id');
+
+            // Today-only bandwidth (for the "Daily Usage" stat card).
+            $todayRow = UserDeviceLoginSession::query()
+                ->selectRaw('
+                    SUM(COALESCE(total_download, 0)) AS today_download,
+                    SUM(COALESCE(total_upload, 0))   AS today_upload
+                ')
+                ->where('location_id', $id)
+                ->where('login_success', true)
+                ->when($networkId, fn ($q) => $q->where('network_id', $networkId))
+                ->whereBetween('connect_time', [Carbon::today()->startOfDay(), Carbon::today()->endOfDay()])
+                ->first();
+
+            $todayDownload = (int) ($todayRow->today_download ?? 0);
+            $todayUpload   = (int) ($todayRow->today_upload   ?? 0);
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'total_download' => $totalDownload,
                     'total_upload' => $totalUpload,
+                    'today_download' => $todayDownload,
+                    'today_upload' => $todayUpload,
                     'unique_users' => $uniqueUsers,
+                    'all_time_unique_users' => $allTimeUniqueUsers,
                     'total_sessions' => $totalSessions,
                     'avg_session_seconds' => $avgSessionSecs,
                     'avg_daily_users' => $avgDailyUsers,

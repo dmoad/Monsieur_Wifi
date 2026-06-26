@@ -16,7 +16,7 @@ return [
     'mac_address' => 'Adresse MAC',
     'firmware' => 'Firmware',
     'total_users' => 'Total utilisateurs',
-    'daily_usage' => 'Utilisation quotidienne',
+    'daily_usage' => 'Utilisation aujourd\'hui',
     'uptime' => 'Temps de fonctionnement',
     'restart_button' => 'Redémarrer',
     'update_button' => 'Mettre à jour',

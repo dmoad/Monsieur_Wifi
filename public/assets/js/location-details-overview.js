@@ -283,8 +283,11 @@ async function loadCurrentUsage(period) {
         $('#total-users').text(data.unique_users || '-');
         $('#total-sessions').text(data.total_sessions || '-');
         $('#avg-daily').text(data.avg_daily_users || '-');
-        $('.connected_users').text(data.unique_users || 0);
-        $('.daily_usage').text(formatBytes((data.total_download || 0) + (data.total_upload || 0)));
+        $('.connected_users').text(data.all_time_unique_users ?? data.unique_users ?? 0);
+        const todayBytes = (data.today_download != null)
+            ? (data.today_download + data.today_upload)
+            : (data.total_download || 0) + (data.total_upload || 0);
+        $('.daily_usage').text(formatBytes(todayBytes));
     } catch (err) {
         console.error('Usage load error:', err);
         $('#download-usage, #upload-usage, #users-sessions-count, #avg-session-time').text('N/A');
