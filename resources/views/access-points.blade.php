@@ -633,6 +633,10 @@
         action_delete:   @json(__('access_points.action_delete')),
         action_edit:     @json(__('access_points.action_edit')),
         confirm_delete_ap:   @json(__('access_points.confirm_delete_ap')),
+        confirm_delete_device_title: @json(__('access_points.confirm_delete_device_title')),
+        confirm_delete_device: @json(__('access_points.confirm_delete_device')),
+        delete_device:       @json(__('access_points.delete_device')),
+        keep_device:         @json(__('access_points.keep_device')),
         confirm_delete_zone: @json(__('access_points.confirm_delete_zone')),
         confirm_delete_zone_title: @json(__('access_points.confirm_delete_zone_title')),
         ap_deleted:      @json(__('access_points.ap_deleted')),
@@ -852,11 +856,33 @@
     // SweetAlert + clone-modal infrastructure.
     window.apActions = {
         async deleteAp(id, name) {
-            const msg = T.confirm_delete_ap.replace('{name}', name);
-            if (!confirm(msg)) return;
+            const ap = allAps.find(a => a.id === id);
+            const ok = await MwConfirm.open({
+                title:       T.action_delete,
+                message:     T.confirm_delete_ap.replace('{name}', name),
+                confirmText: T.action_delete,
+                cancelText:  T.action_cancel,
+                destructive: true,
+            });
+            if (!ok) return;
+
+            // If the location has an attached device, ask whether to remove it too.
+            // Cancel = delete location only; OK = delete both.
+            let deleteDevice = false;
+            if (ap && ap.device && ap.device.id) {
+                deleteDevice = await MwConfirm.open({
+                    title:       T.confirm_delete_device_title,
+                    message:     T.confirm_delete_device.replace('{mac}', ap.device.mac_address || ap.device.name || ''),
+                    confirmText: T.delete_device,
+                    cancelText:  T.keep_device,
+                    destructive: true,
+                });
+            }
+
             const token = (typeof UserManager !== 'undefined') ? UserManager.getToken() : null;
             try {
-                const res = await fetch(APP_CONFIG.API.BASE_URL + '/locations/' + id, {
+                const url = APP_CONFIG.API.BASE_URL + '/locations/' + id + (deleteDevice ? '?delete_device=1' : '');
+                const res = await fetch(url, {
                     method: 'DELETE',
                     headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' },
                 });

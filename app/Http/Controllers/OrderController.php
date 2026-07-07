@@ -138,8 +138,26 @@ class OrderController extends Controller
             ->firstOrFail();
 
         // Validate inventory
+        // Note: this cart item's own quantity was already reserved when it was
+        // added to the cart (see Cart::addItem/updateItem), so
+        // getAvailableQuantity() (quantity - reserved_quantity) already excludes
+        // it. We must exclude this item's own reservation from reserved_quantity
+        // before comparing, otherwise a cart holding most/all of the remaining
+        // stock will always look "insufficient" against its own reservation.
+        // Using raw quantity/reserved_quantity (not the clamped
+        // getAvailableQuantity() accessor) also correctly still blocks the order
+        // if OTHER carts/reservations have oversubscribed the remaining stock.
         foreach ($cart->items as $item) {
-            if ($item->productModel->inventory->getAvailableQuantity() < $item->quantity) {
+            $inventory = $item->productModel->inventory;
+            if (! $inventory) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Insufficient stock for {$item->productModel->name}.",
+                ], 400);
+            }
+            $reservedByOthers = $inventory->reserved_quantity - $item->quantity;
+            $availableForThisItem = $inventory->quantity - $reservedByOthers;
+            if ($availableForThisItem < $item->quantity) {
                 return response()->json([
                     'success' => false,
                     'message' => "Insufficient stock for {$item->productModel->name}.",

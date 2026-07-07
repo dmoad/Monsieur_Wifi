@@ -115,6 +115,7 @@ Route::get('/devices/{mac_address}/{verification_code}/verify', [DeviceControlle
 Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () {
     Route::get('/', [LocationController::class, 'index']);
     Route::post('/', [LocationController::class, 'store']);
+    Route::post('/import', [LocationController::class, 'import']);
     Route::get('/{id}', [LocationController::class, 'show']);
     Route::put('/{id}', [LocationController::class, 'update']);
     Route::delete('/{id}', [LocationController::class, 'destroy']);
@@ -358,6 +359,7 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
     Route::prefix('devices')->group(function () {
         Route::get('/', [DeviceController::class, 'apiIndex']);
         Route::get('/available-for-location', [DeviceController::class, 'getAvailableForLocation']);
+        Route::get('/check-mac', [DeviceController::class, 'checkMacExists']);
         Route::get('/{id}', [DeviceController::class, 'apiShow']);
         Route::put('/{id}/owner', [DeviceController::class, 'updateOwner']);
     });

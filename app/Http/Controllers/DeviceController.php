@@ -1395,6 +1395,39 @@ class DeviceController extends Controller
     }
 
     /**
+     * API: Check whether a MAC address is already registered as a device or
+     * inventory item. Used by the location-import preview to flag a device that
+     * already exists (so it will be reused, not added again).
+     */
+    public function checkMacExists(Request $request)
+    {
+        $mac = $request->query('mac');
+        if (empty($mac)) {
+            return response()->json(['exists' => false]);
+        }
+
+        $normalized = strtoupper(str_replace(':', '-', $mac));
+
+        $device = Device::where('mac_address', $normalized)->first();
+        if ($device) {
+            return response()->json([
+                'exists' => true,
+                'type' => 'device',
+                'name' => $device->name,
+            ]);
+        }
+
+        if (InventoryItem::where('mac_address', $normalized)->exists()) {
+            return response()->json([
+                'exists' => true,
+                'type' => 'inventory',
+            ]);
+        }
+
+        return response()->json(['exists' => false]);
+    }
+
+    /**
      * API: Get devices available for location assignment.
      * Returns unassigned devices first, then assigned ones with location names.
      */

@@ -11,6 +11,37 @@
             </div>
             <div class="modal-body">
                 <form id="add-location-form">
+                    {{-- Mode toggle: create manually vs import a settings JSON. --}}
+                    <div class="btn-group btn-block mb-3" role="group" id="add-location-mode">
+                        <button type="button" class="btn btn-primary" data-mode="manual">{{ __('locations.mode_manual') }}</button>
+                        <button type="button" class="btn btn-outline-primary" data-mode="import">{{ __('locations.mode_import') }}</button>
+                    </div>
+
+                    {{-- Import flow: the file is the only input (plus a password when a new owner is created). --}}
+                    <div id="import-section" style="display: none;">
+                        <div class="form-group" id="import-group">
+                            <label for="import-file">{{ __('locations.import_label') }}</label>
+                            <input type="file" class="form-control-file" id="import-file" accept=".json,application/json">
+                            <small class="form-text text-muted">{{ __('locations.import_help') }}</small>
+                            <div id="import-error" class="text-danger small mt-1" style="display: none;"></div>
+                        </div>
+                        <div id="import-preview" class="mb-3" style="display: none;"></div>
+                        <div class="form-group" id="import-device-model-group" style="display: none;">
+                            <label for="import-device-model">{{ __('locations.import_device_model_label') }} <span class="text-danger">*</span></label>
+                            <select class="form-control" id="import-device-model">
+                                <option value="">{{ __('locations.import_device_model_loading') }}</option>
+                            </select>
+                            <small class="form-text text-muted">{{ __('locations.import_device_model_help') }}</small>
+                        </div>
+                        <div class="form-group" id="import-newuser-group" style="display: none;">
+                            <label for="import-newuser-password">{{ __('locations.import_newuser_password_label') }} <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="import-newuser-password" autocomplete="new-password" placeholder="{{ __('locations.import_newuser_password_placeholder') }}">
+                            <small class="form-text text-muted" id="import-newuser-hint"></small>
+                        </div>
+                    </div>
+
+                    {{-- Manual flow --}}
+                    <div id="manual-fields">
                     <div class="form-group" id="owner-select-group" style="display: none;">
                         <label for="owner-select">{{ __('locations.owner_label') }} <span class="text-danger">*</span></label>
                         <select class="form-control" id="owner-select">
@@ -37,6 +68,7 @@
                         <label for="location-notes">{{ __('locations.description_label') }}</label>
                         <textarea class="form-control" id="location-notes" rows="3" placeholder="{{ __('locations.description_placeholder') }}"></textarea>
                     </div>
+                    </div>{{-- /#manual-fields --}}
                 </form>
             </div>
             <div class="modal-footer">
@@ -73,6 +105,62 @@
         no_devices_found:                @json(__('locations.no_devices_found')),
         error_loading_devices:           @json(__('locations.error_loading_devices')),
         error_loading_users:             @json(__('locations.error_loading_users')),
+        import_button:                   @json(__('locations.import_button')),
+        import_coming_soon:              @json(__('locations.import_coming_soon')),
+        import_newuser_hint:             @json(__('locations.import_newuser_hint')),
+        import_invalid_json:             @json(__('locations.import_invalid_json')),
+        import_unsupported_version:      @json(__('locations.import_unsupported_version')),
+        import_preview_title:            @json(__('locations.import_preview_title')),
+        import_owner:                    @json(__('locations.import_owner')),
+        import_owner_default:            @json(__('locations.import_owner_default')),
+        import_owner_unverified:         @json(__('locations.import_owner_unverified')),
+        import_owner_exists:             @json(__('locations.import_owner_exists')),
+        import_owner_will_create:        @json(__('locations.import_owner_will_create')),
+        import_section_location:         @json(__('locations.import_section_location')),
+        import_section_device:           @json(__('locations.import_section_device')),
+        import_device_checking:          @json(__('locations.import_device_checking')),
+        import_device_exists:            @json(__('locations.import_device_exists')),
+        import_device_new:               @json(__('locations.import_device_new')),
+        import_device_model_select:      @json(__('locations.import_device_model_select')),
+        import_field_model:              @json(__('locations.import_field_model')),
+        import_field_mac:                @json(__('locations.import_field_mac')),
+        import_field_serial:             @json(__('locations.import_field_serial')),
+        import_section_networks:         @json(__('locations.import_section_networks')),
+        import_section_radio:            @json(__('locations.import_section_radio')),
+        import_section_wan:              @json(__('locations.import_section_wan')),
+        import_section_schedule:         @json(__('locations.import_section_schedule')),
+        import_networks_intro:           @json(__('locations.import_networks_intro')),
+        import_network_n:                @json(__('locations.import_network_n')),
+        import_type_password:            @json(__('locations.import_type_password')),
+        import_type_captive_portal:      @json(__('locations.import_type_captive_portal')),
+        import_type_open:                @json(__('locations.import_type_open')),
+        import_enabled:                  @json(__('locations.import_enabled')),
+        import_disabled:                 @json(__('locations.import_disabled')),
+        import_field_name:               @json(__('locations.import_field_name')),
+        import_field_ssid:               @json(__('locations.import_field_ssid')),
+        import_field_auth:               @json(__('locations.import_field_auth')),
+        import_field_security:           @json(__('locations.import_field_security')),
+        import_field_vlan:               @json(__('locations.import_field_vlan')),
+        import_field_ip:                 @json(__('locations.import_field_ip')),
+        import_field_dhcp:               @json(__('locations.import_field_dhcp')),
+        import_field_country:            @json(__('locations.import_field_country')),
+        import_field_channel:            @json(__('locations.import_field_channel')),
+        import_field_width:              @json(__('locations.import_field_width')),
+        import_field_tx_power:           @json(__('locations.import_field_tx_power')),
+        import_field_connection:         @json(__('locations.import_field_connection')),
+        import_field_gateway:            @json(__('locations.import_field_gateway')),
+        import_field_dns:                @json(__('locations.import_field_dns')),
+        import_field_nat:                @json(__('locations.import_field_nat')),
+        import_field_mtu:                @json(__('locations.import_field_mtu')),
+        import_field_vlan_enabled:       @json(__('locations.import_field_vlan_enabled')),
+        import_field_qos:                @json(__('locations.import_field_qos')),
+        import_field_web_filter:         @json(__('locations.import_field_web_filter')),
+        import_field_working_hours:      @json(__('locations.import_field_working_hours')),
+        import_field_hourly:             @json(__('locations.import_field_hourly')),
+        import_days_unit:                @json(__('locations.import_days_unit')),
+        import_hours_unit:               @json(__('locations.import_hours_unit')),
+        on:                              @json(__('locations.on')),
+        off:                             @json(__('locations.off')),
     };
 </script>
 <script src="/assets/js/add-location-modal.js?v={{ filemtime(public_path('assets/js/add-location-modal.js')) }}"></script>

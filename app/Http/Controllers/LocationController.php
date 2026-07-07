@@ -16,6 +16,7 @@ use App\Models\LocationQosDomain;
 use App\Models\LocationSettingsV2;
 use App\Models\OnlineNetworkUser;
 use App\Models\ProductModel;
+use App\Models\User;
 use App\Models\Radacct;
 use App\Models\Radcheck;
 use App\Models\UserDeviceLoginSession;
@@ -27,6 +28,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -278,6 +281,413 @@ class LocationController extends Controller
                 'is_default' => $firmware->default_model_firmware,
             ] : null,
         ]);
+    }
+
+    /**
+     * Import a location and all its settings from an exported JSON payload.
+     *
+     * The export carries a flat `settings` blob (legacy shape) plus working
+     * hours and an hourly schedule. We reconstruct it into the current model:
+     * one LocationSettingsV2 row (radio/WAN/VLAN/web-filter/QoS) and two
+     * LocationNetwork rows (captive_portal + password), mirroring the
+     * 2026_03_04 seed migration, then the captive-portal schedule. The whole
+     * thing runs in one transaction. The location is created device-less — a
+     * device is attached later from the location page.
+     *
+     * Owner: resolved by email. An existing account is reused; a new email
+     * creates a `user`-role account (password required). A null owner falls
+     * back to the caller. Creating users / assigning another owner is admin-only.
+     */
+    public function import(Request $request)
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
+        }
+
+        $request->validate([
+            'import' => 'required|array',
+            'import.format_version' => 'required|string',
+            'import.settings' => 'required|array',
+            'new_user_password' => 'nullable|string|min:8',
+            'device_product_model_id' => 'nullable|exists:product_models,id',
+        ]);
+
+        $payload = $request->input('import');
+
+        if (($payload['format_version'] ?? null) !== '1.0') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unsupported import format version.',
+            ], 422);
+        }
+
+        $settings = $payload['settings'];
+        $source = $payload['source'] ?? [];
+        $ownerData = $payload['owner'] ?? null;
+        $deviceData = $payload['device'] ?? null;
+        $deviceProductModelId = $request->input('device_product_model_id');
+
+        // Resolve the owner by email. Defer user creation into the transaction.
+        $ownerId = $user->id;
+        $newUserData = null;
+        $ownerEmail = is_array($ownerData) ? ($ownerData['email'] ?? null) : null;
+        if ($ownerEmail) {
+            $existing = User::where('email', $ownerEmail)->first();
+            if ($existing) {
+                if ($existing->id !== $user->id && ! $user->isAdminOrAbove()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Only admins can assign an imported location to another owner.',
+                    ], 403);
+                }
+                $ownerId = $existing->id;
+            } else {
+                if (! $user->isAdminOrAbove()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Only admins can create the owner account for an import.',
+                    ], 403);
+                }
+                if (! $request->filled('new_user_password')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'A password is required to create the new owner account.',
+                    ], 422);
+                }
+                $newUserData = [
+                    'name' => $ownerData['name'] ?? $ownerEmail,
+                    'email' => $ownerEmail,
+                    'password' => $request->input('new_user_password'),
+                ];
+            }
+        }
+
+        try {
+            $result = DB::transaction(function () use ($settings, $source, $payload, $deviceData, $deviceProductModelId, &$ownerId, $newUserData) {
+                $createdUser = null;
+                if ($newUserData) {
+                    $createdUser = User::create([
+                        'name' => $newUserData['name'],
+                        'email' => $newUserData['email'],
+                        'password' => Hash::make($newUserData['password']),
+                        'role' => 'user',
+                        'email_verified_at' => now(),
+                    ]);
+                    $ownerId = $createdUser->id;
+                }
+
+                // Resolve the access point: reuse an existing device (by MAC/serial)
+                // or add it to inventory and allocate it to the owner.
+                [$device, $deviceWarning] = $this->resolveImportDevice($deviceData, $ownerId, $deviceProductModelId);
+
+                // Create the location and attach the resolved device.
+                $location = new Location(['name' => $source['location_name'] ?? 'Imported location']);
+                $location->device_id = $device?->id;
+                $location->user_id = $ownerId;
+                $location->owner_id = $ownerId;
+                $location->save();
+
+                // Settings (V2 — radio / WAN / VLAN / web-filter / QoS).
+                $v2 = $this->buildSettingsV2FromFlat($settings);
+                $v2['location_id'] = $location->id;
+                LocationSettingsV2::create($v2);
+
+                // Networks (captive_portal @0, password @1).
+                foreach ($this->buildNetworksFromFlat($settings) as $network) {
+                    $network['location_id'] = $location->id;
+                    LocationNetwork::create($network);
+                }
+
+                // Captive-portal schedule. Fall back to the 24/7 default only
+                // when the export carried neither schedule.
+                $workingHours = $payload['captive_portal_working_hours'] ?? [];
+                $hourlySchedule = $payload['captive_portal_hourly_schedule'] ?? [];
+                if (empty($workingHours) && empty($hourlySchedule)) {
+                    $this->createBusinessWorkingHours($location->id);
+                } else {
+                    foreach ($workingHours as $wh) {
+                        if (empty($wh['day_of_week'])) {
+                            continue;
+                        }
+                        $start = ! empty($wh['start_time']) ? substr($wh['start_time'], 0, 5) : null;
+                        $end = ! empty($wh['end_time']) ? substr($wh['end_time'], 0, 5) : null;
+                        $enabled = $start && $end;
+                        CaptivePortalWorkingHour::updateOrCreate(
+                            ['location_id' => $location->id, 'day_of_week' => $wh['day_of_week']],
+                            ['start_time' => $enabled ? $start : null, 'end_time' => $enabled ? $end : null]
+                        );
+                    }
+                    foreach ($hourlySchedule as $hs) {
+                        if (empty($hs['day_of_week']) || ! isset($hs['hour'])) {
+                            continue;
+                        }
+                        CaptivePortalHourlySchedule::updateOrCreate(
+                            ['location_id' => $location->id, 'day_of_week' => $hs['day_of_week'], 'hour' => (int) $hs['hour']],
+                            ['enabled' => (bool) ($hs['enabled'] ?? false)]
+                        );
+                    }
+                }
+
+                // Bump the device config version so it pulls the imported config.
+                if ($device) {
+                    $device->increment('configuration_version');
+                }
+
+                return [
+                    'location' => $location,
+                    'created_user' => $createdUser,
+                    'device' => $device,
+                    'device_warning' => $deviceWarning,
+                ];
+            });
+        } catch (\Exception $e) {
+            Log::error('Location import failed: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Import failed: '.$e->getMessage(),
+            ], 500);
+        }
+
+        $location = $result['location']->fresh(['settings', 'networks']);
+        $owner = User::find($ownerId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Location imported successfully.',
+            'location' => $location,
+            'owner' => $owner ? $owner->only(['id', 'name', 'email', 'role']) : null,
+            'created_user' => $result['created_user'] ? true : false,
+            'device' => $result['device'] ? $result['device']->only(['id', 'name', 'serial_number', 'mac_address']) : null,
+            'device_warning' => $result['device_warning'],
+        ]);
+    }
+
+    /**
+     * Resolve the access point from the import payload. Reuses an existing
+     * device matched by MAC (then serial); otherwise adds it to inventory and
+     * converts it to a device allocated to the owner. Returns [device, warning];
+     * warning is non-null when the device could not be created (e.g. no matching
+     * product model) so the import still succeeds without a device.
+     */
+    private function resolveImportDevice(?array $deviceData, int $ownerId, $productModelId = null): array
+    {
+        if (! $deviceData || empty($deviceData['mac_address'])) {
+            return [null, null];
+        }
+
+        $mac = $this->normalizeMac($deviceData['mac_address']);
+        $serial = $deviceData['serial_number'] ?? null;
+
+        // Reuse an existing device (same hardware re-imported).
+        $device = Device::where('mac_address', $mac)->first();
+        if (! $device && $serial) {
+            $device = Device::where('serial_number', $serial)->first();
+        }
+        if ($device) {
+            $device->owner_id = $ownerId;
+            $device->save();
+            // Detach from any location it was previously attached to.
+            Location::where('device_id', $device->id)->update(['device_id' => null]);
+
+            return [$device, null];
+        }
+
+        // Reuse an existing inventory item, or create one.
+        $item = InventoryItem::where('mac_address', $mac)->first();
+        if (! $item && $serial) {
+            $item = InventoryItem::where('serial_number', $serial)->first();
+        }
+        if (! $item) {
+            // Prefer the model the user picked in the import dropdown — it drives
+            // firmware assignment, so we don't want to guess it from the label.
+            $productModel = $productModelId
+                ? ProductModel::find($productModelId)
+                : $this->resolveProductModel($deviceData['model'] ?? null);
+            if (! $productModel) {
+                return [null, 'No product model selected for "'.($deviceData['model'] ?? '').'"; location created without a device.'];
+            }
+            $item = InventoryItem::create([
+                'product_model_id' => $productModel->id,
+                'mac_address' => $mac,
+                'serial_number' => $serial,
+                'status' => 'available',
+                'received_at' => now(),
+            ]);
+        }
+
+        $device = $item->convertToDevice($ownerId);
+        $item->device_id = $device->id;
+        $item->status = 'sold';
+        $item->save();
+
+        // Assign the default firmware for this model (per Firmware.php). If the
+        // model has no explicit default, keep what convertToDevice picked. Mirror
+        // the assigned firmware's version onto the device when one is recorded.
+        $deviceType = optional($item->productModel)->device_type;
+        $defaultFirmware = $deviceType ? Firmware::getDefaultForModel($deviceType) : null;
+        if ($defaultFirmware) {
+            $device->firmware_id = $defaultFirmware->id;
+        }
+        $firmware = $device->firmware()->first();
+        if ($firmware) {
+            // These firmware records keep the version string in `name` with an
+            // empty `version` column, so fall back to the name.
+            $device->firmware_version = $firmware->version ?: $firmware->name;
+        }
+        $device->save();
+
+        return [$device, null];
+    }
+
+    /**
+     * Match a product model from the exported device "model" string, trying
+     * exact name/slug, then a contains match, then device_type.
+     */
+    private function resolveProductModel(?string $model): ?ProductModel
+    {
+        if (! $model) {
+            return null;
+        }
+        $slug = \Illuminate\Support\Str::slug($model);
+
+        return ProductModel::where('name', $model)->first()
+            ?? ProductModel::where('slug', $slug)->first()
+            ?? ProductModel::where('name', 'like', '%'.$model.'%')->first()
+            ?? ProductModel::where('slug', 'like', '%'.$slug.'%')->first()
+            ?? ProductModel::where('device_type', $model)->first();
+    }
+
+    /**
+     * Normalize a MAC to the inventory convention: uppercase, colon → dash.
+     */
+    private function normalizeMac(?string $mac): ?string
+    {
+        if (empty($mac)) {
+            return $mac;
+        }
+
+        return strtoupper(str_replace(':', '-', $mac));
+    }
+
+    /**
+     * Map the flat exported `settings` blob onto LocationSettingsV2 columns.
+     * Only the V2-owned keys are taken; everything else (per-network fields,
+     * legacy-only keys) is dropped — networks are reconstructed separately.
+     */
+    private function buildSettingsV2FromFlat(array $s): array
+    {
+        $keys = [
+            'country_code',
+            'transmit_power_2g', 'transmit_power_5g',
+            'channel_2g', 'channel_5g',
+            'channel_width_2g', 'channel_width_5g',
+            'vlan_enabled',
+            'web_filter_enabled', 'web_filter_domains', 'web_filter_categories',
+            'qos_enabled',
+            'wan_enabled', 'wan_connection_type', 'wan_ip_address', 'wan_netmask',
+            'wan_gateway', 'wan_primary_dns', 'wan_secondary_dns',
+            'wan_pppoe_username', 'wan_pppoe_password', 'wan_pppoe_service_name',
+            'wan_mac_address', 'wan_mtu', 'wan_nat_enabled',
+        ];
+
+        return array_intersect_key($s, array_flip($keys));
+    }
+
+    /**
+     * Reconstruct the two LocationNetwork rows (captive_portal + password) from
+     * the flat exported `settings`, mirroring the 2026_03_04 seed migration.
+     * dhcp_end is stored as a pool size (address count), not an end IP.
+     */
+    private function buildNetworksFromFlat(array $s): array
+    {
+        $captive = [
+            'sort_order' => 0,
+            'type' => 'captive_portal',
+            'enabled' => (bool) ($s['captive_portal_enabled'] ?? false),
+            'ssid' => $s['captive_portal_ssid'] ?? 'MrWiFi Guest',
+            'visible' => (bool) ($s['captive_portal_visible'] ?? true),
+            'vlan_id' => $s['captive_portal_vlan'] ?? null,
+            'vlan_tagging' => $s['captive_portal_vlan_tagging'] ?? 'disabled',
+            'auth_method' => $s['captive_auth_method'] ?? 'click-through',
+            'portal_password' => $s['captive_portal_password'] ?? null,
+            'social_auth_method' => $s['captive_social_auth_method'] ?? null,
+            'session_timeout' => $s['session_timeout'] ?? 60,
+            'idle_timeout' => $s['idle_timeout'] ?? 15,
+            'redirect_url' => $s['captive_portal_redirect'] ?? $s['redirect_url'] ?? null,
+            'portal_design_id' => $s['portal_design_id'] ?? null,
+            'download_limit' => $s['download_limit'] ?? null,
+            'upload_limit' => $s['upload_limit'] ?? null,
+            'ip_mode' => 'static',
+            'ip_address' => $s['captive_portal_ip'] ?? '192.168.2.1',
+            'netmask' => $s['captive_portal_netmask'] ?? '255.255.255.0',
+            'gateway' => $s['captive_portal_gateway'] ?? null,
+            'dns1' => $s['captive_portal_dns1'] ?? '8.8.8.8',
+            'dns2' => $s['captive_portal_dns2'] ?? '8.8.4.4',
+            'dhcp_enabled' => (bool) ($s['captive_portal_dhcp_enabled'] ?? true),
+            'dhcp_start' => $s['captive_portal_dhcp_start'] ?? '192.168.2.100',
+            'dhcp_end' => $this->derivePoolSize($s['captive_portal_dhcp_start'] ?? null, $s['captive_portal_dhcp_end'] ?? null),
+            'mac_filter_mode' => $s['mac_filter_mode'] ?? 'allow-all',
+            'mac_filter_list' => $s['captive_mac_filter_list'] ?? $s['mac_filter_list'] ?? null,
+        ];
+
+        $password = [
+            'sort_order' => 1,
+            'type' => 'password',
+            'enabled' => (bool) ($s['password_wifi_enabled'] ?? true),
+            'ssid' => $s['password_wifi_ssid'] ?? 'monsieur-wifi',
+            'visible' => (bool) ($s['wifi_visible'] ?? true),
+            'vlan_id' => $s['password_wifi_vlan'] ?? null,
+            'vlan_tagging' => $s['password_wifi_vlan_tagging'] ?? 'disabled',
+            'password' => $s['password_wifi_password'] ?? 'abcd1234',
+            'security' => $s['password_wifi_security'] ?? 'wpa2-psk',
+            'cipher_suites' => $s['password_wifi_cipher_suites'] ?? 'CCMP',
+            'ip_mode' => $s['password_wifi_ip_mode'] ?? 'static',
+            'ip_address' => $s['password_wifi_ip'] ?? '192.168.1.1',
+            'netmask' => $s['password_wifi_netmask'] ?? '255.255.255.0',
+            'gateway' => $s['password_wifi_gateway'] ?? null,
+            'dns1' => $s['password_wifi_dns1'] ?? '8.8.8.8',
+            'dns2' => $s['password_wifi_dns2'] ?? '8.8.4.4',
+            'dhcp_enabled' => (bool) ($s['password_wifi_dhcp_enabled'] ?? true),
+            'dhcp_start' => $s['password_wifi_dhcp_start'] ?? '192.168.1.100',
+            'dhcp_end' => $this->derivePoolSize($s['password_wifi_dhcp_start'] ?? null, $s['password_wifi_dhcp_end'] ?? null),
+            'mac_filter_mode' => $s['mac_filter_mode'] ?? 'allow-all',
+            'mac_filter_list' => $s['secured_mac_filter_list'] ?? $s['mac_filter_list'] ?? null,
+        ];
+
+        return [$captive, $password];
+    }
+
+    /**
+     * Convert a legacy DHCP start/end IP pair into a pool size (address count).
+     * Mirrors the 2026_04_09 migration that changed dhcp_end to an integer.
+     */
+    private function derivePoolSize(?string $dhcpStart, ?string $dhcpEnd): int
+    {
+        if ($dhcpStart && $dhcpEnd) {
+            $start = filter_var($dhcpStart, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+            $end = filter_var($dhcpEnd, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+            if ($start && $end) {
+                $s = ip2long($start);
+                $e = ip2long($end);
+                if ($s !== false && $e !== false) {
+                    $su = $s < 0 ? $s + 0x100000000 : $s;
+                    $eu = $e < 0 ? $e + 0x100000000 : $e;
+                    if ($eu >= $su) {
+                        return (int) ($eu - $su + 1);
+                    }
+                }
+            }
+            if (is_numeric($dhcpEnd)) {
+                $n = (int) $dhcpEnd;
+                if ($n > 0) {
+                    return $n;
+                }
+            }
+        }
+
+        return 101;
     }
 
     /**
@@ -2196,9 +2606,30 @@ class LocationController extends Controller
      *
      * @return Response
      */
-    public function destroy(Location $location)
+    public function destroy(Request $request, $id)
     {
-        $location->delete();
+        $user = Auth::user();
+        $location = Location::findOrFail($id);
+
+        // Owner check: non-admins may only delete their own locations.
+        if (! $user->isAdminOrAbove() && $location->owner_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        $deviceId = $location->device_id; // locations.device_id is a string column
+
+        DB::transaction(function () use ($location, $request, $deviceId) {
+            $location->delete(); // cascades settings_v2 / networks / schedules
+
+            if ($request->boolean('delete_device') && $deviceId) {
+                // Delete the device only; leave its inventory item as-is (the FK
+                // already nulls inventory_items.device_id on delete).
+                Device::where('id', $deviceId)->delete();
+            }
+        });
 
         return response()->json([
             'success' => true,

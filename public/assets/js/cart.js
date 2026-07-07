@@ -49,7 +49,17 @@ function displayCart(data) {
     }
     
     const itemsContainer = document.getElementById('cart-items');
-    itemsContainer.innerHTML = cart.items.map(item => `
+    itemsContainer.innerHTML = cart.items.map(item => {
+        // available_quantity (quantity - reserved_quantity) already excludes this
+        // item's own reservation, and is clamped at 0 server-side, which can hide
+        // headroom when other carts have also reserved stock. Compute the true
+        // cap from the raw inventory fields instead: total quantity minus
+        // whatever OTHER carts/reservations are holding.
+        const inv = item.product_model.inventory || {};
+        const otherReserved = (inv.reserved_quantity || 0) - item.quantity;
+        const maxQty = Math.max(1, (inv.quantity || 0) - otherReserved);
+
+        return `
         <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
             <img src="${item.product_model.primary_image || '/assets/images/product-placeholder.png'}"
                  alt="${item.product_model.name}" 
@@ -60,7 +70,7 @@ function displayCart(data) {
             </div>
             <div class="d-flex align-items-center">
                 <input type="number" class="form-control" style="width: 80px;"
-                       value="${item.quantity}" min="1" max="${item.product_model.available_quantity}"
+                       value="${item.quantity}" min="1" max="${maxQty}"
                        onchange="updateQuantity(${item.id}, this.value)">
                 <button class="btn btn-danger ml-2 d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0;" onclick="removeItem(${item.id})">
                     <i data-feather="trash-2"></i>
@@ -70,7 +80,8 @@ function displayCart(data) {
                 <strong>€${parseFloat(item.price_at_add * item.quantity).toFixed(2)}</strong>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
     
     document.getElementById('cart-subtotal').textContent = `€${parseFloat(data.total).toFixed(2)}`;
     document.getElementById('cart-total').textContent = `€${parseFloat(data.total).toFixed(2)}`;
