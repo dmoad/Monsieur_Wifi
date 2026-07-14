@@ -180,10 +180,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const currentLang = getLanguage();
             applyTranslations(currentLang);
-            var urlParams = new URLSearchParams(window.location.search);
-            var nasid = urlParams.get('nasid');
-            document.getElementById('nasid-text').textContent = nasid;
-            
+
             // Add click listeners to language buttons
             document.querySelectorAll('.language-btn').forEach(btn => {
                 btn.addEventListener('click', function() {

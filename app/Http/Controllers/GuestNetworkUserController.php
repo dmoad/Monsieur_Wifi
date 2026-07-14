@@ -219,6 +219,7 @@ class GuestNetworkUserController extends Controller
             'design' => $network->portalDesign,
             'ip_address' => $captivePortalIp,
             'challenge' => bin2hex(random_bytes(16)),
+            'working_hours' => $network->workingHoursStatusNow(),
         ];
 
         return response()->json([
@@ -248,6 +249,18 @@ class GuestNetworkUserController extends Controller
         $phone = $request->phone;
         $networkId = $request->network_id;
         $macAddress = $request->mac_address;
+
+        // ── Enforce captive-portal working hours (anti-bypass) ───────────────
+        // Block OTP delivery outside working hours so direct-URL access can't burn
+        // SMS credits when login would ultimately be rejected anyway.
+        $network = LocationNetwork::find($networkId);
+        if ($network && ! $network->workingHoursStatusNow()['enabled']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'outside_working_hours',
+                'message' => 'Login is currently unavailable due to working hours.',
+            ], 403);
+        }
 
         $otpVerification = OtpVerification::generateOtp($phone, $networkId, $macAddress);
 
@@ -280,6 +293,18 @@ class GuestNetworkUserController extends Controller
         $email = $request->email;
         $networkId = $request->network_id;
         $macAddress = $request->mac_address;
+
+        // ── Enforce captive-portal working hours (anti-bypass) ───────────────
+        // Block OTP delivery outside working hours so direct-URL access can't send
+        // verification codes when login would ultimately be rejected anyway.
+        $network = LocationNetwork::find($networkId);
+        if ($network && ! $network->workingHoursStatusNow()['enabled']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'outside_working_hours',
+                'message' => 'Login is currently unavailable due to working hours.',
+            ], 403);
+        }
 
         // Re-use OtpVerification with email as the identifier (stored in the phone column)
         $otpVerification = OtpVerification::generateOtp($email, $networkId, $macAddress);
@@ -384,6 +409,15 @@ class GuestNetworkUserController extends Controller
         // Prefer the location_id sent by the client (derived from nas_id in loading.js);
         // fall back to the network's own location for legacy / direct-URL flows.
         $locationId = (int) ($input['location_id'] ?? $network->location_id);
+
+        // ── Enforce captive-portal working hours (anti-bypass) ───────────────
+        if (! $network->workingHoursStatusNow()['enabled']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'outside_working_hours',
+                'message' => 'Login is currently unavailable due to working hours.',
+            ], 403);
+        }
 
         // ── Upsert guest user ────────────────────────────────────────────────
         $user = GuestNetworkUser::firstOrCreate(

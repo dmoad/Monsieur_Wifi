@@ -146,4 +146,62 @@ class LocationNetwork extends Model
     {
         return $this->hasMany(LocationNetworkQosDomain::class, 'location_network_id')->orderBy('domain');
     }
+
+    /**
+     * Evaluate this network's captive-portal working-hours schedule for right now.
+     *
+     * The schedule lives in the `working_hours` JSON column as a list of enabled
+     * ranges: [{ day, startHour, endHour }, ...]. An empty/absent schedule means
+     * the portal is always on (24/7). When a schedule is present, a day is enabled
+     * only during its listed hour ranges — a day with no range is disabled.
+     *
+     * Returns the shape consumed by loading.js (`enabled`, `start_time`, `end_time`),
+     * with today's window (HH:MM) for display when available.
+     */
+    public function workingHoursStatusNow(): array
+    {
+        $currentDay = strtolower(now()->format('l'));
+        $schedule = $this->working_hours;
+
+        // No schedule configured → always on.
+        if (empty($schedule)) {
+            return ['enabled' => true, 'day_of_week' => $currentDay, 'start_time' => null, 'end_time' => null];
+        }
+
+        $currentHour = (int) now()->format('H');
+        $enabled = false;
+        $startTime = null;
+        $endTime = null;
+
+        foreach ($schedule as $range) {
+            if (strtolower($range['day'] ?? '') !== $currentDay) {
+                continue;
+            }
+
+            $startHour = (int) ($range['startHour'] ?? 0);
+            $endHour = (int) ($range['endHour'] ?? 0);
+
+            // Track today's earliest start / latest end for the display window.
+            $rangeStart = str_pad((string) $startHour, 2, '0', STR_PAD_LEFT) . ':00';
+            $rangeEnd = str_pad((string) $endHour, 2, '0', STR_PAD_LEFT) . ':00';
+            if ($startTime === null || $rangeStart < $startTime) {
+                $startTime = $rangeStart;
+            }
+            if ($endTime === null || $rangeEnd > $endTime) {
+                $endTime = $rangeEnd;
+            }
+
+            // endHour is exclusive: a 9–17 range covers 09:00 up to (not including) 17:00.
+            if ($currentHour >= $startHour && $currentHour < $endHour) {
+                $enabled = true;
+            }
+        }
+
+        return [
+            'enabled' => $enabled,
+            'day_of_week' => $currentDay,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+        ];
+    }
 }
